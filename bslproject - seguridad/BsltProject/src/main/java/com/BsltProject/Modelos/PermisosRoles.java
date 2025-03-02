@@ -12,7 +12,7 @@ import lombok.*;
 public class PermisosRoles {
 
     @Id
-    private String id; // 🔹 Cambié Long por String
+    private String id; // 🔹 MongoDB usa String como ID
 
     private Rol rol;
     private Permiso permiso;

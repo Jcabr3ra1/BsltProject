@@ -1,11 +1,13 @@
 package com.BsltProject.Controladores;
 
 import com.BsltProject.Modelos.PermisosRoles;
+import com.BsltProject.Modelos.Rol;
 import com.BsltProject.Servicios.PermisosRolesServicio;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -35,9 +37,11 @@ public class ControladorPermisosRoles {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/asignar/{rolId}/{permisoId}")
-    public ResponseEntity<PermisosRoles> asignarPermisoARol(@PathVariable String rolId, @PathVariable String permisoId) { // 🔹 Cambié Long por String
-        return ResponseEntity.ok(permisosRolesServicio.asignarPermisoARol(rolId, permisoId));
+    @PutMapping("/asignar-multiples/{rolId}")
+    public ResponseEntity<Rol> asignarPermisosARol(@PathVariable String rolId, @RequestBody Map<String, List<String>> request) {
+        List<String> permisos = request.get("permisos");
+        Rol rolActualizado = permisosRolesServicio.asignarMultiplesPermisosARol(rolId, permisos);
+        return ResponseEntity.ok(rolActualizado);
     }
 
     @DeleteMapping("/{id}")

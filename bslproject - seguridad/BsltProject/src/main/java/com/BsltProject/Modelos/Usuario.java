@@ -1,6 +1,7 @@
 package com.BsltProject.Modelos;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.*;
 
@@ -21,6 +22,8 @@ public class Usuario {
     private String nombre;
     private String password;
 
-    private Set<Rol> roles = new HashSet<>(); // ✅ Inicializa los roles para evitar NullPointerException
+    @DBRef(lazy = false) // ✅ Ahora los roles se cargan junto con el usuario
+    private Set<Rol> roles = new HashSet<>();
+
     private Estado estado;
 }

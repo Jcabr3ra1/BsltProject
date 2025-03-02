@@ -1,8 +1,9 @@
+from functools import wraps
+import jwt
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
 from waitress import serve
-
 
 # Importamos los controladores
 from Controladores.ControladorTipoMovimiento import ControladorTipoMovimiento
@@ -11,10 +12,37 @@ from Controladores.ControladorTransaccion import ControladorTransaccion
 from Controladores.ControladorCuenta import ControladorCuenta
 from Controladores.ControladorBolsillo import ControladorBolsillo
 
-
-
 app = Flask(__name__)
 cors = CORS(app)
+
+# Cargar configuración desde config.json
+def loadFileConfig():
+    with open('Config/config.json') as f:
+        return json.load(f)
+
+dataConfig = loadFileConfig()
+SECRET_KEY = dataConfig["jwt-secret"]  # ✅ Usamos el mismo SECRET_KEY del Backend de Seguridad
+
+# Middleware para verificar JWT
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return jsonify({"error": "Token no proporcionado"}), 403
+
+        token = auth_header.split(" ")[1]  # Extrae solo el token sin "Bearer"
+        try:
+            decoded_token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            request.user = decoded_token  # Guarda los datos del usuario en la solicitud
+        except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Token expirado"}), 403
+        except jwt.InvalidTokenError:
+            return jsonify({"error": "Token inválido"}), 403
+
+        return f(*args, **kwargs)
+    return decorated
+
 
 # Inicializar el controlador de Estado
 controlador_cuenta = ControladorCuenta()
@@ -22,7 +50,6 @@ controlador_bolsillo = ControladorBolsillo()
 controlador_tipo_movimiento = ControladorTipoMovimiento()
 controlador_tipo_transaccion = ControladorTipoTransaccion()
 controlador_transaccion = ControladorTransaccion()
-
 
 @app.route("/", methods=['GET'])
 def test():
@@ -150,11 +177,6 @@ def actualizarTransaccion(id):
 @app.route("/transaccion/<string:id>", methods=['DELETE'])
 def eliminarTransaccion(id):
     return jsonify(controlador_transaccion.eliminar(id))
-
-
-def loadFileConfig():
-    with open('Config/config.json') as f:
-        return json.load(f)
 
 if __name__ == '__main__':
     dataConfig = loadFileConfig()

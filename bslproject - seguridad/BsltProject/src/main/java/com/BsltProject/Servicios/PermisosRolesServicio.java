@@ -8,6 +8,7 @@ import com.BsltProject.Repositorios.RepositorioPermiso;
 import com.BsltProject.Repositorios.RepositorioRol;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,18 +39,21 @@ public class PermisosRolesServicio {
         return repositorioPermisosRoles.findById(id);
     }
 
-    public PermisosRoles asignarPermisoARol(String rolId, String permisoId) { // 🔹 Cambié Long por String
+    public Rol asignarMultiplesPermisosARol(String rolId, List<String> permisosNombres) {
         Rol rol = repositorioRol.findById(rolId)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+                .orElseThrow(() -> new RuntimeException("❌ Error: No se encontró el rol con ID: " + rolId));
 
-        Permiso permiso = repositorioPermiso.findById(permisoId)
-                .orElseThrow(() -> new RuntimeException("Permiso no encontrado"));
+        List<Permiso> permisos = repositorioPermiso.findByNombreIn(permisosNombres);
+        if (permisos.isEmpty()) {
+            throw new RuntimeException("❌ Error: No se encontraron permisos con esos nombres.");
+        }
 
-        PermisosRoles permisosRoles = new PermisosRoles();
-        permisosRoles.setRol(rol);
-        permisosRoles.setPermiso(permiso);
+        if (rol.getPermisos() == null) {
+            rol.setPermisos(new ArrayList<>()); // 🔹 Inicializar si es null
+        }
 
-        return repositorioPermisosRoles.save(permisosRoles);
+        rol.getPermisos().addAll(permisos); // 🔹 Ahora no habrá NullPointerException
+        return repositorioRol.save(rol);
     }
 
     public void eliminarPermisosRoles(String id) { // 🔹 Cambié Long por String

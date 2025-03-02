@@ -17,10 +17,15 @@ public class PermisoServicio {
     }
 
     public Permiso obtenerPorNombre(String nombre) {
-        return repositorioPermiso.findByNombre(nombre);
+        return repositorioPermiso.findByNombre(nombre)
+                .orElseThrow(() -> new RuntimeException("❌ Error: No se encontró el permiso con nombre: " + nombre));
     }
 
+
     public Permiso crearPermiso(Permiso permiso) {
+        if (permiso.getDescripcion() == null || permiso.getDescripcion().isEmpty()) {
+            throw new RuntimeException("La descripción no puede estar vacía");
+        }
         return repositorioPermiso.save(permiso);
     }
 
