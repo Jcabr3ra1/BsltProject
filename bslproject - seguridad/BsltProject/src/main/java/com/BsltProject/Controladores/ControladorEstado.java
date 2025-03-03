@@ -18,31 +18,36 @@ public class ControladorEstado {
         this.estadoServicio = estadoServicio;
     }
 
-    @PostMapping
-    public ResponseEntity<Estado> crearEstado(@RequestBody Estado estado) {
-        return ResponseEntity.ok(estadoServicio.crearEstado(estado));
-    }
-
+    // ✅ OBTENER TODOS LOS ESTADOS
     @GetMapping
     public ResponseEntity<List<Estado>> obtenerTodosLosEstados() {
         return ResponseEntity.ok(estadoServicio.obtenerTodosLosEstados());
     }
 
+    // ✅ OBTENER UN ESTADO POR ID
     @GetMapping("/{id}")
-    public ResponseEntity<Estado> obtenerEstadoPorId(@PathVariable String id) { // 🔹 Cambié Long por String
+    public ResponseEntity<Estado> obtenerEstadoPorId(@PathVariable String id) {
         Optional<Estado> estado = estadoServicio.obtenerEstadoPorId(id);
         return estado.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // ✅ CREAR UN NUEVO ESTADO
+    @PostMapping
+    public ResponseEntity<Estado> crearEstado(@RequestBody Estado estado) {
+        return ResponseEntity.ok(estadoServicio.crearEstado(estado));
+    }
+
+    // ✅ ACTUALIZAR UN ESTADO
     @PutMapping("/{id}")
-    public ResponseEntity<Estado> actualizarEstado(@PathVariable String id, @RequestBody Estado estadoDetalles) { // 🔹 Cambié Long por String
+    public ResponseEntity<Estado> actualizarEstado(@PathVariable String id, @RequestBody Estado estadoDetalles) {
         Estado estadoActualizado = estadoServicio.actualizarEstado(id, estadoDetalles);
         return ResponseEntity.ok(estadoActualizado);
     }
 
+    // ✅ ELIMINAR UN ESTADO
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarEstado(@PathVariable String id) { // 🔹 Cambié Long por String
+    public ResponseEntity<Void> eliminarEstado(@PathVariable String id) {
         estadoServicio.eliminarEstado(id);
         return ResponseEntity.noContent().build();
     }

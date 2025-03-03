@@ -25,5 +25,8 @@ public class Usuario {
     @DBRef(lazy = false) // ✅ Ahora los roles se cargan junto con el usuario
     private Set<Rol> roles = new HashSet<>();
 
+    @DBRef(lazy = false)
+    private Set<Permiso> permisos = new HashSet<>();
+
     private Estado estado;
 }

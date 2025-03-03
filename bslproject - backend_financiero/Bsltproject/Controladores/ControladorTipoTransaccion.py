@@ -1,29 +1,28 @@
-from Repositorios.RepositorioTipoTransaccion import RepositorioTipoTransaccion
-from Modelos.TipoTransaccion import TipoTransaccion
+from fastapi import APIRouter, HTTPException
+from Servicios.TipoTransaccionServicio import TipoTransaccionServicio
 
-class ControladorTipoTransaccion():
-    def __init__(self):
-        self.repositorioTipoTransaccion = RepositorioTipoTransaccion()
+router = APIRouter()
+servicio = TipoTransaccionServicio()
 
-    def obtenerTodos(self):
-        return self.repositorioTipoTransaccion.findAll()
+@router.get("/")
+def obtener_tipos_transaccion():
+    return servicio.obtener_todos()
 
-    def crear(self, data):
-        nuevoTipo = TipoTransaccion(data)
-        return self.repositorioTipoTransaccion.save(nuevoTipo)
+@router.post("/")
+def crear_tipo_transaccion(data: dict):
+    return servicio.crear(data)
 
-    def obtenerPorId(self, id):
-        tipo = self.repositorioTipoTransaccion.findById(id)
-        if tipo:
-            return tipo
-        return {"error": "Tipo de transacción no encontrado"}, 404
+@router.get("/{id}")
+def obtener_tipo_transaccion(id: str):
+    tipo = servicio.obtener_por_id(id)
+    if "error" in tipo:
+        raise HTTPException(status_code=404, detail=tipo["error"])
+    return tipo
 
-    def actualizar(self, id, data):
-        tipoExistente = self.repositorioTipoTransaccion.findById(id)
-        if tipoExistente:
-            tipoExistente["descripcion"] = data["descripcion"]
-            return self.repositorioTipoTransaccion.save(tipoExistente)
-        return {"error": "Tipo de transacción no encontrado"}, 404
+@router.put("/{id}")
+def actualizar_tipo_transaccion(id: str, data: dict):
+    return servicio.actualizar(id, data)
 
-    def eliminar(self, id):
-        return self.repositorioTipoTransaccion.delete(id)
+@router.delete("/{id}")
+def eliminar_tipo_transaccion(id: str):
+    return servicio.eliminar(id)

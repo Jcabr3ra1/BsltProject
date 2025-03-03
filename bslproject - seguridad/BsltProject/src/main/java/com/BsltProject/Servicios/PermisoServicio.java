@@ -1,35 +1,48 @@
 package com.BsltProject.Servicios;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
+
 import com.BsltProject.Modelos.Permiso;
 import com.BsltProject.Repositorios.RepositorioPermiso;
 
 @Service
 public class PermisoServicio {
 
-    @Autowired
-    private RepositorioPermiso repositorioPermiso;
+    private final RepositorioPermiso repositorioPermiso;
 
-    public List<Permiso> obtenerTodos() {
+    public PermisoServicio(RepositorioPermiso repositorioPermiso) {
+        this.repositorioPermiso = repositorioPermiso;
+    }
+
+    public List<Permiso> obtenerTodosLosPermisos() {
         return repositorioPermiso.findAll();
     }
 
-    public Permiso obtenerPorNombre(String nombre) {
-        return repositorioPermiso.findByNombre(nombre)
-                .orElseThrow(() -> new RuntimeException("❌ Error: No se encontró el permiso con nombre: " + nombre));
+    public Optional<Permiso> obtenerPermisoPorId(String id) {
+        return repositorioPermiso.findById(id);
     }
 
+    public Optional<Permiso> obtenerPermisoPorNombre(String nombre) {
+        return repositorioPermiso.findByNombre(nombre);
+    }
 
     public Permiso crearPermiso(Permiso permiso) {
-        if (permiso.getDescripcion() == null || permiso.getDescripcion().isEmpty()) {
-            throw new RuntimeException("La descripción no puede estar vacía");
-        }
+        return repositorioPermiso.save(permiso);
+    }
+
+    public Permiso actualizarPermiso(String id, Permiso permisoDetalles) {
+        Permiso permiso = repositorioPermiso.findById(id)
+                .orElseThrow(() -> new RuntimeException("Permiso no encontrado"));
+
+        permiso.setNombre(permisoDetalles.getNombre());
         return repositorioPermiso.save(permiso);
     }
 
     public void eliminarPermiso(String id) {
-        repositorioPermiso.deleteById(id);
+        Permiso permiso = repositorioPermiso.findById(id)
+                .orElseThrow(() -> new RuntimeException("Permiso no encontrado"));
+        repositorioPermiso.delete(permiso);
     }
 }

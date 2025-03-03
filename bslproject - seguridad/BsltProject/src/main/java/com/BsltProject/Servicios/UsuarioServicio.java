@@ -3,9 +3,11 @@ package com.BsltProject.Servicios;
 import com.BsltProject.Modelos.Usuario;
 import com.BsltProject.Modelos.Rol;
 import com.BsltProject.Modelos.Estado;
+import com.BsltProject.Modelos.Permiso; // ✅ Agregado para manejar permisos
 import com.BsltProject.Repositorios.RepositorioUsuario;
 import com.BsltProject.Repositorios.RepositorioRol;
 import com.BsltProject.Repositorios.RepositorioEstado;
+import com.BsltProject.Repositorios.RepositorioPermiso; // ✅ Agregado para manejar permisos
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +21,19 @@ public class UsuarioServicio {
     private final RepositorioUsuario repositorioUsuario;
     private final RepositorioRol repositorioRol;
     private final RepositorioEstado repositorioEstado;
-    private final PasswordEncoder passwordEncoder; // ✅ Inyectamos el PasswordEncoder
+    private final RepositorioPermiso repositorioPermiso; // ✅ Agregado para manejar permisos
+    private final PasswordEncoder passwordEncoder;
 
     public UsuarioServicio(RepositorioUsuario repositorioUsuario,
                            RepositorioRol repositorioRol,
                            RepositorioEstado repositorioEstado,
-                           PasswordEncoder passwordEncoder) { // ✅ Agregamos PasswordEncoder en el constructor
+                           RepositorioPermiso repositorioPermiso, // ✅ Agregado en el constructor
+                           PasswordEncoder passwordEncoder) {
         this.repositorioUsuario = repositorioUsuario;
         this.repositorioRol = repositorioRol;
         this.repositorioEstado = repositorioEstado;
-        this.passwordEncoder = passwordEncoder; // ✅ Guardamos la referencia del PasswordEncoder
+        this.repositorioPermiso = repositorioPermiso; // ✅ Guardamos referencia del repositorio de permisos
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario crearUsuario(Usuario usuario) {
@@ -91,5 +96,19 @@ public class UsuarioServicio {
         return repositorioUsuario.save(usuario);
     }
 
+    // ✅ NUEVA FUNCIÓN: ASIGNAR PERMISO A UN USUARIO
+    public Usuario asignarPermiso(String usuarioId, String permisoId) {
+        Usuario usuario = repositorioUsuario.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        Permiso permiso = repositorioPermiso.findById(permisoId)
+                .orElseThrow(() -> new RuntimeException("Permiso no encontrado"));
+
+        if (usuario.getPermisos() == null) {
+            usuario.setPermisos(new HashSet<>());
+        }
+
+        usuario.getPermisos().add(permiso);
+        return repositorioUsuario.save(usuario);
+    }
 }

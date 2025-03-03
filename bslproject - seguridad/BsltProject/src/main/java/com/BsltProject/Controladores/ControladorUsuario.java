@@ -143,4 +143,12 @@ public class ControladorUsuario {
         return ResponseEntity.ok(usuarioActualizado);
     }
 
+    // ✅ ASIGNAR UN PERMISO A UN USUARIO (NUEVO ENDPOINT)
+    @PutMapping("/{usuarioId}/asignar-permiso/{permisoId}")
+    public ResponseEntity<Usuario> asignarPermiso(@PathVariable String usuarioId, @PathVariable String permisoId) {
+        Usuario usuarioActualizado = usuarioServicio.asignarPermiso(usuarioId, permisoId);
+        return ResponseEntity.ok(usuarioActualizado);
+    }
+
+
 }

@@ -1,29 +1,28 @@
-from Repositorios.RepositorioTipoMovimiento import RepositorioTipoMovimiento
-from Modelos.TipoMovimiento import TipoMovimiento
+from fastapi import APIRouter, HTTPException
+from Servicios.TipoMovimientoServicio import TipoMovimientoServicio
 
-class ControladorTipoMovimiento():
-    def __init__(self):
-        self.repositorio = RepositorioTipoMovimiento()
+router = APIRouter()
+servicio = TipoMovimientoServicio()
 
-    def obtenerTodos(self):
-        return self.repositorio.findAll()
+@router.get("/")
+def obtener_tipos_movimiento():
+    return servicio.obtener_todos()
 
-    def crear(self, data):
-        nuevo = TipoMovimiento(data)
-        return self.repositorio.save(nuevo)
+@router.post("/")
+def crear_tipo_movimiento(data: dict):
+    return servicio.crear(data)
 
-    def obtenerPorId(self, id):
-        tipo = self.repositorio.findById(id)
-        return tipo if tipo else {"error": "TipoMovimiento no encontrado"}, 404
+@router.get("/{id}")
+def obtener_tipo_movimiento(id: str):
+    tipo = servicio.obtener_por_id(id)
+    if "error" in tipo:
+        raise HTTPException(status_code=404, detail=tipo["error"])
+    return tipo
 
-    def actualizar(self, id, data):
-        tipoActual = self.repositorio.findById(id)
-        if tipoActual:
-            tipoActual["codigo_origen"] = data.get("codigo_origen", tipoActual["codigo_origen"])
-            tipoActual["codigo_destino"] = data.get("codigo_destino", tipoActual["codigo_destino"])
-            tipoActual["descripcion"] = data.get("descripcion", tipoActual["descripcion"])
-            return self.repositorio.save(TipoMovimiento(tipoActual))
-        return {"error": "TipoMovimiento no encontrado"}, 404
+@router.put("/{id}")
+def actualizar_tipo_movimiento(id: str, data: dict):
+    return servicio.actualizar(id, data)
 
-    def eliminar(self, id):
-        return self.repositorio.delete(id)
+@router.delete("/{id}")
+def eliminar_tipo_movimiento(id: str):
+    return servicio.eliminar(id)

@@ -16,28 +16,27 @@ public class EstadoServicio {
         this.repositorioEstado = repositorioEstado;
     }
 
-    public Estado crearEstado(Estado estado) {
-        return repositorioEstado.save(estado);
-    }
-
     public List<Estado> obtenerTodosLosEstados() {
         return repositorioEstado.findAll();
     }
 
-    public Optional<Estado> obtenerEstadoPorId(String id) { // 🔹 Cambié Long por String
+    public Optional<Estado> obtenerEstadoPorId(String id) {
         return repositorioEstado.findById(id);
     }
 
-    public Estado actualizarEstado(String id, Estado estadoDetalles) { // 🔹 Cambié Long por String
+    public Estado crearEstado(Estado estado) {
+        return repositorioEstado.save(estado);
+    }
+
+    public Estado actualizarEstado(String id, Estado estadoDetalles) {
         Estado estado = repositorioEstado.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estado no encontrado"));
 
         estado.setNombre(estadoDetalles.getNombre());
-
         return repositorioEstado.save(estado);
     }
 
-    public void eliminarEstado(String id) { // 🔹 Cambié Long por String
+    public void eliminarEstado(String id) {
         Estado estado = repositorioEstado.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estado no encontrado"));
         repositorioEstado.delete(estado);
