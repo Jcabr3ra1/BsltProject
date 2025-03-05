@@ -68,18 +68,6 @@ public class RolServicio {
         return repositorioUsuario.findByRolesId(id);
     }
 
-    // ✅ NUEVO: Asignar un permiso a un rol
-    public Rol asignarPermiso(String rolId, String permisoId) {
-        Rol rol = repositorioRol.findById(rolId)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-
-        Permiso permiso = repositorioPermiso.findById(permisoId)
-                .orElseThrow(() -> new RuntimeException("Permiso no encontrado"));
-
-        rol.getPermisos().add(permiso);
-        return repositorioRol.save(rol);
-    }
-
     // ✅ Obtener permisos de un usuario autenticado
     public List<String> obtenerPermisosPorRol(String nombreRol) {
         Optional<Rol> rol = repositorioRol.findByNombre(nombreRol);

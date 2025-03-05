@@ -48,7 +48,7 @@ public class ControladorUsuario {
     @PostMapping("/login")
     public ResponseEntity<?> autenticarUsuario(@RequestBody Usuario usuario) {
         try {
-            // Primero verificamos si el usuario existe en la base de datos
+            // Verificamos si el usuario existe en la base de datos
             Optional<Usuario> usuarioEncontrado = usuarioServicio.obtenerUsuarioPorEmail(usuario.getEmail());
             if (!usuarioEncontrado.isPresent()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -59,25 +59,26 @@ public class ControladorUsuario {
             UserDetails userDetails = userDetailsService.loadUserByUsername(usuario.getEmail());
 
             if (passwordEncoder.matches(usuario.getPassword(), userDetails.getPassword())) {
-                String token = jwtUtil.generarToken(userDetails.getUsername());
-
-                // Crear un objeto de respuesta más estructurado
-                Map<String, Object> respuesta = new HashMap<>();
-                respuesta.put("token", token);
-                respuesta.put("tipo", "Bearer");
-                respuesta.put("email", userDetails.getUsername());
-                respuesta.put("nombre", usuarioEncontrado.get().getNombre());
-
-                // Incluir información sobre roles
+                // 🔥 Extraer los roles del usuario
                 List<String> rolesNombres = new ArrayList<>();
                 if (usuarioEncontrado.get().getRoles() != null) {
                     for (Rol rol : usuarioEncontrado.get().getRoles()) {
                         rolesNombres.add(rol.getNombre());
                     }
                 }
+
+                // ✅ Generar token con los roles
+                String token = jwtUtil.generarToken(userDetails.getUsername(), rolesNombres);
+
+                // 🔥 Crear respuesta estructurada
+                Map<String, Object> respuesta = new HashMap<>();
+                respuesta.put("token", token);
+                respuesta.put("tipo", "Bearer");
+                respuesta.put("email", userDetails.getUsername());
+                respuesta.put("nombre", usuarioEncontrado.get().getNombre());
                 respuesta.put("roles", rolesNombres);
 
-                // Incluir información sobre el estado
+                // 🔥 Incluir información sobre el estado del usuario
                 if (usuarioEncontrado.get().getEstado() != null) {
                     Map<String, Object> estadoInfo = new HashMap<>();
                     estadoInfo.put("id", usuarioEncontrado.get().getEstado().getId());
@@ -120,35 +121,46 @@ public class ControladorUsuario {
     // ✅ ACTUALIZAR USUARIO
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> actualizarUsuario(@PathVariable String id, @RequestBody Usuario usuarioDetalles) {
+        System.out.println("✅ Solicitud PUT recibida en el backend para ID: " + id);
         Usuario usuarioActualizado = usuarioServicio.actualizarUsuario(id, usuarioDetalles);
         return ResponseEntity.ok(usuarioActualizado);
     }
 
     // ✅ ELIMINAR USUARIO
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarUsuario(@PathVariable String id) {
+    public ResponseEntity<?> eliminarUsuario(@PathVariable String id) {
         usuarioServicio.eliminarUsuario(id);
         return ResponseEntity.noContent().build();
     }
 
+    // ✅ ASIGNAR ROL A UN USUARIO
     @PutMapping("/{usuarioId}/asignar-rol/{rolId}")
     public ResponseEntity<Usuario> asignarRol(@PathVariable String usuarioId, @PathVariable String rolId) {
         Usuario usuarioActualizado = usuarioServicio.asignarRol(usuarioId, rolId);
+
+        // 🔥 Generar nuevo token con los roles actualizados
+        List<String> rolesNombres = new ArrayList<>();
+        for (Rol rol : usuarioActualizado.getRoles()) {
+            rolesNombres.add(rol.getNombre());
+        }
+
+        String nuevoToken = jwtUtil.generarToken(usuarioActualizado.getEmail(), rolesNombres);
+        System.out.println("✅ Nuevo token generado tras asignación de rol: " + nuevoToken);
+
         return ResponseEntity.ok(usuarioActualizado);
     }
 
+    // ✅ ASIGNAR ESTADO A UN USUARIO
     @PutMapping("/{usuarioId}/asignar-estado/{estadoId}")
     public ResponseEntity<Usuario> asignarEstado(@PathVariable String usuarioId, @PathVariable String estadoId) {
         Usuario usuarioActualizado = usuarioServicio.asignarEstado(usuarioId, estadoId);
         return ResponseEntity.ok(usuarioActualizado);
     }
 
-    // ✅ ASIGNAR UN PERMISO A UN USUARIO (NUEVO ENDPOINT)
-    @PutMapping("/{usuarioId}/asignar-permiso/{permisoId}")
-    public ResponseEntity<Usuario> asignarPermiso(@PathVariable String usuarioId, @PathVariable String permisoId) {
-        Usuario usuarioActualizado = usuarioServicio.asignarPermiso(usuarioId, permisoId);
+    @PutMapping("/{usuarioId}/asignar-cuenta/{cuentaId}")
+    public ResponseEntity<Usuario> asignarCuenta(@PathVariable String usuarioId, @PathVariable String cuentaId) {
+        Usuario usuarioActualizado = usuarioServicio.asignarCuentaAUsuario(usuarioId, cuentaId);
         return ResponseEntity.ok(usuarioActualizado);
     }
-
 
 }

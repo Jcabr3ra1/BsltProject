@@ -1,11 +1,14 @@
 package com.BsltProject.Modelos;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Document(collection = "usuarios") // Define que esta clase será una colección en MongoDB
@@ -22,11 +25,17 @@ public class Usuario {
     private String nombre;
     private String password;
 
-    @DBRef(lazy = false) // ✅ Ahora los roles se cargan junto con el usuario
+    private String cuentaId; // ✅ Solo almacenamos el ID de la cuenta
+
+    @Transient // No se almacena en la base de datos, se obtiene dinámicamente
+    private Map<String, Object> cuenta; // Se llenará con datos en tiempo real del backend financiero
+
+    @DBRef(lazy = false) // Los roles se cargan con el usuario
     private Set<Rol> roles = new HashSet<>();
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY) // 🔥 Evita que se muestre cuando está vacío
     @DBRef(lazy = false)
-    private Set<Permiso> permisos = new HashSet<>();
+    private Set<Permiso> permisos;
 
     private Estado estado;
 }

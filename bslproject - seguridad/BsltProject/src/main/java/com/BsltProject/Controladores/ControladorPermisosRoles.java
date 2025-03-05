@@ -1,14 +1,14 @@
 package com.BsltProject.Controladores;
 
+import com.BsltProject.Modelos.Permiso;
 import com.BsltProject.Modelos.PermisosRoles;
 import com.BsltProject.Modelos.Rol;
 import com.BsltProject.Servicios.PermisosRolesServicio;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/permisos-roles")
@@ -21,13 +21,52 @@ public class ControladorPermisosRoles {
     }
 
     @PostMapping
-    public ResponseEntity<PermisosRoles> crearPermisosRoles(@RequestBody PermisosRoles permisosRoles) {
-        return ResponseEntity.ok(permisosRolesServicio.crearPermisosRoles(permisosRoles));
+    public ResponseEntity<?> crearPermisosRoles(@RequestBody Map<String, String> request) {
+        String rolId = request.get("rolId");
+        String permisoId = request.get("permisoId");
+
+        if (rolId == null || permisoId == null || rolId.isEmpty() || permisoId.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "❌ Error: rolId y permisoId son requeridos"));
+        }
+
+        try {
+            PermisosRoles nuevoPermisoRol = permisosRolesServicio.crearPermisosRoles(rolId, permisoId);
+            return ResponseEntity.ok(nuevoPermisoRol);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping
-    public ResponseEntity<List<PermisosRoles>> obtenerTodosLosPermisosRoles() {
-        return ResponseEntity.ok(permisosRolesServicio.obtenerTodosLosPermisosRoles());
+    public ResponseEntity<?> obtenerPermisosRoles() {
+        List<PermisosRoles> permisosRolesList = permisosRolesServicio.obtenerTodosLosPermisosRoles();
+        List<Map<String, Object>> respuesta = new ArrayList<>();
+
+        for (PermisosRoles permisosRoles : permisosRolesList) {
+            if (permisosRoles.getRol() == null) {
+                System.out.println("❌ Error: PermisosRoles sin Rol asociado - ID: " + permisosRoles.getId());
+                continue; // Saltar registros que no tienen rol
+            }
+
+            if (permisosRoles.getPermiso() == null) {
+                System.out.println("❌ Error: PermisosRoles sin Permiso asociado - ID: " + permisosRoles.getId());
+                continue; // Saltar registros que no tienen permiso
+            }
+
+            Map<String, Object> rolData = new HashMap<>();
+            rolData.put("id", permisosRoles.getRol().getId());
+            rolData.put("nombre", permisosRoles.getRol().getNombre());
+            rolData.put("permisos", permisosRoles.getRol().getPermisos());
+
+            Map<String, Object> permisosRolesData = new HashMap<>();
+            permisosRolesData.put("id", permisosRoles.getId());
+            permisosRolesData.put("rol", rolData);
+            permisosRolesData.put("permiso", permisosRoles.getPermiso());
+
+            respuesta.add(permisosRolesData);
+        }
+
+        return ResponseEntity.ok(respuesta);
     }
 
     @GetMapping("/{id}")
@@ -49,4 +88,5 @@ public class ControladorPermisosRoles {
         permisosRolesServicio.eliminarPermisosRoles(id);
         return ResponseEntity.noContent().build();
     }
+
 }

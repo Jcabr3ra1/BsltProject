@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
 
 @Component
@@ -36,12 +37,13 @@ public class JwtUtil {
         System.out.println("✅ Clave secreta cargada correctamente.");
     }
 
-    public String generarToken(String username) {
+    public String generarToken(String username, List<String> roles) {
         System.out.println("🚀 Generando token para usuario: " + username);
 
         String token = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(username)
+                .claim("roles", roles)  // ✅ Agregamos los roles al token
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hora
                 .signWith(signingKey, SignatureAlgorithm.HS256)
@@ -50,6 +52,7 @@ public class JwtUtil {
         System.out.println("🟢 Token generado correctamente: " + token);
         return token;
     }
+
 
     public String extraerUsuario(String token) {
         return extraerReclamo(token, Claims::getSubject);
@@ -85,6 +88,11 @@ public class JwtUtil {
             System.out.println("❌ ERROR al validar el token: " + e.getMessage());
             throw e;
         }
+    }
+
+    public List<String> extraerRoles(String token) {
+        Claims claims = extraerTodosLosReclamos(token);
+        return claims.get("roles", List.class); // ✅ Obtener roles
     }
 
     private boolean estaExpirado(String token) {

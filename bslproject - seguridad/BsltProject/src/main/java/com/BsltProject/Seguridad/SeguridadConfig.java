@@ -45,18 +45,6 @@ public class SeguridadConfig {
         List<String> permisosModerator = rolServicio.obtenerPermisosPorRol("MODERATOR");
 
         System.out.println("📌 Rutas protegidas con permisos:");
-        for (String permiso : permisosAdmin) {
-            System.out.println("✅ ADMIN puede acceder a: " + permiso);
-        }
-        for (String permiso : permisosUser) {
-            System.out.println("✅ USER puede acceder a: " + permiso);
-        }
-        for (String permiso : permisosGuest) {
-            System.out.println("✅ GUEST puede acceder a: " + permiso);
-        }
-        for (String permiso : permisosModerator) {
-            System.out.println("✅ MODERATOR puede acceder a: " + permiso);
-        }
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
@@ -64,19 +52,22 @@ public class SeguridadConfig {
                     auth.requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll();
                     auth.requestMatchers(HttpMethod.POST, "/usuarios/registro").permitAll();
 
-                    // Proteger rutas según los permisos
-                    for (String permiso : permisosAdmin) {
-                        auth.requestMatchers("/seguridad/admin/**").hasAuthority(permiso);
-                    }
-                    for (String permiso : permisosUser) {
-                        auth.requestMatchers("/seguridad/usuarios/**").hasAuthority(permiso);
-                    }
-                    for (String permiso : permisosGuest) {
-                        auth.requestMatchers("/seguridad/publico/**").hasAuthority(permiso);
-                    }
-                    for (String permiso : permisosModerator) {
-                        auth.requestMatchers("/seguridad/moderacion/**").hasAuthority(permiso);
-                    }
+                    // 🔹 Permisos dinámicos por rol
+                    permisosAdmin.forEach(permiso -> auth.requestMatchers("/seguridad/admin/**").hasAuthority(permiso));
+                    permisosUser.forEach(permiso -> auth.requestMatchers("/seguridad/usuarios/**").hasAuthority(permiso));
+                    permisosGuest.forEach(permiso -> auth.requestMatchers("/seguridad/publico/**").hasAuthority(permiso));
+                    permisosModerator.forEach(permiso -> auth.requestMatchers("/seguridad/moderacion/**").hasAuthority(permiso));
+
+                    // 🔥 Aplicar autenticación a todas las rutas necesarias
+                    List<String> rutasProtegidas = List.of(
+                            "/seguridad/usuarios/**",
+                            "/seguridad/estados/**",
+                            "/seguridad/permisos/**",
+                            "/seguridad/permisos-roles/**",
+                            "/seguridad/roles/**"
+                    );
+
+                    rutasProtegidas.forEach(ruta -> auth.requestMatchers(ruta).authenticated());
 
                     auth.anyRequest().authenticated();
                 })
@@ -85,6 +76,7 @@ public class SeguridadConfig {
 
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

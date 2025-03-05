@@ -4,10 +4,12 @@ import com.BsltProject.Modelos.Rol;
 import com.BsltProject.Modelos.Usuario;
 import com.BsltProject.Modelos.Permiso;
 import com.BsltProject.Servicios.RolServicio;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -21,8 +23,14 @@ public class ControladorRol {
     }
 
     @PostMapping
-    public ResponseEntity<Rol> crearRol(@RequestBody Rol rol) {
-        return ResponseEntity.ok(rolServicio.crearRol(rol));
+    public ResponseEntity<?> crearRol(@RequestBody Rol rol) {
+        try {
+            Rol nuevoRol = rolServicio.crearRol(rol);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoRol);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al crear el rol", "detalle", e.getMessage()));
+        }
     }
 
     @GetMapping
@@ -70,10 +78,4 @@ public class ControladorRol {
         return ResponseEntity.ok(usuarios);
     }
 
-    // ✅ NUEVO: ASIGNAR UN PERMISO A UN ROL
-    @PutMapping("/asignar-permiso/{rolId}/{permisoId}")
-    public ResponseEntity<Rol> asignarPermisoARol(@PathVariable String rolId, @PathVariable String permisoId) {
-        Rol rolActualizado = rolServicio.asignarPermiso(rolId, permisoId);
-        return ResponseEntity.ok(rolActualizado);
-    }
 }

@@ -1,10 +1,11 @@
 package com.BsltProject.Modelos;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "permisos_roles") // 🔹 Definirlo como una colección en MongoDB
+@Document(collection = "permisos_roles")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,8 +13,11 @@ import lombok.*;
 public class PermisosRoles {
 
     @Id
-    private String id; // 🔹 MongoDB usa String como ID
+    private String id;
 
+    @DBRef // 🔹 Hace que MongoDB almacene la referencia completa del rol
     private Rol rol;
+
+    @DBRef // 🔹 Hace que MongoDB almacene la referencia completa del permiso
     private Permiso permiso;
 }

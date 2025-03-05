@@ -1,7 +1,0 @@
-{
-  "url-backend": "127.0.0.1",
-  "port": 9999,
-  "data-db-connection": "mongodb+srv://root:root@bstproject.98lqw.mongodb.net/BstProject_db?retryWrites=true&w=majority&appName=BstProject",
-  "name-db": "BstProject_db",
-  "jwt-secret": "vQmatW7Mo/DUNpapm4JL/p5V8v4G8ObEgaQ1Qu9uVqE="
-}

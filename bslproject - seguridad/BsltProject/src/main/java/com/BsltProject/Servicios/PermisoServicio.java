@@ -37,8 +37,11 @@ public class PermisoServicio {
                 .orElseThrow(() -> new RuntimeException("Permiso no encontrado"));
 
         permiso.setNombre(permisoDetalles.getNombre());
+        permiso.setDescripcion(permisoDetalles.getDescripcion());  // ✅ AHORA SE ACTUALIZA LA DESCRIPCIÓN
+
         return repositorioPermiso.save(permiso);
     }
+
 
     public void eliminarPermiso(String id) {
         Permiso permiso = repositorioPermiso.findById(id)
