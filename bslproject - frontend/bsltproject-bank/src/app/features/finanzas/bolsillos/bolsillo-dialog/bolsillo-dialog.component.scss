@@ -1,0 +1,25 @@
+.dialog-content {
+  min-width: 400px;
+  padding: 20px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.mat-dialog-actions {
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.toggle-container {
+  margin: 16px 0;
+}

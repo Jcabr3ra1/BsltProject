@@ -13,7 +13,7 @@ URL_FINANZAS = configuracion["servicios"]["finanzas"]
 
 router = APIRouter()
 
-####################################### ✅ BOLSILLOS #######################################
+####################################### BOLSILLOS #######################################
 
 @router.get("/finanzas/bolsillos", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))])
 async def obtener_bolsillos(request: Request):
@@ -48,11 +48,9 @@ async def crear_bolsillo(request: Request):
         headers={"Authorization": auth_header, "Content-Type": "application/json"}
     )
 
-    print(f"🔍 Respuesta del backend Finanzas: {response.status_code} - {response.text}")  # 🔥 Debug
-
     if response.status_code in [200, 201]:
         result = response.json()
-        if not result:  # Si está vacío, forzar la recuperación del bolsillo
+        if not result:  
             return {"mensaje": "Bolsillo creado, pero sin respuesta. Verifica en la base de datos."}
         return result
 
@@ -66,14 +64,10 @@ async def obtener_bolsillo(id: str, request: Request):
     if not auth_header:
         raise HTTPException(status_code=401, detail="Token de autorización faltante")
 
-    print(f"🔍 Solicitando bolsillo con ID: {id}")  # 🔥 Debug
-
     response = requests.get(
         f"{URL_FINANZAS}/bolsillos/{id}",
         headers={"Authorization": auth_header}
     )
-
-    print(f"🔍 Respuesta del backend: {response.status_code} - {response.text}")  # 🔥 Debug
 
     if response.status_code == 200:
         return response.json()
@@ -107,7 +101,7 @@ async def eliminar_bolsillo(id: str, request: Request):
         headers={"Authorization": request.headers.get("Authorization")}
     )
 
-    if response.status_code in [200, 204]:  # ✅ Aceptamos 200 y 204 como exitosos
+    if response.status_code in [200, 204]:  
         return {"mensaje": "Bolsillo eliminado correctamente"}
 
     raise HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al eliminar bolsillo"))
@@ -133,10 +127,10 @@ async def crear_cuenta(request: Request, token: str = Depends(verificar_token)):
 
     result = response.json()
 
-    if response.status_code in [200, 201]:  # ✅ Aceptamos 200 y 201 como éxito
-        if "error" in result:  # ❌ Si el backend manda error dentro del JSON
+    if response.status_code in [200, 201]:  
+        if "error" in result:  
             raise HTTPException(status_code=400, detail=result["error"])
-        return result  # ✅ Devolver la cuenta creada correctamente
+        return result  
 
     raise HTTPException(status_code=response.status_code, detail=result.get("error", "Error al crear cuenta"))
 
@@ -198,36 +192,25 @@ async def asignar_cuenta_a_usuario(id_cuenta: str, id_usuario: str, request: Req
     if not auth_header:
         raise HTTPException(status_code=401, detail="Token de autorización faltante")
 
-    print(f"📌 Recibida solicitud para asignar cuenta {id_cuenta} al usuario {id_usuario}")
-
-    # ✅ 1. Verificar si el usuario existe en Seguridad
     seguridad_url = f"{URL_SEGURIDAD}/usuarios/{id_usuario}"
-    print(f"🔍 Verificando usuario en Seguridad: {seguridad_url}")
 
     response_usuario = requests.get(seguridad_url, headers={"Authorization": auth_header})
 
     if response_usuario.status_code != 200:
-        print(f"❌ Usuario no encontrado en Seguridad: {response_usuario.status_code}")
         raise HTTPException(status_code=404, detail="Usuario no encontrado en Seguridad")
 
-    print("✅ Usuario encontrado en Seguridad, procediendo a Finanzas")
-
-    # ✅ 2. Llamar a Finanzas para asignar el usuario a la cuenta
     finanzas_url = f"{URL_FINANZAS}/cuentas/{id_cuenta}/asignar-usuario/{id_usuario}"
-    print(f"🔄 Llamando a Finanzas: {finanzas_url}")
 
     try:
         response = requests.put(finanzas_url, headers={"Authorization": auth_header}, timeout=10)
-        response.raise_for_status()  # ✅ Lanza una excepción si hay un error
+        response.raise_for_status()  
     except requests.exceptions.RequestException as e:
-        print(f"❌ Error al llamar a Finanzas: {e}")
         raise HTTPException(status_code=500, detail=f"Error al asignar usuario en Finanzas: {str(e)}")
 
-    print("✅ Asignación completada con éxito")
     return response.json()
 
 
-####################################### ✅ TRANSACCIONES #######################################
+####################################### TRANSACCIONES #######################################
 
 @router.get("/finanzas/transacciones", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def obtener_transacciones(token: str = Depends(verificar_token)):
@@ -236,8 +219,6 @@ async def obtener_transacciones(token: str = Depends(verificar_token)):
         f"{URL_FINANZAS}/transacciones",
         headers={"Authorization": f"Bearer {token}"}
     )
-
-    print("📩 Respuesta del servidor:", response.status_code, response.text)  # 🐞 Depuración
 
     if response.status_code == 200:
         return response.json()
@@ -254,8 +235,6 @@ async def obtener_transaccion(id: str, token: str = Depends(verificar_token)):
         headers={"Authorization": f"Bearer {token}"}
     )
 
-    print("📩 Respuesta del servidor:", response.status_code, response.text)  # 🐞 Depuración
-
     if response.status_code == 200:
         return response.json()
 
@@ -267,7 +246,6 @@ async def obtener_transaccion(id: str, token: str = Depends(verificar_token)):
 async def crear_transaccion(request: Request, token: str = Depends(verificar_token)):
     """Crea una nueva transacción"""
     data = await request.json()
-    print("🔎 Enviando datos para crear transacción:", data)  # 🐞 Depuración
 
     response = requests.post(
         f"{URL_FINANZAS}/transacciones",
@@ -275,13 +253,10 @@ async def crear_transaccion(request: Request, token: str = Depends(verificar_tok
         headers={"Authorization": f"Bearer {token}"}
     )
 
-    print("📩 Respuesta del servidor:", response.status_code, response.text)  # 🐞 Depuración
-
-    if response.status_code in [200, 201]:  # ✅ Permitir 200 y 201 como respuestas exitosas
+    if response.status_code in [200, 201]:  
         return response.json()
 
     error_message = response.json().get("error", "Error al crear transacción")
-    print(f"❌ Error al crear transacción: {error_message}")  # 🐞 Depuración
     raise HTTPException(status_code=response.status_code, detail=error_message)
 
 
@@ -290,10 +265,8 @@ async def actualizar_transaccion(id: str, request: Request, token: str = Depends
     """Actualiza solo ciertos campos de una transacción"""
     data = await request.json()
 
-    # Se permiten modificar solo estos campos
     campos_permitidos = ["descripcion", "fecha_transaccion"]
 
-    # Filtrar solo los campos permitidos
     data_actualizada = {campo: data[campo] for campo in campos_permitidos if campo in data}
 
     response = requests.put(
@@ -313,7 +286,7 @@ async def anular_transaccion(id: str, token: str = Depends(verificar_token)):
     """Anula una transacción en lugar de eliminarla"""
 
     response = requests.put(
-        f"{URL_FINANZAS}/transacciones/{id}/anular",  # ✅ Correcto: Se usa PUT en la URL correcta
+        f"{URL_FINANZAS}/transacciones/{id}/anular",  
         headers={"Authorization": f"Bearer {token}"}
     )
 
@@ -325,7 +298,7 @@ async def anular_transaccion(id: str, token: str = Depends(verificar_token)):
         detail=response.json().get("error", "Error al anular transacción")
     )
 
-####################################### ✅ TIPO MOVIMIENTO #######################################
+####################################### TIPO MOVIMIENTO #######################################
 
 @router.get("/finanzas/tipo_movimiento", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def obtener_tipo_movimientos(token: str = Depends(verificar_token)):
@@ -348,7 +321,6 @@ async def crear_tipo_transaccion(request: Request, token: str = Depends(verifica
         json=data,
         headers={"Authorization": f"Bearer {token}"}
     )
-    print("📢 Respuesta Finanzas:", response.status_code, response.text)  # Debug 🔥
     return response.json() if response.status_code in [200, 201] else HTTPException(status_code=response.status_code, detail="Error al crear tipo de transacción")
 
 @router.get("/finanzas/tipo_movimiento/{id}",
@@ -361,16 +333,11 @@ async def obtener_tipo_movimiento(id: str, token: str = Depends(verificar_token)
         headers={"Authorization": f"Bearer {token}"}
     )
 
-    # 🔥 Debug: Verificar la respuesta del backend Finanzas
-    print(f"📢 Status Code recibido de Finanzas: {response.status_code}")
-
     try:
         respuesta_json = response.json()
-        print(f"📢 Respuesta JSON de Finanzas: {respuesta_json}")  # Debug
     except Exception:
         return HTTPException(status_code=500, detail="Error en la respuesta del servidor Finanzas (no es JSON válido)")
 
-    # ✅ Verificar si Finanzas devolvió una respuesta válida
     if response.status_code == 200:
         return respuesta_json
     elif response.status_code == 404:
@@ -392,16 +359,11 @@ async def actualizar_tipo_movimiento(id: str, request: Request, token: str = Dep
         headers={"Authorization": f"Bearer {token}"}
     )
 
-    # 🔥 Debug: Verificar la respuesta del backend Finanzas
-    print(f"📢 Status Code recibido de Finanzas: {response.status_code}")
-
     try:
         respuesta_json = response.json()
-        print(f"📢 Respuesta JSON de Finanzas: {respuesta_json}")  # Debug
     except Exception:
         return HTTPException(status_code=500, detail="Error en la respuesta del servidor Finanzas (no es JSON válido)")
 
-    # ✅ Verificar si Finanzas devolvió una respuesta válida
     if response.status_code == 200:
         return respuesta_json
     elif response.status_code == 404:
@@ -419,10 +381,6 @@ async def eliminar_tipo_movimiento(id: str, token: str = Depends(verificar_token
         headers={"Authorization": f"Bearer {token}"}
     )
 
-    # 🔥 Debug: Verificar la respuesta del backend Finanzas
-    print(f"📢 Status Code recibido de Finanzas: {response.status_code}")
-
-    # ✅ Verificar si Finanzas devolvió una respuesta válida
     if response.status_code == 200:
         return {"mensaje": "Tipo de movimiento eliminado correctamente"}
     elif response.status_code == 404:
@@ -430,7 +388,7 @@ async def eliminar_tipo_movimiento(id: str, token: str = Depends(verificar_token
     else:
         return HTTPException(status_code=response.status_code, detail="Error al eliminar tipo de movimiento")
 
-####################################### ✅ TIPO TRANSACCIÓN #######################################
+####################################### TIPO TRANSACCIÓN #######################################
 
 @router.get("/finanzas/tipo_transaccion", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def obtener_tipo_transacciones(token: str = Depends(verificar_token)):
@@ -480,13 +438,11 @@ async def eliminar_tipo_transaccion(id: str, token: str = Depends(verificar_toke
         headers={"Authorization": f"Bearer {token}"}
     )
 
-    if response.status_code == 200:  # ✅ No Content - Eliminado correctamente
+    if response.status_code == 200:  
         return {"mensaje": "Tipo de transacción eliminado correctamente"}
 
-    elif response.status_code == 404:  # ❌ No encontrado
+    elif response.status_code == 404:  
         return HTTPException(status_code=404, detail="Tipo de transacción no encontrado")
 
-    else:  # ❌ Otro error
+    else:  
         return HTTPException(status_code=response.status_code, detail=f"Error al eliminar tipo de transacción: {response.text}")
-
-

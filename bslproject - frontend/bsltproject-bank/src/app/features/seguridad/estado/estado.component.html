@@ -1,0 +1,57 @@
+<!-- Contenedor principal -->
+<div class="container">
+
+    <!-- 🔹 Título y botón de creación alineados -->
+    <div class="header">
+      <h2>Lista de Estados</h2>
+      <button mat-raised-button color="primary" (click)="mostrarFormulario = !mostrarFormulario">
+        {{ mostrarFormulario ? 'Ocultar Formulario' : 'Crear Nuevo Estado' }}
+      </button>
+    </div>
+  
+    <!-- 📌 Formulario de Creación (Oculto por defecto) -->
+    <mat-card *ngIf="mostrarFormulario" class="form-card">
+      <h2>Crear Nuevo Estado</h2>
+      <form [formGroup]="estadoForm" (ngSubmit)="guardarEstado()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre*</mat-label>
+          <input matInput formControlName="nombre" placeholder="Nombre del estado" required />
+        </mat-form-field>
+  
+        <button mat-raised-button color="primary" type="submit" [disabled]="estadoForm.invalid">
+          {{ editandoEstado ? 'Actualizar' : 'Crear' }} Estado
+        </button>
+      </form>
+    </mat-card>
+  
+    <!-- 📌 Tabla de Estados -->
+    <mat-card class="table-card">
+      <table mat-table [dataSource]="estados" class="mat-elevation-z8">
+  
+        <!-- 📌 Nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef> Nombre </th>
+          <td mat-cell *matCellDef="let estado"> {{ estado.nombre }} </td>
+        </ng-container>
+  
+        <!-- 📌 Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef> Acciones </th>
+          <td mat-cell *matCellDef="let estado">
+            <button mat-icon-button color="accent" (click)="editarEstado(estado)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="eliminarEstado(estado.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+  
+        <!-- 📌 Renderizar las columnas -->
+        <tr mat-header-row *matHeaderRowDef="['nombre', 'acciones']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['nombre', 'acciones'];"></tr>
+  
+      </table>
+    </mat-card>
+  </div>
+  

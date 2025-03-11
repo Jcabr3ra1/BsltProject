@@ -1,0 +1,79 @@
+/* 🔹 Estilo general del contenedor */
+.container {
+    width: 90%;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* 🔹 Encabezado con título y botón alineados */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  /* 🔹 Botón de creación */
+  button {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  /* 🔹 Estilos para el formulario */
+  .form-card {
+    padding: 20px;
+    background: #212121;
+    border-radius: 8px;
+  }
+  
+  /* 🔹 Ajustar ancho de los inputs */
+  mat-form-field.full-width {
+    width: 100%;
+  }
+  
+  /* 🔹 Tabla estilizada */
+  .table-card {
+    padding: 15px;
+    background: #1e1e1e;
+    border-radius: 8px;
+  }
+  
+  /* 🔹 Mejoras en la tabla */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  /* 🔹 Ajuste de encabezados */
+  th {
+    text-align: left;
+    padding: 10px;
+    font-weight: bold;
+  }
+  
+  /* 🔹 Ajuste de filas */
+  td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* 🔹 Centrar las acciones y ajustar espacio */
+  td:last-child {
+    text-align: center;
+    width: 150px;
+  }
+  
+  /* 🔹 Estilos para los botones de acción */
+  button mat-icon {
+    font-size: 20px;
+  }
+  
+  /* 🔹 Espaciado entre botones */
+  td button {
+    margin-right: 5px;
+  }
+  

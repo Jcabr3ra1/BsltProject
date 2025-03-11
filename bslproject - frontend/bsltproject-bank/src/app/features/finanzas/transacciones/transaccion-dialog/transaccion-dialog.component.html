@@ -1,0 +1,130 @@
+<h2 mat-dialog-title>Nueva Transacción</h2>
+
+<mat-dialog-content class="mat-typography">
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <form [formGroup]="transaccionForm" *ngIf="!isLoading">
+    <div class="row">
+      <!-- Tipo de Movimiento -->
+      <div class="col-12 mb-3">
+        <label class="form-label">Tipo de Movimiento <span class="text-danger">*</span></label>
+        <select class="form-select" formControlName="id_tipo_movimiento">
+          <option value="">Seleccione un tipo de movimiento</option>
+          <option *ngFor="let tipo of tiposMovimiento" [value]="tipo.id">
+            {{tipo.nombre}}
+          </option>
+        </select>
+        <div *ngIf="transaccionForm.get('id_tipo_movimiento')?.invalid && transaccionForm.get('id_tipo_movimiento')?.touched" class="text-danger small mt-1">
+          El tipo de movimiento es requerido
+        </div>
+        
+        <!-- Lista de tipos de movimiento para depuración -->
+        <div *ngIf="tiposMovimiento.length === 0" class="alert alert-warning mt-2">
+          No hay tipos de movimiento disponibles
+        </div>
+        <div *ngIf="tiposMovimiento.length > 0" class="mt-2 small text-muted">
+          {{tiposMovimiento.length}} tipos de movimiento disponibles
+        </div>
+      </div>
+
+      <!-- Descripción del tipo de movimiento seleccionado -->
+      <div class="col-12 mb-3" *ngIf="tipoMovimientoSeleccionado">
+        <div class="alert alert-info">
+          <strong>{{obtenerDescripcionTipoMovimiento()}}</strong>
+          <p *ngIf="tipoMovimientoSeleccionado.descripcion">{{tipoMovimientoSeleccionado.descripcion}}</p>
+        </div>
+      </div>
+
+      <!-- Cuenta Origen (visible para ACCOUNT → cualquiera) -->
+      <div class="col-md-6 mb-3" *ngIf="tipoMovimientoSeleccionado?.codigoOrigen === ACCOUNT">
+        <label class="form-label">Cuenta Origen <span class="text-danger">*</span></label>
+        <select class="form-select" formControlName="id_cuenta_origen">
+          <option value="">Seleccione una cuenta</option>
+          <option *ngFor="let cuenta of cuentas" [value]="cuenta.id">
+            {{ cuenta.numero }} - ${{ cuenta.saldo | number:'1.2-2' }}
+          </option>
+        </select>
+        <div *ngIf="transaccionForm.get('id_cuenta_origen')?.invalid && transaccionForm.get('id_cuenta_origen')?.touched" class="text-danger small mt-1">
+          Debe seleccionar una cuenta de origen
+        </div>
+      </div>
+
+      <!-- Bolsillo Origen (visible para WALLET → cualquiera) -->
+      <div class="col-md-6 mb-3" *ngIf="tipoMovimientoSeleccionado?.codigoOrigen === WALLET">
+        <label class="form-label">Bolsillo Origen <span class="text-danger">*</span></label>
+        <select class="form-select" formControlName="id_bolsillo_origen">
+          <option value="">Seleccione un bolsillo</option>
+          <option *ngFor="let bolsillo of bolsillos" [value]="bolsillo.id">
+            {{bolsillo.nombre}} - {{bolsillo.saldo | currency}}
+          </option>
+        </select>
+        <div *ngIf="transaccionForm.get('id_bolsillo_origen')?.invalid && transaccionForm.get('id_bolsillo_origen')?.touched" class="text-danger small mt-1">
+          El bolsillo origen es requerido
+        </div>
+      </div>
+
+      <!-- Cuenta Destino (visible para cualquiera → ACCOUNT) -->
+      <div class="col-md-6 mb-3" *ngIf="tipoMovimientoSeleccionado?.codigoOrigen === ACCOUNT">
+        <label class="form-label">Cuenta Destino <span class="text-danger">*</span></label>
+        <select class="form-select" formControlName="id_cuenta_destino">
+          <option value="">Seleccione una cuenta</option>
+          <option *ngFor="let cuenta of cuentas" [value]="cuenta.id">
+            {{ cuenta.numero }} - ${{ cuenta.saldo | number:'1.2-2' }}
+          </option>
+        </select>
+        <div *ngIf="transaccionForm.get('id_cuenta_destino')?.invalid && transaccionForm.get('id_cuenta_destino')?.touched" class="text-danger small mt-1">
+          Debe seleccionar una cuenta de destino
+        </div>
+      </div>
+
+      <!-- Bolsillo Destino (visible para cualquiera → WALLET) -->
+      <div class="col-md-6 mb-3" *ngIf="tipoMovimientoSeleccionado?.codigoOrigen === WALLET">
+        <label class="form-label">Bolsillo Destino <span class="text-danger">*</span></label>
+        <select class="form-select" formControlName="id_bolsillo_destino">
+          <option value="">Seleccione un bolsillo</option>
+          <option *ngFor="let bolsillo of bolsillos" [value]="bolsillo.id">
+            {{ bolsillo.nombre }} - ${{ bolsillo.saldo | number:'1.2-2' }}
+          </option>
+        </select>
+        <div *ngIf="transaccionForm.get('id_bolsillo_destino')?.invalid && transaccionForm.get('id_bolsillo_destino')?.touched" class="text-danger small mt-1">
+          Debe seleccionar un bolsillo de destino
+        </div>
+      </div>
+
+      <!-- Monto -->
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Monto <span class="text-danger">*</span></label>
+        <div class="input-group">
+          <span class="input-group-text">$</span>
+          <input type="number" class="form-control" formControlName="monto" min="0.01" step="0.01">
+        </div>
+        <div *ngIf="transaccionForm.get('monto')?.invalid && transaccionForm.get('monto')?.touched" class="text-danger small mt-1">
+          El monto es requerido
+        </div>
+        <div *ngIf="transaccionForm.get('monto')?.hasError('min') && transaccionForm.get('monto')?.touched" class="text-danger small mt-1">
+          El monto debe ser mayor a 0
+        </div>
+        <div *ngIf="transaccionForm.get('monto')?.hasError('max') && transaccionForm.get('monto')?.touched" class="text-danger small mt-1">
+          El monto no puede ser mayor a {{maxAmount | currency}}
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="col-12 mb-3">
+        <label class="form-label">Descripción</label>
+        <textarea class="form-control" formControlName="descripcion" rows="3"></textarea>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-raised-button color="primary" 
+          (click)="onSubmit()"
+          [disabled]="transaccionForm.invalid || isLoading">
+    Realizar Transacción
+  </button>
+</mat-dialog-actions>

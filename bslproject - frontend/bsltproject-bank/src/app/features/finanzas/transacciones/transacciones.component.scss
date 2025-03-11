@@ -1,0 +1,175 @@
+// Variables
+$primary-color: #3f51b5;
+$accent-color: #ff4081;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$danger-color: #f44336;
+$text-primary: rgba(0, 0, 0, 0.87);
+$text-secondary: rgba(0, 0, 0, 0.54);
+$border-color: rgba(0, 0, 0, 0.12);
+$card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+$transition-speed: 0.3s;
+
+.transacciones-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    
+    .page-title {
+      h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 500;
+        color: $text-primary;
+      }
+      
+      .subtitle {
+        margin: 8px 0 0;
+        color: $text-secondary;
+        font-size: 16px;
+      }
+    }
+  }
+  
+  mat-card {
+    border-radius: 12px;
+    box-shadow: $card-shadow;
+    overflow: hidden;
+    margin-bottom: 24px;
+    transition: transform $transition-speed ease, box-shadow $transition-speed ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    mat-card-header {
+      background-color: rgba($primary-color, 0.05);
+      padding: 16px 24px;
+      
+      mat-card-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+      }
+      
+      mat-card-subtitle {
+        margin: 8px 0 0;
+        color: $text-secondary;
+      }
+    }
+    
+    mat-card-content {
+      padding: 24px;
+    }
+    
+    mat-card-actions {
+      padding: 0 24px 24px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+  }
+  
+  mat-tab-group {
+    margin-top: 16px;
+    
+    ::ng-deep {
+      .mat-mdc-tab-header {
+        margin-bottom: 16px;
+      }
+      
+      .mat-mdc-tab {
+        height: 48px;
+        
+        &.mdc-tab--active {
+          .mdc-tab__text-label {
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+  
+  .action-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    height: 42px;
+    border-radius: 21px;
+    transition: all $transition-speed ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  .coming-soon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    text-align: center;
+    color: $text-secondary;
+    
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      color: rgba($primary-color, 0.5);
+    }
+    
+    h3 {
+      font-size: 24px;
+      font-weight: 500;
+      margin: 0 0 8px;
+      color: $text-primary;
+    }
+    
+    p {
+      font-size: 16px;
+      margin: 0;
+      max-width: 400px;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .transacciones-container {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+  }
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

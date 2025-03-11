@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Permisos de {{ data.nombre }}</h2>
+<mat-dialog-content class="contenido">
+  <mat-list>
+    <mat-list-item *ngFor="let permiso of data.permisos">
+      <mat-icon>verified_user</mat-icon> {{ permiso.nombre }}
+    </mat-list-item>
+  </mat-list>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cerrar()" color="primary">Cerrar</button>
+</mat-dialog-actions>

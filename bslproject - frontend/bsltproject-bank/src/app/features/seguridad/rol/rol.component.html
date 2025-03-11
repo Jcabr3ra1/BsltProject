@@ -1,0 +1,122 @@
+<div class="module-container">
+  <div class="module-header">
+    <div class="header-content">
+      <div class="title-section">
+        <mat-icon class="module-icon">admin_panel_settings</mat-icon>
+        <h1 class="module-title">Gestión de Roles</h1>
+      </div>
+      <div class="actions-section">
+        <button mat-raised-button color="primary" class="add-button" (click)="mostrarFormulario = !mostrarFormulario">
+          <mat-icon>{{ mostrarFormulario ? 'visibility_off' : 'add' }}</mat-icon>
+          {{ mostrarFormulario ? 'Ocultar Formulario' : 'Nuevo Rol' }}
+        </button>
+      </div>
+    </div>
+    <p class="module-description">
+      Administra los roles del sistema y asigna permisos para controlar el acceso a las funcionalidades.
+    </p>
+  </div>
+
+  <!-- Formulario de Creación/Edición -->
+  <ng-container *ngIf="mostrarFormulario; else noFormulario">
+    <div class="form-container mat-elevation-z2">
+      <h2 class="form-title">{{ editandoRol ? 'Editar' : 'Crear Nuevo' }} Rol</h2>
+      <form [formGroup]="rolForm" (ngSubmit)="guardarRol()">
+        <div class="form-fields">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre*</mat-label>
+            <input matInput formControlName="nombre" placeholder="Nombre del rol" required />
+            <mat-icon matSuffix>label</mat-icon>
+            <ng-container *ngIf="rolForm.get('nombre')?.invalid && rolForm.get('nombre')?.touched; else noErrorNombre">
+              <mat-error>El nombre del rol es obligatorio</mat-error>
+            </ng-container>
+            <ng-template #noErrorNombre></ng-template>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="descripcion" placeholder="Descripción del rol y sus funciones" rows="3"></textarea>
+            <mat-icon matSuffix>description</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button mat-button type="button" (click)="mostrarFormulario = false">
+            Cancelar
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="rolForm.invalid">
+            <mat-icon>{{ editandoRol ? 'update' : 'save' }}</mat-icon>
+            {{ editandoRol ? 'Actualizar' : 'Crear' }} Rol
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+  <ng-template #noFormulario></ng-template>
+
+  <!-- Filtros y búsqueda -->
+  <div class="filters-container">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar rol</mat-label>
+      <input matInput placeholder="Nombre o descripción">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Tabla de Roles -->
+  <div class="table-container mat-elevation-z2">
+    <table mat-table [dataSource]="roles" class="roles-table">
+      <!-- Nombre -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef> Nombre </th>
+        <td mat-cell *matCellDef="let rol"> 
+          <div class="role-name">
+            <span class="role-badge">{{ rol.nombre }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Descripción -->
+      <ng-container matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef> Descripción </th>
+        <td mat-cell *matCellDef="let rol"> 
+          <div class="role-description">
+            {{ rol.descripcion || 'Sin descripción' }}
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Permisos -->
+      <ng-container matColumnDef="permisos">
+        <th mat-header-cell *matHeaderCellDef> Permisos </th>
+        <td mat-cell *matCellDef="let rol">
+          <button mat-stroked-button color="primary" (click)="verPermisos(rol)" class="permissions-button">
+            <mat-icon>vpn_key</mat-icon>
+            Ver permisos
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef> Acciones </th>
+        <td mat-cell *matCellDef="let rol">
+          <div class="action-buttons">
+            <button mat-icon-button color="primary" matTooltip="Editar rol" (click)="editarRol(rol)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" matTooltip="Eliminar rol" (click)="eliminarRol(rol.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['nombre', 'descripcion', 'permisos', 'acciones']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['nombre', 'descripcion', 'permisos', 'acciones'];" class="role-row"></tr>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
+</div>

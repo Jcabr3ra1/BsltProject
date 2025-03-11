@@ -1,0 +1,95 @@
+<div class="debug-container">
+  <mat-card class="auth-info-card">
+    <mat-card-header>
+      <mat-card-title>Información de Autenticación</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <ng-container *ngIf="token; else notAuthenticated">
+        <div class="auth-status authenticated">
+          <mat-icon>check_circle</mat-icon>
+          <span>Autenticado</span>
+        </div>
+        <div class="token-info">
+          <h3>Token JWT:</h3>
+          <div class="token-display">{{ token }}</div>
+        </div>
+        <ng-container *ngIf="user">
+          <div class="user-info">
+            <h3>Usuario:</h3>
+            <p><strong>ID:</strong> {{ user.id }}</p>
+            <p><strong>Nombre:</strong> {{ user.nombre }} {{ user.apellido }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Roles:</strong> {{ user.roles?.join(', ') }}</p>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="tokenInfo">
+          <div class="token-payload">
+            <h3>Información del Token:</h3>
+            <p><strong>Subject:</strong> {{ tokenInfo.sub }}</p>
+            <p><strong>Roles:</strong> {{ tokenInfo.roles?.join(', ') }}</p>
+            <p><strong>Emitido:</strong> {{ tokenInfo.iat | date:'medium' }}</p>
+            <p><strong>Expira:</strong> {{ tokenInfo.exp | date:'medium' }}</p>
+          </div>
+        </ng-container>
+        <button mat-raised-button color="warn" (click)="logout()">Cerrar Sesión</button>
+      </ng-container>
+      <ng-template #notAuthenticated>
+        <div class="auth-status not-authenticated">
+          <mat-icon>error</mat-icon>
+          <span>No Autenticado</span>
+        </div>
+        <p>No hay un token de autenticación almacenado.</p>
+        <button mat-raised-button color="primary" (click)="login()">Ir a Login</button>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="endpoints-card">
+    <mat-card-header>
+      <mat-card-title>Probar Endpoints</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="endpoints-list">
+        <button mat-raised-button color="primary" (click)="testEndpoint('/seguridad/usuarios')">
+          Probar /seguridad/usuarios
+        </button>
+        <button mat-raised-button color="primary" (click)="testEndpoint('/finanzas/cuentas')">
+          Probar /finanzas/cuentas
+        </button>
+        <button mat-raised-button color="primary" (click)="testEndpoint('/finanzas/transacciones')">
+          Probar /finanzas/transacciones
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <ng-container *ngIf="apiResponses.length > 0">
+    <mat-card class="responses-card">
+      <mat-card-header>
+        <mat-card-title>Respuestas API</mat-card-title>
+        <button mat-icon-button color="warn" (click)="clearResponses()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let response of apiResponses; trackBy: trackResponse">
+            <div class="response-item">
+              <h3>{{ response.endpoint }}</h3>
+              <p [ngClass]="{'success': response.status === 'Éxito', 'error': response.status !== 'Éxito'}">
+                {{ response.status }}
+              </p>
+              <ng-container *ngIf="response.data">
+                <pre class="response-data">{{ response.data | json }}</pre>
+              </ng-container>
+              <ng-container *ngIf="response.error">
+                <pre class="response-error">{{ response.error | json }}</pre>
+              </ng-container>
+            </div>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
+</div>

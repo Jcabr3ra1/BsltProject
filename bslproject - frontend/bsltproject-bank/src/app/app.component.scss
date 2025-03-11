@@ -1,0 +1,305 @@
+/* Estilos del contenedor principal estilo moderno */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* Variables de colores */
+$primary-color: #f44336;
+$primary-dark: #d32f2f;
+$dark-bg: #0f0f0f;
+$light-text: #ffffff;
+$hover-bg: rgba(255, 255, 255, 0.1);
+$shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+$transition: all 0.2s ease;
+
+/* Estilos para la barra de navegación superior estilo YouTube */
+.modern-navbar {
+  background: $dark-bg !important;
+  color: $light-text;
+  height: 56px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .navbar-left, .navbar-right {
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar-left {
+    gap: 8px;
+    min-width: 180px;
+  }
+  
+  /* Espaciador para mantener la distribución del navbar */
+  .navbar-spacer {
+    flex: 1;
+  }
+  
+  .navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    mat-icon {
+      color: $primary-color;
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+    }
+  }
+  
+  .app-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: $light-text;
+    letter-spacing: -0.5px;
+  }
+  
+  .navbar-right {
+    gap: 8px;
+    min-width: 180px;
+    justify-content: flex-end;
+  }
+  
+  .menu-button, .icon-button {
+    color: $light-text;
+    transition: $transition;
+    position: relative;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    mat-icon {
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+    }
+  }
+  
+  .notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background-color: $primary-color;
+    color: $light-text;
+    font-size: 11px;
+    font-weight: bold;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    
+    mat-icon {
+      font-size: 32px;
+      height: 32px;
+      width: 32px;
+    }
+  }
+}
+
+/* Estilos para los menús desplegables */
+::ng-deep .mat-mdc-menu-panel.notifications-menu, 
+::ng-deep .mat-mdc-menu-panel.user-menu {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 8px;
+  min-width: 300px;
+  max-width: 300px;
+  padding: 0;
+  background-color: #282828;
+  
+  .notification-header, .user-menu-header, .notification-footer {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: $light-text;
+    }
+    
+    button {
+      color: #3ea6ff;
+    }
+  }
+  
+  .notification-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 16px;
+    transition: $transition;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .notification-icon {
+      margin-right: 12px;
+      color: $primary-color;
+    }
+    
+    .notification-content {
+      flex: 1;
+      
+      .notification-text {
+        margin: 0 0 4px;
+        font-size: 14px;
+        color: $light-text;
+      }
+      
+      .notification-time {
+        margin: 0;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+  }
+  
+  .user-menu-header {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    
+    .user-avatar-large {
+      margin-right: 16px;
+      
+      mat-icon {
+        font-size: 40px;
+        height: 40px;
+        width: 40px;
+        color: $light-text;
+      }
+    }
+    
+    .user-info {
+      h3 {
+        margin: 0 0 4px;
+        font-size: 16px;
+        font-weight: 500;
+        color: $light-text;
+      }
+      
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+  }
+  
+  .notification-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
+    justify-content: center;
+  }
+  
+  button.mat-mdc-menu-item {
+    font-size: 14px;
+    color: $light-text;
+    
+    mat-icon {
+      color: rgba(255, 255, 255, 0.7);
+      margin-right: 16px;
+    }
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+  
+  mat-divider {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Estilos para el contenedor de sidenav */
+.sidenav-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  
+  .github-sidenav {
+    width: 240px;
+    background-color: $dark-bg;
+    box-shadow: none;
+  }
+  
+  mat-sidenav-content {
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+}
+
+/* Estilos para el contenido principal */
+.main-content {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f9f9f9; /* Fondo gris muy claro */
+  color: rgba(0, 0, 0, 0.87); /* Color de texto oscuro para mejor contraste */
+  box-shadow: none; /* Eliminamos sombras que puedan causar problemas visuales */
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  .github-sidenav {
+    width: 100% !important;
+  }
+  
+  .main-content {
+    padding: 16px;
+  }
+}
+
+/* Estilos para la barra de navegación móvil */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  z-index: 1000;
+  background: var(--primary);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid var(--border-color);
+  
+  button {
+    color: var(--text-light);
+    
+    &.active {
+      color: var(--accent);
+    }
+  }
+}

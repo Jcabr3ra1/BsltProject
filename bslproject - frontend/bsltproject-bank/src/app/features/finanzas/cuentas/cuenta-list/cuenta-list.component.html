@@ -1,0 +1,67 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Mis Cuentas</h2>
+    <button mat-raised-button color="primary" (click)="crearCuenta()">
+      <mat-icon>add</mat-icon>
+      Nueva Cuenta
+    </button>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <div *ngIf="isLoading">
+        <div class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading">
+        <div class="cuenta-list">
+          <mat-card *ngFor="let cuenta of cuentas" class="cuenta-card">
+            <mat-card-header>
+              <mat-card-title>{{ cuenta.numero }}</mat-card-title>
+              <mat-card-subtitle>{{ cuenta.tipo }}</mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <div class="saldo">
+                <strong>Saldo:</strong> {{ cuenta.saldo | currency:'USD' }}
+              </div>
+              
+              <div class="estado">
+                <mat-chip-listbox>
+                  <mat-chip [color]="cuenta.estado ? 'primary' : 'warn'" selected>
+                    {{ cuenta.estado ? 'Activa' : 'Inactiva' }}
+                  </mat-chip>
+                </mat-chip-listbox>
+              </div>
+            </mat-card-content>
+
+            <mat-card-actions align="end">
+              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opciones de cuenta">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </mat-card-actions>
+
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="verDetalles(cuenta)">
+                <mat-icon>visibility</mat-icon>
+                <span>Ver Detalles</span>
+              </button>
+              <button mat-menu-item (click)="verMovimientos(cuenta)">
+                <mat-icon>history</mat-icon>
+                <span>Ver Movimientos</span>
+              </button>
+            </mat-menu>
+          </mat-card>
+
+          <div *ngIf="cuentas.length === 0">
+            <div class="text-center py-4">
+              <p>No hay cuentas disponibles</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

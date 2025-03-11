@@ -1,0 +1,166 @@
+<div class="container">
+  <div class="header-section">
+    <div class="header-title">
+      <h1>Transacciones</h1>
+      <p class="subtitle">Administra todas las transacciones del sistema</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" class="action-button" (click)="crearTransaccion()">
+        <mat-icon>add</mat-icon>
+        <span>Nueva Transacción</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sección de filtros -->
+  <div class="filter-section">
+    <mat-card>
+      <mat-card-content>
+        <div class="filtros-container">
+          <mat-form-field appearance="outline">
+            <mat-label>Cuenta</mat-label>
+            <mat-select [(ngModel)]="cuentaSeleccionadaId" (selectionChange)="onCuentaChange()">
+              <ng-container *ngFor="let cuenta of cuentas; trackBy: trackCuentaById">
+                <mat-option [value]="cuenta.id">{{ cuenta.numero }}</mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha Inicio</mat-label>
+            <input matInput [matDatepicker]="pickerInicio" [(ngModel)]="fechaInicio">
+            <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+            <mat-datepicker #pickerInicio></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha Fin</mat-label>
+            <input matInput [matDatepicker]="pickerFin" [(ngModel)]="fechaFin">
+            <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFin></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Tipo de Transacción</mat-label>
+            <mat-select [(ngModel)]="tipoSeleccionado">
+              <mat-option value="">Todos</mat-option>
+              <ng-container *ngFor="let tipo of tiposTransaccion; trackBy: trackTipoById">
+                <mat-option [value]="tipo.id">{{ tipo.nombre }}</mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="botones-filtro">
+            <button mat-raised-button color="primary" (click)="filtrarTransacciones()">
+              <mat-icon>filter_list</mat-icon>
+              <span>Filtrar</span>
+            </button>
+            <button mat-button (click)="limpiarFiltros()">
+              <mat-icon>clear</mat-icon>
+              <span>Limpiar</span>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Tabla de transacciones -->
+  <div class="table-container">
+    <div class="table-header">
+      <h2>Listado de Transacciones</h2>
+    </div>
+
+    <div class="mat-elevation-z2">
+      <ng-container *ngIf="isLoading; else elseBlock">
+        <div class="loading-spinner">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      </ng-container>
+      <ng-template #elseBlock>
+        <table mat-table [dataSource]="transacciones" class="transacciones-table">
+          <!-- Fecha Column -->
+          <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let transaccion" class="fecha-cell">
+              <div class="fecha-principal">{{ transaccion.fecha | date:'dd/MM/yyyy' }}</div>
+              <div class="fecha-secundaria">{{ transaccion.fecha | date:'HH:mm' }}</div>
+            </td>
+          </ng-container>
+
+          <!-- Monto Column -->
+          <ng-container matColumnDef="monto">
+            <th mat-header-cell *matHeaderCellDef>Monto</th>
+            <td mat-cell *matCellDef="let transaccion" class="monto-cell">
+              {{ transaccion.monto | currency:'COP':'symbol-narrow':'1.0-0' }}
+            </td>
+          </ng-container>
+
+          <!-- Tipo Column -->
+          <ng-container matColumnDef="tipo">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let transaccion">
+              <span class="tipo-badge">
+                {{ getTipoTransaccion(transaccion.tipo_transaccion_id) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Descripción Column -->
+          <ng-container matColumnDef="descripcion">
+            <th mat-header-cell *matHeaderCellDef>Descripción</th>
+            <td mat-cell *matCellDef="let transaccion" class="descripcion-cell">
+              {{ transaccion.descripcion }}
+            </td>
+          </ng-container>
+
+          <!-- Estado Column -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let transaccion">
+              <span class="estado-badge" [ngClass]="{
+                'estado-completada': transaccion.estado === 'COMPLETADA',
+                'estado-anulada': transaccion.estado === 'ANULADA',
+                'estado-pendiente': transaccion.estado === 'PENDIENTE'
+              }">
+                {{ transaccion.estado }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Acciones Column -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let transaccion">
+              <div class="action-buttons">
+                <ng-container *ngIf="transaccion.estado === 'COMPLETADA'">
+                  <button mat-icon-button color="warn" matTooltip="Anular" (click)="anularTransaccion(transaccion.id)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </ng-container>
+                <button mat-icon-button color="primary" matTooltip="Ver detalles">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- Empty State Row -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell empty-state" [attr.colspan]="displayedColumns.length">
+              <div class="empty-message">
+                <mat-icon>sentiment_dissatisfied</mat-icon>
+                <p>No hay transacciones para mostrar</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+      </ng-template>
+    </div>
+  </div>
+</div>
