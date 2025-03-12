@@ -1,137 +1,135 @@
-<div class="module-container">
-  <div class="module-header">
-    <div class="header-content">
-      <div class="title-section">
-        <mat-icon class="module-icon">people</mat-icon>
-        <h1 class="module-title">Gestión de Usuarios</h1>
-      </div>
-      <div class="actions-section">
-        <button mat-raised-button color="primary" class="add-button">
-          <mat-icon>add</mat-icon>
-          Nuevo Usuario
-        </button>
-      </div>
-    </div>
-    <p class="module-description">
-      Administra los usuarios del sistema, asigna roles y estados, y gestiona sus permisos.
-    </p>
-  </div>
-
-  <!-- Filtros y búsqueda -->
-  <div class="filters-container">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Buscar usuario</mat-label>
-      <input matInput placeholder="Nombre, email o cuenta">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-    
-    <div class="filter-actions">
-      <mat-form-field appearance="outline">
-        <mat-label>Filtrar por rol</mat-label>
-        <mat-select>
-          <mat-option [value]="''">Todos</mat-option>
-          <mat-option *ngFor="let rol of roles" [value]="rol.id">
-            {{ rol.nombre }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      
-      <mat-form-field appearance="outline">
-        <mat-label>Filtrar por estado</mat-label>
-        <mat-select>
-          <mat-option [value]="''">Todos</mat-option>
-          <mat-option *ngFor="let estado of estados" [value]="estado.id">
-            {{ estado.nombre }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+<div class="container">
+  <div class="header">
+    <h2>User Management</h2>
+    <div class="actions">
+      <button mat-raised-button color="primary">
+        <mat-icon>add</mat-icon>
+        Add User
+      </button>
+      <button mat-raised-button color="accent">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
     </div>
   </div>
 
-  <!-- Mensaje de error -->
-  <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <div class="filters">
+    <div class="row">
+      <div class="col">
+        <mat-form-field appearance="outline">
+          <mat-label>Search</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Filter users">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
 
-  <!-- Tabla de usuarios -->
-  <div class="table-container mat-elevation-z2">
-    <table mat-table [dataSource]="usuarios" class="users-table">
-      <!-- ID -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef> ID </th>
-        <td mat-cell *matCellDef="let user" class="id-cell"> 
-          <span class="id-text">{{ user.id }}</span>
-        </td>
-      </ng-container>
-
-      <!-- Nombre -->
-      <ng-container matColumnDef="nombre">
-        <th mat-header-cell *matHeaderCellDef> Nombre </th>
-        <td mat-cell *matCellDef="let user" class="editable-cell">
-          <input matInput [(ngModel)]="user.nombre" (blur)="actualizarUsuario(user)" />
-        </td>
-      </ng-container>
-
-      <!-- Email -->
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef> Email </th>
-        <td mat-cell *matCellDef="let user" class="editable-cell">
-          <input matInput [(ngModel)]="user.email" (blur)="actualizarUsuario(user)" />
-        </td>
-      </ng-container>
-
-      <!-- Cuenta -->
-      <ng-container matColumnDef="cuenta">
-        <th mat-header-cell *matHeaderCellDef> Cuenta </th>
-        <td mat-cell *matCellDef="let user">
-          <span class="cuenta-badge" *ngIf="user.cuentaNumero">{{ user.cuentaNumero }}</span>
-          <span class="sin-cuenta" *ngIf="!user.cuentaNumero">Sin cuenta</span>
-        </td>
-      </ng-container>
-
-      <!-- Rol -->
-      <ng-container matColumnDef="rol">
-        <th mat-header-cell *matHeaderCellDef> Rol </th>
-        <td mat-cell *matCellDef="let user">
-          <mat-select [(ngModel)]="user.rol" (selectionChange)="asignarRol(user.id, $event.value)" class="table-select">
-            <mat-option *ngFor="let rol of roles" [value]="rol.id">
-              {{ rol.nombre }}
-            </mat-option>
+      <div class="col">
+        <mat-form-field appearance="outline">
+          <mat-label>Role</mat-label>
+          <mat-select>
+            <mat-option value="">All</mat-option>
+            @for (role of roles; track role.id) {
+              <mat-option [value]="role.id">{{ role.name }}</mat-option>
+            }
           </mat-select>
-        </td>
-      </ng-container>
+        </mat-form-field>
+      </div>
 
-      <!-- Estado -->
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef> Estado </th>
-        <td mat-cell *matCellDef="let user">
-          <mat-select [(ngModel)]="user.estado" (selectionChange)="asignarEstado(user.id, $event.value)" class="table-select">
-            <mat-option *ngFor="let estado of estados" [value]="estado.id">
-              <span class="estado-activo" *ngIf="estado.nombre === 'ACTIVO'">{{ estado.nombre }}</span>
-              <span class="estado-inactivo" *ngIf="estado.nombre !== 'ACTIVO'">{{ estado.nombre }}</span>
-            </mat-option>
+      <div class="col">
+        <mat-form-field appearance="outline">
+          <mat-label>State</mat-label>
+          <mat-select>
+            <mat-option value="">All</mat-option>
+            @for (state of states; track state.id) {
+              <mat-option [value]="state.id">{{ state.name }}</mat-option>
+            }
           </mat-select>
-        </td>
-      </ng-container>
-
-      <!-- Acciones -->
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef> Acciones </th>
-        <td mat-cell *matCellDef="let user">
-          <div class="action-buttons">
-            <button mat-icon-button color="primary" matTooltip="Ver detalles">
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" matTooltip="Eliminar usuario" (click)="eliminarUsuario(user.id)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="['id', 'nombre', 'email', 'cuenta', 'rol', 'estado', 'acciones']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['id', 'nombre', 'email', 'cuenta', 'rol', 'estado', 'acciones'];" class="user-row"></tr>
-    </table>
+        </mat-form-field>
+      </div>
+    </div>
   </div>
 
-  <!-- Paginación -->
-  <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
+  @if (error) {
+    <div class="error-message">
+      {{ error }}
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  } @else {
+    <div class="table-container mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+          <td mat-cell *matCellDef="let user">{{ user.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="firstName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>First Name</th>
+          <td mat-cell *matCellDef="let user">
+            <input matInput [(ngModel)]="user.firstName" (blur)="updateUser(user)">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lastName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Name</th>
+          <td mat-cell *matCellDef="let user">
+            <input matInput [(ngModel)]="user.lastName" (blur)="updateUser(user)">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let user">
+            <input matInput [(ngModel)]="user.email" (blur)="updateUser(user)">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+          <td mat-cell *matCellDef="let user">
+            <mat-select [(ngModel)]="user.role.id" (selectionChange)="assignRole(user.id, $event.value)">
+              @for (role of roles; track role.id) {
+                <mat-option [value]="role.id">{{ role.name }}</mat-option>
+              }
+            </mat-select>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="state">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>State</th>
+          <td mat-cell *matCellDef="let user">
+            <mat-select [(ngModel)]="user.state.id" (selectionChange)="updateState(user.id, $event.value)">
+              @for (state of states; track state.id) {
+                <mat-option [value]="state.id">{{ state.name }}</mat-option>
+              }
+            </mat-select>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let user">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="deleteUser(user.id)">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+    </div>
+  }
 </div>

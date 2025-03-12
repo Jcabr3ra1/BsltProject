@@ -1,30 +1,38 @@
 <div class="transacciones-container">
-  <div class="page-header">
-    <div class="page-title">
-      <h1>Gestión de Transacciones</h1>
-      <p class="subtitle">Administra todas las transacciones financieras del sistema</p>
-    </div>
-  </div>
-
-  <mat-card>
+  <!-- Header -->
+  <mat-card class="header-card">
     <mat-card-header>
-      <mat-card-title>Transacciones</mat-card-title>
-      <mat-card-subtitle>Visualiza y gestiona el historial de movimientos</mat-card-subtitle>
+      <mat-card-title>Gestión de Transacciones</mat-card-title>
+      <button mat-raised-button color="primary" (click)="abrirDialogoTransaccion()">
+        <mat-icon>add</mat-icon>
+        Nueva Transacción
+      </button>
     </mat-card-header>
-    
-    <mat-card-content>
-      <mat-tab-group animationDuration="300ms">
-        <mat-tab label="Listado de Transacciones">
-          <app-transaccion-list></app-transaccion-list>
-        </mat-tab>
-        <mat-tab label="Estadísticas">
-          <div class="coming-soon">
-            <mat-icon>insert_chart</mat-icon>
-            <h3>Estadísticas de transacciones</h3>
-            <p>Esta funcionalidad estará disponible próximamente</p>
-          </div>
-        </mat-tab>
-      </mat-tab-group>
-    </mat-card-content>
   </mat-card>
+
+  <!-- Transaction List -->
+  <ng-container *ngIf="error; else noError">
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error }}</p>
+      <button mat-button color="primary" (click)="cargarTransacciones()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+    </div>
+  </ng-container>
+  <ng-template #noError>
+    <app-transaccion-list 
+      [transacciones]="transacciones"
+      (onTransaccionCreated)="cargarTransacciones()"
+      (onTransaccionUpdated)="cargarTransacciones()">
+    </app-transaccion-list>
+  </ng-template>
+
+  <!-- Transaction Dialog -->
+  <app-transaccion-dialog 
+    #transaccionDialog
+    (transaccionCreated)="onTransaccionCreated($event)"
+    (transaccionUpdated)="onTransaccionUpdated($event)">
+  </app-transaccion-dialog>
 </div>

@@ -1,15 +1,22 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../core/services/seguridad/auth.service';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
+import { AuthService } from '../../core/services/seguridad/auth.service';
+import { RegistroRequest } from '../../core/models/seguridad/usuario.model';
+import { passwordMatchValidator } from '../../core/validators/password-match.validator';
+
+/**
+ * RegisterComponent handles user registration functionality
+ * Uses standalone component architecture and modern Angular control flow
+ */
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -22,85 +29,82 @@ import { MatCardModule } from '@angular/material/card';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
+    MatCardModule,
     MatProgressSpinnerModule,
-    MatCardModule
+    MatFormFieldModule
   ]
 })
 export class RegisterComponent {
   registerForm: FormGroup;
-  hidePassword = true;
-  hideConfirmPassword = true;
-  isLoading = false;
-  errorMessage = '';
+  errorMessage: string = '';
+  isLoading: boolean = false;
+  hidePassword: boolean = true;
+  hideConfirmPassword: boolean = true;
 
   constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
+    private readonly formBuilder: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {
-    this.registerForm = this.fb.group({
-      nombre: ['', [Validators.required]],
-      apellido: ['', [Validators.required]],
+    this.registerForm = this.formBuilder.group({
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]]
-    }, { validators: this.passwordMatchValidator });
+    }, {
+      validators: passwordMatchValidator
+    });
   }
 
-  // Validador personalizado para verificar que las contraseñas coincidan
-  passwordMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
-    const password = control.get('password');
-    const confirmPassword = control.get('confirmPassword');
-
-    if (!password || !confirmPassword) {
-      return null;
-    }
-
-    return password.value === confirmPassword.value ? null : { 'passwordMismatch': true };
-  }
-
+  /**
+   * Toggle password visibility
+   */
   togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;
   }
 
+  /**
+   * Toggle confirm password visibility
+   */
   toggleConfirmPasswordVisibility(): void {
     this.hideConfirmPassword = !this.hideConfirmPassword;
   }
 
+  /**
+   * Handle form submission
+   * Sends registration request to API Gateway
+   */
   onSubmit(): void {
-    if (this.registerForm.valid) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      
-      const { nombre, apellido, email, password } = this.registerForm.value;
-      
-      // Crear el objeto de datos de registro
-      const userData = {
-        nombre,
-        apellido,
-        email,
-        password
-      };
-      
-      this.authService.register(userData).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.router.navigate(['/auth/login'], { 
-            queryParams: { registered: 'true' } 
-          });
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.errorMessage = error.message || 'Error al registrarse. Por favor, intenta de nuevo.';
-        }
-      });
-    } else {
-      // Marcar todos los campos como touched para mostrar errores
-      Object.keys(this.registerForm.controls).forEach(key => {
-        const control = this.registerForm.get(key);
-        control?.markAsTouched();
-      });
+    if (this.registerForm.invalid) {
+      return;
     }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const { firstName, lastName, email, password } = this.registerForm.value;
+    const userData: RegistroRequest = {
+      firstName,
+      lastName,
+      email,
+      password
+    };
+
+    console.log('Registering user:', { ...userData, password: '[REDACTED]' });
+
+    this.authService.register(userData).subscribe({
+      next: () => {
+        console.log('Registration successful');
+        this.router.navigate(['/auth/login'], { 
+          queryParams: { registered: 'true' } 
+        });
+      },
+      error: (error) => {
+        console.error('Registration error:', error);
+        this.errorMessage = error.message || 'Error al registrar el usuario';
+        this.isLoading = false;
+      }
+    });
   }
 }

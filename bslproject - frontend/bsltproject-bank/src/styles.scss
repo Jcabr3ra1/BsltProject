@@ -129,6 +129,40 @@ p {
   margin-bottom: var(--spacing-md);
 }
 
+/* Estilos unificados para todos los botones */
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  border-radius: 25px !important;
+  padding: 4px 20px !important;
+  height: 40px !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.mat-mdc-raised-button:hover,
+.mat-mdc-outlined-button:hover,
+.mat-mdc-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Mejorar la visibilidad del texto en los botones */
+.mdc-button__label {
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Color específico para botones primarios */
+.mat-primary .mdc-button__label {
+  color: #ffffff !important;
+}
+
+/* Color para botones secundarios/outline */
+.mat-accent .mdc-button__label {
+  color: var(--primary) !important;
+}
+
 /* Estilos de botones */
 .btn {
   display: inline-flex;
@@ -332,6 +366,27 @@ p {
   font-weight: var(--font-weight-medium) !important;
   border-radius: var(--border-radius-md) !important;
   transition: all var(--transition-normal) !important;
+}
+
+.mat-mdc-raised-button {
+  border-radius: 20px !important;
+  padding: 4px 16px !important;
+}
+
+.mat-mdc-outlined-button {
+  border-radius: 20px !important;
+  padding: 4px 16px !important;
+}
+
+/* Mejorar la visibilidad del texto en los botones */
+.mdc-button__label {
+  color: #333333 !important;
+  font-weight: 600 !important;
+}
+
+/* Color específico para botones primarios */
+.mat-primary .mdc-button__label {
+  color: #ffffff !important;
 }
 
 .mat-mdc-card {
@@ -665,7 +720,8 @@ td.mat-mdc-cell:first-child {
 }
 
 /* Evitar que los caracteres especiales cambien el color del texto */
-.mat-mdc-cell, .mat-mdc-header-cell {
+.mat-mdc-cell, 
+.mat-mdc-header-cell {
   color: #333333 !important;
   background-color: transparent !important;
 }

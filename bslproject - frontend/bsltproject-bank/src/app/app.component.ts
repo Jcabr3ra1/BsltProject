@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
-import { AuthService, User } from '@core/services/seguridad/auth.service';
+import { AuthService } from '@core/services/seguridad/auth.service';
+import { User } from '@core/models/seguridad/usuario.model';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -40,12 +41,12 @@ export class AppComponent implements OnInit {
   currentUser: User | null = null;
 
   constructor(
-    private authService: AuthService,
-    private router: Router
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
     
-    // Suscribirse a los eventos de navegación para actualizar la URL actual
+    // Subscribe to navigation events to update current URL
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
@@ -54,10 +55,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Obtener el usuario actual al inicializar
+    // Get current user on initialization
     this.getCurrentUser();
     
-    // Suscribirse a cambios en la autenticación para actualizar el usuario
+    // Subscribe to authentication changes to update user
     this.isAuthenticated$.subscribe(isAuthenticated => {
       if (isAuthenticated) {
         this.getCurrentUser();
@@ -77,28 +78,27 @@ export class AppComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
+    this.authService.logout().subscribe(() => {
+      this.router.navigate(['/auth/login']);
+    });
   }
   
-  // Método para verificar si estamos en la landing page o páginas de autenticación
+  // Check if we're on the landing page or auth pages
   isLandingPage(): boolean {
-    // Verificar si estamos en landing page o en cualquier ruta de autenticación
     return this.currentUrl === '/landing' || 
            this.currentUrl === '/' || 
-           this.currentUrl.startsWith('/auth') ||
-           this.currentUrl === '/auth/login';
+           this.currentUrl.startsWith('/auth');
   }
   
-  // Método para obtener el nombre completo del usuario
+  // Get user's full name
   getUserFullName(): string {
     if (this.currentUser) {
-      return `${this.currentUser.nombre} ${this.currentUser.apellido}`;
+      return `${this.currentUser.firstName} ${this.currentUser.lastName}`;
     }
     return 'Usuario';
   }
   
-  // Método para obtener el email del usuario
+  // Get user's email
   getUserEmail(): string {
     if (this.currentUser) {
       return this.currentUser.email;

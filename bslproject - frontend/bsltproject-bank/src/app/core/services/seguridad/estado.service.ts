@@ -7,7 +7,7 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root'
 })
 export class EstadoService {
-  private apiUrl = `${environment.apiUrl}/seguridad/estados`;
+  private apiUrl = `${environment.securityUrl}/estados`;
 
   constructor(private http: HttpClient) {}
 

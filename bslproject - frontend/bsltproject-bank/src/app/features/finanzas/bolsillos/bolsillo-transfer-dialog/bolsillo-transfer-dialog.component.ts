@@ -1,132 +1,79 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { BolsilloService } from '../../../../core/services/finanzas';
-import { Bolsillo } from '../../../../core/models/bolsillo.model';
+import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+import { Pocket } from '@core/models/finanzas/cuenta.model';
 
 @Component({
   selector: 'app-bolsillo-transfer-dialog',
-  templateUrl: './bolsillo-transfer-dialog.component.html',
-  styleUrls: ['./bolsillo-transfer-dialog.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressSpinnerModule,
-    MatSelectModule
-  ]
+    MatSelectModule,
+    FormsModule,
+    ReactiveFormsModule
+  ],
+  template: `
+    <h2 mat-dialog-title>Transfer to Pocket</h2>
+    <mat-dialog-content>
+      <form [formGroup]="transferForm">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Amount</mat-label>
+          <input matInput type="number" formControlName="amount" min="0">
+          <mat-error *ngIf="transferForm.get('amount')?.hasError('required')">Amount is required</mat-error>
+          <mat-error *ngIf="transferForm.get('amount')?.hasError('min')">Amount must be greater than 0</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Description</mat-label>
+          <input matInput formControlName="description">
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">Cancel</button>
+      <button mat-raised-button color="primary" 
+              [disabled]="!transferForm.valid"
+              (click)="onSubmit()">
+        Transfer
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .full-width {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+  `]
 })
-export class BolsilloTransferDialogComponent implements OnInit {
+export class BolsilloTransferDialogComponent {
   transferForm: FormGroup;
-  bolsillos: Bolsillo[] = [];
-  bolsilloOrigen!: Bolsillo;
-  isLoading = false;
-  maxAmount: number = 0;
 
   constructor(
-    private dialogRef: MatDialogRef<BolsilloTransferDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { bolsillo: Bolsillo },
-    private formBuilder: FormBuilder,
-    private bolsilloService: BolsilloService,
-    private snackBar: MatSnackBar
+    private readonly formBuilder: FormBuilder,
+    private readonly dialogRef: MatDialogRef<BolsilloTransferDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { pocket: Pocket }
   ) {
-    this.bolsilloOrigen = data.bolsillo;
-    this.maxAmount = this.bolsilloOrigen.saldo;
     this.transferForm = this.formBuilder.group({
-      bolsilloDestinoId: ['', Validators.required],
-      monto: ['', [Validators.required, Validators.min(0.01), Validators.max(this.maxAmount)]]
-    });
-  }
-
-  ngOnInit(): void {
-    this.cargarBolsillos();
-  }
-
-  get montoControl() {
-    return this.transferForm.get('monto');
-  }
-
-  cargarBolsillos(): void {
-    this.isLoading = true;
-    this.bolsilloService.getBolsillos().subscribe({
-      next: (bolsillos) => {
-        this.bolsillos = bolsillos.filter(b => b.id !== this.bolsilloOrigen.id);
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error al cargar bolsillos:', error);
-        this.mostrarError('Error al cargar los bolsillos');
-        this.isLoading = false;
-      }
+      amount: ['', [Validators.required, Validators.min(0)]],
+      description: ['']
     });
   }
 
   onSubmit(): void {
     if (this.transferForm.valid) {
-      const { bolsilloDestinoId, monto } = this.transferForm.value;
-      this.isLoading = true;
-      
-      if (!bolsilloDestinoId || !monto) {
-        this.mostrarError('Por favor complete todos los campos');
-        this.isLoading = false;
-        return;
-      }
-      
-      // Al llegar aquí, sabemos que bolsilloDestinoId no es null ni undefined
-      const destinoId: string = bolsilloDestinoId.toString();
-      
-      // Asegurarse de que bolsilloOrigen.id no sea undefined
-      if (!this.bolsilloOrigen || !this.bolsilloOrigen.id) {
-        this.mostrarError('Error: Bolsillo de origen no válido');
-        this.isLoading = false;
-        return;
-      }
-      
-      const origenId: string = this.bolsilloOrigen.id.toString();
-      
-      this.bolsilloService.transferirEntreBolsillos(
-        origenId,
-        destinoId,
-        monto
-      ).subscribe({
-        next: () => {
-          this.mostrarExito('Transferencia realizada con éxito');
-          this.dialogRef.close(true);
-        },
-        error: (error: any) => {
-          console.error('Error en la transferencia:', error);
-          this.mostrarError('Error al realizar la transferencia');
-          this.isLoading = false;
-        }
-      });
+      this.dialogRef.close(this.transferForm.value);
     }
-  }
-
-  private mostrarExito(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
-  }
-
-  private mostrarError(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
   }
 
   onCancel(): void {

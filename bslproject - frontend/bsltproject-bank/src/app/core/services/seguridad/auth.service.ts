@@ -1,138 +1,158 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, tap } from 'rxjs';
-import { API_CONFIG } from '../../config/api.config';
+import { BehaviorSubject, Observable, of, tap, catchError, throwError } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { HttpService } from '../http/http.service';
-
-export interface User {
-  id: string;
-  nombre: string;
-  apellido: string;
-  email: string;
-  roles: string[];
-}
-
-export interface LoginResponse {
-  token: string;
-  refreshToken: string;
-  user: User;
-}
-
-export interface RefreshTokenResponse {
-  token: string;
-  refreshToken: string;
-}
-
-export interface RegisterRequest {
-  nombre: string;
-  apellido: string;
-  email: string;
-  password: string;
-}
+import { User, Role, State, RegistroRequest, LoginRequest, LoginResponse, RegistroResponse } from '../../models/seguridad/usuario.model';
+import { API_CONFIG } from '../../config/api.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private securityApi = API_CONFIG.SECURITY_API;
+  private readonly authUrl = API_CONFIG.SECURITY_API.AUTH;
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidToken());
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor(private httpService: HttpService) {
-    console.log('AuthService initialized');
-    console.log('Current token exists:', this.hasValidToken());
-  }
+  constructor(private readonly httpService: HttpService) {}
 
   /**
-   * Inicia sesión con email y contraseña
-   * @param email Email del usuario
-   * @param password Contraseña del usuario
-   * @returns Observable con la respuesta del login
+   * Login user
+   * @param email User's email
+   * @param password User's password
+   * @returns Observable<LoginResponse>
    */
   login(email: string, password: string): Observable<LoginResponse> {
-    console.log('Login attempt for:', email);
-    
-    // Usar solo la ruta relativa, no la URL completa
-    const endpoint = this.securityApi.AUTH.LOGIN;
-    console.log('Using endpoint:', endpoint);
-    
-    return this.httpService.post<LoginResponse>(endpoint, { email, password }).pipe(
+    if (!email || !password) {
+      throw new Error('Email and password are required');
+    }
+
+    const credentials: LoginRequest = { email, password };
+
+    return this.httpService.post<LoginResponse>(this.authUrl.LOGIN, credentials).pipe(
       tap(response => {
-        console.log('Login successful, storing tokens');
-        console.log('Token received:', response.token ? response.token.substring(0, 15) + '...' : 'No token');
-        this.saveTokens(response.token, response.refreshToken || '');
-        localStorage.setItem('user', JSON.stringify(response.user));
-        this.isAuthenticatedSubject.next(true);
-      })
+        console.log('Login response received:', response);
+        if (!response || !response.token) {
+          throw new Error('Invalid login response from server');
+        }
+
+        if (response.token && response.refreshToken) {
+          console.log('Tokens received from server:', { token: response.token, refreshToken: response.refreshToken });
+          console.log('Saving tokens...');
+          this.saveTokens(response.token, response.refreshToken);
+          
+          // Then save user if available
+          if (response.user) {
+            console.log('Saving user data...');
+            this.saveUser(response.user);
+          }
+
+          console.log('Updating authentication state...');
+          this.updateAuthenticationState(true);
+        }
+      }),
+      catchError(error => this.handleError(error, 'login'))
     );
   }
 
   /**
-   * Cierra la sesión del usuario actual
-   * @returns Observable que completa cuando se cierra la sesión
+   * Register new user
+   * @param userData RegistroRequest
+   * @returns Observable<RegistroResponse>
+   */
+  register(userData: RegistroRequest): Observable<RegistroResponse> {
+    return this.httpService.post<RegistroResponse>(this.authUrl.REGISTER, userData).pipe(
+      catchError(error => this.handleError(error, 'register'))
+    );
+  }
+
+  /**
+   * Logout user
+   * @returns Observable<void>
    */
   logout(): Observable<void> {
-    console.log('Logging out');
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+    sessionStorage.removeItem('user_backup');
     this.isAuthenticatedSubject.next(false);
     return of(void 0);
   }
 
   /**
-   * Registra un nuevo usuario
-   * @param userData Datos del usuario a registrar
-   * @returns Observable con la respuesta del registro
+   * Refresh authentication token
+   * @returns Observable<RefreshTokenResponse>
    */
-  register(userData: RegisterRequest): Observable<any> {
-    console.log('Registering new user:', userData.email);
-    
-    // Usar solo la ruta relativa, no la URL completa
-    const endpoint = this.securityApi.AUTH.REGISTER;
-    console.log('Using endpoint:', endpoint);
-    
-    return this.httpService.post(endpoint, userData);
-  }
-
-  /**
-   * Refresca el token de autenticación
-   * @returns Observable con el nuevo token
-   */
-  refreshToken(): Observable<RefreshTokenResponse> {
-    console.log('Refreshing token');
+  refreshToken(): Observable<LoginResponse> {
     const refreshToken = this.getRefreshToken();
     
     if (!refreshToken) {
-      console.error('No refresh token available');
       this.logout();
       throw new Error('No refresh token available');
     }
     
-    // Usar solo la ruta relativa, no la URL completa
-    const endpoint = this.securityApi.AUTH.REFRESH_TOKEN;
-    console.log('Using endpoint:', endpoint);
-    
-    return this.httpService.post<RefreshTokenResponse>(endpoint, { refreshToken }).pipe(
+    return this.httpService.post<LoginResponse>(this.authUrl.REFRESH, { refreshToken }).pipe(
       tap(response => {
-        console.log('Token refreshed successfully');
-        console.log('New token:', response.token ? response.token.substring(0, 15) + '...' : 'No token');
-        this.saveTokens(response.token, response.refreshToken || '');
+        if (response.token && response.refreshToken) {
+          this.saveTokens(response.token, response.refreshToken);
+        }
         this.isAuthenticatedSubject.next(true);
-      })
+      }),
+      catchError(error => this.handleError(error, 'refreshToken'))
     );
   }
 
   /**
-   * Verifica si el usuario está autenticado
-   * @returns true si el usuario está autenticado, false en caso contrario
+   * Check if user is authenticated
+   * @returns true if user is authenticated, false otherwise
    */
   isAuthenticated(): boolean {
     return this.hasValidToken();
   }
 
   /**
-   * Verifica si hay un token válido almacenado
-   * @returns true si hay un token válido, false en caso contrario
+   * Get the current user from storage
+   * @returns The current user or null if not found
+   */
+  getCurrentUser(): User | null {
+    try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        const backupStr = sessionStorage.getItem('user_backup');
+        if (backupStr) {
+          const user = JSON.parse(backupStr);
+          this.saveUser(user);
+          return user;
+        }
+        return null;
+      }
+      return JSON.parse(userStr);
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get the current authentication token
+   * @returns The current token or null if not found
+   */
+  getToken(): string | null {
+    const token = localStorage.getItem('token');
+    console.log('Retrieving token from localStorage:', token);
+    return token;
+  }
+
+  /**
+   * Get the current refresh token
+   * @returns The current refresh token or null if not found
+   */
+  private getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+
+  /**
+   * Check if there is a valid token stored
+   * @returns true if there is a valid token, false otherwise
    */
   private hasValidToken(): boolean {
     const token = this.getToken();
@@ -140,54 +160,57 @@ export class AuthService {
   }
 
   /**
-   * Guarda los tokens en el almacenamiento local
-   * @param token Token de acceso
-   * @param refreshToken Token de refresco
+   * Save tokens to local storage
+   * @param token Access token
+   * @param refreshToken Refresh token
    */
   private saveTokens(token: string, refreshToken: string): void {
-    console.log('Saving tokens to localStorage');
+    console.log('Saving tokens:', { token, refreshToken });
     localStorage.setItem('token', token);
     localStorage.setItem('refreshToken', refreshToken);
   }
 
   /**
-   * Obtiene el token de acceso almacenado
-   * @returns Token de acceso o null si no hay token
+   * Save user to localStorage with additional validation
+   * @param user User to save
    */
-  getToken(): string | null {
-    const token = localStorage.getItem('token');
-    console.log('Retrieved token from localStorage:', token ? token.substring(0, 15) + '...' : 'No token');
-    return token;
+  private saveUser(user: User): void {
+    if (!user || typeof user !== 'object' || !user.email) {
+      throw new Error(`Cannot save invalid user data: ${JSON.stringify(user)}`);
+    }
+
+    try {
+      localStorage.setItem('user', JSON.stringify(user));
+      sessionStorage.setItem('user_backup', JSON.stringify(user));
+    } catch (error) {
+      console.error('Error saving user data:', error);
+      throw new Error('Failed to save user data to storage');
+    }
+  }
+
+  private updateAuthenticationState(isAuthenticated: boolean): void {
+    console.log('Current authentication state:', this.isAuthenticatedSubject.value);
+    console.log('New authentication state:', isAuthenticated);
+    this.isAuthenticatedSubject.next(isAuthenticated);
+    console.log('Authentication state updated');
   }
 
   /**
-   * Obtiene el token de refresco almacenado
-   * @returns Token de refresco o null si no hay token
+   * Handle HTTP errors
+   * @param error Error object
+   * @param operation Name of the operation that failed
+   * @returns Observable with error
    */
-  getRefreshToken(): string | null {
-    const refreshToken = localStorage.getItem('refreshToken');
-    console.log('Retrieved refresh token from localStorage:', refreshToken ? refreshToken.substring(0, 15) + '...' : 'No refresh token');
-    return refreshToken;
-  }
-
-  /**
-   * Obtiene el usuario actual
-   * @returns Usuario actual o null si no hay usuario
-   */
-  getCurrentUser(): User | null {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) {
-      console.log('No user found in localStorage');
-      return null;
+  private handleError(error: any, operation: string): Observable<never> {
+    console.error(`Error in ${operation}:`, error);
+    let errorMessage = 'An error occurred';
+    
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Client error: ${error.error.message}`;
+    } else {
+      errorMessage = `Server error: ${error.status} - ${error.error?.message || error.statusText}`;
     }
     
-    try {
-      const user = JSON.parse(userStr) as User;
-      console.log('Retrieved user from localStorage:', user.email);
-      return user;
-    } catch (error) {
-      console.error('Error parsing user from localStorage:', error);
-      return null;
-    }
+    return throwError(() => new Error(errorMessage));
   }
 }

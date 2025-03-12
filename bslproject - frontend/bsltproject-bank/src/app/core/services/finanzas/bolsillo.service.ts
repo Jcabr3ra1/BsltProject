@@ -1,60 +1,65 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Bolsillo } from '../../../core/models';
-import { environment } from '../../../../environments/environment';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { Bolsillo } from '@core/models/finanzas/bolsillo.model';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BolsilloService {
-  private apiUrl = `${environment.apiUrl}/finanzas/bolsillos`;
+  private baseUrl = `${environment.financeUrl}/bolsillos`;
+  private headers = new HttpHeaders().set('Content-Type', 'application/json');
 
   constructor(private http: HttpClient) {}
 
-  private getHeaders() {
-    const token = localStorage.getItem('token');
-    return {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      })
-    };
+  obtenerTodos(): Observable<Bolsillo[]> {
+    return this.http.get<Bolsillo[]>(this.baseUrl, { headers: this.headers })
+      .pipe(catchError(this.handleError));
   }
 
-  getBolsillos(): Observable<Bolsillo[]> {
-    return this.http.get<Bolsillo[]>(this.apiUrl, this.getHeaders());
+  obtenerPorId(id: string): Observable<Bolsillo> {
+    return this.http.get<Bolsillo>(`${this.baseUrl}/${id}`, { headers: this.headers })
+      .pipe(catchError(this.handleError));
   }
 
-  getBolsillo(id: string): Observable<Bolsillo> {
-    return this.http.get<Bolsillo>(`${this.apiUrl}/${id}`, this.getHeaders());
+  crear(bolsillo: Bolsillo): Observable<Bolsillo> {
+    return this.http.post<Bolsillo>(this.baseUrl, bolsillo, { headers: this.headers })
+      .pipe(catchError(this.handleError));
   }
 
-  getBolsillosPorCuenta(cuentaId: string): Observable<Bolsillo[]> {
-    return this.http.get<Bolsillo[]>(`${this.apiUrl}/cuenta/${cuentaId}`, this.getHeaders());
+  actualizar(id: string, bolsillo: Bolsillo): Observable<Bolsillo> {
+    return this.http.put<Bolsillo>(`${this.baseUrl}/${id}`, bolsillo, { headers: this.headers })
+      .pipe(catchError(this.handleError));
   }
 
-  crearBolsillo(bolsillo: Bolsillo): Observable<Bolsillo> {
-    return this.http.post<Bolsillo>(this.apiUrl, bolsillo, this.getHeaders());
+  eliminar(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, { headers: this.headers })
+      .pipe(catchError(this.handleError));
   }
 
-  actualizarBolsillo(id: string, bolsillo: Bolsillo): Observable<Bolsillo> {
-    return this.http.put<Bolsillo>(`${this.apiUrl}/${id}`, bolsillo, this.getHeaders());
-  }
-
-  eliminarBolsillo(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, this.getHeaders());
+  obtenerPorCuenta(cuentaId: string): Observable<Bolsillo[]> {
+    return this.http.get<Bolsillo[]>(`${this.baseUrl}/cuenta/${cuentaId}`, { headers: this.headers })
+      .pipe(catchError(this.handleError));
   }
 
   cerrarBolsillo(id: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${id}/cerrar`, {}, this.getHeaders());
+    return this.http.post<void>(`${this.baseUrl}/${id}/cerrar`, {}, { headers: this.headers })
+      .pipe(catchError(this.handleError));
   }
 
   transferirEntreBolsillos(idOrigen: string, idDestino: string, monto: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/transferir`, {
+    return this.http.post<void>(`${this.baseUrl}/transferir`, {
       bolsilloOrigenId: idOrigen,
       bolsilloDestinoId: idDestino,
       monto: monto
-    }, this.getHeaders());
+    }, { headers: this.headers })
+      .pipe(catchError(this.handleError));
+  }
+
+  private handleError(error: any): Observable<never> {
+    console.error('Error en BolsilloService:', error);
+    return throwError(() => error);
   }
 }

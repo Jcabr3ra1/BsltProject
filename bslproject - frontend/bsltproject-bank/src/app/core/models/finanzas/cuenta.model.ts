@@ -1,54 +1,69 @@
-import { Usuario } from '../seguridad/usuario.model';
+import { User } from '../seguridad/usuario.model';
 
 /**
  * Modelo de Cuenta
  * 
  * Representa una cuenta bancaria en el sistema financiero
  */
-export interface Cuenta {
-  id: string;
-  numero: string;
-  saldo: number;
-  fechaCreacion: Date;
-  fechaActualizacion?: Date;
-  usuarioId: string;
-  usuario?: Usuario;
-  tipo: TipoCuenta;
-  estado: EstadoCuenta;
-  bolsillos?: Bolsillo[];
-}
-
-/**
- * Enumeración de tipos de cuenta
- */
-export enum TipoCuenta {
-  AHORRO = 'AHORRO',
-  CORRIENTE = 'CORRIENTE',
-  CREDITO = 'CREDITO'
+export enum AccountType {
+  SAVINGS = 'SAVINGS',
+  CHECKING = 'CHECKING'
 }
 
 /**
  * Enumeración de estados de cuenta
  */
-export enum EstadoCuenta {
-  ACTIVA = 'ACTIVA',
-  INACTIVA = 'INACTIVA',
-  BLOQUEADA = 'BLOQUEADA',
-  CERRADA = 'CERRADA'
+export enum AccountStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  BLOCKED = 'BLOCKED'
 }
+
+export interface Account {
+  id: string;
+  userId?: string;
+  accountNumber: string;
+  type: AccountType;
+  balance: number;
+  status: AccountStatus;
+  createdAt?: string;
+  updatedAt?: string;
+  user?: User;
+}
+
+export interface AccountRequest {
+  accountNumber: string;
+  balance: number;
+  status: AccountStatus;
+  userId: string;
+}
+
+export interface AccountFilters {
+  userId?: string;
+  type?: AccountType;
+  status?: AccountStatus;
+  minBalance?: number;
+  maxBalance?: number;
+}
+
+// For backward compatibility
+export type Cuenta = Account;
+export type TipoCuenta = AccountType;
+export type EstadoCuenta = AccountStatus;
 
 /**
  * Modelo de Bolsillo
  * 
  * Representa un bolsillo o subcuenta asociada a una cuenta principal
  */
-export interface Bolsillo {
+export interface Pocket {
   id: string;
-  nombre: string;
-  saldo: number;
-  meta?: number;
-  fechaCreacion: Date;
-  fechaActualizacion?: Date;
-  cuentaId: string;
-  cuenta?: Cuenta;
+  name: string;
+  balance: number;
+  goal?: number;
+  createdAt: Date;
+  updatedAt?: Date;
+  accountId: string;
+  account?: Account;
+  user?: User;
 }

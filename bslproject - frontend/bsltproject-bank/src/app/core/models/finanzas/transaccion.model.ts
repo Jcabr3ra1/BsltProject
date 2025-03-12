@@ -1,75 +1,68 @@
-import { Cuenta } from './cuenta.model';
-import { Usuario } from '../seguridad/usuario.model';
+import { Account } from './cuenta.model';
+import { Pocket } from './bolsillo.model';
+import { User } from '../seguridad/usuario.model';
+
+/**
+ * Estados posibles de una transacción
+ */
+export enum TransactionStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED'
+}
+
+/**
+ * Tipos de transacciones posibles
+ */
+export enum TransactionType {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAWAL = 'WITHDRAWAL',
+  TRANSFER = 'TRANSFER'
+}
 
 /**
  * Modelo de Transacción
  * 
  * Representa una transacción financiera en el sistema
  */
-export interface Transaccion {
+export interface Transaction {
   id: string;
-  monto: number;
-  descripcion: string;
-  fechaTransaccion: Date;
-  cuentaOrigenId: string;
-  cuentaDestinoId?: string;
-  cuentaOrigen?: Cuenta;
-  cuentaDestino?: Cuenta;
-  tipoTransaccionId: string;
-  tipoTransaccion?: TipoTransaccion;
-  tipoMovimientoId: string;
-  tipoMovimiento?: TipoMovimiento;
-  estado: EstadoTransaccion;
-  referencia?: string;
-  usuarioId: string;
-  usuario?: Usuario;
-  fechaCreacion: Date;
-  fechaActualizacion: Date;
-}
-
-/**
- * Modelo de Tipo de Transacción
- * 
- * Representa un tipo de transacción (transferencia, depósito, retiro, etc.)
- */
-export interface TipoTransaccion {
-  id: string;
-  nombre: string;
-  descripcion?: string;
-  requiereDestino: boolean;
-}
-
-/**
- * Modelo de Tipo de Movimiento
- * 
- * Representa un tipo de movimiento (entrada, salida)
- */
-export interface TipoMovimiento {
-  id: string;
-  nombre: string;
-  descripcion?: string;
-  afectaSaldo: 1 | -1; // 1 para incremento, -1 para decremento
-}
-
-/**
- * Enumeración de estados de transacción
- */
-export enum EstadoTransaccion {
-  PENDIENTE = 'PENDIENTE',
-  COMPLETADA = 'COMPLETADA',
-  RECHAZADA = 'RECHAZADA',
-  ANULADA = 'ANULADA'
+  accountId: string;
+  account?: Account;
+  type: TransactionType;
+  amount: number;
+  description?: string;
+  status: TransactionStatus;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 /**
  * Modelo para solicitud de nueva transacción
  */
-export interface TransaccionRequest {
-  monto: number;
-  descripcion: string;
-  cuentaOrigenId: string;
-  cuentaDestinoId?: string;
-  tipoTransaccionId: string;
-  tipoMovimientoId: string;
-  referencia?: string;
+export interface TransactionRequest {
+  accountId: string;
+  type: TransactionType;
+  amount: number;
+  description?: string;
 }
+
+/**
+ * Filtros para búsqueda de transacciones
+ */
+export interface TransactionFilters {
+  accountId?: string;
+  type?: TransactionType;
+  status?: TransactionStatus;
+  startDate?: Date;
+  endDate?: Date;
+}
+
+// For backward compatibility
+export type Transaccion = Transaction;
+export type TransaccionRequest = TransactionRequest;
+export type TipoTransaccion = TransactionType;
+export type EstadoTransaccion = TransactionStatus;

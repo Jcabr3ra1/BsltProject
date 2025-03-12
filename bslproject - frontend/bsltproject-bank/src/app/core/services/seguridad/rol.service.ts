@@ -7,7 +7,7 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root'
 })
 export class RolService {
-  private apiUrl = `${environment.apiUrl}/seguridad/roles`;
+  private apiUrl = `${environment.securityUrl}/roles`;
 
   constructor(private http: HttpClient) {}
 

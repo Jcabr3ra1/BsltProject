@@ -1,233 +1,289 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule, MatCardContent } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { TransaccionService, CuentaService, TipoTransaccionService } from '../../../../core/services/finanzas';
-import { Transaccion, TipoTransaccion } from '../../../../core/models/finanzas/transaccion.model';
-import { Cuenta } from '../../../../core/models/finanzas/cuenta.model';
-import { TransaccionDialogComponent } from '../transaccion-dialog/transaccion-dialog.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { Transaction, TransactionType, TransactionStatus } from '@core/models/finanzas/transaccion.model';
+import { Account } from '@core/models/finanzas/cuenta.model';
 
 @Component({
   selector: 'app-transaccion-list',
-  templateUrl: './transaccion-list.component.html',
-  styleUrls: ['./transaccion-list.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatTableModule,
-    MatCardModule,
-    MatCardContent,
-    MatButtonModule,
-    MatIconModule,
+    MatPaginatorModule,
+    MatSortModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatMenuModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatPaginatorModule,
-    MatTooltipModule
-  ]
+    MatProgressSpinnerModule
+  ],
+  template: `
+    <div class="transaction-list-container">
+      <form [formGroup]="filterForm" class="filter-form">
+        <mat-form-field>
+          <mat-label>Account</mat-label>
+          <mat-select formControlName="accountId">
+            <mat-option [value]="''">All</mat-option>
+            @for (account of accounts; track account.id) {
+              <mat-option [value]="account.id">{{ account.accountNumber }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option [value]="''">All</mat-option>
+            @for (type of TransactionType | keyvalue; track type.key) {
+              <mat-option [value]="type.value">{{ type.value }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option [value]="''">All</mat-option>
+            @for (status of TransactionStatus | keyvalue; track status.key) {
+              <mat-option [value]="status.value">{{ status.value }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Date Range</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate formControlName="startDate" placeholder="Start date">
+            <input matEndDate formControlName="endDate" placeholder="End date">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+      </form>
+
+      @if (loading) {
+        <div class="loading-container">
+          <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+          <span>Loading transactions...</span>
+        </div>
+      } @else if (error) {
+        <div class="error-container">
+          <mat-icon color="warn">error</mat-icon>
+          <p>{{ error }}</p>
+          <button mat-raised-button color="primary" (click)="loadTransactions()">Retry</button>
+        </div>
+      } @else {
+        <table mat-table [dataSource]="dataSource" matSort class="transaction-table">
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+            <td mat-cell *matCellDef="let transaction">{{ transaction.createdAt | date }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="accountNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Account</th>
+            <td mat-cell *matCellDef="let transaction">
+              {{ getAccountNumber(transaction.accountId) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+            <td mat-cell *matCellDef="let transaction">{{ transaction.type }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+            <td mat-cell *matCellDef="let transaction">{{ transaction.amount | currency }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <td mat-cell *matCellDef="let transaction">
+              <span [class]="'status-badge status-' + transaction.status.toLowerCase()">
+                {{ transaction.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let transaction">{{ transaction.description }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let transaction">
+              <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                @if (transaction.status === TransactionStatus.PENDING) {
+                  <button mat-menu-item (click)="onApprove(transaction)">
+                    <mat-icon>check</mat-icon>
+                    <span>Approve</span>
+                  </button>
+                  <button mat-menu-item (click)="onReject(transaction)">
+                    <mat-icon>close</mat-icon>
+                    <span>Reject</span>
+                  </button>
+                }
+                <button mat-menu-item (click)="onEdit(transaction)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Edit</span>
+                </button>
+                <button mat-menu-item (click)="onDelete(transaction)">
+                  <mat-icon>delete</mat-icon>
+                  <span>Delete</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+      }
+    </div>
+  `,
+  styles: [`
+    .transaction-list-container {
+      padding: 1rem;
+    }
+
+    .filter-form {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .transaction-table {
+      width: 100%;
+    }
+
+    .loading-container,
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 2rem;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .status-pending {
+      background-color: #fff3e0;
+      color: #e65100;
+    }
+
+    .status-approved {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .status-rejected {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+  `]
 })
 export class TransaccionListComponent implements OnInit {
-  transacciones: Transaccion[] = [];
-  cuentas: Cuenta[] = [];
-  tiposTransaccion: TipoTransaccion[] = [];
-  cuentaSeleccionadaId: string = '';
-  fechaInicio?: Date;
-  fechaFin?: Date;
-  tipoSeleccionado: string = '';
-  isLoading = false;
-  displayedColumns: string[] = [
-    'fecha',
-    'monto',
-    'tipo',
-    'descripcion',
-    'estado',
-    'acciones'
-  ];
+  @Input() transactions: Transaction[] = [];
+  @Input() accounts: Account[] = [];
+  @Input() loading = false;
+  @Input() error: string | null = null;
 
-  constructor(
-    private transaccionService: TransaccionService,
-    private cuentaService: CuentaService,
-    private tipoTransaccionService: TipoTransaccionService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar
-  ) {}
+  @Output() filterChange = new EventEmitter<any>();
+  @Output() approve = new EventEmitter<Transaction>();
+  @Output() reject = new EventEmitter<Transaction>();
+  @Output() edit = new EventEmitter<Transaction>();
+  @Output() delete = new EventEmitter<Transaction>();
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  filterForm: FormGroup;
+  dataSource: MatTableDataSource<Transaction>;
+  displayedColumns = ['createdAt', 'accountNumber', 'type', 'amount', 'status', 'description', 'actions'];
+  readonly TransactionType = TransactionType;
+  readonly TransactionStatus = TransactionStatus;
+
+  constructor(private readonly fb: FormBuilder) {
+    this.filterForm = this.fb.group({
+      accountId: [''],
+      type: [''],
+      status: [''],
+      startDate: [null],
+      endDate: [null]
+    });
+
+    this.dataSource = new MatTableDataSource<Transaction>();
+  }
 
   ngOnInit(): void {
-    this.cargarCuentas();
-    this.cargarTiposTransaccion();
-  }
-
-  cargarCuentas(): void {
-    this.isLoading = true;
-    this.cuentaService.getCuentas().subscribe({
-      next: (cuentas) => {
-        this.cuentas = cuentas;
-        if (cuentas.length > 0) {
-          this.cuentaSeleccionadaId = cuentas[0].id;
-          this.cargarTransacciones();
-        }
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error al cargar cuentas:', error);
-        this.mostrarError('Error al cargar las cuentas');
-        this.isLoading = false;
-      }
-    });
-  }
-
-  cargarTiposTransaccion(): void {
-    this.tipoTransaccionService.getTiposTransaccion().subscribe({
-      next: (tipos) => {
-        this.tiposTransaccion = tipos;
-      },
-      error: (error) => {
-        console.error('Error al cargar tipos de transacción:', error);
-        this.mostrarError('Error al cargar los tipos de transacción');
-      }
-    });
-  }
-
-  cargarTransacciones(): void {
-    if (!this.cuentaSeleccionadaId) return;
-
-    this.isLoading = true;
-    this.transaccionService.getTransaccionesPorCuenta(this.cuentaSeleccionadaId).subscribe({
-      next: (transacciones) => {
-        this.transacciones = transacciones;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error al cargar transacciones:', error);
-        this.mostrarError('Error al cargar las transacciones');
-        this.isLoading = false;
-      }
-    });
-  }
-
-  filtrarTransacciones(): void {
-    if (!this.cuentaSeleccionadaId) return;
-
-    this.isLoading = true;
-    this.transaccionService.getHistorialTransacciones(
-      this.fechaInicio,
-      this.fechaFin,
-      this.tipoSeleccionado
-    ).subscribe({
-      next: (transacciones) => {
-        this.transacciones = transacciones;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error al filtrar transacciones:', error);
-        this.mostrarError('Error al filtrar las transacciones');
-        this.isLoading = false;
-      }
-    });
-  }
-
-  crearTransaccion(): void {
-    const dialogRef = this.dialog.open(TransaccionDialogComponent, {
-      width: '500px',
-      data: { cuentaId: this.cuentaSeleccionadaId }
+    this.filterForm.valueChanges.subscribe(filters => {
+      this.filterChange.emit(filters);
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.cargarTransacciones();
-      }
-    });
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
-  anularTransaccion(id: string): void {
-    if (confirm('¿Está seguro de anular esta transacción?')) {
-      this.isLoading = true;
-      this.transaccionService.anularTransaccion(id).subscribe({
-        next: () => {
-          this.mostrarExito('Transacción anulada exitosamente');
-          this.cargarTransacciones();
-        },
-        error: (error) => {
-          console.error('Error al anular transacción:', error);
-          this.mostrarError('Error al anular la transacción');
-          this.isLoading = false;
-        }
-      });
+  ngOnChanges(): void {
+    if (this.transactions) {
+      this.dataSource.data = this.transactions;
     }
   }
 
-  private mostrarExito(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
+  getAccountNumber(accountId: string): string {
+    const account = this.accounts.find(a => a.id === accountId);
+    return account ? account.accountNumber : 'Unknown';
   }
 
-  private mostrarError(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
-      panelClass: ['error-snackbar']
-    });
+  onApprove(transaction: Transaction): void {
+    this.approve.emit(transaction);
   }
 
-  onCuentaChange(): void {
-    this.cargarTransacciones();
+  onReject(transaction: Transaction): void {
+    this.reject.emit(transaction);
   }
 
-  limpiarFiltros(): void {
-    this.fechaInicio = undefined;
-    this.fechaFin = undefined;
-    this.tipoSeleccionado = '';
-    this.cargarTransacciones();
+  onEdit(transaction: Transaction): void {
+    this.edit.emit(transaction);
   }
 
-  getTipoTransaccion(id: string | number | undefined): string {
-    if (!id) return 'Desconocido';
-    
-    // Convertir id a string para asegurar la comparación correcta
-    const idStr = id.toString();
-    const tipo = this.tiposTransaccion.find(t => t.id && t.id.toString() === idStr);
-    return tipo ? tipo.nombre : 'Desconocido';
+  onDelete(transaction: Transaction): void {
+    this.delete.emit(transaction);
   }
 
-  getNombreCuenta(cuentaId: string | number | undefined): string {
-    if (!cuentaId) return 'N/A';
-    
-    // Convertir cuentaId a string para asegurar la comparación correcta
-    const cuentaIdStr = cuentaId.toString();
-    const cuenta = this.cuentas.find(c => c.id && c.id.toString() === cuentaIdStr);
-    return cuenta ? cuenta.numero || 'Sin número' : 'N/A';
-  }
-
-  // Tracking functions for ngFor
-  trackCuentaById(index: number, cuenta: Cuenta): string {
-    return cuenta.id;
-  }
-
-  trackTipoById(index: number, tipo: TipoTransaccion): string {
-    return tipo.id;
+  loadTransactions(): void {
+    this.filterChange.emit(this.filterForm.value);
   }
 }

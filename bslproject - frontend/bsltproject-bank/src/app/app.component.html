@@ -1,8 +1,8 @@
-<!-- Contenedor principal estilo GitHub -->
+<!-- Main container with GitHub-inspired layout -->
 <div class="app-container">
-  <!-- Contenido principal -->
+  <!-- Main content -->
   @if ((isAuthenticated$ | async) && !isLandingPage()) {
-    <!-- Navbar - estilo YouTube -->
+    <!-- Navbar - YouTube-inspired -->
     <mat-toolbar class="modern-navbar">
       <div class="navbar-left">
         <button mat-icon-button (click)="toggleSidenav()" class="menu-button">
@@ -27,30 +27,20 @@
             <button mat-button>Marcar todas como leídas</button>
           </div>
           <mat-divider></mat-divider>
-          <div class="notification-item">
-            <mat-icon class="notification-icon">account_balance</mat-icon>
-            <div class="notification-content">
-              <p class="notification-text">Nueva transacción recibida</p>
-              <p class="notification-time">Hace 5 minutos</p>
+          @for (notification of [
+            { icon: 'account_balance', text: 'Nueva transacción recibida', time: 'Hace 5 minutos' },
+            { icon: 'security', text: 'Inicio de sesión desde un nuevo dispositivo', time: 'Hace 2 horas' },
+            { icon: 'credit_card', text: 'Su tarjeta ha sido activada', time: 'Ayer' }
+          ]; track notification.text) {
+            <div class="notification-item">
+              <mat-icon class="notification-icon">{{notification.icon}}</mat-icon>
+              <div class="notification-content">
+                <p class="notification-text">{{notification.text}}</p>
+                <p class="notification-time">{{notification.time}}</p>
+              </div>
             </div>
-          </div>
-          <mat-divider></mat-divider>
-          <div class="notification-item">
-            <mat-icon class="notification-icon">security</mat-icon>
-            <div class="notification-content">
-              <p class="notification-text">Inicio de sesión desde un nuevo dispositivo</p>
-              <p class="notification-time">Hace 2 horas</p>
-            </div>
-          </div>
-          <mat-divider></mat-divider>
-          <div class="notification-item">
-            <mat-icon class="notification-icon">credit_card</mat-icon>
-            <div class="notification-content">
-              <p class="notification-text">Su tarjeta ha sido activada</p>
-              <p class="notification-time">Ayer</p>
-            </div>
-          </div>
-          <mat-divider></mat-divider>
+            <mat-divider></mat-divider>
+          }
           <div class="notification-footer">
             <button mat-button>Ver todas</button>
           </div>
@@ -72,31 +62,33 @@
             </div>
           </div>
           <mat-divider></mat-divider>
-          <button mat-menu-item>
-            <mat-icon>person</mat-icon>
-            <span>Mi Perfil</span>
-          </button>
-          <button mat-menu-item>
-            <mat-icon>settings</mat-icon>
-            <span>Configuración</span>
-          </button>
-          <mat-divider></mat-divider>
-          <button mat-menu-item (click)="logout()">
-            <mat-icon>exit_to_app</mat-icon>
-            <span>Cerrar Sesión</span>
-          </button>
+          @for (item of [
+            { icon: 'person', text: 'Mi Perfil', action: null },
+            { icon: 'settings', text: 'Configuración', action: null },
+            { divider: true },
+            { icon: 'exit_to_app', text: 'Cerrar Sesión', action: logout }
+          ]; track item.text) {
+            @if (item.divider) {
+              <mat-divider></mat-divider>
+            } @else {
+              <button mat-menu-item (click)="item.action?.()">
+                <mat-icon>{{item.icon}}</mat-icon>
+                <span>{{item.text}}</span>
+              </button>
+            }
+          }
         </mat-menu>
       </div>
     </mat-toolbar>
 
-    <!-- Contenedor principal con sidebar y contenido (estilo GitHub) -->
+    <!-- Main container with sidebar and content (GitHub-inspired) -->
     <mat-sidenav-container class="sidenav-container">
-      <!-- Sidebar - solo visible cuando el usuario está autenticado -->
+      <!-- Sidebar - only visible when user is authenticated -->
       <mat-sidenav [opened]="sidenavOpened" mode="side" class="github-sidenav">
         <app-sidebar></app-sidebar>
       </mat-sidenav>
       
-      <!-- Contenido principal -->
+      <!-- Main content -->
       <mat-sidenav-content>
         <div class="main-content">
           <router-outlet></router-outlet>
@@ -106,9 +98,9 @@
       </mat-sidenav-content>
     </mat-sidenav-container>
   } @else {
-    <!-- Template para usuarios no autenticados o landing page -->
+    <!-- Template for non-authenticated users or landing page -->
     <router-outlet></router-outlet>
-    <!-- Footer para usuarios no autenticados -->
+    <!-- Footer for non-authenticated users -->
     @if (!isLandingPage()) {
       <app-footer></app-footer>
     }

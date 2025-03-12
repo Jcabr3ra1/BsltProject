@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { TipoTransaccion } from '../../../core/models/finanzas/transaccion.model';
+import { TipoTransaccion } from '@core/models/finanzas/tipo-transaccion.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TipoTransaccionService {
-  private apiUrl = `${environment.apiUrl}/finanzas/tipo_transaccion`;
+  private apiUrl = `${environment.financeUrl}/tipo_transaccion`;
 
   constructor(private http: HttpClient) { }
 
@@ -33,19 +33,22 @@ export class TipoTransaccionService {
           id: '1',
           nombre: 'Transferencia',
           descripcion: 'Transferencia entre cuentas',
-          requiereDestino: true
+          requiereDestino: true,
+          activo: true
         },
         {
           id: '2',
           nombre: 'Retiro',
           descripcion: 'Retiro de dinero',
-          requiereDestino: false
+          requiereDestino: false,
+          activo: true
         },
         {
           id: '3',
           nombre: 'Depósito',
           descripcion: 'Depósito de dinero',
-          requiereDestino: true
+          requiereDestino: true,
+          activo: true
         }
       ];
       return of(mockTiposTransaccion);

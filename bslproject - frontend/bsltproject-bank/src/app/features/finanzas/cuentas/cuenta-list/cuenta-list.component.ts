@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+
+import { Account, AccountStatus } from '../../../../core/models/finanzas/cuenta.model';
 import { CuentaService } from '../../../../core/services/finanzas';
-import { Cuenta } from '../../../../core/models/finanzas/cuenta.model';
 
 @Component({
   selector: 'app-cuenta-list',
@@ -18,69 +19,64 @@ import { Cuenta } from '../../../../core/models/finanzas/cuenta.model';
   standalone: true,
   imports: [
     CommonModule,
-    MatButtonModule,
+    MatTableModule,
     MatCardModule,
-    MatChipsModule,
-    MatDialogModule,
+    MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatProgressSpinnerModule
   ]
 })
 export class CuentaListComponent implements OnInit {
-  cuentas: Cuenta[] = [];
-  displayedColumns: string[] = ['numero_cuenta', 'saldo', 'estado', 'acciones'];
-  isLoading = false;
+  accounts: Account[] = [];
+  loading = false;
+  displayedColumns: string[] = ['accountNumber', 'type', 'balance', 'status', 'actions'];
+  AccountStatus = AccountStatus;
 
   constructor(
-    private cuentaService: CuentaService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private readonly router: Router,
+    private readonly accountService: CuentaService
   ) { }
 
   ngOnInit(): void {
-    this.loadCuentas();
+    this.loadAccounts();
   }
 
-  loadCuentas(): void {
-    this.isLoading = true;
-    this.cuentaService.getCuentas().subscribe({
-      next: (cuentas: Cuenta[]) => {
-        this.cuentas = cuentas;
-        this.isLoading = false;
-      },
-      error: (error: Error) => {
-        console.error('Error al cargar cuentas:', error);
-        this.snackBar.open('Error al cargar las cuentas', 'Cerrar', { duration: 3000 });
-        this.isLoading = false;
-      }
-    });
+  private async loadAccounts(): Promise<void> {
+    try {
+      this.loading = true;
+      this.accounts = await firstValueFrom(this.accountService.obtenerTodos());
+    } catch (error) {
+      console.error('Error loading accounts:', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
-  crearCuenta(): void {
-    // Implement dialog for creating new account
+  onRowClick(account: Account): void {
+    this.router.navigate(['/cuentas', account.id]);
   }
 
-  editarCuenta(cuenta: Cuenta): void {
-    // Implement dialog for editing account
+  onEdit(account: Account): void {
+    this.router.navigate(['/cuentas', account.id, 'edit']);
   }
 
-  verTransacciones(cuenta: Cuenta): void {
-    // Navigate to transactions view for this account
+  onDelete(account: Account): void {
+    // TODO: Implement delete functionality
+    console.log('Delete account:', account);
   }
 
-  verBolsillos(cuenta: Cuenta): void {
-    // Navigate to pockets view for this account
+  onCreate(): void {
+    this.router.navigate(['/cuentas/new']);
   }
 
-  verDetalles(cuenta: Cuenta): void {
+  verDetalles(account: Account): void {
     // Por implementar: Mostrar detalles de la cuenta
-    console.log('Ver detalles de cuenta:', cuenta);
+    console.log('Ver detalles de cuenta:', account);
   }
 
-  verMovimientos(cuenta: Cuenta): void {
+  verMovimientos(account: Account): void {
     // Por implementar: Mostrar movimientos de la cuenta
-    console.log('Ver movimientos de cuenta:', cuenta);
+    console.log('Ver movimientos de cuenta:', account);
   }
 }

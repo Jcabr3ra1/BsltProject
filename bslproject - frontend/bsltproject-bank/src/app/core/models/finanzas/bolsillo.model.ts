@@ -1,28 +1,58 @@
-import { Cuenta } from './cuenta.model';
-import { Usuario } from '../seguridad/usuario.model';
+import { Account } from './cuenta.model';
+import { User } from '../seguridad/usuario.model';
 
 /**
- * Modelo de Bolsillo
+ * Model of Pocket
  * 
- * Representa un bolsillo asociado a una cuenta
+ * Represents a pocket associated with an account
  */
-export interface Bolsillo {
+export interface Pocket {
   id: string;
-  nombre: string;
-  saldo: number;
-  cuentaId: string;
-  cuenta?: Cuenta;
-  usuarioId: string;
-  usuario?: Usuario;
-  fechaCreacion: Date;
-  fechaActualizacion: Date;
-  estado: boolean;
+  name: string;
+  balance: number;
+  goal?: number;
+  createdAt: Date;
+  updatedAt?: Date;
+  accountId: string;
+  account?: Account;
+  user?: User;
 }
 
 /**
- * Modelo para solicitud de creación de bolsillo
+ * Model for pocket type
  */
-export interface BolsilloRequest {
-  nombre: string;
-  cuentaId: string;
+export interface PocketType {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+/**
+ * Model for pocket status
+ */
+export interface PocketStatus {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+/**
+ * Model for pocket transaction
+ */
+export interface PocketTransaction {
+  id: string;
+  amount: number;
+  type: 'DEPOSIT' | 'WITHDRAWAL';
+  description?: string;
+  createdAt: Date;
+  pocketId: string;
+  pocket?: Pocket;
+}
+
+/**
+ * Model for pocket creation request
+ */
+export interface PocketRequest {
+  name: string;
+  accountId: string;
 }

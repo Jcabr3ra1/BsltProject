@@ -4,12 +4,20 @@
  * Representa un tipo de movimiento financiero
  */
 export interface TipoMovimiento {
+  /**
+   * Identificador único del tipo de movimiento
+   */
   id: string;
+  /**
+   * Nombre del tipo de movimiento
+   */
   nombre: string;
-  descripcion?: string;
-  codigoOrigen: string;  // ACCOUNT, WALLET, BANK
-  codigoDestino: string; // ACCOUNT, WALLET, BANK
-  afectaSaldo: boolean;
-  estado?: boolean;
-  requiereDestino?: boolean; // Indica si el tipo de movimiento requiere un destino
+  /**
+   * Indica si el tipo de movimiento permite bolsillo
+   */
+  permiteBolsillo: boolean;
+  /**
+   * Indica si el tipo de movimiento está activo
+   */
+  activo: boolean;
 }

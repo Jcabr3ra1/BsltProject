@@ -1,25 +1,21 @@
-import { Component, WritableSignal, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { UsuariosService } from '../../../core/services/seguridad/usuarios.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDialogModule } from '@angular/material/dialog';
 
-interface Usuario {
-  id: number;
-  nombre: string;
-  email: string;
-  cuenta?: { numero_cuenta: string };
-  cuentaNumero?: string;
-  rol?: number;
-  estado?: number;
-}
+import { UsuariosService } from '../../../core/services/seguridad/usuarios.service';
+import { User, Role, State } from '../../../core/models/seguridad/usuario.model';
 
 @Component({
   selector: 'app-usuarios',
@@ -30,118 +26,135 @@ interface Usuario {
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
+    MatMenuModule,
     MatSelectModule,
-    MatInputModule,
     MatPaginatorModule,
-    MatTooltipModule
+    MatSortModule,
+    MatTooltipModule,
+    MatProgressSpinnerModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatDialogModule
   ],
   templateUrl: './usuarios.component.html',
   styleUrls: ['./usuarios.component.scss']
 })
-export class UsuariosComponent {
+export class UsuariosComponent implements OnInit, AfterViewInit {
+  readonly displayedColumns: string[] = ['id', 'firstName', 'lastName', 'email', 'role', 'state', 'actions'];
+  dataSource: MatTableDataSource<User>;
+  users: User[] = [];
+  roles: Role[] = [];
+  states: State[] = [];
+  loading = false;
+  error: string | null = null;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  
-  usuarios: Usuario[] = []; // Ahora es un array tipado de Usuario
-  roles: any[] = [];
-  estados: any[] = [];
-  errorMessage: string = '';
+  @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private usuarioService: UsuariosService) {
-    this.cargarUsuarios();
+  constructor(private readonly usuariosService: UsuariosService) {
+    this.dataSource = new MatTableDataSource<User>();
   }
 
-  cargarUsuarios() {
-    this.usuarioService.obtenerUsuarios().subscribe({
-      next: (data: any[]) => {
-        console.log("Usuarios obtenidos:", data);
-  
-        this.usuarios = data.map((user) => {
-          // Tomar el primer rol del array de roles
-          const usuarioRol = user.roles.length > 0 ? user.roles[0].id : null;
-          const usuarioEstado = user.estado ? user.estado.id : null; // Asegurar el estado
-  
-          return {
-            ...user,
-            cuentaNumero: user.cuenta ? user.cuenta.numero_cuenta : 'Sin cuenta',
-            rol: usuarioRol, // Asignamos el ID del primer rol
-            estado: usuarioEstado // Asignamos el ID del estado
-          };
-        });
-  
-        console.log("Usuarios procesados:", this.usuarios);
-      },
-      error: (error) => {
-        this.errorMessage = 'Error al cargar usuarios';
-        console.error('Error:', error);
-      }
-    });
-  
-    this.usuarioService.obtenerRoles().subscribe({
-      next: (data) => {
-        this.roles = data;
-        console.log("Roles obtenidos:", this.roles);
-      },
-      error: (error) => {
-        this.errorMessage = 'Error al cargar roles';
-        console.error('Error:', error);
-      }
-    });
-  
-    this.usuarioService.obtenerEstados().subscribe({
-      next: (data) => {
-        this.estados = data;
-        console.log("Estados obtenidos:", this.estados);
-      },
-      error: (error) => {
-        this.errorMessage = 'Error al cargar estados';
-        console.error('Error:', error);
-      }
-    });
+  ngOnInit(): void {
+    this.loadUsers();
+    this.loadRoles();
+    this.loadStates();
   }
-  
-  eliminarUsuario(id: number) {
-    this.usuarioService.eliminarUsuario(id).subscribe({
-      next: () => this.cargarUsuarios(),
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  loadUsers(): void {
+    this.loading = true;
+    this.error = null;
+    this.usuariosService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.dataSource.data = users;
+        this.loading = false;
+      },
       error: (error) => {
-        console.error('Error al eliminar usuario:', error);
-        this.errorMessage = 'Error al eliminar usuario';
+        this.error = 'Error loading users: ' + error.message;
+        this.loading = false;
       }
     });
   }
 
-  actualizarUsuario(usuario: Usuario) {
-    this.usuarioService.actualizarUsuario(usuario).subscribe({
+  loadRoles(): void {
+    this.usuariosService.getRoles().subscribe({
+      next: (roles) => {
+        this.roles = roles;
+      },
+      error: (error) => {
+        this.error = 'Error loading roles: ' + error.message;
+      }
+    });
+  }
+
+  loadStates(): void {
+    this.usuariosService.getStates().subscribe({
+      next: (states) => {
+        this.states = states;
+      },
+      error: (error) => {
+        this.error = 'Error loading states: ' + error.message;
+      }
+    });
+  }
+
+  deleteUser(userId: string): void {
+    if (confirm('Are you sure you want to delete this user?')) {
+      this.usuariosService.deleteUser(userId).subscribe({
+        next: () => {
+          this.loadUsers();
+        },
+        error: (error) => {
+          this.error = 'Error deleting user: ' + error.message;
+        }
+      });
+    }
+  }
+
+  updateUser(user: User): void {
+    this.usuariosService.updateUser(user.id, user).subscribe({
       next: () => {
-        console.log('Usuario actualizado correctamente');
+        this.loadUsers();
       },
       error: (error) => {
-        console.error('Error al actualizar usuario:', error);
-        this.errorMessage = 'Error al actualizar usuario';
+        this.error = 'Error updating user: ' + error.message;
       }
     });
   }
 
-  asignarRol(usuarioId: number, rolId: number) {
-    this.usuarioService.asignarRol(usuarioId.toString(), rolId.toString()).subscribe({
+  assignRole(userId: string, roleId: string): void {
+    this.usuariosService.assignRole(userId, roleId).subscribe({
       next: () => {
-        console.log('Rol asignado correctamente');
+        this.loadUsers();
       },
       error: (error) => {
-        console.error('Error al asignar rol:', error);
-        this.errorMessage = 'Error al asignar rol';
+        this.error = 'Error assigning role: ' + error.message;
       }
     });
   }
 
-  asignarEstado(usuarioId: number, estadoId: number) {
-    this.usuarioService.asignarEstado(usuarioId.toString(), estadoId.toString()).subscribe({
+  updateState(userId: string, stateId: string): void {
+    this.usuariosService.updateState(userId, stateId).subscribe({
       next: () => {
-        console.log('Estado asignado correctamente');
+        this.loadUsers();
       },
       error: (error) => {
-        console.error('Error al asignar estado:', error);
-        this.errorMessage = 'Error al asignar estado';
+        this.error = 'Error updating state: ' + error.message;
       }
     });
   }

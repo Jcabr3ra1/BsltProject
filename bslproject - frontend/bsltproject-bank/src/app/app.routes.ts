@@ -22,10 +22,7 @@ export const routes: Routes = [
   { 
     path: 'auth', 
     children: [
-      { 
-        path: 'login', 
-        loadComponent: () => import('@app/auth/login/login.component').then(m => m.LoginComponent)
-      },
+      { path: 'login', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
       { path: 'debug', component: DebugComponent },
       { path: 'login-debug', component: LoginDebugComponent },

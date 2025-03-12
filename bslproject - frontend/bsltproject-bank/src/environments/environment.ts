@@ -1,4 +1,8 @@
 export const environment = {
-    production: false,
-    apiUrl: 'http://127.0.0.1:7777' // Updated port to 7777
-  };
+  production: false,
+  useMockData: false,
+  apiUrl: 'http://localhost:7777',
+  securityUrl: 'http://localhost:7777/seguridad',
+  financeUrl: 'http://localhost:7777/finanzas',
+  apiGatewayUrl: 'http://localhost:7777'
+};

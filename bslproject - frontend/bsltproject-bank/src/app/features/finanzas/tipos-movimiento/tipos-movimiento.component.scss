@@ -1,0 +1,23 @@
+.table-container {
+  position: relative;
+  min-height: 200px;
+  overflow: auto;
+}
+
+.full-width-table {
+  width: 100%;
+}
+
+.add-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+}
+
+mat-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}

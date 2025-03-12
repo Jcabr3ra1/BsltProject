@@ -49,25 +49,51 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
+    console.log('LoginComponent - onSubmit called');
+    console.log('LoginComponent - Form value:', this.loginForm.value);
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.errorMessage = '';
+      console.log('Attempting login with:', this.loginForm.value);
       
       const { email, password } = this.loginForm.value;
       
       this.authService.login(email, password).subscribe({
         next: (response) => {
+          console.log('Login successful:', response);
           this.isLoading = false;
-          // Redireccionar al dashboard después del login exitoso
-          this.router.navigate(['/dashboard']);
+          
+          // Verify authentication state before navigation
+          console.log('Checking authentication state...');
+          const isAuthenticated = this.authService.isAuthenticated();
+          console.log('Authentication state:', isAuthenticated);
+          
+          if (isAuthenticated) {
+            console.log('Navigating to dashboard');
+            this.router.navigate(['/dashboard'])
+              .then(success => {
+                if (!success) {
+                  console.error('Navigation failed');
+                  this.errorMessage = 'Error al redireccionar. Intente nuevamente.';
+                }
+              })
+              .catch(err => {
+                console.error('Navigation error:', err);
+                this.errorMessage = 'Error al redireccionar. Intente nuevamente.';
+              });
+          } else {
+            console.error('Authentication state not updated');
+            this.errorMessage = 'Error en la autenticación. Intente nuevamente.';
+          }
         },
         error: (error) => {
+          console.error('Login error:', error);
           this.isLoading = false;
           this.errorMessage = error.error?.message || 'Error al iniciar sesión. Intente nuevamente.';
         }
       });
     } else {
-      // Marcar todos los campos como touched para mostrar errores
+      console.log('Form is invalid');
       Object.keys(this.loginForm.controls).forEach(key => {
         const control = this.loginForm.get(key);
         control?.markAsTouched();

@@ -1,53 +1,45 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-// Importamos desde los archivos de barril
-import { TipoMovimientoService } from '../../../core/services/finanzas';
-import { TipoMovimiento } from '../../../core/models/finanzas/tipo-movimiento.model';
-// Importamos los componentes pero no los incluimos en los imports del componente
-// ya que se utilizan a través del servicio MatDialog
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog';
-import { TipoMovimientoDialogComponent } from './tipo-movimiento-dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { TipoMovimientoService } from '@core/services/finanzas/tipo-movimiento.service';
+import { TipoMovimiento } from '@core/models/finanzas/tipo-movimiento.model';
+import { TipoMovimientoDialogComponent } from './tipo-movimiento-dialog/tipo-movimiento-dialog.component';
 
 @Component({
   selector: 'app-tipos-movimiento',
   templateUrl: './tipos-movimiento.component.html',
+  styleUrls: ['./tipos-movimiento.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatSnackBarModule,
     MatDialogModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule
+    MatSnackBarModule,
+    MatTooltipModule,
+    MatCardModule,
+    MatProgressBarModule
   ]
 })
 export class TiposMovimientoComponent implements OnInit {
   tiposMovimiento: TipoMovimiento[] = [];
-  displayedColumns: string[] = ['id', 'nombre', 'codigo_origen', 'codigo_destino', 'descripcion', 'estado', 'acciones'];
+  displayedColumns: string[] = ['nombre', 'descripcion', 'estado', 'acciones'];
   isLoading = false;
+  error: string | null = null;
 
   constructor(
     private tipoMovimientoService: TipoMovimientoService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.cargarTiposMovimiento();
@@ -55,15 +47,16 @@ export class TiposMovimientoComponent implements OnInit {
 
   cargarTiposMovimiento(): void {
     this.isLoading = true;
-    this.tipoMovimientoService.getTiposMovimiento().subscribe({
-      next: (data) => {
-        this.tiposMovimiento = data;
+    this.tipoMovimientoService.obtenerTodos().subscribe({
+      next: (tipos: TipoMovimiento[]) => {
+        this.tiposMovimiento = tipos;
         this.isLoading = false;
       },
-      error: (error) => {
+      error: (error: Error) => {
         console.error('Error al cargar tipos de movimiento:', error);
-        this.mostrarError('Error al cargar los tipos de movimiento');
+        this.error = 'Error al cargar los tipos de movimiento';
         this.isLoading = false;
+        this.mostrarError(this.error);
       }
     });
   }
@@ -71,130 +64,86 @@ export class TiposMovimientoComponent implements OnInit {
   abrirDialogoCrear(): void {
     const dialogRef = this.dialog.open(TipoMovimientoDialogComponent, {
       width: '500px',
-      data: { titulo: 'Crear Tipo de Movimiento' }
+      data: { modo: 'crear' }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.crearTipoMovimiento(result);
+        this.tipoMovimientoService.crear(result).subscribe({
+          next: () => {
+            this.mostrarExito('Tipo de movimiento creado exitosamente');
+            this.cargarTiposMovimiento();
+          },
+          error: (error: Error) => {
+            console.error('Error al crear tipo de movimiento:', error);
+            this.mostrarError('Error al crear el tipo de movimiento');
+          }
+        });
       }
     });
   }
 
-  abrirDialogoEditar(tipoMovimiento: TipoMovimiento): void {
+  editarTipoMovimiento(tipoMovimiento: TipoMovimiento): void {
     const dialogRef = this.dialog.open(TipoMovimientoDialogComponent, {
       width: '500px',
-      data: {
-        titulo: 'Editar Tipo de Movimiento',
-        tipoMovimiento
-      }
+      data: { modo: 'editar', tipoMovimiento }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.actualizarTipoMovimiento(tipoMovimiento.id, result);
+        this.tipoMovimientoService.actualizar(tipoMovimiento.id, result).subscribe({
+          next: () => {
+            this.mostrarExito('Tipo de movimiento actualizado exitosamente');
+            this.cargarTiposMovimiento();
+          },
+          error: (error: Error) => {
+            console.error('Error al actualizar tipo de movimiento:', error);
+            this.mostrarError('Error al actualizar el tipo de movimiento');
+          }
+        });
       }
     });
   }
 
-  abrirDialogoEliminar(tipoMovimiento: TipoMovimiento): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        titulo: 'Eliminar Tipo de Movimiento',
-        mensaje: `¿Está seguro que desea eliminar el tipo de movimiento "${tipoMovimiento.nombre}"?`,
-        botonAceptar: 'Eliminar',
-        botonCancelar: 'Cancelar'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.eliminarTipoMovimiento(tipoMovimiento.id);
-      }
-    });
-  }
-
-  crearTipoMovimiento(tipoMovimiento: TipoMovimiento): void {
-    this.isLoading = true;
-    this.tipoMovimientoService.crearTipoMovimiento(tipoMovimiento).subscribe({
+  toggleEstadoTipoMovimiento(tipoMovimiento: TipoMovimiento): void {
+    this.tipoMovimientoService.toggleEstado(tipoMovimiento.id).subscribe({
       next: () => {
-        this.mostrarExito('Tipo de movimiento creado exitosamente');
+        this.mostrarExito('Estado actualizado exitosamente');
         this.cargarTiposMovimiento();
       },
-      error: (error) => {
-        console.error('Error al crear tipo de movimiento:', error);
-        this.mostrarError('Error al crear el tipo de movimiento');
-        this.isLoading = false;
+      error: (error: Error) => {
+        console.error('Error al cambiar estado:', error);
+        this.mostrarError('Error al cambiar el estado');
       }
     });
   }
 
-  actualizarTipoMovimiento(id: string, tipoMovimiento: TipoMovimiento): void {
-    if (!id) {
-      this.mostrarError('Error: ID de tipo de movimiento no válido');
-      return;
+  eliminarTipoMovimiento(tipoMovimiento: TipoMovimiento): void {
+    if (confirm('¿Está seguro de eliminar este tipo de movimiento?')) {
+      this.tipoMovimientoService.eliminar(tipoMovimiento.id).subscribe({
+        next: () => {
+          this.mostrarExito('Tipo de movimiento eliminado exitosamente');
+          this.cargarTiposMovimiento();
+        },
+        error: (error: Error) => {
+          console.error('Error al eliminar tipo de movimiento:', error);
+          this.mostrarError('Error al eliminar el tipo de movimiento');
+        }
+      });
     }
-    
-    this.isLoading = true;
-    this.tipoMovimientoService.actualizarTipoMovimiento(id, tipoMovimiento).subscribe({
-      next: () => {
-        this.mostrarExito('Tipo de movimiento actualizado exitosamente');
-        this.cargarTiposMovimiento();
-      },
-      error: (error) => {
-        console.error('Error al actualizar tipo de movimiento:', error);
-        this.mostrarError('Error al actualizar el tipo de movimiento');
-        this.isLoading = false;
-      }
-    });
-  }
-
-  eliminarTipoMovimiento(id: string): void {
-    if (!id) {
-      this.mostrarError('Error: ID de tipo de movimiento no válido');
-      return;
-    }
-    
-    this.isLoading = true;
-    this.tipoMovimientoService.eliminarTipoMovimiento(id).subscribe({
-      next: () => {
-        this.mostrarExito('Tipo de movimiento eliminado exitosamente');
-        this.cargarTiposMovimiento();
-      },
-      error: (error) => {
-        console.error('Error al eliminar tipo de movimiento:', error);
-        this.mostrarError('Error al eliminar el tipo de movimiento');
-        this.isLoading = false;
-      }
-    });
-  }
-
-  cambiarEstado(tipoMovimiento: TipoMovimiento): void {
-    if (!tipoMovimiento.id) {
-      this.mostrarError('Error: ID de tipo de movimiento no válido');
-      return;
-    }
-    
-    const nuevoTipoMovimiento = { ...tipoMovimiento, estado: !tipoMovimiento.estado };
-    this.actualizarTipoMovimiento(tipoMovimiento.id, nuevoTipoMovimiento);
   }
 
   private mostrarExito(mensaje: string): void {
     this.snackBar.open(mensaje, 'Cerrar', {
       duration: 3000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-      panelClass: ['success-snackbar']
+      panelClass: ['snackbar-success']
     });
   }
 
   private mostrarError(mensaje: string): void {
     this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-      panelClass: ['error-snackbar']
+      duration: 3000,
+      panelClass: ['snackbar-error']
     });
   }
 }

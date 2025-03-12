@@ -4,101 +4,109 @@ import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../config/api.config';
 
 /**
- * Servicio base para realizar solicitudes HTTP
+ * Base service for making HTTP requests
  * 
- * Este servicio proporciona métodos genéricos para realizar solicitudes HTTP
- * a los diferentes endpoints de la API, utilizando la configuración centralizada.
+ * This service provides generic methods for making HTTP requests
+ * to different API endpoints, using centralized configuration.
+ * It automatically handles base URLs and query parameters.
  */
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
-  private apiGatewayUrl = API_CONFIG.API_GATEWAY_URL;
+  private readonly apiGatewayUrl = API_CONFIG.API_GATEWAY_URL;
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   /**
-   * Realiza una solicitud GET
-   * @param endpoint Endpoint relativo a la URL base
-   * @param params Parámetros de consulta opcionales
-   * @param headers Cabeceras HTTP opcionales
-   * @returns Observable con la respuesta
+   * Make a GET request
+   * @param endpoint Endpoint relative to base URL or full URL
+   * @param params Optional query parameters
+   * @param headers Optional HTTP headers
+   * @returns Observable with the response
    */
   public get<T>(endpoint: string, params?: any, headers?: HttpHeaders): Observable<T> {
     const options = {
       params: this.buildParams(params),
       headers: headers
     };
-    // Si el endpoint ya es una URL completa, no agregar la URL base
-    const url = endpoint.startsWith('http') ? endpoint : `${this.apiGatewayUrl}${endpoint}`;
+    const url = this.buildUrl(endpoint);
     return this.http.get<T>(url, options);
   }
 
   /**
-   * Realiza una solicitud POST
-   * @param endpoint Endpoint relativo a la URL base
-   * @param body Cuerpo de la solicitud
-   * @param headers Cabeceras HTTP opcionales
-   * @returns Observable con la respuesta
+   * Make a POST request
+   * @param endpoint Endpoint relative to base URL or full URL
+   * @param body Request body
+   * @param headers Optional HTTP headers
+   * @returns Observable with the response
    */
   public post<T>(endpoint: string, body: any, headers?: HttpHeaders): Observable<T> {
-    // Si el endpoint ya es una URL completa, no agregar la URL base
-    const url = endpoint.startsWith('http') ? endpoint : `${this.apiGatewayUrl}${endpoint}`;
+    const url = this.buildUrl(endpoint);
     return this.http.post<T>(url, body, { headers });
   }
 
   /**
-   * Realiza una solicitud PUT
-   * @param endpoint Endpoint relativo a la URL base
-   * @param body Cuerpo de la solicitud
-   * @param headers Cabeceras HTTP opcionales
-   * @returns Observable con la respuesta
+   * Make a PUT request
+   * @param endpoint Endpoint relative to base URL or full URL
+   * @param body Request body
+   * @param headers Optional HTTP headers
+   * @returns Observable with the response
    */
   public put<T>(endpoint: string, body: any, headers?: HttpHeaders): Observable<T> {
-    // Si el endpoint ya es una URL completa, no agregar la URL base
-    const url = endpoint.startsWith('http') ? endpoint : `${this.apiGatewayUrl}${endpoint}`;
+    const url = this.buildUrl(endpoint);
     return this.http.put<T>(url, body, { headers });
   }
 
   /**
-   * Realiza una solicitud DELETE
-   * @param endpoint Endpoint relativo a la URL base
-   * @param headers Cabeceras HTTP opcionales
-   * @returns Observable con la respuesta
+   * Make a DELETE request
+   * @param endpoint Endpoint relative to base URL or full URL
+   * @param headers Optional HTTP headers
+   * @returns Observable with the response
    */
   public delete<T>(endpoint: string, headers?: HttpHeaders): Observable<T> {
-    // Si el endpoint ya es una URL completa, no agregar la URL base
-    const url = endpoint.startsWith('http') ? endpoint : `${this.apiGatewayUrl}${endpoint}`;
+    const url = this.buildUrl(endpoint);
     return this.http.delete<T>(url, { headers });
   }
 
   /**
-   * Realiza una solicitud PATCH
-   * @param endpoint Endpoint relativo a la URL base
-   * @param body Cuerpo de la solicitud
-   * @param headers Cabeceras HTTP opcionales
-   * @returns Observable con la respuesta
+   * Make a PATCH request
+   * @param endpoint Endpoint relative to base URL or full URL
+   * @param body Request body
+   * @param headers Optional HTTP headers
+   * @returns Observable with the response
    */
   public patch<T>(endpoint: string, body: any, headers?: HttpHeaders): Observable<T> {
-    // Si el endpoint ya es una URL completa, no agregar la URL base
-    const url = endpoint.startsWith('http') ? endpoint : `${this.apiGatewayUrl}${endpoint}`;
+    const url = this.buildUrl(endpoint);
     return this.http.patch<T>(url, body, { headers });
   }
 
   /**
-   * Construye los parámetros HTTP a partir de un objeto
-   * @param params Objeto con los parámetros
-   * @returns HttpParams
+   * Build HTTP parameters from an object
+   * @param params Object containing parameters
+   * @returns HttpParams instance
+   * @private
    */
   private buildParams(params?: any): HttpParams {
     let httpParams = new HttpParams();
     if (params) {
       Object.keys(params).forEach(key => {
-        if (params[key] !== undefined && params[key] !== null) {
-          httpParams = httpParams.set(key, params[key]);
+        const value = params[key];
+        if (value !== undefined && value !== null) {
+          httpParams = httpParams.set(key, value);
         }
       });
     }
     return httpParams;
+  }
+
+  /**
+   * Build the complete URL for an endpoint
+   * @param endpoint Endpoint relative to base URL or full URL
+   * @returns Complete URL
+   * @private
+   */
+  private buildUrl(endpoint: string): string {
+    return endpoint.startsWith('http') ? endpoint : `${this.apiGatewayUrl}${endpoint}`;
   }
 }

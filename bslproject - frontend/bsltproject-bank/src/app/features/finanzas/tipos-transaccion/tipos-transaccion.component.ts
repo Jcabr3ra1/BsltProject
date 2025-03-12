@@ -12,7 +12,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TipoTransaccionService } from '@core/services/finanzas/tipo-transaccion.service';
-import { TipoTransaccion } from '@core/models/finanzas/transaccion.model';
+import { TipoTransaccion } from '@core/models/finanzas/tipo-transaccion.model';
 // Importamos los componentes pero no los incluimos en los imports del componente
 // ya que se utilizan a través del servicio MatDialog
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog';
