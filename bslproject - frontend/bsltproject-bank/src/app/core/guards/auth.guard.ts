@@ -1,31 +1,34 @@
-import { inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, take, catchError, of, switchMap } from 'rxjs';
-import { AuthService } from '../services/seguridad/auth.service';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { AuthService } from '@core/services/seguridad/auth.service';
 
-// Enhanced version with better error handling and logging
-export const authGuard = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard {
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  return authService.isAuthenticated$.pipe(
-    take(1),
-    switchMap(isAuthenticated => {
-      console.log('AuthGuard - Checking authentication state...');
-      console.log('AuthGuard - Is authenticated:', isAuthenticated);
-
-      if (!isAuthenticated) {
-        console.log('AuthGuard - User not authenticated, redirecting to login');
-        router.navigate(['/auth/login']);
+  canActivate(): Observable<boolean> {
+    return this.authService.verifyToken().pipe(
+      map(isAuthenticated => {
+        console.log('AuthGuard - Is authenticated:', isAuthenticated);
+        if (!isAuthenticated) {
+          console.log('Usuario no autenticado, redirigiendo a login');
+          this.router.navigate(['/autenticacion/login']);
+          return false;
+        }
+        return true;
+      }),
+      catchError(error => {
+        console.error('Error en authGuard:', error);
+        this.router.navigate(['/autenticacion/login']);
         return of(false);
-      }
-
-      return of(true);
-    }),
-    catchError(error => {
-      console.error('AuthGuard - Error:', error);
-      router.navigate(['/auth/login']);
-      return of(false);
-    })
-  );
-};
+      })
+    );
+  }
+}

@@ -1,27 +1,23 @@
-/**
- * @deprecated This interceptor is deprecated and should not be used.
- * Token handling has been moved to AuthInterceptor for better management of:
- * - Token refresh
- * - Error handling
- * - API Gateway request filtering
- * 
- * The AuthInterceptor now handles:
- * 1. Adding tokens to API Gateway requests
- * 2. Automatic token refresh on 401 errors
- * 3. Proper error handling and user redirection
- * 4. Request queueing during token refresh
- * 
- * Please use AuthInterceptor instead.
- */
-
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from '../services/seguridad/auth.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
+    constructor(private authService: AuthService) { }
+
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        console.warn('JwtInterceptor is deprecated. Please use AuthInterceptor instead.');
+        // Obtener el token directamente del método getToken
+        const token = this.authService.getToken();
+        
+        if (token) {
+            request = request.clone({
+                setHeaders: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+        }
         return next.handle(request);
     }
 }

@@ -104,9 +104,8 @@ export class HttpService {
    * Build the complete URL for an endpoint
    * @param endpoint Endpoint relative to base URL or full URL
    * @returns Complete URL
-   * @private
    */
-  private buildUrl(endpoint: string): string {
+  public buildUrl(endpoint: string): string {
     return endpoint.startsWith('http') ? endpoint : `${this.apiGatewayUrl}${endpoint}`;
   }
 }

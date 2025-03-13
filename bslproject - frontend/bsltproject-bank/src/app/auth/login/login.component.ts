@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../core/services/seguridad/auth.service';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatCardModule } from '@angular/material/card';
-import { finalize } from 'rxjs/operators';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
+import { AuthService } from '@core/services/seguridad/auth.service';
+import { LoginRequest } from '@core/models/seguridad/usuario.model';
 
 @Component({
   selector: 'app-login',
@@ -19,95 +20,104 @@ import { finalize } from 'rxjs/operators';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterLink,
+    MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatFormFieldModule,
     MatProgressSpinnerModule,
-    MatCardModule
+    MatSnackBarModule
   ]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
+  loading = false;
   hidePassword = true;
-  isLoading = false;
-  errorMessage = '';
+  error: string | null = null;
+  errorMessage: string | null = null;
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {
-    this.loginForm = this.fb.group({
+    this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  togglePasswordVisibility(): void {
-    this.hidePassword = !this.hidePassword;
+  ngOnInit(): void {
+    // Verificar si ya hay una sesión activa
+    this.authService.verifyToken().subscribe({
+      next: (isValid) => {
+        if (isValid) {
+          this.router.navigate(['/dashboard']);
+        }
+      },
+      error: () => {
+        // Token inválido o no existe, el usuario debe iniciar sesión
+        this.authService.logout();
+      }
+    });
   }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.validateForm();
-      return;
-    }
+    if (this.loginForm.valid) {
+      this.loading = true;
+      this.error = null;
+      this.errorMessage = null;
 
-    const { email, password } = this.loginForm.value;
-    this.isLoading = true;
-    this.errorMessage = '';
+      const credentials: LoginRequest = this.loginForm.value;
 
-    // Asegurémonos de que email y password están definidos
-    if (!email || !password) {
-      this.errorMessage = 'Email y contraseña son requeridos';
-      this.isLoading = false;
-      return;
-    }
-
-    console.log('Intentando login con:', { email });
-
-    this.authService.login(email, password)
-      .pipe(
-        finalize(() => {
-          this.isLoading = false;
-        })
-      )
-      .subscribe({
+      this.authService.login(credentials).subscribe({
         next: (response) => {
-          console.log('Login exitoso');
+          this.loading = false;
           this.router.navigate(['/dashboard']);
         },
         error: (error) => {
-          console.error('Error de login:', error);
-          
-          // Mensaje de error más específico basado en el código de error
-          if (error.status === 403 || (error.error && error.error.detail && error.error.detail.includes('403'))) {
-            this.errorMessage = 'Acceso denegado. Verifica tus credenciales o permisos.';
-          } else if (error.status === 500) {
-            this.errorMessage = 'Error en el servidor. Por favor, intenta más tarde.';
-          } else {
-            this.errorMessage = 'Error al iniciar sesión. Por favor, verifica tus credenciales.';
-          }
+          this.loading = false;
+          this.error = error.message;
+          this.errorMessage = error.message;
+          this.showErrorMessage(error.message);
         }
       });
+    } else {
+      this.markFormGroupTouched(this.loginForm);
+    }
   }
 
-  private validateForm(): void {
-    Object.keys(this.loginForm.controls).forEach(key => {
-      const control = this.loginForm.get(key);
-      if (control?.errors) {
-        if (key === 'email') {
-          if (control.errors['required']) {
-            this.errorMessage = 'El email es requerido';
-          } else if (control.errors['email']) {
-            this.errorMessage = 'Ingresa un email válido';
-          }
-        } else if (key === 'password' && control.errors['required']) {
-          this.errorMessage = 'La contraseña es requerida';
-        }
+  getErrorMessage(controlName: string): string {
+    const control = this.loginForm.get(controlName);
+    
+    if (control?.hasError('required')) {
+      return 'Este campo es obligatorio';
+    }
+    
+    if (controlName === 'email' && control?.hasError('email')) {
+      return 'Por favor ingrese un correo electrónico válido';
+    }
+    
+    if (controlName === 'password' && control?.hasError('minlength')) {
+      return 'La contraseña debe tener al menos 6 caracteres';
+    }
+    
+    return '';
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
       }
+    });
+  }
+
+  private showErrorMessage(message: string): void {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 5000,
+      panelClass: ['error-snackbar']
     });
   }
 }

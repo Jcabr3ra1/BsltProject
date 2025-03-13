@@ -1,138 +1,177 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, tap, catchError, throwError } from 'rxjs';
-import { environment } from '../../../../environments/environment';
-import { HttpService } from '../http/http.service';
-import { User, Role, State, RegistroRequest, LoginRequest, LoginResponse, RegistroResponse } from '../../models/seguridad/usuario.model';
-import { API_CONFIG } from '../../config/api.config';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError, BehaviorSubject, of } from 'rxjs';
+import { catchError, map, tap, switchMap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+
+import { environment } from '@environments/environment';
+import { LoginRequest, LoginResponse, Usuario, RegistroRequest } from '@core/models/seguridad/usuario.model';
+import { API_CONFIG } from '@core/config/api.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly authUrl = `${API_CONFIG.API_GATEWAY_URL}/seguridad/autenticacion`;
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidToken());
-  isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+  private currentUserSubject: BehaviorSubject<Usuario | null>;
+  public currentUser: Observable<Usuario | null>;
+  public isAuthenticated$: Observable<boolean>;
 
-  constructor(private readonly httpService: HttpService) {
-    // Initialize auth state from localStorage
-    this.updateAuthenticationState(this.hasValidToken());
+  constructor(private http: HttpClient, private router: Router) {
+    this.currentUserSubject = new BehaviorSubject<Usuario | null>(null);
+    this.currentUser = this.currentUserSubject.asObservable();
+    this.isAuthenticated$ = this.currentUser.pipe(map(user => !!user));
+    this.checkInitialAuth();
   }
 
-  /**
-   * Login user
-   * @param email User's email
-   * @param password User's password
-   * @returns Observable<LoginResponse>
-   */
-  login(email: string, password: string): Observable<LoginResponse> {
-    const credentials: LoginRequest = { email, password };
-    
-    console.log('Enviando petición de login a:', `${this.authUrl}/login`);
-    
-    return this.httpService.post<LoginResponse>(`${this.authUrl}/login`, credentials).pipe(
+  public get currentUserValue(): Usuario | null {
+    return this.currentUserSubject.value;
+  }
+
+  login(credentials: LoginRequest): Observable<LoginResponse> {
+    console.log('Intentando iniciar sesión en:', `${environment.apiUrl}${API_CONFIG.AUTH_API.LOGIN}`);
+    return this.http.post<LoginResponse>(
+      `${environment.apiUrl}${API_CONFIG.AUTH_API.LOGIN}`,
+      credentials
+    ).pipe(
       tap(response => {
-        console.log('Respuesta de login recibida:', response);
-        this.saveToken(response.token);
-        if (response.usuario) {
-          this.saveUser(response.usuario);
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+          if (response.user) {
+            this.currentUserSubject.next(response.user);
+          }
         }
-        this.updateAuthenticationState(true);
       }),
+      catchError(this.handleAuthError)
+    );
+  }
+
+  register(userData: RegistroRequest): Observable<any> {
+    return this.http.post(
+      `${environment.apiUrl}${API_CONFIG.AUTH_API.REGISTER}`,
+      userData
+    ).pipe(
+      catchError(this.handleAuthError)
+    );
+  }
+
+  verifyToken(): Observable<boolean> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return of(false);
+    }
+
+    return this.http.post<{ isValid: boolean; user?: Usuario }>(
+      `${environment.apiUrl}${API_CONFIG.AUTH_API.VERIFY_TOKEN}`,
+      { token }
+    ).pipe(
+      tap(response => {
+        if (response.user) {
+          this.currentUserSubject.next(response.user);
+        }
+      }),
+      map(response => response.isValid),
       catchError(error => {
-        console.error('Error en servicio de autenticación:', error);
+        console.error('Error verificando token:', error);
+        this.logout();
         return throwError(() => error);
       })
     );
   }
 
-  /**
-   * Register new user
-   * @param userData RegistroRequest
-   * @returns Observable<RegistroResponse>
-   */
-  register(userData: RegistroRequest): Observable<RegistroResponse> {
-    return this.httpService.post<RegistroResponse>(`${this.authUrl}/registro`, userData).pipe(
-      catchError(error => {
-        console.error('Registration error:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  /**
-   * Logout user
-   * @returns Observable<void>
-   */
   logout(): Observable<void> {
-    console.log('Cerrando sesión');
-    // Simplemente limpiamos los datos locales sin llamadas al servidor
-    this.clearAuthData();
-    return of(void 0);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.clearSession();
+      return of(void 0);
+    }
+
+    return this.http.post<void>(
+      `${environment.apiUrl}${API_CONFIG.AUTH_API.LOGOUT}`,
+      { token }
+    ).pipe(
+      tap(() => this.clearSession()),
+      catchError(error => {
+        this.clearSession();
+        return throwError(() => error);
+      })
+    );
   }
 
-  /**
-   * Check if user is authenticated
-   * @returns true if user is authenticated, false otherwise
-   */
+  private clearSession(): void {
+    localStorage.removeItem('token');
+    this.currentUserSubject.next(null);
+    this.router.navigate(['/autenticacion/login']);
+  }
+
+  getCurrentUser(): Observable<Usuario | null> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return of(null);
+    }
+
+    return this.verifyToken().pipe(
+      switchMap(() => this.currentUser)
+    );
+  }
+
+  private checkInitialAuth(): void {
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.verifyToken().subscribe({
+        next: (isValid) => {
+          if (!isValid) {
+            this.logout();
+          }
+        },
+        error: (error) => {
+          console.error('Error verificando token:', error);
+          this.logout();
+        }
+      });
+    }
+  }
+
+  private handleAuthError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'Error de autenticación';
+    
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      if (error.status === 401) {
+        errorMessage = 'Credenciales inválidas';
+      } else if (error.status === 403) {
+        errorMessage = 'No tiene permisos para acceder';
+      } else if (error.status === 409) {
+        errorMessage = 'El usuario ya existe';
+      } else if (error.status === 404) {
+        errorMessage = 'Servicio no disponible';
+      } else if (error.error && error.error.message) {
+        errorMessage = error.error.message;
+      } else {
+        errorMessage = `Error ${error.status}: ${error.statusText}`;
+      }
+    }
+    
+    return throwError(() => new Error(errorMessage));
+  }
+
   isAuthenticated(): boolean {
-    return this.hasValidToken();
+    return !!this.getToken();
   }
 
-  /**
-   * Get current user from local storage
-   * @returns User | null
-   */
-  getCurrentUser(): User | null {
-    const userJson = localStorage.getItem('user');
-    return userJson ? JSON.parse(userJson) : null;
-  }
-
-  /**
-   * Get authentication token from local storage
-   * @returns string | null
-   */
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  /**
-   * Save token to local storage
-   * @param token Authentication token
-   */
-  private saveToken(token: string): void {
-    localStorage.setItem('token', token);
+  getUserId(): string | null {
+    return localStorage.getItem('userId');
   }
 
-  /**
-   * Save user to local storage
-   * @param user User data
-   */
-  private saveUser(user: User): void {
-    localStorage.setItem('user', JSON.stringify(user));
+  getClientId(): string | null {
+    return localStorage.getItem('clientId');
   }
 
-  /**
-   * Clear all authentication data from local storage
-   */
-  private clearAuthData(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.updateAuthenticationState(false);
-  }
-
-  /**
-   * Update authentication state
-   * @param isAuthenticated Boolean indicating if user is authenticated
-   */
-  private updateAuthenticationState(isAuthenticated: boolean): void {
-    this.isAuthenticatedSubject.next(isAuthenticated);
-  }
-
-  /**
-   * Check if there is a valid token
-   * @returns boolean
-   */
-  private hasValidToken(): boolean {
-    return !!this.getToken();
+  getSessionId(): string | null {
+    return localStorage.getItem('sessionId');
   }
 }

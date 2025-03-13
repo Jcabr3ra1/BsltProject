@@ -1,84 +1,81 @@
-import { inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   HttpRequest,
-  HttpHandlerFn,
+  HttpHandler,
   HttpEvent,
-  HttpInterceptorFn,
-  HttpErrorResponse
+  HttpInterceptor,
+  HttpErrorResponse,
+  HttpInterceptorFn
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/seguridad/auth.service';
+import { LoginResponse } from '../models/seguridad/usuario.model';
 import { Router } from '@angular/router';
 import { API_CONFIG } from '../config/api.config';
 
-// Funciones auxiliares
-function isAuthRequest(request: HttpRequest<unknown>): boolean {
-  const authEndpoints = [
-    `${API_CONFIG.API_GATEWAY_URL}/seguridad/autenticacion/login`,
-    `${API_CONFIG.API_GATEWAY_URL}/seguridad/autenticacion/registro`
-  ];
-  return authEndpoints.some(endpoint => request.url.includes(endpoint));
-}
-
-function isApiGatewayRequest(request: HttpRequest<unknown>): boolean {
-  return request.url.startsWith(API_CONFIG.API_GATEWAY_URL);
-}
-
-function addToken(request: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
-  const tokenValue = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
-  return request.clone({
-    setHeaders: {
-      Authorization: tokenValue
-    }
-  });
-}
-
-// Interceptor principal
-export const authInterceptor: HttpInterceptorFn = (request, next) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+/**
+ * Functional interceptor for Angular 16+ to add authentication token to requests
+ * and handle authentication errors
+ */
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  console.log('AuthInterceptor - Request URL:', req.url);
   
-  // Agregar Content-Type para todas las solicitudes JSON
-  if (!request.headers.has('Content-Type') && !(request.body instanceof FormData)) {
-    request = request.clone({
-      headers: request.headers.set('Content-Type', 'application/json')
-    });
+  // Skip authentication if the Skip-Auth header is present or if it's a login/register request
+  if (req.headers.has('Skip-Auth') || 
+      req.url.includes('/autenticacion/login') || 
+      req.url.includes('/autenticacion/registro')) {
+    console.log('AuthInterceptor - Skipping token for auth endpoint:', req.url);
+    return next(req);
   }
-
-  // Skip token for login and register requests
-  if (isAuthRequest(request)) {
-    return next(request);
-  }
-
-  const token = authService.getToken();
   
-  // Add token to all API Gateway requests
-  if (token && isApiGatewayRequest(request)) {
-    request = addToken(request, token);
-  }
-
-  return next(request).pipe(
-    catchError((error: HttpErrorResponse) => {
-      // Registro detallado del error
-      console.error('Interceptor - Error completo:', error);
-      console.error('Interceptor - URL:', request.url);
-      console.error('Interceptor - Método:', request.method);
-      console.error('Interceptor - Headers:', request.headers);
-      console.error('Interceptor - Body:', request.body);
-      console.error('Interceptor - Status:', error.status);
-      console.error('Interceptor - Status Text:', error.statusText);
-      console.error('Interceptor - Error:', error.error);
-      console.error('Interceptor - Message:', error.message);
-      
-      // Si hay error 401 (No autorizado) o 403 (Prohibido)
-      if (error.status === 401 || error.status === 403) {
-        console.error('Interceptor - Error de autenticación, redirigiendo a login');
-        authService.logout();
-        router.navigate(['/auth/login']);
+  // Get token from localStorage directly since we don't have access to AuthService in a functional interceptor
+  const token = localStorage.getItem('token');
+  console.log('AuthInterceptor - Token exists:', !!token);
+  
+  // Add token to requests to the API Gateway
+  if (token && (
+    req.url.includes(API_CONFIG.API_GATEWAY_URL) || 
+    req.url.includes('localhost:7777') ||
+    req.url.includes('/finanzas/') || 
+    req.url.includes('/seguridad/')
+  )) {
+    console.log('AuthInterceptor - Adding token to request');
+    
+    // Create a new request with the Authorization header
+    const authReq = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
-      
-      return throwError(() => error);
-    })
-  );
+    });
+    
+    // Log the headers for debugging
+    console.log('AuthInterceptor - Headers:');
+    authReq.headers.keys().forEach(key => {
+      console.log(`${key}: ${authReq.headers.get(key)}`);
+    });
+    
+    return next(authReq).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.log('AuthInterceptor - Error:', error.status, error.message);
+        
+        // Handle 401 Unauthorized errors
+        if (error.status === 401) {
+          console.log('AuthInterceptor - 401 error, redirecting to login');
+          // Clear tokens and redirect to login
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          
+          // We can't inject Router in a functional interceptor, so use window.location
+          window.location.href = '/auth/login';
+        }
+        
+        return throwError(() => error);
+      })
+    );
+  }
+  
+  return next(req);
 };

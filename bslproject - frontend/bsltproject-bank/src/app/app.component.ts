@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { AuthService } from '@core/services/seguridad/auth.service';
-import { User } from '@core/models/seguridad/usuario.model';
+import { Usuario } from '@core/models/seguridad/usuario.model';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +13,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { SidebarComponent } from '@shared/components/sidebar/sidebar.component';
 import { FooterComponent } from '@shared/components/footer/footer.component';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
   sidenavOpened = false;
   currentYear: number = new Date().getFullYear();
   currentUrl: string = '';
-  currentUser: User | null = null;
+  currentUser: Usuario | null = null;
 
   constructor(
     private readonly authService: AuthService,
@@ -69,8 +69,10 @@ export class AppComponent implements OnInit {
   }
 
   getCurrentUser(): void {
-    this.currentUser = this.authService.getCurrentUser();
-    console.log('Current user:', this.currentUser);
+    this.authService.getCurrentUser().subscribe(user => {
+      this.currentUser = user;
+      console.log('Current user:', this.currentUser);
+    });
   }
 
   toggleSidenav(): void {
@@ -93,7 +95,7 @@ export class AppComponent implements OnInit {
   // Get user's full name
   getUserFullName(): string {
     if (this.currentUser) {
-      return `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+      return `${this.currentUser.nombre} ${this.currentUser.apellido}`;
     }
     return 'Usuario';
   }
@@ -103,6 +105,6 @@ export class AppComponent implements OnInit {
     if (this.currentUser) {
       return this.currentUser.email;
     }
-    return 'usuario@example.com';
+    return '';
   }
 }

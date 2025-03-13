@@ -85,8 +85,8 @@ export class RegisterComponent {
 
     const { firstName, lastName, email, password } = this.registerForm.value;
     const userData: RegistroRequest = {
-      firstName,
-      lastName,
+      nombre: firstName,
+      apellido: lastName,
       email,
       password
     };

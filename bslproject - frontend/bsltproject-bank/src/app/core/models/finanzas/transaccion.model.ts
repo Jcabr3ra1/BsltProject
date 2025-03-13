@@ -9,8 +9,6 @@ export enum TransactionStatus {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
   CANCELLED = 'CANCELLED'
 }
 
@@ -18,9 +16,12 @@ export enum TransactionStatus {
  * Tipos de transacciones posibles
  */
 export enum TransactionType {
-  DEPOSIT = 'DEPOSIT',
-  WITHDRAWAL = 'WITHDRAWAL',
-  TRANSFER = 'TRANSFER'
+  CUENTA_CUENTA = 'CUENTA_CUENTA',
+  CUENTA_BOLSILLO = 'CUENTA_BOLSILLO',
+  BOLSILLO_CUENTA = 'BOLSILLO_CUENTA',
+  BANCO_CUENTA = 'BANCO_CUENTA',
+  BANCO_BOLSILLO = 'BANCO_BOLSILLO',
+  CUENTA_BANCO = 'CUENTA_BANCO'
 }
 
 /**
@@ -30,24 +31,27 @@ export enum TransactionType {
  */
 export interface Transaction {
   id: string;
-  accountId: string;
-  account?: Account;
-  type: TransactionType;
-  amount: number;
-  description?: string;
-  status: TransactionStatus;
-  createdAt?: string;
-  updatedAt?: string;
+  tipo: TransactionType;
+  monto: number;
+  estado: TransactionStatus;
+  descripcion: string;
+  cuentaOrigenId?: string;
+  cuentaDestinoId?: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 /**
  * Modelo para solicitud de nueva transacción
  */
-export interface TransactionRequest {
-  accountId: string;
-  type: TransactionType;
-  amount: number;
-  description?: string;
+export interface CreateTransactionRequest {
+  tipo: TransactionType;
+  monto: number;
+  descripcion: string;
+  cuentaOrigenId?: string;
+  cuentaDestinoId?: string;
+  userId: string;
 }
 
 /**
@@ -57,12 +61,12 @@ export interface TransactionFilters {
   accountId?: string;
   type?: TransactionType;
   status?: TransactionStatus;
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: string;
+  endDate?: string;
 }
 
 // For backward compatibility
 export type Transaccion = Transaction;
-export type TransaccionRequest = TransactionRequest;
+export type TransaccionRequest = CreateTransactionRequest;
 export type TipoTransaccion = TransactionType;
 export type EstadoTransaccion = TransactionStatus;

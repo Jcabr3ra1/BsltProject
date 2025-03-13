@@ -6,8 +6,8 @@ import { User } from '../seguridad/usuario.model';
  * Representa una cuenta bancaria en el sistema financiero
  */
 export enum AccountType {
-  SAVINGS = 'SAVINGS',
-  CHECKING = 'CHECKING'
+  CUENTA = 'CUENTA',
+  BOLSILLO = 'BOLSILLO'
 }
 
 /**
@@ -21,21 +21,18 @@ export enum AccountStatus {
 
 export interface Account {
   id: string;
-  userId?: string;
-  accountNumber: string;
-  type: AccountType;
-  balance: number;
-  status: AccountStatus;
-  createdAt?: string;
-  updatedAt?: string;
-  user?: User;
+  numero: string;  // Número de cuenta
+  tipo: AccountType;
+  saldo: number;
+  estado: AccountStatus;
+  userId: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-export interface AccountRequest {
-  accountNumber: string;
-  balance: number;
-  status: AccountStatus;
-  userId: string;
+export interface CreateAccountRequest {
+  tipo: AccountType;
+  saldoInicial: number;
 }
 
 export interface AccountFilters {

@@ -1,0 +1,59 @@
+<div class="transaccion-form-container">
+  <h2 mat-dialog-title>{{ getTitulo() }}</h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="transaccionForm">
+      <div class="loading-container" *ngIf="loading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando datos...</p>
+      </div>
+      <div *ngIf="!loading">
+        <div class="error-message" *ngIf="error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ error }}</span>
+        </div>
+        <mat-form-field class="form-field" *ngIf="needsOrigen()">
+          <mat-label>Cuenta de Origen</mat-label>
+          <mat-select formControlName="cuentaOrigen">
+            <mat-option *ngFor="let cuenta of cuentasOrigen; let i = index" [value]="cuenta.id">
+              {{ cuenta.numero }} - {{ cuenta.tipo }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="transaccionForm.get('cuentaOrigen')?.errors">{{ getErrorMessage('cuentaOrigen') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-field" *ngIf="needsDestino()">
+          <mat-label>Cuenta de Destino</mat-label>
+          <mat-select formControlName="cuentaDestino">
+            <mat-option *ngFor="let cuenta of cuentasDestino; let i = index" [value]="cuenta.id">
+              {{ cuenta.numero }} - {{ cuenta.tipo }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="transaccionForm.get('cuentaDestino')?.errors">{{ getErrorMessage('cuentaDestino') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <mat-label>Monto</mat-label>
+          <input matInput type="number" formControlName="monto" min="1000">
+          <span matPrefix>$&nbsp;</span>
+          <mat-error *ngIf="transaccionForm.get('monto')?.errors">{{ getErrorMessage('monto') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-field">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput formControlName="descripcion" rows="3"></textarea>
+          <mat-error *ngIf="transaccionForm.get('descripcion')?.errors">{{ getErrorMessage('descripcion') }}</mat-error>
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">
+      Cancelar
+    </button>
+    <button mat-raised-button color="primary" 
+            (click)="onSubmit()" 
+            [disabled]="transaccionForm.invalid || loading">
+      <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+      Confirmar
+    </button>
+  </mat-dialog-actions>
+</div>

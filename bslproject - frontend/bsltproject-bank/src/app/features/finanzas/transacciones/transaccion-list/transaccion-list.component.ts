@@ -1,289 +1,121 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatSortModule, MatSort } from '@angular/material/sort';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { Transaction, TransactionType, TransactionStatus } from '@core/models/finanzas/transaccion.model';
-import { Account } from '@core/models/finanzas/cuenta.model';
 
 @Component({
   selector: 'app-transaccion-list',
+  templateUrl: './transaccion-list.component.html',
+  styleUrls: ['./transaccion-list.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     MatTableModule,
-    MatPaginatorModule,
     MatSortModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
+    MatPaginatorModule,
     MatIconModule,
-    MatMenuModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatProgressSpinnerModule
-  ],
-  template: `
-    <div class="transaction-list-container">
-      <form [formGroup]="filterForm" class="filter-form">
-        <mat-form-field>
-          <mat-label>Account</mat-label>
-          <mat-select formControlName="accountId">
-            <mat-option [value]="''">All</mat-option>
-            @for (account of accounts; track account.id) {
-              <mat-option [value]="account.id">{{ account.accountNumber }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Type</mat-label>
-          <mat-select formControlName="type">
-            <mat-option [value]="''">All</mat-option>
-            @for (type of TransactionType | keyvalue; track type.key) {
-              <mat-option [value]="type.value">{{ type.value }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Status</mat-label>
-          <mat-select formControlName="status">
-            <mat-option [value]="''">All</mat-option>
-            @for (status of TransactionStatus | keyvalue; track status.key) {
-              <mat-option [value]="status.value">{{ status.value }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Date Range</mat-label>
-          <mat-date-range-input [rangePicker]="picker">
-            <input matStartDate formControlName="startDate" placeholder="Start date">
-            <input matEndDate formControlName="endDate" placeholder="End date">
-          </mat-date-range-input>
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker></mat-date-range-picker>
-        </mat-form-field>
-      </form>
-
-      @if (loading) {
-        <div class="loading-container">
-          <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
-          <span>Loading transactions...</span>
-        </div>
-      } @else if (error) {
-        <div class="error-container">
-          <mat-icon color="warn">error</mat-icon>
-          <p>{{ error }}</p>
-          <button mat-raised-button color="primary" (click)="loadTransactions()">Retry</button>
-        </div>
-      } @else {
-        <table mat-table [dataSource]="dataSource" matSort class="transaction-table">
-          <ng-container matColumnDef="createdAt">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-            <td mat-cell *matCellDef="let transaction">{{ transaction.createdAt | date }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="accountNumber">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Account</th>
-            <td mat-cell *matCellDef="let transaction">
-              {{ getAccountNumber(transaction.accountId) }}
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
-            <td mat-cell *matCellDef="let transaction">{{ transaction.type }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="amount">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
-            <td mat-cell *matCellDef="let transaction">{{ transaction.amount | currency }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-            <td mat-cell *matCellDef="let transaction">
-              <span [class]="'status-badge status-' + transaction.status.toLowerCase()">
-                {{ transaction.status }}
-              </span>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="description">
-            <th mat-header-cell *matHeaderCellDef>Description</th>
-            <td mat-cell *matCellDef="let transaction">{{ transaction.description }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let transaction">
-              <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
-                <mat-icon>more_vert</mat-icon>
-              </button>
-              <mat-menu #menu="matMenu">
-                @if (transaction.status === TransactionStatus.PENDING) {
-                  <button mat-menu-item (click)="onApprove(transaction)">
-                    <mat-icon>check</mat-icon>
-                    <span>Approve</span>
-                  </button>
-                  <button mat-menu-item (click)="onReject(transaction)">
-                    <mat-icon>close</mat-icon>
-                    <span>Reject</span>
-                  </button>
-                }
-                <button mat-menu-item (click)="onEdit(transaction)">
-                  <mat-icon>edit</mat-icon>
-                  <span>Edit</span>
-                </button>
-                <button mat-menu-item (click)="onDelete(transaction)">
-                  <mat-icon>delete</mat-icon>
-                  <span>Delete</span>
-                </button>
-              </mat-menu>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-
-        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
-      }
-    </div>
-  `,
-  styles: [`
-    .transaction-list-container {
-      padding: 1rem;
-    }
-
-    .filter-form {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .transaction-table {
-      width: 100%;
-    }
-
-    .loading-container,
-    .error-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      padding: 2rem;
-    }
-
-    .status-badge {
-      padding: 0.25rem 0.5rem;
-      border-radius: 1rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-
-    .status-pending {
-      background-color: #fff3e0;
-      color: #e65100;
-    }
-
-    .status-approved {
-      background-color: #e8f5e9;
-      color: #2e7d32;
-    }
-
-    .status-rejected {
-      background-color: #ffebee;
-      color: #c62828;
-    }
-  `]
+    MatButtonModule,
+    MatTooltipModule
+  ]
 })
-export class TransaccionListComponent implements OnInit {
-  @Input() transactions: Transaction[] = [];
-  @Input() accounts: Account[] = [];
-  @Input() loading = false;
-  @Input() error: string | null = null;
+export class TransaccionListComponent implements AfterViewInit {
+  @Input() set transacciones(value: Transaction[]) {
+    this._transacciones = value;
+    this.dataSource.data = this._transacciones;
+  }
+  get transacciones(): Transaction[] {
+    return this._transacciones;
+  }
 
-  @Output() filterChange = new EventEmitter<any>();
-  @Output() approve = new EventEmitter<Transaction>();
-  @Output() reject = new EventEmitter<Transaction>();
-  @Output() edit = new EventEmitter<Transaction>();
-  @Output() delete = new EventEmitter<Transaction>();
+  @Output() transactionSelected = new EventEmitter<Transaction>();
+  @Output() transaccionCreated = new EventEmitter<void>();
+  @Output() transaccionUpdated = new EventEmitter<Transaction>();
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  filterForm: FormGroup;
-  dataSource: MatTableDataSource<Transaction>;
-  displayedColumns = ['createdAt', 'accountNumber', 'type', 'amount', 'status', 'description', 'actions'];
-  readonly TransactionType = TransactionType;
-  readonly TransactionStatus = TransactionStatus;
+  displayedColumns: string[] = ['id', 'tipo', 'monto', 'estado', 'descripcion', 'createdAt', 'acciones'];
+  dataSource = new MatTableDataSource<Transaction>([]);
+  private _transacciones: Transaction[] = [];
 
-  constructor(private readonly fb: FormBuilder) {
-    this.filterForm = this.fb.group({
-      accountId: [''],
-      type: [''],
-      status: [''],
-      startDate: [null],
-      endDate: [null]
-    });
-
-    this.dataSource = new MatTableDataSource<Transaction>();
-  }
-
-  ngOnInit(): void {
-    this.filterForm.valueChanges.subscribe(filters => {
-      this.filterChange.emit(filters);
-    });
-
-    this.dataSource.paginator = this.paginator;
+  ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
 
-  ngOnChanges(): void {
-    if (this.transactions) {
-      this.dataSource.data = this.transactions;
+  onViewTransaction(transaction: Transaction): void {
+    this.transactionSelected.emit(transaction);
+  }
+
+  onCreateClick(): void {
+    this.transaccionCreated.emit();
+  }
+
+  onEditClick(transaccion: Transaction): void {
+    this.transaccionUpdated.emit(transaccion);
+  }
+
+  getEstadoClass(estado: string): string {
+    switch (estado.toUpperCase()) {
+      case 'APROBADA':
+        return 'status-approved';
+      case 'PENDIENTE':
+        return 'status-pending';
+      case 'RECHAZADA':
+        return 'status-rejected';
+      case 'CANCELADA':
+        return 'status-cancelled';
+      default:
+        return '';
     }
   }
 
-  getAccountNumber(accountId: string): string {
-    const account = this.accounts.find(a => a.id === accountId);
-    return account ? account.accountNumber : 'Unknown';
+  getTypeIcon(type: TransactionType): string {
+    switch (type) {
+      case TransactionType.BANCO_CUENTA:
+      case TransactionType.BANCO_BOLSILLO:
+        return 'arrow_downward';
+      case TransactionType.CUENTA_BANCO:
+        return 'arrow_upward';
+      case TransactionType.CUENTA_CUENTA:
+      case TransactionType.CUENTA_BOLSILLO:
+      case TransactionType.BOLSILLO_CUENTA:
+        return 'swap_horiz';
+      default:
+        return 'help';
+    }
   }
 
-  onApprove(transaction: Transaction): void {
-    this.approve.emit(transaction);
+  getTypeDescription(type: TransactionType): string {
+    switch (type) {
+      case TransactionType.CUENTA_CUENTA:
+        return 'Transferencia entre Cuentas';
+      case TransactionType.CUENTA_BOLSILLO:
+        return 'Transferencia a Bolsillo';
+      case TransactionType.BOLSILLO_CUENTA:
+        return 'Transferencia de Bolsillo a Cuenta';
+      case TransactionType.BANCO_CUENTA:
+        return 'Consignación a Cuenta';
+      case TransactionType.BANCO_BOLSILLO:
+        return 'Consignación a Bolsillo';
+      case TransactionType.CUENTA_BANCO:
+        return 'Retiro a Banco';
+      default:
+        return 'Transacción';
+    }
   }
 
-  onReject(transaction: Transaction): void {
-    this.reject.emit(transaction);
-  }
-
-  onEdit(transaction: Transaction): void {
-    this.edit.emit(transaction);
-  }
-
-  onDelete(transaction: Transaction): void {
-    this.delete.emit(transaction);
-  }
-
-  loadTransactions(): void {
-    this.filterChange.emit(this.filterForm.value);
+  formatMonto(monto: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    }).format(monto);
   }
 }

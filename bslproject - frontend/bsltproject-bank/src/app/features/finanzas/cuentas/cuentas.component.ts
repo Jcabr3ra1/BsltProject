@@ -28,7 +28,7 @@ import { Account, AccountStatus } from '@core/models/finanzas/cuenta.model';
   template: `
     <mat-card>
       <mat-card-header>
-        <mat-card-title>Accounts</mat-card-title>
+        <mat-card-title>Cuentas</mat-card-title>
       </mat-card-header>
 
       <mat-card-content>
@@ -51,29 +51,29 @@ import { Account, AccountStatus } from '@core/models/finanzas/cuenta.model';
             @if (accounts.length) {
               <table mat-table [dataSource]="accounts" class="mat-elevation-z2">
                 <!-- Account Number Column -->
-                <ng-container matColumnDef="accountNumber">
-                  <th mat-header-cell *matHeaderCellDef>Account Number</th>
-                  <td mat-cell *matCellDef="let account">{{account.accountNumber}}</td>
+                <ng-container matColumnDef="numero">
+                  <th mat-header-cell *matHeaderCellDef>Número de cuenta</th>
+                  <td mat-cell *matCellDef="let account">{{account.numero}}</td>
                 </ng-container>
 
                 <!-- Type Column -->
-                <ng-container matColumnDef="type">
-                  <th mat-header-cell *matHeaderCellDef>Type</th>
-                  <td mat-cell *matCellDef="let account">{{account.type}}</td>
+                <ng-container matColumnDef="tipo">
+                  <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                  <td mat-cell *matCellDef="let account">{{account.tipo}}</td>
                 </ng-container>
 
                 <!-- Balance Column -->
-                <ng-container matColumnDef="balance">
-                  <th mat-header-cell *matHeaderCellDef>Balance</th>
-                  <td mat-cell *matCellDef="let account">{{account.balance | currency}}</td>
+                <ng-container matColumnDef="saldo">
+                  <th mat-header-cell *matHeaderCellDef>Saldo</th>
+                  <td mat-cell *matCellDef="let account">{{account.saldo | currency}}</td>
                 </ng-container>
 
                 <!-- Status Column -->
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                <ng-container matColumnDef="estado">
+                  <th mat-header-cell *matHeaderCellDef>Estado</th>
                   <td mat-cell *matCellDef="let account">
-                    <span [class]="'status-' + account.status.toLowerCase()">
-                      {{account.status}}
+                    <span [class]="'status-' + account.estado.toLowerCase()">
+                      {{this.getStatusDisplay(account.estado)}}
                     </span>
                   </td>
                 </ng-container>
@@ -185,9 +185,11 @@ import { Account, AccountStatus } from '@core/models/finanzas/cuenta.model';
 })
 export class CuentasComponent implements OnInit {
   accounts: Account[] = [];
-  displayedColumns = ['accountNumber', 'type', 'balance', 'status', 'actions'];
+  displayedColumns = ['numero', 'tipo', 'saldo', 'estado', 'actions'];
   loading = false;
   error: string | null = null;
+
+  readonly AccountStatus = AccountStatus;
 
   constructor(
     private readonly accountService: CuentaService,
@@ -204,15 +206,58 @@ export class CuentasComponent implements OnInit {
 
     this.accountService.obtenerTodos().subscribe({
       next: (accounts: Account[]) => {
-        this.accounts = accounts;
+        this.accounts = accounts.map(account => ({
+          ...account,
+          estado: this.normalizeStatus(account.estado)
+        }));
         this.loading = false;
       },
       error: (error: Error) => {
         console.error('Error loading accounts:', error);
-        this.error = 'Failed to load accounts. Please try again.';
+        this.error = 'Error al cargar las cuentas: ' + error.message;
         this.loading = false;
       }
     });
+  }
+
+  private normalizeStatus(status: AccountStatus | string | undefined): AccountStatus {
+    if (!status) return AccountStatus.INACTIVE;
+    
+    // If it's already a valid enum value, return it
+    if (Object.values(AccountStatus).includes(status as AccountStatus)) {
+      return status as AccountStatus;
+    }
+    
+    // Convert to uppercase for consistent comparison
+    const upperStatus = typeof status === 'string' ? status.toUpperCase() : '';
+    
+    // Map Spanish status values to enum values
+    switch (upperStatus) {
+      case 'ACTIVA':
+      case 'ACTIVE':
+        return AccountStatus.ACTIVE;
+      case 'INACTIVA':
+      case 'INACTIVE':
+        return AccountStatus.INACTIVE;
+      case 'BLOQUEADA':
+      case 'BLOCKED':
+        return AccountStatus.BLOCKED;
+      default:
+        return AccountStatus.INACTIVE;
+    }
+  }
+
+  getStatusDisplay(status: AccountStatus): string {
+    switch (status) {
+      case AccountStatus.ACTIVE:
+        return 'Activa';
+      case AccountStatus.INACTIVE:
+        return 'Inactiva';
+      case AccountStatus.BLOCKED:
+        return 'Bloqueada';
+      default:
+        return 'Inactiva';
+    }
   }
 
   createAccount(): void {
@@ -240,7 +285,7 @@ export class CuentasComponent implements OnInit {
   }
 
   deleteAccount(account: Account): void {
-    if (confirm(`Are you sure you want to delete account ${account.accountNumber}?`)) {
+    if (confirm(`Are you sure you want to delete account ${account.numero}?`)) {
       this.accountService.eliminar(account.id.toString()).subscribe({
         next: () => {
           this.loadAccounts();

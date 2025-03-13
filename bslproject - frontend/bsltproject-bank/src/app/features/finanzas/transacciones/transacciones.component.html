@@ -1,38 +1,62 @@
 <div class="transacciones-container">
-  <!-- Header -->
-  <mat-card class="header-card">
-    <mat-card-header>
-      <mat-card-title>Gestión de Transacciones</mat-card-title>
-      <button mat-raised-button color="primary" (click)="abrirDialogoTransaccion()">
-        <mat-icon>add</mat-icon>
+  <div class="header">
+    <h2>Transacciones</h2>
+    <div class="actions">
+      <button mat-raised-button [matMenuTriggerFor]="menu" color="primary">
         Nueva Transacción
+        <mat-icon>add</mat-icon>
       </button>
-    </mat-card-header>
-  </mat-card>
-
-  <!-- Transaction List -->
-  <ng-container *ngIf="error; else noError">
-    <div class="error-container">
-      <mat-icon color="warn">error</mat-icon>
-      <p>{{ error }}</p>
-      <button mat-button color="primary" (click)="cargarTransacciones()">
-        <mat-icon>refresh</mat-icon>
-        Reintentar
-      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onCreateTransaction(TransactionType.CUENTA_CUENTA)">
+          <mat-icon>swap_horiz</mat-icon>
+          <span>Entre Cuentas</span>
+        </button>
+        <button mat-menu-item (click)="onCreateTransaction(TransactionType.CUENTA_BOLSILLO)">
+          <mat-icon>savings</mat-icon>
+          <span>A Bolsillo</span>
+        </button>
+        <button mat-menu-item (click)="onCreateTransaction(TransactionType.BOLSILLO_CUENTA)">
+          <mat-icon>account_balance_wallet</mat-icon>
+          <span>De Bolsillo a Cuenta</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="onCreateTransaction(TransactionType.BANCO_CUENTA)">
+          <mat-icon>add_circle</mat-icon>
+          <span>Consignar a Cuenta</span>
+        </button>
+        <button mat-menu-item (click)="onCreateTransaction(TransactionType.BANCO_BOLSILLO)">
+          <mat-icon>add_circle</mat-icon>
+          <span>Consignar a Bolsillo</span>
+        </button>
+        <button mat-menu-item (click)="onCreateTransaction(TransactionType.CUENTA_BANCO)">
+          <mat-icon>remove_circle</mat-icon>
+          <span>Retirar a Banco</span>
+        </button>
+      </mat-menu>
     </div>
-  </ng-container>
-  <ng-template #noError>
-    <app-transaccion-list 
-      [transacciones]="transacciones"
-      (onTransaccionCreated)="cargarTransacciones()"
-      (onTransaccionUpdated)="cargarTransacciones()">
-    </app-transaccion-list>
-  </ng-template>
+  </div>
 
-  <!-- Transaction Dialog -->
-  <app-transaccion-dialog 
-    #transaccionDialog
-    (transaccionCreated)="onTransaccionCreated($event)"
-    (transaccionUpdated)="onTransaccionUpdated($event)">
-  </app-transaccion-dialog>
+  <div class="content">
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando transacciones...</p>
+    </div>
+
+    <ng-template #errorTemplate>
+      <div class="error-container">
+        <mat-icon color="warn">error_outline</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="loadTransactions()">
+          Reintentar
+        </button>
+      </div>
+    </ng-template>
+
+    <div *ngIf="!loading && !error">
+      <app-transaccion-list
+        [transacciones]="transacciones"
+        (transactionSelected)="onTransactionUpdated($event)">
+      </app-transaccion-list>
+    </div>
+  </div>
 </div>

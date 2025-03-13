@@ -1,110 +1,95 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Transaction, TransactionRequest, TransactionType, TransactionStatus } from '@core/models/finanzas/transaccion.model';
-import { Account } from '@core/models/finanzas/cuenta.model';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '@environments/environment';
-
-interface TransactionFilters {
-  accountId?: string;
-  type?: TransactionType;
-  status?: TransactionStatus;
-  startDate?: string;
-  endDate?: string;
-}
+import { Transaction } from '@core/models/finanzas/transaccion.model';
+import { Account } from '@core/models/finanzas/cuenta.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransaccionService {
-  private readonly baseUrl = `${environment.financeUrl}/transacciones`;
+  private apiUrl = `${environment.apiUrl}/transacciones`;
+  private accountsUrl = `${environment.apiUrl}/cuentas`;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-  }
-
-  private handleError(error: any, operation = 'operation'): Observable<never> {
-    console.error(`${operation} failed:`, error);
-    return throwError(() => error);
-  }
-
-  getTransactions(filters?: TransactionFilters): Observable<Transaction[]> {
-    let params = new HttpParams();
-    
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params = params.set(key, value);
-        }
-      });
+  getTransactions(): Observable<Transaction[]> {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      return throwError(() => new Error('Usuario no autenticado'));
     }
 
-    return this.http.get<Transaction[]>(`${this.baseUrl}`, {
-      headers: this.getHeaders(),
-      params
-    }).pipe(
-      catchError(error => this.handleError(error, 'getTransactions'))
-    );
-  }
-
-  getTransaction(id: string): Observable<Transaction> {
-    return this.http.get<Transaction>(`${this.baseUrl}/${id}`, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(error => this.handleError(error, 'getTransaction'))
-    );
-  }
-
-  createTransaction(transaction: TransactionRequest): Observable<Transaction> {
-    return this.http.post<Transaction>(`${this.baseUrl}`, transaction, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(error => this.handleError(error, 'createTransaction'))
-    );
-  }
-
-  updateTransaction(id: string, transaction: TransactionRequest): Observable<Transaction> {
-    return this.http.put<Transaction>(`${this.baseUrl}/${id}`, transaction, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(error => this.handleError(error, 'updateTransaction'))
-    );
-  }
-
-  deleteTransaction(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(error => this.handleError(error, 'deleteTransaction'))
-    );
-  }
-
-  approveTransaction(id: string): Observable<void> {
-    return this.http.patch<void>(`${this.baseUrl}/${id}/approve`, {}, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(error => this.handleError(error, 'approveTransaction'))
-    );
-  }
-
-  rejectTransaction(id: string): Observable<void> {
-    return this.http.patch<void>(`${this.baseUrl}/${id}/reject`, {}, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(error => this.handleError(error, 'rejectTransaction'))
+    return this.http.get<Transaction[]>(`${this.apiUrl}/user/${userId}`).pipe(
+      catchError(this.handleError)
     );
   }
 
   getAccounts(): Observable<Account[]> {
-    return this.http.get<Account[]>(`${this.baseUrl}/accounts`, {
-      headers: this.getHeaders()
-    }).pipe(
-      catchError(error => this.handleError(error, 'getAccounts'))
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    return this.http.get<Account[]>(`${this.accountsUrl}/user/${userId}`).pipe(
+      catchError(this.handleError)
     );
+  }
+
+  createTransaction(transaction: Partial<Transaction>): Observable<Transaction> {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
+
+    // Agregar el userId a la transacción
+    const transactionWithUser = {
+      ...transaction,
+      userId
+    };
+
+    return this.http.post<Transaction>(this.apiUrl, transactionWithUser).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'Ha ocurrido un error. Por favor, intente nuevamente.';
+
+    if (error.error instanceof ErrorEvent) {
+      // Error del lado del cliente
+      errorMessage = error.error.message;
+    } else {
+      // Error del lado del servidor
+      if (error.status === 401) {
+        // Limpiar la sesión si el token no es válido
+        localStorage.clear();
+        errorMessage = 'Su sesión ha expirado. Por favor, inicie sesión nuevamente.';
+      } else if (error.status === 403) {
+        errorMessage = 'No tiene permisos para realizar esta acción.';
+      } else if (error.status === 404) {
+        errorMessage = 'El recurso solicitado no existe.';
+      } else if (error.status === 409) {
+        // Error específico para usuarios duplicados
+        if (error.error?.message?.includes('non unique result')) {
+          errorMessage = 'Se encontraron múltiples usuarios con el mismo correo. Por favor, contacte al administrador.';
+        } else {
+          errorMessage = 'La transacción no pudo ser procesada debido a un conflicto.';
+        }
+      } else if (error.status === 422) {
+        // Error de validación
+        if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else {
+          errorMessage = 'Los datos proporcionados no son válidos.';
+        }
+      } else if (error.status === 500) {
+        errorMessage = 'Error interno del servidor. Por favor, intente más tarde.';
+      }
+    }
+
+    console.error('Error en TransaccionService:', error);
+    return throwError(() => new Error(errorMessage));
   }
 }

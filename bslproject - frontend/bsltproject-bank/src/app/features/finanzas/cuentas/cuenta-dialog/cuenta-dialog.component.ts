@@ -37,43 +37,43 @@ interface DialogData {
         <form [formGroup]="accountForm">
           <mat-form-field appearance="fill">
             <mat-label>Account Number</mat-label>
-            <input matInput formControlName="accountNumber" required>
-            @if (accountForm.get('accountNumber')?.errors?.['required'] && accountForm.get('accountNumber')?.touched) {
+            <input matInput formControlName="numero" required>
+            @if (accountForm.get('numero')?.errors?.['required'] && accountForm.get('numero')?.touched) {
               <mat-error>Account number is required</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="fill">
             <mat-label>Type</mat-label>
-            <mat-select formControlName="type" required>
+            <mat-select formControlName="tipo" required>
               @for (type of accountTypes; track type) {
                 <mat-option [value]="type">{{ type }}</mat-option>
               }
             </mat-select>
-            @if (accountForm.get('type')?.errors?.['required'] && accountForm.get('type')?.touched) {
+            @if (accountForm.get('tipo')?.errors?.['required'] && accountForm.get('tipo')?.touched) {
               <mat-error>Account type is required</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="fill">
             <mat-label>Balance</mat-label>
-            <input matInput type="number" formControlName="balance" required>
-            @if (accountForm.get('balance')?.errors?.['required'] && accountForm.get('balance')?.touched) {
+            <input matInput type="number" formControlName="saldo" required>
+            @if (accountForm.get('saldo')?.errors?.['required'] && accountForm.get('saldo')?.touched) {
               <mat-error>Balance is required</mat-error>
             }
-            @if (accountForm.get('balance')?.errors?.['min']) {
+            @if (accountForm.get('saldo')?.errors?.['min']) {
               <mat-error>Balance cannot be negative</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="fill">
             <mat-label>Status</mat-label>
-            <mat-select formControlName="status" required>
+            <mat-select formControlName="estado" required>
               @for (status of accountStatuses; track status) {
                 <mat-option [value]="status">{{ status }}</mat-option>
               }
             </mat-select>
-            @if (accountForm.get('status')?.errors?.['required'] && accountForm.get('status')?.touched) {
+            @if (accountForm.get('estado')?.errors?.['required'] && accountForm.get('estado')?.touched) {
               <mat-error>Status is required</mat-error>
             }
           </mat-form-field>
@@ -117,18 +117,18 @@ export class CuentaDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
     this.accountForm = this.fb.group({
-      accountNumber: ['', Validators.required],
-      type: [AccountType.SAVINGS, Validators.required],
-      balance: [0, [Validators.required, Validators.min(0)]],
-      status: [AccountStatus.ACTIVE, Validators.required]
+      numero: ['', Validators.required],
+      tipo: [AccountType.CUENTA, Validators.required],
+      saldo: [0, [Validators.required, Validators.min(0)]],
+      estado: [AccountStatus.ACTIVE, Validators.required]
     });
 
     if (data.account) {
       this.accountForm.patchValue({
-        accountNumber: data.account.accountNumber,
-        type: data.account.type,
-        balance: data.account.balance,
-        status: data.account.status
+        numero: data.account.numero,
+        tipo: data.account.tipo,
+        saldo: data.account.saldo,
+        estado: data.account.estado
       });
     }
   }
