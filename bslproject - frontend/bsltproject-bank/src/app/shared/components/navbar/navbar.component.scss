@@ -222,6 +222,27 @@
   }
 }
 
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+
+  .user-name {
+    margin-right: 8px;
+  }
+}
+
+.mat-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .navbar {

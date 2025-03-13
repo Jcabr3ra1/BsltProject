@@ -65,10 +65,12 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.loading = true;
-      this.error = null;
       this.errorMessage = null;
 
-      const credentials: LoginRequest = this.loginForm.value;
+      const credentials: LoginRequest = {
+        email: this.loginForm.get('email')?.value,
+        password: this.loginForm.get('password')?.value
+      };
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
@@ -77,9 +79,7 @@ export class LoginComponent implements OnInit {
         },
         error: (error) => {
           this.loading = false;
-          this.error = error.message;
-          this.errorMessage = error.message;
-          this.showErrorMessage(error.message);
+          this.showErrorMessage('Error al iniciar sesión: ' + error.message);
         }
       });
     } else {

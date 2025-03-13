@@ -13,11 +13,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
-    MatSidenavModule,
     MatListModule,
     MatIconModule,
-    MatExpansionModule
+    RouterModule
   ]
 })
 export class SidebarComponent {

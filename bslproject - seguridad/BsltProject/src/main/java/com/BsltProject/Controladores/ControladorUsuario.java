@@ -4,6 +4,8 @@ import com.BsltProject.Modelos.Rol;
 import com.BsltProject.Modelos.Usuario;
 import com.BsltProject.Seguridad.JwtUtil;
 import com.BsltProject.Servicios.UsuarioServicio;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -91,6 +93,39 @@ public class ControladorUsuario {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Credenciales incorrectas", "detalle", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/autenticacion/verificar-token")
+    public ResponseEntity<?> verificarToken(@RequestBody Map<String, String> request) {
+        String token = request.get("token");
+
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("isValid", false, "error", "Token no proporcionado"));
+        }
+
+        try {
+            // Verificar el token
+            Claims claims = jwtUtil.extraerTodosLosReclamos(token);
+            String email = claims.getSubject();
+
+            // Buscar el usuario
+            Optional<Usuario> usuarioOpt = usuarioServicio.obtenerUsuarioPorEmail(email);
+            if (!usuarioOpt.isPresent()) {
+                return ResponseEntity.ok(Map.of("isValid", false));
+            }
+
+            Usuario usuario = usuarioOpt.get();
+
+            return ResponseEntity.ok(Map.of(
+                    "isValid", true,
+                    "user", usuario
+            ));
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.ok(Map.of("isValid", false, "error", "Token expirado"));
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of("isValid", false, "error", e.getMessage()));
         }
     }
     

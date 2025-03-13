@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -25,7 +25,7 @@ import { AuthService } from '../../../core/services/seguridad/auth.service';
     MatBadgeModule
   ]
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   isAuthenticated = false;
   userName = '';
   userInitials = '';
@@ -40,7 +40,21 @@ export class NavbarComponent {
     });
   }
 
+  ngOnInit(): void {
+    // Add any initialization logic here
+  }
+
   logout() {
-    this.authService.logout();
+    this.authService.logout().subscribe({
+      next: () => {
+        console.log('Logout exitoso');
+        this.isAuthenticated = false;
+        this.userName = '';
+        this.userInitials = '';
+      },
+      error: (error) => {
+        console.error('Error en logout:', error);
+      }
+    });
   }
 }

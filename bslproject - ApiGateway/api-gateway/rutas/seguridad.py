@@ -1,7 +1,8 @@
+import jwt
 import requests
 from fastapi import APIRouter, Request, HTTPException, Depends
 from starlette.responses import JSONResponse
-from middleware.autenticacion import verificar_token, verificar_rol, verificar_roles_permitidos
+from middleware.autenticacion import verificar_token, verificar_rol, verificar_roles_permitidos, CLAVE_SECRETA
 import json
 
 # Cargar configuración
@@ -66,6 +67,59 @@ async def cerrar_sesion(request: Request):
     response = requests.post(f"{URL_SEGURIDAD}/seguridad/cerrar-sesion", headers={"Authorization": auth_header})
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al cerrar sesión")
 
+
+@router.post("/autenticacion/verificar-token")
+async def verificar_token(request: Request):
+    """Verifica la validez de un token JWT"""
+    try:
+        datos = await request.json()
+        token = datos.get('token')
+
+        if not token:
+            return JSONResponse(
+                status_code=400,
+                content={"isValid": False, "error": "Token no proporcionado"}
+            )
+
+        # Verificar el token directamente con middleware
+        try:
+            # Decodificar el token
+            contenido = jwt.decode(token, CLAVE_SECRETA, algorithms=["HS256"])
+
+            # Si llegamos aquí, el token es válido
+            # Obtener usuario desde el servicio de seguridad
+            usuario_response = requests.get(
+                f"{URL_SEGURIDAD}/seguridad/usuarios/email/{contenido.get('sub')}",
+                headers={"Authorization": f"Bearer {token}"}
+            )
+
+            if usuario_response.status_code == 200:
+                return JSONResponse(
+                    status_code=200,
+                    content={"isValid": True, "user": usuario_response.json()}
+                )
+            else:
+                return JSONResponse(
+                    status_code=200,
+                    content={"isValid": True, "user": {
+                        "id": "temp-id",
+                        "email": contenido.get('sub'),
+                        "roles": contenido.get('roles', [])
+                    }}
+                )
+
+        except (jwt.ExpiredSignatureError, jwt.InvalidSignatureError, jwt.DecodeError):
+            return JSONResponse(
+                status_code=200,
+                content={"isValid": False, "error": "Token inválido o expirado"}
+            )
+
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Formato de datos inválido")
+    except Exception as e:
+        print(f"Error inesperado en verificar_token: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # USUARIOS
 @router.get("/usuarios")
 async def obtener_usuarios(request: Request, token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))):
@@ -124,7 +178,7 @@ async def asignar_rol(userId: str, roleId: str, request: Request, token_data: di
     response = requests.put(f"{URL_SEGURIDAD}/seguridad/usuarios/{userId}/roles/{roleId}", headers={"Authorization": auth_header})
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code)
 
-@router.put("/usuarios/{id}/status/{statusId}")
+@router.put("/usuarios/{id}/estado/{statusId}")
 async def asignar_estado_a_usuario(id: str, statusId: str, request: Request):
     """Redirige la solicitud al backend de seguridad para asignar un estado a un usuario."""
     auth_header = request.headers.get("Authorization")

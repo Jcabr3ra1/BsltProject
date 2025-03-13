@@ -14,19 +14,29 @@ export class AuthGuard {
   ) {}
 
   canActivate(): Observable<boolean> {
+    console.log('AuthGuard - Verificando acceso...');
+    
+    // Primero comprobar si hay token
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('No hay token, redirigiendo a login');
+      this.router.navigate(['/auth/login']);
+      return of(false);
+    }
+    
+    // Verificar token en el servidor
     return this.authService.verifyToken().pipe(
       map(isAuthenticated => {
-        console.log('AuthGuard - Is authenticated:', isAuthenticated);
         if (!isAuthenticated) {
-          console.log('Usuario no autenticado, redirigiendo a login');
-          this.router.navigate(['/autenticacion/login']);
+          console.log('Token inválido, redirigiendo a login');
+          this.router.navigate(['/auth/login']);
           return false;
         }
         return true;
       }),
       catchError(error => {
         console.error('Error en authGuard:', error);
-        this.router.navigate(['/autenticacion/login']);
+        this.router.navigate(['/auth/login']);
         return of(false);
       })
     );

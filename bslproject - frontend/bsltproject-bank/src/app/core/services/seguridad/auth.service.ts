@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject, of } from 'rxjs';
-import { catchError, map, tap, switchMap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 import { environment } from '@environments/environment';
-import { LoginRequest, LoginResponse, Usuario, RegistroRequest } from '@core/models/seguridad/usuario.model';
-import { API_CONFIG } from '@core/config/api.config';
+import { LoginRequest, LoginResponse, Usuario } from '@core/models/seguridad/usuario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,28 +14,49 @@ export class AuthService {
   private currentUserSubject: BehaviorSubject<Usuario | null>;
   public currentUser: Observable<Usuario | null>;
   public isAuthenticated$: Observable<boolean>;
+  
+  // Ajustar las rutas para usar tu API Gateway
+  private baseUrl = 'http://localhost:7777';
+  private authUrl = `${this.baseUrl}/seguridad/autenticacion`;
 
   constructor(private http: HttpClient, private router: Router) {
-    this.currentUserSubject = new BehaviorSubject<Usuario | null>(null);
+    // Intentar recuperar el usuario del almacenamiento local
+    const savedUser = this.getSavedUser();
+    this.currentUserSubject = new BehaviorSubject<Usuario | null>(savedUser);
     this.currentUser = this.currentUserSubject.asObservable();
     this.isAuthenticated$ = this.currentUser.pipe(map(user => !!user));
-    this.checkInitialAuth();
   }
 
   public get currentUserValue(): Usuario | null {
     return this.currentUserSubject.value;
   }
 
+  /**
+   * Intenta obtener el usuario guardado en localStorage
+   */
+  private getSavedUser(): Usuario | null {
+    try {
+      const userJson = localStorage.getItem('user');
+      return userJson ? JSON.parse(userJson) : null;
+    } catch (error) {
+      console.error('Error al parsear usuario guardado:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Inicia sesión con las credenciales proporcionadas
+   */
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    console.log('Intentando iniciar sesión en:', `${environment.apiUrl}${API_CONFIG.AUTH_API.LOGIN}`);
     return this.http.post<LoginResponse>(
-      `${environment.apiUrl}${API_CONFIG.AUTH_API.LOGIN}`,
+      `${this.baseUrl}/seguridad/autenticacion/login`,
       credentials
     ).pipe(
       tap(response => {
         if (response.token) {
           localStorage.setItem('token', response.token);
           if (response.user) {
+            localStorage.setItem('user', JSON.stringify(response.user));
             this.currentUserSubject.next(response.user);
           }
         }
@@ -45,92 +65,82 @@ export class AuthService {
     );
   }
 
-  register(userData: RegistroRequest): Observable<any> {
+  /**
+   * Registra un nuevo usuario
+   */
+  register(userData: any): Observable<any> {
     return this.http.post(
-      `${environment.apiUrl}${API_CONFIG.AUTH_API.REGISTER}`,
+      `${this.baseUrl}/seguridad/autenticacion/registro`,
       userData
     ).pipe(
       catchError(this.handleAuthError)
     );
   }
 
+  /**
+   * Verifica si el token actual es válido
+   */
   verifyToken(): Observable<boolean> {
     const token = localStorage.getItem('token');
     if (!token) {
+      this.currentUserSubject.next(null);
       return of(false);
     }
 
     return this.http.post<{ isValid: boolean; user?: Usuario }>(
-      `${environment.apiUrl}${API_CONFIG.AUTH_API.VERIFY_TOKEN}`,
+      `${this.baseUrl}/seguridad/autenticacion/verificar-token`,
       { token }
     ).pipe(
       tap(response => {
-        if (response.user) {
+        if (response.isValid && response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
           this.currentUserSubject.next(response.user);
+        } else if (!response.isValid) {
+          this.clearSession();
         }
       }),
       map(response => response.isValid),
       catchError(error => {
         console.error('Error verificando token:', error);
-        this.logout();
-        return throwError(() => error);
-      })
-    );
-  }
-
-  logout(): Observable<void> {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      this.clearSession();
-      return of(void 0);
-    }
-
-    return this.http.post<void>(
-      `${environment.apiUrl}${API_CONFIG.AUTH_API.LOGOUT}`,
-      { token }
-    ).pipe(
-      tap(() => this.clearSession()),
-      catchError(error => {
         this.clearSession();
-        return throwError(() => error);
+        return of(false);
       })
     );
   }
 
+  /**
+   * Cierra la sesión del usuario
+   */
+  logout(): Observable<void> {
+    return new Observable(observer => {
+      try {
+        // Limpiar localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        
+        // Actualizar el estado de autenticación
+        this.currentUserSubject.next(null);
+        
+        observer.next();
+        observer.complete();
+      } catch (error) {
+        observer.error(error);
+      }
+    });
+  }
+
+  /**
+   * Limpia los datos de sesión del usuario
+   */
   private clearSession(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     this.currentUserSubject.next(null);
-    this.router.navigate(['/autenticacion/login']);
   }
 
-  getCurrentUser(): Observable<Usuario | null> {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return of(null);
-    }
-
-    return this.verifyToken().pipe(
-      switchMap(() => this.currentUser)
-    );
-  }
-
-  private checkInitialAuth(): void {
-    const token = localStorage.getItem('token');
-    if (token) {
-      this.verifyToken().subscribe({
-        next: (isValid) => {
-          if (!isValid) {
-            this.logout();
-          }
-        },
-        error: (error) => {
-          console.error('Error verificando token:', error);
-          this.logout();
-        }
-      });
-    }
-  }
-
+  /**
+   * Maneja errores de autenticación
+   */
   private handleAuthError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Error de autenticación';
     
@@ -155,23 +165,17 @@ export class AuthService {
     return throwError(() => new Error(errorMessage));
   }
 
+  /**
+   * Verifica si el usuario está autenticado
+   */
   isAuthenticated(): boolean {
     return !!this.getToken();
   }
 
+  /**
+   * Obtiene el token JWT
+   */
   getToken(): string | null {
     return localStorage.getItem('token');
-  }
-
-  getUserId(): string | null {
-    return localStorage.getItem('userId');
-  }
-
-  getClientId(): string | null {
-    return localStorage.getItem('clientId');
-  }
-
-  getSessionId(): string | null {
-    return localStorage.getItem('sessionId');
   }
 }

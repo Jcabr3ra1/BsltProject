@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { Usuario, RolUsuario, EstadoUsuario } from '../../../core/models/seguridad/usuario.model';
 import { UsuariosService } from '../../../core/services/seguridad/usuarios.service';
@@ -32,7 +33,8 @@ import { UsuariosService } from '../../../core/services/seguridad/usuarios.servi
     MatInputModule,
     MatFormFieldModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatTooltipModule
   ],
   templateUrl: './usuarios.component.html',
   styleUrls: ['./usuarios.component.scss']
@@ -85,10 +87,12 @@ export class UsuariosComponent implements OnInit {
       next: (usuarios) => {
         this.dataSource.data = usuarios;
         this.loading = false;
+        this.mostrarSnackBar('Usuarios cargados correctamente', 'success-snackbar');
       },
       error: (error) => {
         this.error = 'Error al cargar usuarios: ' + error.message;
         this.loading = false;
+        this.mostrarSnackBar('Error al cargar usuarios', 'error-snackbar');
       }
     });
   }
@@ -109,16 +113,20 @@ export class UsuariosComponent implements OnInit {
       return cumpleRol && cumpleEstado;
     };
     this.dataSource.filter = ' '; // Trigger filter
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   onRolChange(usuario: Usuario, nuevoRol: RolUsuario) {
     this.usuariosService.actualizarRol(usuario.id, nuevoRol).subscribe({
       next: () => {
         usuario.rol = nuevoRol;
-        this.snackBar.open('Rol actualizado correctamente', 'Cerrar', { duration: 3000 });
+        this.mostrarSnackBar('Rol actualizado correctamente', 'success-snackbar');
       },
       error: (error) => {
-        this.snackBar.open('Error al actualizar rol: ' + error.message, 'Cerrar', { duration: 3000 });
+        this.mostrarSnackBar('Error al actualizar rol: ' + error.message, 'error-snackbar');
       }
     });
   }
@@ -127,10 +135,10 @@ export class UsuariosComponent implements OnInit {
     this.usuariosService.actualizarEstado(usuario.id, nuevoEstado).subscribe({
       next: () => {
         usuario.estado = nuevoEstado;
-        this.snackBar.open('Estado actualizado correctamente', 'Cerrar', { duration: 3000 });
+        this.mostrarSnackBar('Estado actualizado correctamente', 'success-snackbar');
       },
       error: (error) => {
-        this.snackBar.open('Error al actualizar estado: ' + error.message, 'Cerrar', { duration: 3000 });
+        this.mostrarSnackBar('Error al actualizar estado: ' + error.message, 'error-snackbar');
       }
     });
   }
@@ -140,12 +148,21 @@ export class UsuariosComponent implements OnInit {
       this.usuariosService.eliminarUsuario(usuario.id).subscribe({
         next: () => {
           this.dataSource.data = this.dataSource.data.filter(u => u.id !== usuario.id);
-          this.snackBar.open('Usuario eliminado correctamente', 'Cerrar', { duration: 3000 });
+          this.mostrarSnackBar('Usuario eliminado correctamente', 'success-snackbar');
         },
         error: (error) => {
-          this.snackBar.open('Error al eliminar usuario: ' + error.message, 'Cerrar', { duration: 3000 });
+          this.mostrarSnackBar('Error al eliminar usuario: ' + error.message, 'error-snackbar');
         }
       });
     }
+  }
+  
+  mostrarSnackBar(mensaje: string, panelClass: string) {
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: [panelClass]
+    });
   }
 }

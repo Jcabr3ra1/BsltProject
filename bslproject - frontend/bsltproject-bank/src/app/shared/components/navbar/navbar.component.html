@@ -17,38 +17,18 @@
       </button>
 
       <div class="user-menu">
-        <button mat-button class="user-btn" [matMenuTriggerFor]="userMenu">
-          <div class="user-avatar">{{ userInitials }}</div>
-          <p class="user-name">{{ userName }}</p>
-          <mat-icon>arrow_drop_down</mat-icon>
+        <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
+          <span class="user-name">{{ userName }}</span>
+          <mat-icon>account_circle</mat-icon>
         </button>
-
-        <mat-menu #userMenu="matMenu" class="user-dropdown" xPosition="before">
-          <div class="menu-header">
-            <div class="user-info">
-              <div class="user-avatar large">{{ userInitials }}</div>
-              <div class="user-details">
-                <h3>{{ userName }}</h3>
-                <p>Usuario</p>
-              </div>
-            </div>
-          </div>
-
-          <mat-divider></mat-divider>
-
-          <button mat-menu-item routerLink="/profile">
+        
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item>
             <mat-icon>person</mat-icon>
             <span>Mi Perfil</span>
           </button>
-
-          <button mat-menu-item routerLink="/settings">
-            <mat-icon>settings</mat-icon>
-            <span>Configuración</span>
-          </button>
-
           <mat-divider></mat-divider>
-
-          <button mat-menu-item (click)="logout()" class="logout-btn">
+          <button mat-menu-item (click)="logout()">
             <mat-icon>exit_to_app</mat-icon>
             <span>Cerrar Sesión</span>
           </button>

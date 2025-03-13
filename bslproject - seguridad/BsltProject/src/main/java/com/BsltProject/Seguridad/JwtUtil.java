@@ -76,7 +76,7 @@ public class JwtUtil {
         return resolver.apply(claims);
     }
 
-    private Claims extraerTodosLosReclamos(String token) {
+    public Claims extraerTodosLosReclamos(String token) {
         System.out.println("🔍 Validando token...");
         try {
             return Jwts.parserBuilder()
