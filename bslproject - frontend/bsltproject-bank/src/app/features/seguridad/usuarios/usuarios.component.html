@@ -1,14 +1,14 @@
 <div class="container">
   <div class="header">
-    <h2>User Management</h2>
+    <h2>Gestión de Usuarios</h2>
     <div class="actions">
       <button mat-raised-button color="primary">
         <mat-icon>add</mat-icon>
-        Add User
+        Agregar Usuario
       </button>
       <button mat-raised-button color="accent">
         <mat-icon>refresh</mat-icon>
-        Refresh
+        Actualizar
       </button>
     </div>
   </div>
@@ -17,19 +17,19 @@
     <div class="row">
       <div class="col">
         <mat-form-field appearance="outline">
-          <mat-label>Search</mat-label>
-          <input matInput (keyup)="applyFilter($event)" placeholder="Filter users">
+          <mat-label>Buscar</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Filtrar usuarios">
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
       </div>
 
       <div class="col">
         <mat-form-field appearance="outline">
-          <mat-label>Role</mat-label>
+          <mat-label>Rol</mat-label>
           <mat-select>
-            <mat-option value="">All</mat-option>
+            <mat-option value="">Todos</mat-option>
             @for (role of roles; track role.id) {
-              <mat-option [value]="role.id">{{ role.name }}</mat-option>
+              <mat-option [value]="role.id">{{ role.nombre }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -37,11 +37,11 @@
 
       <div class="col">
         <mat-form-field appearance="outline">
-          <mat-label>State</mat-label>
+          <mat-label>Estado</mat-label>
           <mat-select>
-            <mat-option value="">All</mat-option>
+            <mat-option value="">Todos</mat-option>
             @for (state of states; track state.id) {
-              <mat-option [value]="state.id">{{ state.name }}</mat-option>
+              <mat-option [value]="state.id">{{ state.nombre }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -67,51 +67,59 @@
           <td mat-cell *matCellDef="let user">{{ user.id }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="firstName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>First Name</th>
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
           <td mat-cell *matCellDef="let user">
-            <input matInput [(ngModel)]="user.firstName" (blur)="updateUser(user)">
+            {{ user.nombre || '-' }}
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="lastName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Name</th>
+        <ng-container matColumnDef="apellido">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellido</th>
           <td mat-cell *matCellDef="let user">
-            <input matInput [(ngModel)]="user.lastName" (blur)="updateUser(user)">
+            {{ user.apellido || '-' }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Correo electrónico</th>
           <td mat-cell *matCellDef="let user">
-            <input matInput [(ngModel)]="user.email" (blur)="updateUser(user)">
+            {{ user.email || '-' }}
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="role">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+        <ng-container matColumnDef="rol">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
           <td mat-cell *matCellDef="let user">
-            <mat-select [(ngModel)]="user.role.id" (selectionChange)="assignRole(user.id, $event.value)">
-              @for (role of roles; track role.id) {
-                <mat-option [value]="role.id">{{ role.name }}</mat-option>
+            <mat-select [ngModel]="user.rol?.id" (selectionChange)="assignRole(user.id, $event.value)">
+              @if (roles && roles.length > 0) {
+                @for (role of roles; track role.id) {
+                  <mat-option [value]="role.id">{{ role.nombre }}</mat-option>
+                }
+              } @else {
+                <mat-option [value]="user.rol?.id" disabled>{{ user.rol?.nombre || 'Cargando roles...' }}</mat-option>
               }
             </mat-select>
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="state">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>State</th>
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
           <td mat-cell *matCellDef="let user">
-            <mat-select [(ngModel)]="user.state.id" (selectionChange)="updateState(user.id, $event.value)">
-              @for (state of states; track state.id) {
-                <mat-option [value]="state.id">{{ state.name }}</mat-option>
+            <mat-select [ngModel]="user.estado?.id" (selectionChange)="assignState(user.id, $event.value)">
+              @if (states && states.length > 0) {
+                @for (state of states; track state.id) {
+                  <mat-option [value]="state.id">{{ state.nombre }}</mat-option>
+                }
+              } @else {
+                <mat-option [value]="user.estado?.id" disabled>{{ user.estado?.nombre || 'Cargando estados...' }}</mat-option>
               }
             </mat-select>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let user">
             <button mat-icon-button [matMenuTriggerFor]="menu">
               <mat-icon>more_vert</mat-icon>
@@ -119,17 +127,22 @@
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="deleteUser(user.id)">
                 <mat-icon>delete</mat-icon>
-                Delete
+                Eliminar
               </button>
             </mat-menu>
           </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-header-row *matHeaderRowDef="['id', 'nombre', 'apellido', 'email', 'rol', 'estado', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['id', 'nombre', 'apellido', 'email', 'rol', 'estado', 'actions'];"></tr>
+
+        <!-- Fila mostrada cuando no hay datos que coincidan con el filtro -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="7">No se encontraron usuarios que coincidan con el filtro</td>
+        </tr>
       </table>
 
-      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de usuarios"></mat-paginator>
     </div>
   }
 </div>

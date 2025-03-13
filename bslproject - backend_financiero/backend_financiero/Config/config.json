@@ -5,7 +5,7 @@
   "name-db": "BstProject_db",
   "jwt-secret": "qwertyuiopasdfghjklzxcvbnm123456",
   "servicios": {
-    "seguridad": "http://localhost:8080",
-    "finanzas": "http://localhost:9999"
+    "seguridad": "http://localhost:7777/seguridad",
+    "finanzas": "http://localhost:7777/finanzas"
   }
 }

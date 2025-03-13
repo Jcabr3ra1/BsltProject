@@ -30,12 +30,13 @@ public class Usuario {
     @Transient // No se almacena en la base de datos, se obtiene dinámicamente
     private Map<String, Object> cuenta; // Se llenará con datos en tiempo real del backend financiero
 
-    @DBRef(lazy = false) // Los roles se cargan con el usuario
+    @DBRef // Cambiado a DBRef simple sin lazy=false
     private Set<Rol> roles = new HashSet<>();
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY) // 🔥 Evita que se muestre cuando está vacío
-    @DBRef(lazy = false)
+    @DBRef // Cambiado a DBRef simple sin lazy=false
     private Set<Permiso> permisos;
 
+    @DBRef // Añadido DBRef para el estado
     private Estado estado;
 }

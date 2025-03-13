@@ -4,15 +4,16 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { User, Role, State, RegistroRequest } from '../../models/seguridad/usuario.model';
+import { API_CONFIG } from '../../config/api.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
-  private readonly baseUrl = `${environment.securityUrl}/users`;
-  private readonly rolesUrl = `${environment.securityUrl}/roles`;
-  private readonly statesUrl = `${environment.securityUrl}/states`;
-  private readonly authUrl = `${environment.securityUrl}/auth`;
+  private readonly baseUrl = API_CONFIG.SECURITY_API.USERS.BASE;
+  private readonly rolesUrl = API_CONFIG.SECURITY_API.ROLES.BASE;
+  private readonly statesUrl = `${API_CONFIG.SECURITY_API.BASE_URL}/estados`;
+  private readonly authUrl = `${API_CONFIG.SECURITY_API.BASE_URL}/autenticacion`;
 
   constructor(private readonly http: HttpClient) {}
 
@@ -25,13 +26,19 @@ export class UsuariosService {
   }
 
   private handleError(error: any, operation: string): Observable<never> {
-    console.error(`Error in ${operation}:`, error);
+    console.error(`Error detallado en ${operation}:`, error);
     let errorMessage = 'An error occurred';
     
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Client error: ${error.error.message}`;
     } else {
       errorMessage = `Server error: ${error.status} - ${error.error?.message || error.statusText}`;
+      console.error('Error completo:', JSON.stringify(error));
+      console.error('Error status:', error.status);
+      console.error('Error statusText:', error.statusText);
+      console.error('Error headers:', error.headers);
+      console.error('Error error:', error.error);
+      console.error('Error message:', error.message);
     }
     
     return throwError(() => new Error(errorMessage));
@@ -120,11 +127,11 @@ export class UsuariosService {
     );
   }
 
-  updateState(userId: string, stateId: string): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/${userId}/states/${stateId}`, {}, {
+  assignState(userId: string, stateId: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${userId}/estados/${stateId}`, {}, {
       headers: this.getHeaders()
     }).pipe(
-      catchError(error => this.handleError(error, 'updateState'))
+      catchError(error => this.handleError(error, 'assignState'))
     );
   }
 }

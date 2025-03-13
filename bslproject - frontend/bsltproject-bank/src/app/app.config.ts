@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, ErrorHandler } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { importProvidersFrom } from '@angular/core';
@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { GlobalErrorHandler } from './core/error-handler/global-error-handler';
 
 import { routes } from './app.routes';
 
@@ -30,6 +31,7 @@ export const appConfig: ApplicationConfig = {
       MatIconModule,
       MatProgressSpinnerModule
     ),
-    provideZoneChangeDetection({ eventCoalescing: true })
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    { provide: ErrorHandler, useClass: GlobalErrorHandler }
   ]
 };

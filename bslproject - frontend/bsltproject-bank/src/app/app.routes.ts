@@ -40,6 +40,12 @@ export const routes: Routes = [
   // Herramienta de depuración de API
   { path: 'api-debug', component: ApiDebugComponent },
   
+  // Módulo de administración
+  {
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.module').then(m => m.AdminModule)
+  },
+  
   // Módulos de características - carga perezosa
   {
     path: 'seguridad',

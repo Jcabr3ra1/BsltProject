@@ -5,6 +5,7 @@ import com.BsltProject.Repositorios.RepositorioUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,6 +31,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Usuario usuario = repositorioUsuario.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        // Eliminamos todas las validaciones de estado
+        // Cualquier usuario puede iniciar sesión independientemente de su estado
 
         System.out.println("DEBUG: Usuario encontrado - Email: " + usuario.getEmail());
         System.out.println("DEBUG: Contraseña en la base de datos: " + usuario.getPassword());

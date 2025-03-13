@@ -44,27 +44,31 @@ public class SeguridadConfig {
         List<String> permisosGuest = rolServicio.obtenerPermisosPorRol("GUEST");
         List<String> permisosModerator = rolServicio.obtenerPermisosPorRol("MODERATOR");
 
-        System.out.println("📌 Rutas protegidas con permisos:");
+        System.out.println(" Rutas protegidas con permisos:");
 
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
                     // Permitir acceso público al login y registro
                     auth.requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll();
                     auth.requestMatchers(HttpMethod.POST, "/usuarios/registro").permitAll();
+                    
+                    // Permitir acceso público a los endpoints de autenticación
+                    auth.requestMatchers("/autenticacion/**").permitAll();
+                    auth.requestMatchers("/seguridad/autenticacion/**").permitAll();
+                    
+                    // Permisos dinámicos por rol
+                    permisosAdmin.forEach(permiso -> auth.requestMatchers("/admin/**").hasAuthority(permiso));
+                    permisosUser.forEach(permiso -> auth.requestMatchers("/usuarios/**").hasAuthority(permiso));
+                    permisosGuest.forEach(permiso -> auth.requestMatchers("/publico/**").hasAuthority(permiso));
+                    permisosModerator.forEach(permiso -> auth.requestMatchers("/moderacion/**").hasAuthority(permiso));
 
-                    // 🔹 Permisos dinámicos por rol
-                    permisosAdmin.forEach(permiso -> auth.requestMatchers("/seguridad/admin/**").hasAuthority(permiso));
-                    permisosUser.forEach(permiso -> auth.requestMatchers("/seguridad/usuarios/**").hasAuthority(permiso));
-                    permisosGuest.forEach(permiso -> auth.requestMatchers("/seguridad/publico/**").hasAuthority(permiso));
-                    permisosModerator.forEach(permiso -> auth.requestMatchers("/seguridad/moderacion/**").hasAuthority(permiso));
-
-                    // 🔥 Aplicar autenticación a todas las rutas necesarias
+                    // Aplicar autenticación a todas las rutas necesarias
                     List<String> rutasProtegidas = List.of(
-                            "/seguridad/usuarios/**",
-                            "/seguridad/estados/**",
-                            "/seguridad/permisos/**",
-                            "/seguridad/permisos-roles/**",
-                            "/seguridad/roles/**"
+                            "/usuarios/**",
+                            "/estados/**",
+                            "/permisos/**",
+                            "/permisos-roles/**",
+                            "/roles/**"
                     );
 
                     rutasProtegidas.forEach(ruta -> auth.requestMatchers(ruta).authenticated());

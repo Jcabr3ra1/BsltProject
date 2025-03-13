@@ -44,6 +44,18 @@
           <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
         </button>
 
+        <!-- Usuarios de prueba -->
+        <div class="test-users">
+          <h4>Usuarios de prueba</h4>
+          <ul>
+            <li><strong>Admin:</strong> admin&#64;bsltproject.com</li>
+            <li><strong>Usuario:</strong> user&#64;bsltproject.com</li>
+            <li><strong>Invitado:</strong> guest&#64;bsltproject.com</li>
+            <li><strong>Moderador:</strong> moderator&#64;bsltproject.com</li>
+          </ul>
+          <div class="test-password">Contraseña para todos: <strong>admin123</strong></div>
+        </div>
+
         <!-- Register Link -->
         <p class="toggle-text">
           ¿No tienes una cuenta? <a [routerLink]="['/register']">Regístrate aquí</a>

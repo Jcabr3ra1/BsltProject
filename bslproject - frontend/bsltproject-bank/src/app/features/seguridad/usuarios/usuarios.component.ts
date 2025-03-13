@@ -40,7 +40,7 @@ import { User, Role, State } from '../../../core/models/seguridad/usuario.model'
   styleUrls: ['./usuarios.component.scss']
 })
 export class UsuariosComponent implements OnInit, AfterViewInit {
-  readonly displayedColumns: string[] = ['id', 'firstName', 'lastName', 'email', 'role', 'state', 'actions'];
+  readonly displayedColumns: string[] = ['id', 'nombre', 'apellido', 'email', 'rol', 'estado', 'actions'];
   dataSource: MatTableDataSource<User>;
   users: User[] = [];
   roles: Role[] = [];
@@ -84,8 +84,9 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
         this.dataSource.data = users;
         this.loading = false;
       },
-      error: (error) => {
-        this.error = 'Error loading users: ' + error.message;
+      error: (error: any) => {
+        console.error('Error completo en loadUsers:', error);
+        this.error = `Error al cargar usuarios: ${error.message || 'Error desconocido'}. Estado: ${error.status || 'N/A'}. Detalles: ${error.error?.detail || JSON.stringify(error.error) || 'Sin detalles'}`;
         this.loading = false;
       }
     });
@@ -96,8 +97,9 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
       next: (roles) => {
         this.roles = roles;
       },
-      error: (error) => {
-        this.error = 'Error loading roles: ' + error.message;
+      error: (error: any) => {
+        console.error('Error completo en loadRoles:', error);
+        this.error = `Error al cargar roles: ${error.message || 'Error desconocido'}. Estado: ${error.status || 'N/A'}. Detalles: ${error.error?.detail || JSON.stringify(error.error) || 'Sin detalles'}`;
       }
     });
   }
@@ -107,8 +109,9 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
       next: (states) => {
         this.states = states;
       },
-      error: (error) => {
-        this.error = 'Error loading states: ' + error.message;
+      error: (error: any) => {
+        console.error('Error completo en loadStates:', error);
+        this.error = `Error al cargar estados: ${error.message || 'Error desconocido'}. Estado: ${error.status || 'N/A'}. Detalles: ${error.error?.detail || JSON.stringify(error.error) || 'Sin detalles'}`;
       }
     });
   }
@@ -119,7 +122,7 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
         next: () => {
           this.loadUsers();
         },
-        error: (error) => {
+        error: (error: any) => {
           this.error = 'Error deleting user: ' + error.message;
         }
       });
@@ -131,7 +134,7 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
       next: () => {
         this.loadUsers();
       },
-      error: (error) => {
+      error: (error: any) => {
         this.error = 'Error updating user: ' + error.message;
       }
     });
@@ -142,18 +145,18 @@ export class UsuariosComponent implements OnInit, AfterViewInit {
       next: () => {
         this.loadUsers();
       },
-      error: (error) => {
+      error: (error: any) => {
         this.error = 'Error assigning role: ' + error.message;
       }
     });
   }
 
-  updateState(userId: string, stateId: string): void {
-    this.usuariosService.updateState(userId, stateId).subscribe({
+  assignState(userId: string, stateId: string): void {
+    this.usuariosService.assignState(userId, stateId).subscribe({
       next: () => {
         this.loadUsers();
       },
-      error: (error) => {
+      error: (error: any) => {
         this.error = 'Error updating state: ' + error.message;
       }
     });

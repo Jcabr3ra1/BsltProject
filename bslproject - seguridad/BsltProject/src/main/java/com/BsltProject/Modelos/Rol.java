@@ -12,19 +12,19 @@ public class Rol {
     private String id;
     private String nombre;
 
-    @DBRef(lazy = false) // ✅ Se asegura que los permisos se carguen
-    private List<Permiso> permisos = new ArrayList<>(); // ✅ Se inicializa la lista
+    @DBRef 
+    private List<Permiso> permisos = new ArrayList<>(); 
 
     public Rol() {}
 
     public Rol(String nombre) {
         this.nombre = nombre;
-        this.permisos = new ArrayList<>(); // ✅ Asegurar lista vacía en constructor
+        this.permisos = new ArrayList<>(); 
     }
 
     public Rol(String nombre, List<Permiso> permisos) {
         this.nombre = nombre;
-        this.permisos = (permisos != null) ? permisos : new ArrayList<>(); // ✅ Evita `null`
+        this.permisos = (permisos != null) ? permisos : new ArrayList<>(); 
     }
 
     // Getters y Setters
@@ -37,14 +37,14 @@ public class Rol {
     public List<Permiso> getPermisos() { return permisos; }
 
     public void setPermisos(List<Permiso> permisos) {
-        this.permisos = (permisos != null) ? permisos : new ArrayList<>(); // ✅ Evita `null`
+        this.permisos = (permisos != null) ? permisos : new ArrayList<>(); 
     }
 
-    // ✅ Método para agregar permisos sin errores de `null`
+    // Método para agregar permisos sin errores de `null`
     public void agregarPermiso(Permiso permiso) {
         if (permiso != null) {
             if (this.permisos == null) {
-                this.permisos = new ArrayList<>(); // ✅ Inicializar si está `null`
+                this.permisos = new ArrayList<>(); 
             }
             this.permisos.add(permiso);
         }

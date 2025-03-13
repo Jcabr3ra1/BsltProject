@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/estados")
+@RequestMapping("/seguridad/estados")
 public class ControladorEstado {
 
     private final EstadoServicio estadoServicio;

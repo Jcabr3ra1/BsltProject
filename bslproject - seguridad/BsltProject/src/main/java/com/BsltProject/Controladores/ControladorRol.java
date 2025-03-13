@@ -1,8 +1,8 @@
 package com.BsltProject.Controladores;
 
+import com.BsltProject.Modelos.Permiso;
 import com.BsltProject.Modelos.Rol;
 import com.BsltProject.Modelos.Usuario;
-import com.BsltProject.Modelos.Permiso;
 import com.BsltProject.Servicios.RolServicio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/roles")
+@RequestMapping("/seguridad/roles")
 public class ControladorRol {
 
     private final RolServicio rolServicio;
@@ -45,9 +45,9 @@ public class ControladorRol {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/nombre/{nombre}")
-    public ResponseEntity<Rol> obtenerRolPorNombre(@PathVariable String nombre) {
-        Optional<Rol> rol = rolServicio.obtenerRolPorNombre(nombre);
+    @GetMapping("/name/{name}")
+    public ResponseEntity<Rol> obtenerRolPorNombre(@PathVariable String name) {
+        Optional<Rol> rol = rolServicio.obtenerRolPorNombre(name);
         return rol.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -64,18 +64,15 @@ public class ControladorRol {
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ NUEVO: OBTENER PERMISOS DE UN ROL
-    @GetMapping("/{id}/permisos")
+    @GetMapping("/{id}/permissions")
     public ResponseEntity<List<Permiso>> obtenerPermisosDeRol(@PathVariable String id) {
         List<Permiso> permisos = rolServicio.obtenerPermisosDeRol(id);
         return ResponseEntity.ok(permisos);
     }
 
-    // ✅ NUEVO: OBTENER USUARIOS ASOCIADOS A UN ROL
-    @GetMapping("/{id}/usuarios")
+    @GetMapping("/{id}/users")
     public ResponseEntity<List<Usuario>> obtenerUsuariosConRol(@PathVariable String id) {
         List<Usuario> usuarios = rolServicio.obtenerUsuariosConRol(id);
         return ResponseEntity.ok(usuarios);
     }
-
 }

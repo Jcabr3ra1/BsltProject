@@ -15,73 +15,79 @@ export const API_CONFIG = {
   
   // Security service endpoints
   SECURITY_API: {
-    BASE_URL: '/seguridad',
+    BASE_URL: 'http://localhost:7777/seguridad',
     AUTH: {
-      LOGIN: '/seguridad/usuarios/login',
-      REGISTER: '/seguridad/usuarios/registro',
-      REFRESH: '/seguridad/usuarios/refresh'
+      LOGIN: 'http://localhost:7777/seguridad/autenticacion/login',
+      REGISTER: 'http://localhost:7777/seguridad/autenticacion/registro',
+      LOGOUT: 'http://localhost:7777/seguridad/cerrar-sesion'
     },
     USERS: {
-      BASE: '/seguridad/usuarios',
-      BY_ID: (id: string) => `/seguridad/usuarios/${id}`,
-      ASSIGN_ROLE: (userId: string, roleId: string) => `/seguridad/usuarios/${userId}/asignar-rol/${roleId}`,
-      ASSIGN_STATE: (userId: string, stateId: string) => `/seguridad/usuarios/${userId}/asignar-estado/${stateId}`
+      BASE: 'http://localhost:7777/seguridad/usuarios',
+      BY_ID: (id: string) => `http://localhost:7777/seguridad/usuarios/${id}`,
+      ASSIGN_ROLE: (userId: string, roleId: string) => `http://localhost:7777/seguridad/usuarios/${userId}/roles/${roleId}`,
+      ASSIGN_STATE: (userId: string, stateId: string) => `http://localhost:7777/seguridad/usuarios/${userId}/status/${stateId}`
+    },
+    ACTIVATION: {
+      ACTIVATE_ADMIN: 'http://localhost:7777/seguridad/activacion/activar-admin',
+      ACTIVATE_USER: 'http://localhost:7777/seguridad/activacion/activar-usuario'
     },
     ROLES: {
-      BASE: '/seguridad/roles',
-      BY_ID: (id: string) => `/seguridad/roles/${id}`,
-      BY_NAME: (name: string) => `/seguridad/roles/nombre/${name}`,
-      PERMISSIONS: (id: string) => `/seguridad/roles/${id}/permisos`,
-      USERS: (id: string) => `/seguridad/roles/${id}/usuarios`
+      BASE: 'http://localhost:7777/seguridad/roles',
+      BY_ID: (id: string) => `http://localhost:7777/seguridad/roles/${id}`,
+      BY_NAME: (name: string) => `http://localhost:7777/seguridad/roles/nombre/${name}`,
+      PERMISSIONS: (id: string) => `http://localhost:7777/seguridad/roles/${id}/permisos`,
+      USERS: (id: string) => `http://localhost:7777/seguridad/roles/${id}/usuarios`
     },
     PERMISSIONS: {
-      BASE: '/seguridad/permisos',
-      BY_ID: (id: string) => `/seguridad/permisos/${id}`,
-      BY_NAME: (name: string) => `/seguridad/permisos/nombre/${name}`
+      BASE: 'http://localhost:7777/seguridad/permisos',
+      BY_ID: (id: string) => `http://localhost:7777/seguridad/permisos/${id}`,
+      BY_NAME: (name: string) => `http://localhost:7777/seguridad/permisos/nombre/${name}`
     },
     STATES: {
-      BASE: '/seguridad/estados',
-      BY_ID: (id: string) => `/seguridad/estados/${id}`
+      BASE: 'http://localhost:7777/seguridad/estados',
+      BY_ID: (id: string) => `http://localhost:7777/seguridad/estados/${id}`
     }
   },
   
   // Finance service endpoints
   FINANCE_API: {
-    BASE_URL: '/finanzas',
+    BASE_URL: 'http://localhost:7777/finanzas',
     ACCOUNTS: {
-      BASE: '/finanzas/cuentas',
-      BY_ID: (id: string) => `/finanzas/cuentas/${id}`,
-      UPDATE_BALANCE: (id: string) => `/finanzas/cuentas/${id}/saldo`,
-      ASSIGN_TO_USER: (accountId: string, userId: string) => `/finanzas/cuentas/${accountId}/asignar-usuario/${userId}`
+      BASE: 'http://localhost:7777/finanzas/cuentas',
+      BY_ID: (id: string) => `http://localhost:7777/finanzas/cuentas/${id}`,
+      UPDATE_BALANCE: (id: string) => `http://localhost:7777/finanzas/cuentas/${id}/saldo`,
+      ASSIGN_TO_USER: (accountId: string, userId: string) => `http://localhost:7777/finanzas/cuentas/${accountId}/usuarios/${userId}`
     },
     POCKETS: {
-      BASE: '/finanzas/bolsillos',
-      BY_ID: (id: string) => `/finanzas/bolsillos/${id}`,
-      ASSIGN_ACCOUNT: (pocketId: string, accountId: string) => `/finanzas/bolsillos/${pocketId}/cuenta/${accountId}`
+      BASE: 'http://localhost:7777/finanzas/bolsillos',
+      BY_ID: (id: string) => `http://localhost:7777/finanzas/bolsillos/${id}`,
+      ASSIGN_ACCOUNT: (pocketId: string, accountId: string) => `http://localhost:7777/finanzas/bolsillos/${pocketId}/cuentas/${accountId}`
     },
     TRANSACTIONS: {
-      BASE: '/finanzas/transacciones',
-      BY_ID: (id: string) => `/finanzas/transacciones/${id}`,
-      CANCEL: (id: string) => `/finanzas/transacciones/${id}/anular`,
-      HISTORY: '/finanzas/transacciones/historial'
+      BASE: 'http://localhost:7777/finanzas/transacciones',
+      BY_ID: (id: string) => `http://localhost:7777/finanzas/transacciones/${id}`,
+      CANCEL: (id: string) => `http://localhost:7777/finanzas/transacciones/${id}/cancelar`,
+      HISTORY: 'http://localhost:7777/finanzas/transacciones/historial'
     },
     TRANSACTION_TYPES: {
-      BASE: '/finanzas/tipos-transaccion',
-      BY_ID: (id: string) => `/finanzas/tipos-transaccion/${id}`
+      BASE: 'http://localhost:7777/finanzas/tipos-transaccion',
+      BY_ID: (id: string) => `http://localhost:7777/finanzas/tipos-transaccion/${id}`
     },
     MOVEMENT_TYPES: {
-      BASE: '/finanzas/tipos-movimiento',
-      BY_ID: (id: string) => `/finanzas/tipos-movimiento/${id}`
+      BASE: 'http://localhost:7777/finanzas/tipos-movimiento',
+      BY_ID: (id: string) => `http://localhost:7777/finanzas/tipos-movimiento/${id}`
     },
     TRANSFERS: {
-      ACCOUNT_TO_ACCOUNT: '/finanzas/transferencias/cuenta-cuenta',
-      ACCOUNT_TO_POCKET: '/finanzas/transferencias/cuenta-bolsillo',
-      POCKET_TO_ACCOUNT: '/finanzas/transferencias/bolsillo-cuenta'
+      ACCOUNT_TO_ACCOUNT: 'http://localhost:7777/finanzas/transferencias/cuenta-cuenta',
+      ACCOUNT_TO_POCKET: 'http://localhost:7777/finanzas/transferencias/cuenta-bolsillo',
+      POCKET_TO_ACCOUNT: 'http://localhost:7777/finanzas/transferencias/bolsillo-cuenta'
     },
-    BANK_OPERATIONS: {
-      DEPOSIT_TO_ACCOUNT: '/finanzas/consignaciones/banco-cuenta',
-      DEPOSIT_TO_POCKET: '/finanzas/consignaciones/banco-bolsillo',
-      WITHDRAW_TO_BANK: '/finanzas/retiros/cuenta-banco'
+    DEPOSITS: {
+      BANK_TO_ACCOUNT: 'http://localhost:7777/finanzas/consignaciones/banco-cuenta',
+      BANK_TO_POCKET: 'http://localhost:7777/finanzas/consignaciones/banco-bolsillo'
+    },
+    WITHDRAWALS: {
+      ACCOUNT_TO_BANK: 'http://localhost:7777/finanzas/retiros/cuenta-banco'
     }
   }
 };

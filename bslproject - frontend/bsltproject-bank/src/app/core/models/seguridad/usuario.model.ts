@@ -8,8 +8,8 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role?: Role;
-  state?: State;
+  rol?: Role;
+  estado?: State;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -21,9 +21,9 @@ export interface User {
  */
 export interface Role {
   id: string;
-  name: string;
-  description?: string;
-  permissions?: string[];
+  nombre: string;
+  descripcion?: string;
+  permisos?: string[];
 }
 
 /**
@@ -33,8 +33,8 @@ export interface Role {
  */
 export interface State {
   id: string;
-  name: string;
-  description?: string;
+  nombre: string;
+  descripcion?: string;
 }
 
 /**
@@ -50,8 +50,7 @@ export interface LoginRequest {
  */
 export interface LoginResponse {
   token: string;
-  refreshToken: string;
-  user?: User;
+  usuario?: User;
   expiracion?: number;
 }
 
@@ -59,8 +58,8 @@ export interface LoginResponse {
  * Modelo para solicitud de registro
  */
 export interface RegistroRequest {
-  firstName: string;
-  lastName: string;
+  nombre: string;
+  apellido: string;
   email: string;
   password: string;
 }
@@ -73,24 +72,8 @@ export interface RegistroResponse {
   firstName: string;
   lastName: string;
   email: string;
-  role?: Role;
-  state?: State;
+  rol?: Role;
+  estado?: State;
   createdAt?: Date;
   updatedAt?: Date;
-}
-
-/**
- * Modelo para solicitud de refresco de token
- */
-export interface RefreshTokenRequest {
-  refreshToken: string;
-}
-
-/**
- * Modelo para respuesta de refresco de token
- */
-export interface RefreshTokenResponse {
-  token: string;
-  refreshToken: string;
-  expiracion?: number;
 }

@@ -45,7 +45,7 @@ public class JwtUtil {
                 .setSubject(username)
                 .claim("roles", roles)  // ✅ Agregamos los roles al token
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hora
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 horas
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
 

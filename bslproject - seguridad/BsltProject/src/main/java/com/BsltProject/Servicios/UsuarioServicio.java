@@ -46,13 +46,34 @@ public class UsuarioServicio {
     }
 
     public Usuario crearUsuario(Usuario usuario) {
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword())); // Encripta la contraseña antes de guardarla
+        // Encripta la contraseña antes de guardarla
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        
+        // Asignar rol USER por defecto si no tiene roles asignados
+        if (usuario.getRoles() == null || usuario.getRoles().isEmpty()) {
+            Optional<Rol> rolUser = repositorioRol.findByNombre("USER");
+            if (rolUser.isPresent()) {
+                if (usuario.getRoles() == null) {
+                    usuario.setRoles(new HashSet<>());
+                }
+                usuario.getRoles().add(rolUser.get());
+            }
+        }
+        
+        // Asignar estado ACTIVO por defecto
+        if (usuario.getEstado() == null) {
+            Optional<Estado> estadoActivo = repositorioEstado.findByNombre("ACTIVO");
+            if (estadoActivo.isPresent()) {
+                usuario.setEstado(estadoActivo.get());
+            }
+        }
+        
         return repositorioUsuario.save(usuario);
     }
 
     public List<Usuario> obtenerTodosLosUsuarios() {
         List<Usuario> usuarios = repositorioUsuario.findAll();
-        String backendFinancieroURL = "http://localhost:9999/cuentas/";
+        String backendFinancieroURL = "http://localhost:9999/accounts/";
         RestTemplate restTemplate = new RestTemplate();
 
         // 🔥 Usamos parallelStream() para mejorar el rendimiento
@@ -87,7 +108,7 @@ public class UsuarioServicio {
 
         // ✅ Verificar si el usuario tiene una cuenta asignada
         if (usuario.getCuentaId() != null && !usuario.getCuentaId().isEmpty()) {
-            String urlCuenta = "http://localhost:9999/cuentas/" + usuario.getCuentaId();  // 🔥 Usa la URL correcta aquí
+            String urlCuenta = "http://localhost:9999/accounts/" + usuario.getCuentaId();  // 🔥 Usa la URL correcta aquí
             RestTemplate restTemplate = new RestTemplate();
 
             try {

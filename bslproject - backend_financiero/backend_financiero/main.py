@@ -28,7 +28,7 @@ PORT = config.get("port", 9999)
 
 # Inicializar FastAPI
 print("🚀 Iniciando FastAPI...")
-app = FastAPI(title="BslProject API")
+app = FastAPI(title="BslProject Finance API")
 
 # Configuración de CORS
 print("🌍 Configurando CORS...")
@@ -58,7 +58,7 @@ async def verify_token(request: Request):
 # Endpoint de prueba
 @app.get("/")
 def test():
-    return {"message": "Server running ..."}
+    return {"message": "Finance Service running..."}
 
 # 📦 Importar y registrar los controladores
 print("📦 Cargando controladores...")
@@ -71,11 +71,13 @@ try:
     from Controladores.ControladorTransaccion import router as transaccion_router
 
     print("🔗 Registrando rutas en FastAPI...")
-    app.include_router(cuenta_router, prefix="/cuentas")
-    app.include_router(bolsillo_router, prefix="/bolsillos")
-    app.include_router(tipo_movimiento_router, prefix="/tipo_movimiento")
-    app.include_router(tipo_transaccion_router, prefix="/tipo_transaccion")
-    app.include_router(transaccion_router, prefix="/transacciones")
+    # Usar el prefijo /finanzas para todas las rutas en español
+    api_prefix = "/finanzas"
+    app.include_router(cuenta_router, prefix=f"{api_prefix}/cuentas")
+    app.include_router(bolsillo_router, prefix=f"{api_prefix}/bolsillos")
+    app.include_router(tipo_movimiento_router, prefix=f"{api_prefix}/tipos-movimiento")
+    app.include_router(tipo_transaccion_router, prefix=f"{api_prefix}/tipos-transaccion")
+    app.include_router(transaccion_router, prefix=f"{api_prefix}/transacciones")
     print("✅ Rutas registradas correctamente.")
 
 except Exception as e:

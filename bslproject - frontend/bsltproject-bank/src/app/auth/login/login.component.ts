@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -49,55 +50,64 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    console.log('LoginComponent - onSubmit called');
-    console.log('LoginComponent - Form value:', this.loginForm.value);
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      this.errorMessage = '';
-      console.log('Attempting login with:', this.loginForm.value);
-      
-      const { email, password } = this.loginForm.value;
-      
-      this.authService.login(email, password).subscribe({
-        next: (response) => {
-          console.log('Login successful:', response);
+    if (this.loginForm.invalid) {
+      this.validateForm();
+      return;
+    }
+
+    const { email, password } = this.loginForm.value;
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    // Asegurémonos de que email y password están definidos
+    if (!email || !password) {
+      this.errorMessage = 'Email y contraseña son requeridos';
+      this.isLoading = false;
+      return;
+    }
+
+    console.log('Intentando login con:', { email });
+
+    this.authService.login(email, password)
+      .pipe(
+        finalize(() => {
           this.isLoading = false;
-          
-          // Verify authentication state before navigation
-          console.log('Checking authentication state...');
-          const isAuthenticated = this.authService.isAuthenticated();
-          console.log('Authentication state:', isAuthenticated);
-          
-          if (isAuthenticated) {
-            console.log('Navigating to dashboard');
-            this.router.navigate(['/dashboard'])
-              .then(success => {
-                if (!success) {
-                  console.error('Navigation failed');
-                  this.errorMessage = 'Error al redireccionar. Intente nuevamente.';
-                }
-              })
-              .catch(err => {
-                console.error('Navigation error:', err);
-                this.errorMessage = 'Error al redireccionar. Intente nuevamente.';
-              });
-          } else {
-            console.error('Authentication state not updated');
-            this.errorMessage = 'Error en la autenticación. Intente nuevamente.';
-          }
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          console.log('Login exitoso');
+          this.router.navigate(['/dashboard']);
         },
         error: (error) => {
-          console.error('Login error:', error);
-          this.isLoading = false;
-          this.errorMessage = error.error?.message || 'Error al iniciar sesión. Intente nuevamente.';
+          console.error('Error de login:', error);
+          
+          // Mensaje de error más específico basado en el código de error
+          if (error.status === 403 || (error.error && error.error.detail && error.error.detail.includes('403'))) {
+            this.errorMessage = 'Acceso denegado. Verifica tus credenciales o permisos.';
+          } else if (error.status === 500) {
+            this.errorMessage = 'Error en el servidor. Por favor, intenta más tarde.';
+          } else {
+            this.errorMessage = 'Error al iniciar sesión. Por favor, verifica tus credenciales.';
+          }
         }
       });
-    } else {
-      console.log('Form is invalid');
-      Object.keys(this.loginForm.controls).forEach(key => {
-        const control = this.loginForm.get(key);
-        control?.markAsTouched();
-      });
-    }
+  }
+
+  private validateForm(): void {
+    Object.keys(this.loginForm.controls).forEach(key => {
+      const control = this.loginForm.get(key);
+      if (control?.errors) {
+        if (key === 'email') {
+          if (control.errors['required']) {
+            this.errorMessage = 'El email es requerido';
+          } else if (control.errors['email']) {
+            this.errorMessage = 'Ingresa un email válido';
+          }
+        } else if (key === 'password' && control.errors['required']) {
+          this.errorMessage = 'La contraseña es requerida';
+        }
+      }
+    });
   }
 }

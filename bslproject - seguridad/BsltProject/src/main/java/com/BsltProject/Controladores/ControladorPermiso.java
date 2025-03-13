@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/permisos")
+@RequestMapping("/seguridad/permisos")
 public class ControladorPermiso {
 
     private final PermisoServicio permisoServicio;

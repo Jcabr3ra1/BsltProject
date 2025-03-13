@@ -46,6 +46,12 @@
             <span>Configuración</span>
           </button>
 
+          <!-- Herramienta de Activación de Usuarios (solo para administradores) -->
+          <button mat-menu-item routerLink="/admin/activar-usuario">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span>Activar Usuarios</span>
+          </button>
+
           <mat-divider></mat-divider>
 
           <button mat-menu-item (click)="logout()" class="logout-btn">
