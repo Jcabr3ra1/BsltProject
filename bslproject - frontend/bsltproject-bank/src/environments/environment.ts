@@ -1,5 +1,4 @@
 export const environment = {
   production: false,
-  useMockData: false,
-  apiGatewayUrl: 'http://localhost:7777'
+  apiUrl: 'http://localhost:7777' // URL de tu API Gateway
 };
