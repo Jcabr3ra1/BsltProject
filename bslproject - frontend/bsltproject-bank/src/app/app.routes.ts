@@ -1,70 +1,53 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { HomeComponent } from '@app/features/home/home.component';
+import { LoginComponent } from '@app/auth/login/login.component';
+import { RegisterComponent } from '@app/auth/register/register.component';
+import { DashboardComponent } from '@app/features/dashboard/dashboard.component';
+import { AuthGuard } from '@core/guards/auth.guard';
+import { LandingPageComponent } from '@app/features/landing-page/landing-page.component';
+// Importar directamente las rutas para evitar problemas de carga perezosa
+import { SEGURIDAD_ROUTES } from '@app/features/seguridad/seguridad.routes';
+import { FINANZAS_ROUTES } from '@app/features/finanzas/finanzas.routes';
+import { TokenDiagnosticoComponent } from '@app/features/diagnostico/token-diagnostico.component';
 
 export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full'
-  },
-  {
-    path: 'home',
-    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
-  },
-  {
-    path: 'auth',
+  // Rutas públicas
+  { path: '', component: LandingPageComponent },
+  { path: 'landing', component: LandingPageComponent },
+  { path: 'home', component: HomeComponent },
+  
+  // Rutas de autenticación
+  { 
+    path: 'auth', 
     children: [
-      {
-        path: 'login',
-        loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent)
-      },
-      {
-        path: 'register',
-        loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent)
-      },
+      { path: 'login', component: LoginComponent },
+      { path: 'register', component: RegisterComponent },
       { path: '', redirectTo: 'login', pathMatch: 'full' }
     ]
   },
+  
+  // Rutas protegidas - requieren autenticación
+  { 
+    path: 'dashboard', 
+    component: DashboardComponent, 
+    canActivate: [AuthGuard] 
+  },
+  
+  // Módulos de características - carga perezosa
   {
-    path: 'dashboard',
-    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
-    canActivate: [authGuard]
+    path: 'seguridad',
+    children: SEGURIDAD_ROUTES,
+    canActivate: [AuthGuard]
   },
   {
     path: 'finanzas',
-    canActivate: [authGuard],
-    children: [
-      {
-        path: 'cuentas',
-        loadComponent: () => import('./features/finanzas/cuentas/cuentas.component').then(m => m.CuentasComponent)
-      },
-      {
-        path: 'transacciones',
-        loadComponent: () => import('./features/finanzas/transacciones/transacciones.component').then(m => m.TransaccionesComponent)
-      },
-      {
-        path: 'bolsillos',
-        loadComponent: () => import('./features/finanzas/bolsillos/bolsillos.component').then(m => m.BolsillosComponent)
-      }
-    ]
+    children: FINANZAS_ROUTES,
+    canActivate: [AuthGuard]
   },
-  {
-    path: 'seguridad',
-    canActivate: [authGuard],
-    children: [
-      {
-        path: 'usuarios',
-        loadComponent: () => import('./features/seguridad/usuarios/usuarios.component').then(m => m.UsuariosComponent)
-      },
-      {
-        path: 'roles',
-        loadComponent: () => import('./features/seguridad/roles/roles.component').then(m => m.RolesComponent)
-      },
-      {
-        path: 'permisos',
-        loadComponent: () => import('./features/seguridad/permisos/permisos.component').then(m => m.PermisosComponent)
-      }
-    ]
-  },
-  { path: '**', redirectTo: 'home' }
+  
+  // Ruta de diagnóstico - accesible sin autenticación para facilitar la depuración
+  { path: 'diagnostico', component: TokenDiagnosticoComponent },
+  
+  // Ruta de fallback
+  { path: '**', redirectTo: '/landing' }
 ];

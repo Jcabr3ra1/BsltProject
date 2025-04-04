@@ -1,0 +1,124 @@
+.transaccion-dialog {
+  padding: 20px;
+  min-width: 400px;
+
+  h2 {
+    margin: 0 0 20px;
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  .error-message {
+    background-color: #ffebee;
+    color: #d32f2f;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0;
+    margin: 0 0 20px;
+
+    .full-width {
+      width: 100%;
+    }
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    textarea {
+      min-height: 80px;
+    }
+  }
+
+  mat-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+
+    button {
+      min-width: 100px;
+
+      mat-spinner {
+        display: inline-block;
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+.dialog-container {
+  padding: 24px;
+  min-width: 400px;
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+  }
+
+  .error-container {
+    margin: 16px 0;
+    padding: 16px;
+    background-color: #ffebee;
+    border-radius: 4px;
+    color: #c62828;
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .form-row {
+    margin-bottom: 16px;
+  }
+
+  mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0;
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    textarea {
+      resize: none;
+    }
+  }
+
+  mat-dialog-actions {
+    margin-top: 24px;
+    padding: 8px 0;
+    gap: 16px;
+  }
+
+  // Estilos para la pantalla de carga
+  mat-spinner {
+    margin: 0 auto 16px;
+  }
+
+  // Estilos para errores
+  .mat-error {
+    font-size: 12px;
+  }
+
+  // Estilos para botones
+  button {
+    &[type="submit"] {
+      min-width: 120px;
+    }
+  }
+}

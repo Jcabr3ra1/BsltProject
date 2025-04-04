@@ -1,0 +1,44 @@
+<mat-toolbar class="navbar">
+  <div class="navbar-brand">
+    <a class="brand-logo" routerLink="/">
+      <div class="logo-container">
+        <mat-icon>account_balance</mat-icon>
+      </div>
+      <h1>BSLTBank</h1>
+    </a>
+  </div>
+
+  <span class="spacer"></span>
+
+  <div class="navbar-end">
+    <ng-container *ngIf="isAuthenticated">
+      <button mat-icon-button class="notification-btn" [matBadge]="3" matBadgeSize="small">
+        <mat-icon>notifications</mat-icon>
+      </button>
+
+      <div class="user-menu">
+        <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
+          <span class="user-name">{{ userName }}</span>
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>Mi Perfil</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>exit_to_app</mat-icon>
+            <span>Cerrar Sesión</span>
+          </button>
+        </mat-menu>
+      </div>
+    </ng-container>
+
+    <button *ngIf="!isAuthenticated" mat-flat-button color="accent" class="login-btn" routerLink="/auth/login">
+      <mat-icon>login</mat-icon>
+      <span>Iniciar Sesión</span>
+    </button>
+  </div>
+</mat-toolbar>

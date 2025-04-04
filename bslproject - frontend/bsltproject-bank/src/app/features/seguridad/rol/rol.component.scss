@@ -1,0 +1,358 @@
+// Variables
+$primary-color: #3f51b5;
+$accent-color: #ff4081;
+$light-gray: #f5f5f5;
+$medium-gray: #e0e0e0;
+$dark-gray: #757575;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$error-color: #f44336;
+$shadow-color: rgba(0, 0, 0, 0.1);
+$border-radius: 4px;
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// Module Container
+.module-container {
+  padding: $spacing-lg;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// Module Header
+.module-header {
+  margin-bottom: $spacing-xl;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-md;
+
+    .title-section {
+      display: flex;
+      align-items: center;
+
+      .module-icon {
+        font-size: 32px;
+        height: 32px;
+        width: 32px;
+        margin-right: $spacing-md;
+        color: $primary-color;
+      }
+
+      .module-title {
+        font-size: 24px;
+        font-weight: 500;
+        margin: 0;
+        color: rgba(0, 0, 0, 0.87);
+      }
+    }
+
+    .actions-section {
+      .add-button {
+        transition: all 0.3s ease;
+        
+        mat-icon {
+          margin-right: $spacing-sm;
+        }
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px $shadow-color;
+        }
+      }
+    }
+  }
+
+  .module-description {
+    color: $dark-gray;
+    font-size: 16px;
+    margin: 0;
+    max-width: 800px;
+  }
+}
+
+// Form Container
+.form-container {
+  background-color: white;
+  border-radius: $border-radius;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-xl;
+  transition: all 0.3s ease;
+  
+  .form-title {
+    margin-top: 0;
+    margin-bottom: $spacing-lg;
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  
+  .form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    
+    .full-width {
+      width: 100%;
+    }
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-md;
+    margin-top: $spacing-lg;
+    
+    button {
+      min-width: 120px;
+      
+      mat-icon {
+        margin-right: $spacing-sm;
+      }
+    }
+  }
+}
+
+// Filters Container
+.filters-container {
+  margin-bottom: $spacing-lg;
+  
+  .search-field {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+// Loading Container
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl;
+  
+  p {
+    margin-top: $spacing-md;
+    color: $dark-gray;
+  }
+}
+
+// Table Container
+.table-container {
+  background-color: white;
+  border-radius: $border-radius;
+  overflow: hidden;
+  margin-bottom: $spacing-md;
+  
+  .roles-table {
+    width: 100%;
+    
+    .role-row {
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: $light-gray;
+      }
+    }
+    
+    .role-name {
+      .role-badge {
+        background-color: $primary-color;
+        color: white;
+        padding: $spacing-xs $spacing-md;
+        border-radius: 16px;
+        font-size: 14px;
+        font-weight: 500;
+        display: inline-block;
+      }
+    }
+    
+    .role-description {
+      color: $dark-gray;
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .permissions-container {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      
+      .permissions-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-xs;
+        
+        .permission-chip {
+          background-color: $light-gray;
+          color: $dark-gray;
+          font-size: 12px;
+          height: 24px;
+          
+          &:hover {
+            background-color: $medium-gray;
+          }
+        }
+        
+        .more-chip {
+          background-color: $medium-gray;
+          color: rgba(0, 0, 0, 0.87);
+          font-size: 12px;
+          height: 24px;
+          cursor: pointer;
+        }
+      }
+      
+      .permissions-button {
+        font-size: 12px;
+        line-height: 28px;
+        padding: 0 $spacing-md;
+        
+        mat-icon {
+          font-size: 16px;
+          height: 16px;
+          width: 16px;
+          margin-right: $spacing-xs;
+        }
+      }
+    }
+    
+    .permissions-loading {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      
+      .no-permissions {
+        color: $dark-gray;
+        font-style: italic;
+        font-size: 14px;
+      }
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: $spacing-xs;
+    }
+  }
+  
+  .no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: $spacing-xl;
+    color: $dark-gray;
+    
+    mat-icon {
+      font-size: 48px;
+      height: 48px;
+      width: 48px;
+      margin-bottom: $spacing-md;
+      opacity: 0.5;
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl * 2;
+  background-color: white;
+  border-radius: $border-radius;
+  text-align: center;
+  
+  .empty-icon {
+    font-size: 64px;
+    height: 64px;
+    width: 64px;
+    margin-bottom: $spacing-lg;
+    color: $dark-gray;
+    opacity: 0.5;
+  }
+  
+  h2 {
+    margin-top: 0;
+    margin-bottom: $spacing-sm;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  
+  p {
+    margin-top: 0;
+    margin-bottom: $spacing-lg;
+    color: $dark-gray;
+    max-width: 400px;
+  }
+  
+  button {
+    mat-icon {
+      margin-right: $spacing-sm;
+    }
+  }
+}
+
+// Responsive Adjustments
+@media (max-width: 768px) {
+  .module-header {
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .title-section {
+        margin-bottom: $spacing-md;
+      }
+    }
+  }
+  
+  .table-container {
+    .roles-table {
+      .role-description {
+        max-width: 150px;
+      }
+    }
+  }
+}
+
+// Animation
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-container, .table-container, .empty-state {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// Custom Scrollbar
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $light-gray;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $medium-gray;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $dark-gray;
+}

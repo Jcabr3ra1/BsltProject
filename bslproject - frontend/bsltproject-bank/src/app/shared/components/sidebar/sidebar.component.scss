@@ -1,0 +1,228 @@
+/* Variables */
+$dark-bg: #0f0f0f;
+$light-text: #ffffff;
+$hover-bg: rgba(255, 255, 255, 0.1);
+$active-bg: rgba(255, 255, 255, 0.2);
+$accent-color: #f44336;
+$transition: all 0.2s ease;
+$sidebar-text: rgba(255, 255, 255, 0.8);
+
+/* 🔹 Ajuste de altura y eliminación de la barra blanca inferior */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Evita el scroll innecesario */
+    background-color: #f5f5f5; /* Fondo claro */
+}
+
+/* Contenedor principal del sidebar */
+.sidebar-container {
+  height: 100%;
+  background-color: $dark-bg;
+  color: $light-text;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Personalizar la barra de desplazamiento */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+/* Secciones del sidebar */
+.sidebar-section {
+  padding: 8px 0;
+}
+
+/* Divisor de secciones */
+.sidebar-divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 8px 12px;
+}
+
+/* Estilos para los elementos de navegación */
+.nav-list {
+  padding: 8px 0;
+}
+
+.nav-item {
+  display: block;
+  margin: 1px 8px;
+  border-radius: 10px;
+  transition: $transition;
+  text-decoration: none;
+  color: $sidebar-text;
+  overflow: hidden;
+  
+  &:hover {
+    background-color: $hover-bg;
+  }
+  
+  &.active {
+    background-color: $hover-bg;
+    
+    .nav-item-content {
+      mat-icon {
+        color: $accent-color;
+      }
+      
+      span {
+        color: $light-text;
+        font-weight: 500;
+      }
+    }
+  }
+  
+  &.sub-item {
+    margin-left: 12px;
+    margin-right: 12px;
+    border-radius: 8px;
+  }
+}
+
+.nav-item-content {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  
+  mat-icon {
+    margin-right: 16px;
+    color: rgba(255, 255, 255, 0.7);
+    transition: $transition;
+  }
+  
+  span {
+    font-size: 14px;
+    transition: $transition;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Estilos para el panel de expansión personalizado */
+.custom-expansion-panel {
+  margin: 1px 8px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: transparent;
+  
+  .custom-expansion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    height: 40px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: $transition;
+    
+    &:hover {
+      background-color: $hover-bg;
+    }
+    
+    .expansion-icon {
+      margin-right: 12px;
+      transition: transform 0.3s ease;
+      color: rgba(255, 255, 255, 0.7);
+      
+      &.expanded {
+        transform: rotate(180deg);
+      }
+    }
+  }
+  
+  .custom-expansion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    
+    &.expanded {
+      max-height: 500px; /* Altura máxima para el contenido expandido */
+    }
+  }
+}
+
+/* Estilos para las listas anidadas */
+.mat-nav-list .mat-nav-list {
+  padding-top: 0;
+  padding-bottom: 0;
+  
+  a.mat-list-item {
+    padding-left: 24px;
+    font-size: 13px;
+    height: 40px;
+    border-radius: 0;
+    
+    &.active {
+      background-color: rgba(244, 67, 54, 0.1);
+      border-left: 2px solid #f44336;
+    }
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+    
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+  }
+}
+
+::ng-deep {
+  .mat-expansion-panel-body {
+    padding: 0 !important;
+  }
+
+  .mat-expansion-indicator::after {
+    color: #f44336;
+  }
+
+  .mat-expanded .mat-expansion-indicator::after {
+    color: #fff;
+  }
+  
+  /* Eliminar bordes y fondos predeterminados */
+  .mat-expansion-panel {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #f44336;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}

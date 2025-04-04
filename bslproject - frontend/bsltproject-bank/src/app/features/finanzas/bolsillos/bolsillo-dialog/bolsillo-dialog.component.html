@@ -1,0 +1,55 @@
+<h2 mat-dialog-title>Crear Bolsillo</h2>
+
+<mat-dialog-content>
+  <ng-container *ngIf="isLoading">
+    <div class="loading-spinner">
+      <mat-spinner></mat-spinner>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isLoading">
+    <form [formGroup]="form">
+      <mat-form-field>
+        <mat-label>Nombre del Bolsillo</mat-label>
+        <input matInput formControlName="nombre" required>
+        <mat-error *ngIf="form.get('nombre')?.errors?.['required'] && form.get('nombre')?.touched">
+          El nombre es requerido
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Cuenta</mat-label>
+        <mat-select formControlName="cuentaId" required>
+          <mat-option *ngFor="let cuenta of cuentas" [value]="cuenta.id">
+            {{ cuenta.numero_cuenta }} - {{ cuenta.saldo | currency:'USD' }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('cuentaId')?.errors?.['required'] && form.get('cuentaId')?.touched">
+          La cuenta es requerida
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Saldo Inicial</mat-label>
+        <input matInput type="number" formControlName="saldoInicial" required>
+        <mat-error *ngIf="form.get('saldoInicial')?.errors?.['required'] && form.get('saldoInicial')?.touched">
+          El saldo inicial es requerido
+        </mat-error>
+        <mat-error *ngIf="form.get('saldoInicial')?.errors?.['min']">
+          El saldo inicial debe ser al menos $1,000
+        </mat-error>
+      </mat-form-field>
+
+      <mat-slide-toggle formControlName="esAhorro">
+        Es un bolsillo de ahorro
+      </mat-slide-toggle>
+    </form>
+  </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!form.valid">
+    Crear
+  </button>
+</mat-dialog-actions>

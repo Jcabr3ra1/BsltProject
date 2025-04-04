@@ -1,0 +1,31 @@
+.container {
+  padding: 20px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.amount-cell {
+  text-align: right;
+}
+
+.progress-container {
+  margin-top: 8px;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+}
+
+mat-form-field {
+  margin-right: 16px;
+}
+
+.filter-form {
+  margin-bottom: 16px;
+}

@@ -1,0 +1,78 @@
+<!-- Contenedor principal -->
+<div class="container">
+  <!-- Título y botón de creación alineados -->
+  <div class="header">
+    <h2>Lista de Estados</h2>
+    <button mat-raised-button color="warn" (click)="mostrarFormulario = !mostrarFormulario">
+      {{ mostrarFormulario ? 'Ocultar Formulario' : 'Crear Nuevo Estado' }}
+    </button>
+  </div>
+
+  <!-- Formulario de Creación (Usando @if en lugar de *ngIf) -->
+  @if (mostrarFormulario) {
+    <mat-card class="form-card">
+      <h2>{{ editandoEstado ? 'Editar' : 'Crear Nuevo' }} Estado</h2>
+      <form [formGroup]="estadoForm" (ngSubmit)="guardarEstado()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre*</mat-label>
+          <input matInput formControlName="nombre" placeholder="Nombre del estado" required />
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput formControlName="descripcion" placeholder="Descripción del estado" rows="3"></textarea>
+        </mat-form-field>
+        
+        <div class="form-field-checkbox">
+          <mat-label>Estado Activo</mat-label>
+          <mat-checkbox formControlName="activo" color="primary"></mat-checkbox>
+        </div>
+  
+        <div class="form-actions">
+          <button mat-raised-button type="button" (click)="cancelarEdicion(); mostrarFormulario = false;">
+            Cancelar
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="estadoForm.invalid">
+            {{ editandoEstado ? 'Actualizar' : 'Crear' }} Estado
+          </button>
+        </div>
+      </form>
+    </mat-card>
+  }
+
+  <!-- Tabla de Estados -->
+  <div class="table-container">
+    @if (estados.length === 0) {
+      <div class="empty-state">
+        <p>No hay estados disponibles</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="custom-table">
+          <!-- Encabezado de la tabla -->
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th class="actions-column">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (estado of estados; track estado.id) {
+              <tr>
+                <td>{{ estado.nombre }}</td>
+                <td class="actions-cell">
+                  <button mat-icon-button color="primary" (click)="editarEstado(estado)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="eliminarEstado(estado.id)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

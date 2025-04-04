@@ -1,4 +1,1045 @@
-/* You can add global styles to this file, and also import other style files */
+/* Estilos globales */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'ngx-bootstrap/datepicker/bs-datepicker.css';
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Variables globales */
+:root {
+  /* Colores principales */
+  --primary: #f44336;
+  --primary-light: #ff7961;
+  --primary-dark: #ba000d;
+  
+  --dark: #121212;
+  --dark-light: #1e1e1e;
+  --dark-lighter: #2d2d2d;
+  
+  --light: #ffffff;
+  --light-dark: #f5f5f5;
+  --light-darker: #e0e0e0;
+  
+  --success: #4caf50;
+  --warning: #ff9800;
+  --info: #2196f3;
+  --error: #f44336;
+  
+  /* Espaciado */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  
+  /* Bordes */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-circle: 50%;
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.14);
+  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.16);
+  
+  /* Transiciones */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* Fuentes */
+  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  
+  /* Tamaños de fuente */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
+  --font-size-xxxl: 3rem;
+  
+  /* Pesos de fuente */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Z-index */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+}
+
+/* Estilos base */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  color: var(--dark);
+  background-color: var(--light-dark);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* Estilos de tipografía */
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: var(--font-size-xxxl);
+}
+
+h2 {
+  font-size: var(--font-size-xxl);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+}
+
+h4 {
+  font-size: var(--font-size-lg);
+}
+
+h5 {
+  font-size: var(--font-size-md);
+}
+
+h6 {
+  font-size: var(--font-size-sm);
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Estilos unificados para todos los botones */
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  border-radius: 25px !important;
+  padding: 4px 20px !important;
+  height: 40px !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.mat-mdc-raised-button:hover,
+.mat-mdc-outlined-button:hover,
+.mat-mdc-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Mejorar la visibilidad del texto en los botones */
+.mdc-button__label {
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Color específico para botones primarios */
+.mat-primary .mdc-button__label {
+  color: #ffffff !important;
+}
+
+/* Color para botones secundarios/outline */
+.mat-accent .mdc-button__label {
+  color: var(--primary) !important;
+}
+
+/* Estilos de botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  border: none;
+  outline: none;
+  box-shadow: var(--shadow-sm);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--light);
+  
+  &:hover {
+    background-color: var(--primary-dark);
+  }
+}
+
+.btn-secondary {
+  background-color: var(--dark);
+  color: var(--light);
+  
+  &:hover {
+    background-color: var(--dark-light);
+  }
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  
+  &:hover {
+    background-color: var(--primary);
+    color: var(--light);
+  }
+}
+
+.btn-light {
+  background-color: var(--light);
+  color: var(--dark);
+  
+  &:hover {
+    background-color: var(--light-dark);
+  }
+}
+
+/* Estilos de tarjetas */
+.card {
+  background-color: var(--light);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  transition: all var(--transition-normal);
+  
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+}
+
+/* Estilos de formularios */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  color: var(--dark);
+  background-color: var(--light);
+  background-clip: padding-box;
+  border: 1px solid var(--light-darker);
+  border-radius: var(--border-radius-md);
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+  
+  &:focus {
+    border-color: var(--primary);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(244, 67, 54, 0.25);
+  }
+}
+
+/* Utilidades */
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.mt-1 { margin-top: var(--spacing-xs); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mt-4 { margin-top: var(--spacing-lg); }
+.mt-5 { margin-top: var(--spacing-xl); }
+
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+.mb-5 { margin-bottom: var(--spacing-xl); }
+
+.ml-1 { margin-left: var(--spacing-xs); }
+.ml-2 { margin-left: var(--spacing-sm); }
+.ml-3 { margin-left: var(--spacing-md); }
+.ml-4 { margin-left: var(--spacing-lg); }
+.ml-5 { margin-left: var(--spacing-xl); }
+
+.mr-1 { margin-right: var(--spacing-xs); }
+.mr-2 { margin-right: var(--spacing-sm); }
+.mr-3 { margin-right: var(--spacing-md); }
+.mr-4 { margin-right: var(--spacing-lg); }
+.mr-5 { margin-right: var(--spacing-xl); }
+
+.p-1 { padding: var(--spacing-xs); }
+.p-2 { padding: var(--spacing-sm); }
+.p-3 { padding: var(--spacing-md); }
+.p-4 { padding: var(--spacing-lg); }
+.p-5 { padding: var(--spacing-xl); }
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn var(--transition-normal);
+}
+
+.animate-slideInUp {
+  animation: slideInUp var(--transition-normal);
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Estilos específicos para Material */
+.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-outlined-button, .mat-mdc-unelevated-button {
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-medium) !important;
+  border-radius: var(--border-radius-md) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.mat-mdc-raised-button {
+  border-radius: 20px !important;
+  padding: 4px 16px !important;
+}
+
+.mat-mdc-outlined-button {
+  border-radius: 20px !important;
+  padding: 4px 16px !important;
+}
+
+/* Mejorar la visibilidad del texto en los botones */
+.mdc-button__label {
+  color: #333333 !important;
+  font-weight: 600 !important;
+}
+
+/* Color específico para botones primarios */
+.mat-primary .mdc-button__label {
+  color: #ffffff !important;
+}
+
+.mat-mdc-card {
+  border-radius: var(--border-radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+  transition: all var(--transition-normal) !important;
+  
+  &:hover {
+    box-shadow: var(--shadow-lg) !important;
+    transform: translateY(-4px);
+  }
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+/* Estilos para scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--light-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dark-lighter);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-light);
+}
+
+/* Estilos para el carrusel */
+.carousel-item {
+  height: 500px;
+  background-size: cover;
+  background-position: center;
+}
+
+.carousel-caption {
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Estilos para la página de inicio */
+.home-container {
+  min-height: 100vh;
+  background-color: var(--background);
+}
+
+.home-header {
+  background-color: var(--primary);
+  color: var(--text-light);
+  padding: var(--spacing-md) var(--spacing-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.home-nav {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.home-content {
+  padding: var(--spacing-xl) 0;
+}
+
+.home-features {
+  padding: var(--spacing-xl) 0;
+  background-color: var(--background-dark);
+  color: var(--text-light);
+}
+
+.feature-card {
+  background-color: var(--primary-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  height: 100%;
+  transition: transform 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  color: var(--accent);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Botones personalizados estilo GitHub */
+.btn-primary {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-light);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: var(--border-radius-md);
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-outline-light {
+  border-color: var(--border-color);
+  color: var(--text-light);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: var(--border-radius-md);
+}
+
+.btn-outline-light:hover {
+  background-color: var(--nav-hover);
+  color: var(--text-light);
+  border-color: var(--text-muted);
+}
+
+/* Estilos de Material personalizados */
+.mat-mdc-card {
+  border-radius: var(--border-radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
+  transition: all 0.3s ease;
+  background: var(--background-card);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+
+  &:hover {
+    box-shadow: var(--shadow-lg) !important;
+  }
+
+  .mat-mdc-card-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--primary);
+    color: var(--text-light);
+
+    .mat-mdc-card-title {
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .mat-mdc-card-subtitle {
+      color: var(--text-muted);
+      margin: var(--spacing-xs) 0 0;
+    }
+  }
+
+  .mat-mdc-card-content {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* Botones personalizados */
+.mdc-button {
+  border-radius: var(--border-radius-md) !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  padding: var(--spacing-sm) var(--spacing-lg) !important;
+  transition: all 0.3s ease !important;
+
+  &.mat-primary {
+    background-color: var(--primary) !important;
+    color: var(--text-light) !important;
+
+    &:hover {
+      background-color: var(--primary-dark) !important;
+      box-shadow: var(--shadow-md) !important;
+    }
+  }
+
+  &.mat-accent {
+    background-color: var(--accent) !important;
+    color: var(--text-light) !important;
+
+    &:hover {
+      background-color: var(--accent-hover) !important;
+      box-shadow: var(--shadow-md) !important;
+    }
+  }
+}
+
+/* Tablas personalizadas */
+.mat-mdc-table {
+  width: 100%;
+  background: var(--background-card);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+
+  .mat-mdc-header-row {
+    background-color: var(--primary-light);
+
+    .mat-mdc-header-cell {
+      color: var(--text-light);
+      font-weight: 500;
+      padding: var(--spacing-md) var(--spacing-lg);
+      white-space: nowrap;
+    }
+  }
+
+  .mat-mdc-row {
+    &:hover {
+      background-color: rgba(168, 230, 207, 0.1);
+    }
+
+    .mat-mdc-cell {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    &:last-child .mat-mdc-cell {
+      border-bottom: none;
+    }
+  }
+}
+
+/* Formularios personalizados */
+.mat-mdc-form-field {
+  width: 100%;
+  margin-bottom: var(--spacing-md);
+
+  .mat-mdc-floating-label {
+    color: var(--primary) !important;
+  }
+
+  .mat-mdc-input-element {
+    padding: var(--spacing-sm) !important;
+  }
+
+  &.mat-focused {
+    .mat-mdc-floating-label {
+      color: var(--accent) !important;
+    }
+  }
+}
+
+/* Diálogos personalizados */
+.mat-mdc-dialog-container {
+  border-radius: var(--border-radius-md) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+
+  .mat-mdc-dialog-title {
+    background: var(--primary);
+    color: var(--text-light);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin: 0 !important;
+    font-size: 1.25rem;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: var(--spacing-lg) !important;
+    margin: 0 !important;
+  }
+
+  .mat-mdc-dialog-actions {
+    padding: var(--spacing-md) var(--spacing-lg) !important;
+    margin: 0 !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Estilos para diálogos personalizados */
+.custom-dialog .mat-mdc-dialog-container {
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+.custom-dialog .mat-mdc-dialog-surface {
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+/* Estilos para snackbars */
+.success-snackbar {
+  background-color: var(--success);
+  color: white;
+}
+
+.error-snackbar {
+  background-color: var(--error);
+  color: white;
+}
+
+.warning-snackbar {
+  background-color: var(--warning);
+  color: white;
+}
+
+.info-snackbar {
+  background-color: var(--info);
+  color: white;
+}
+
+/* Animaciones */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Utilidades de espaciado */
+.mt-1 { margin-top: var(--spacing-xs) !important; }
+.mt-2 { margin-top: var(--spacing-sm) !important; }
+.mt-3 { margin-top: var(--spacing-md) !important; }
+.mt-4 { margin-top: var(--spacing-lg) !important; }
+.mt-5 { margin-top: var(--spacing-xl) !important; }
+
+.mb-1 { margin-bottom: var(--spacing-xs) !important; }
+.mb-2 { margin-bottom: var(--spacing-sm) !important; }
+.mb-3 { margin-bottom: var(--spacing-md) !important; }
+.mb-4 { margin-bottom: var(--spacing-lg) !important; }
+.mb-5 { margin-bottom: var(--spacing-xl) !important; }
+
+.p-1 { padding: var(--spacing-xs) !important; }
+.p-2 { padding: var(--spacing-sm) !important; }
+.p-3 { padding: var(--spacing-md) !important; }
+.p-4 { padding: var(--spacing-lg) !important; }
+.p-5 { padding: var(--spacing-xl) !important; }
+
+/* Estilos específicos para IDs y textos con caracteres especiales */
+.mat-column-id {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #333333 !important;
+  background-color: transparent !important;
+}
+
+/* Asegurar que los IDs sean legibles independientemente del fondo */
+td.mat-mdc-cell:first-child {
+  color: #333333 !important;
+  background-color: transparent !important;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+/* Evitar que los caracteres especiales cambien el color del texto */
+.mat-mdc-cell, 
+.mat-mdc-header-cell {
+  color: #333333 !important;
+  background-color: transparent !important;
+}
+
+/* Asegurar que los selects y dropdowns tengan texto legible */
+.mat-mdc-select-value {
+  color: #333333 !important;
+}
+
+/* Mejorar la visualización de los IDs en las tablas */
+.mat-mdc-table .mat-mdc-cell:first-child {
+  font-family: 'Roboto Mono', monospace;
+  letter-spacing: -0.5px;
+}
+
+/* Corregir problema específico con puntos y caracteres especiales */
+.mat-mdc-cell::selection,
+.mat-mdc-cell *::selection {
+  background-color: rgba(63, 81, 181, 0.2) !important;
+  color: #333333 !important;
+}
+
+/* Asegurar que el texto sea legible cuando hay caracteres especiales */
+.mat-mdc-cell {
+  font-variant-ligatures: none;
+}
+
+/* 🔹 Contenedor del contenido principal */
+.main-content {
+  flex-grow: 1; /* Hace que ocupe el espacio restante */
+  padding-bottom: 60px; /* Espacio suficiente para el footer */
+}
+
+/* 🔹 Footer fijo en la parte inferior */
+.footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  background-color: #121212;
+  color: #ffffff;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 14px;
+  z-index: 10;
+}
+
+/* 🔹 Contenedor del contenido principal */
+.mat-sidenav-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Hace que el contenido principal se expanda */
+}
+
+/* Estilos para login y registro */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background);
+  padding: var(--spacing-xl);
+}
+
+.auth-card {
+  max-width: 400px;
+  width: 100%;
+  padding: var(--spacing-lg);
+}
+
+.auth-header {
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+.auth-footer {
+  margin-top: var(--spacing-lg);
+  text-align: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Estilos para el sidenav */
+.sidenav-container {
+  height: calc(100vh - 64px);
+}
+
+.sidenav {
+  width: 250px;
+  background-color: var(--primary-light);
+  color: var(--text-light);
+}
+
+.sidenav-content {
+  padding: var(--spacing-lg);
+}
+
+/* Utilidades adicionales */
+.text-accent {
+  color: var(--accent);
+}
+
+.bg-primary {
+  background-color: var(--primary);
+}
+
+.bg-accent {
+  background-color: var(--accent);
+}
+
+.rounded {
+  border-radius: var(--border-radius-md);
+}
+
+.shadow {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-hover:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Estilos globales para mejorar el contraste y legibilidad */
+.mat-mdc-table {
+  background-color: #ffffff;
+}
+
+.mat-mdc-row {
+  background-color: #ffffff;
+}
+
+.mat-mdc-cell, 
+.mat-mdc-header-cell {
+  color: #333333 !important;
+}
+
+.mat-mdc-paginator {
+  background-color: #ffffff;
+}
+
+/* Asegurar que los inputs dentro de las tablas tengan buen contraste */
+.mat-mdc-table input {
+  color: #333333 !important;
+  background-color: transparent !important;
+}
+
+/* Mejorar contraste de selects */
+.mat-mdc-select-value-text {
+  color: #333333 !important;
+}
+
+.mat-mdc-select-arrow {
+  color: #333333 !important;
+}
+
+/* Asegurar que los paneles de selección tengan buen contraste */
+.mat-mdc-select-panel {
+  background-color: #ffffff !important;
+}
+
+.mat-mdc-option {
+  color: #333333 !important;
+}
+
+.mat-mdc-option:hover:not(.mat-mdc-option-disabled) {
+  background-color: rgba(63, 81, 181, 0.05) !important;
+}
+
+.mat-mdc-option.mat-mdc-selected:not(.mat-mdc-option-disabled) {
+  color: #3f51b5 !important;
+}
+
+/* Asegurar que los textos en los campos de formulario sean legibles */
+.mat-mdc-form-field-label {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.mat-mdc-input-element {
+  color: #333333 !important;
+}
+
+/* Estilos para estados específicos */
+.estado-activo {
+  color: #4caf50 !important;
+  font-weight: 500;
+}
+
+.estado-inactivo {
+  color: #f44336 !important;
+  font-weight: 500;
+}
+
+/* Estilos para las celdas de la tabla */
+td.mat-mdc-cell {
+  padding: 0 16px !important;
+  height: 48px !important;
+}
+
+/* Asegurar que los íconos tengan buen contraste */
+.mat-icon {
+  color: inherit;
+}
+
+/* Estilos para los botones de acción */
+button.mat-mdc-icon-button {
+  color: #3f51b5;
+}
+
+button.mat-mdc-icon-button.warn {
+  color: #f44336;
+}
+
+/* Mejorar la visualización de los IDs y textos largos */
+.mat-column-id {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Asegurar que los selects dentro de las tablas tengan buen contraste */
+td.mat-mdc-cell .mat-mdc-select {
+  color: #333333 !important;
+}
+
+/* Estilos para los badges y etiquetas */
+.cuenta-badge {
+  background-color: rgba(63, 81, 181, 0.1);
+  color: #3f51b5;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sin-cuenta {
+  color: #f44336;
+  font-style: italic;
+}
+
+.rol-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: rgba(63, 81, 181, 0.1);
+  color: #3f51b5;
+}
+
+/* Estilos globales para snackbars */
+.success-snackbar {
+  background: #4caf50;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}
+
+.error-snackbar {
+  background: #f44336;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}
+
+.mat-mdc-snack-bar-container {
+  &.success-snackbar {
+    --mdc-snackbar-container-color: #4caf50;
+    --mdc-snackbar-supporting-text-color: white;
+    --mat-snack-bar-button-color: white;
+  }
+
+  &.error-snackbar {
+    --mdc-snackbar-container-color: #f44336;
+    --mdc-snackbar-supporting-text-color: white;
+    --mat-snack-bar-button-color: white;
+  }
+}

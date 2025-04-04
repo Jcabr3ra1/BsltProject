@@ -1,0 +1,123 @@
+/* 📌 Contenedor principal */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    text-align: center;
+  }
+  
+  /* 🔹 Encabezado con título y botones */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+  }
+  
+  .header h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+  
+  /* 🔹 Botones */
+  button {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    border-radius: 6px;
+  }
+  
+  /* 📌 Tarjetas de Formulario */
+  .form-card {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: left;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+  }
+  
+  /* 📌 Formularios */
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  /* 📌 Tarjeta de la tabla */
+  .table-card {
+    width: 100%;
+    background: #121212;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: left;
+    margin-top: 20px;
+    max-height: 400px; /* 📌 Altura máxima para permitir scroll */
+    overflow-y: auto; /* 📌 Habilitar desplazamiento vertical */
+  }
+  
+  /* 📌 Contenedor de la tabla */
+  .table-container {
+    max-height: 350px; /* 📌 Controla la altura para evitar que se corte */
+    overflow-y: auto;
+  }
+  
+  /* 📌 Ajustes en la tabla */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  /* 📌 Encabezados */
+  mat-header-cell {
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #e0e0e0;
+  }
+  
+  /* 📌 Celdas */
+  mat-cell {
+    padding: 10px;
+    color: #f5f5f5;
+  }
+  
+  /* 📌 Botones de acción */
+  mat-icon-button {
+    color: #e91e63;
+  }
+  
+  /* 📌 Botón de asignación */
+  .ver-permisos {
+    color: #ff4081;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  
+  /* 📌 Responsividad */
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .form-card {
+      width: 90%;
+    }
+  
+    .table-card {
+      width: 100%;
+    }
+  }
+  
