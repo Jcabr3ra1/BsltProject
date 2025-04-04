@@ -1,0 +1,68 @@
+<h2 mat-dialog-title>Asignar Usuario a Cuenta</h2>
+
+<mat-dialog-content>
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando usuarios...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-message">
+      <mat-icon color="warn">error</mat-icon>
+      <span>{{ error }}</span>
+    </div>
+  }
+
+  @if (!loading) {
+    <form [formGroup]="form">
+      @if (account) {
+        <div class="account-info">
+          <h3>Información de la cuenta</h3>
+          <div class="account-details">
+            <p><strong>Número:</strong> {{ account.numero }}</p>
+            <p><strong>Tipo:</strong> {{ getTipoCuentaDisplay(account.tipo) }}</p>
+            <p><strong>Saldo:</strong> {{ account.saldo | currency:'USD':'symbol':'1.2-2' }}</p>
+          </div>
+        </div>
+      } @else {
+        <div class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          <span>No se encontraron datos de la cuenta</span>
+        </div>
+      }
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Seleccionar Usuario</mat-label>
+        <mat-select formControlName="usuarioId">
+          @for (usuario of usuarios; track usuario.id) {
+            <mat-option [value]="usuario.id">
+              {{ getUsuarioNombreCompleto(usuario) }}
+            </mat-option>
+          }
+        </mat-select>
+        @if (form.get('usuarioId')?.hasError('required')) {
+          <mat-error>
+            Debe seleccionar un usuario
+          </mat-error>
+        }
+      </mat-form-field>
+    </form>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="submitting">Cancelar</button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="onSubmit()" 
+    [disabled]="form.invalid || submitting">
+    @if (submitting) {
+      <mat-spinner diameter="20" color="accent"></mat-spinner>
+    } @else {
+      <span>Asignar</span>
+    }
+  </button>
+</mat-dialog-actions>

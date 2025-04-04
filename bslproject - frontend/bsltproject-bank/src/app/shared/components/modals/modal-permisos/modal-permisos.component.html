@@ -1,11 +1,33 @@
-<h2 mat-dialog-title>Permisos de {{ data.nombre }}</h2>
-<mat-dialog-content class="contenido">
-  <mat-list>
-    <mat-list-item *ngFor="let permiso of data.permisos">
-      <mat-icon>verified_user</mat-icon> {{ permiso.nombre }}
-    </mat-list-item>
-  </mat-list>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button (click)="cerrar()" color="primary">Cerrar</button>
-</mat-dialog-actions>
+<div class="permisos-modal">
+  <h2 mat-dialog-title>
+    <mat-icon class="title-icon">vpn_key</mat-icon>
+    Permisos de {{ data.nombre }}
+  </h2>
+  
+  <mat-dialog-content class="permisos-content">
+    @if (data.permisos.length > 0) {
+      <div class="permisos-grid">
+        @for (permiso of data.permisos; track permiso.id) {
+          <div class="permiso-item">
+            <mat-icon class="permiso-icon">verified_user</mat-icon>
+            <div class="permiso-details">
+              <span class="permiso-nombre">{{ permiso.nombre }}</span>
+              @if (permiso.descripcion) {
+                <span class="permiso-descripcion">{{ permiso.descripcion }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="no-permisos">
+        <mat-icon>info</mat-icon>
+        <p>Este rol no tiene permisos asignados</p>
+      </div>
+    }
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cerrar()" color="primary">Cerrar</button>
+  </mat-dialog-actions>
+</div>

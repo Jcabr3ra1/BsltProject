@@ -24,6 +24,103 @@ class TransaccionServicio:
             return transaccion
         return {"error": "Transacción no encontrada"}, 404
 
+    def obtener_por_usuario(self, id_usuario):
+        """
+        Obtiene todas las transacciones asociadas a un usuario específico.
+        
+        Args:
+            id_usuario (str): ID del usuario para filtrar las transacciones
+            
+        Returns:
+            list: Lista de transacciones del usuario
+        """
+        print(f"Servicio: Buscando transacciones para el usuario: {id_usuario}")
+        
+        # Primero obtenemos todas las cuentas del usuario
+        cuentas_usuario = self.repositorioCuenta.query({"usuario_id": id_usuario})
+        if not cuentas_usuario:
+            print(f"No se encontraron cuentas para el usuario {id_usuario}")
+            return []
+            
+        print(f"Cuentas encontradas para el usuario {id_usuario}: {len(cuentas_usuario)}")
+        
+        # Obtenemos todas las transacciones
+        todas_transacciones = self.repositorioTransaccion.findAll()
+        
+        # Filtramos las transacciones que involucran las cuentas del usuario
+        transacciones_usuario = []
+        ids_cuentas = [cuenta["_id"] for cuenta in cuentas_usuario]
+        
+        # También obtenemos los bolsillos asociados a las cuentas del usuario
+        bolsillos_usuario = []
+        for cuenta in cuentas_usuario:
+            if cuenta.get("id_bolsillo"):
+                bolsillo = self.repositorioBolsillo.findById(cuenta["id_bolsillo"])
+                if bolsillo:
+                    bolsillos_usuario.append(bolsillo)
+                    
+        ids_bolsillos = [bolsillo["_id"] for bolsillo in bolsillos_usuario]
+        
+        for transaccion in todas_transacciones:
+            # Verificamos si la cuenta origen o destino pertenece al usuario
+            cuenta_origen_match = "id_cuenta_origen" in transaccion and transaccion["id_cuenta_origen"] in ids_cuentas
+            cuenta_destino_match = "id_cuenta_destino" in transaccion and transaccion["id_cuenta_destino"] in ids_cuentas
+            bolsillo_origen_match = "id_bolsillo_origen" in transaccion and transaccion["id_bolsillo_origen"] in ids_bolsillos
+            bolsillo_destino_match = "id_bolsillo_destino" in transaccion and transaccion["id_bolsillo_destino"] in ids_bolsillos
+            
+            if cuenta_origen_match or cuenta_destino_match or bolsillo_origen_match or bolsillo_destino_match:
+                # Enriquecer la transacción con información relacionada
+                transaccion_enriquecida = self._enriquecer_transaccion(transaccion)
+                transacciones_usuario.append(transaccion_enriquecida)
+        
+        print(f"Transacciones encontradas para el usuario {id_usuario}: {len(transacciones_usuario)}")
+        return transacciones_usuario
+        
+    def _enriquecer_transaccion(self, transaccion):
+        """
+        Enriquece una transacción con información de las entidades relacionadas
+        
+        Args:
+            transaccion (dict): Transacción a enriquecer
+            
+        Returns:
+            dict: Transacción enriquecida con información de cuentas, bolsillos y tipos
+        """
+        # Crear una copia para no modificar el original
+        transaccion_enriquecida = transaccion.copy()
+        
+        # Añadir información de tipo de movimiento
+        if "id_tipo_movimiento" in transaccion and transaccion["id_tipo_movimiento"]:
+            tipo_movimiento = self.repositorioTipoMovimiento.findById(transaccion["id_tipo_movimiento"])
+            if tipo_movimiento:
+                transaccion_enriquecida["tipo_movimiento"] = tipo_movimiento
+        
+        # Añadir información de cuenta origen
+        if "id_cuenta_origen" in transaccion and transaccion["id_cuenta_origen"]:
+            cuenta_origen = self.repositorioCuenta.findById(transaccion["id_cuenta_origen"])
+            if cuenta_origen:
+                transaccion_enriquecida["cuenta_origen"] = cuenta_origen
+        
+        # Añadir información de cuenta destino
+        if "id_cuenta_destino" in transaccion and transaccion["id_cuenta_destino"]:
+            cuenta_destino = self.repositorioCuenta.findById(transaccion["id_cuenta_destino"])
+            if cuenta_destino:
+                transaccion_enriquecida["cuenta_destino"] = cuenta_destino
+        
+        # Añadir información de bolsillo origen
+        if "id_bolsillo_origen" in transaccion and transaccion["id_bolsillo_origen"]:
+            bolsillo_origen = self.repositorioBolsillo.findById(transaccion["id_bolsillo_origen"])
+            if bolsillo_origen:
+                transaccion_enriquecida["bolsillo_origen"] = bolsillo_origen
+        
+        # Añadir información de bolsillo destino
+        if "id_bolsillo_destino" in transaccion and transaccion["id_bolsillo_destino"]:
+            bolsillo_destino = self.repositorioBolsillo.findById(transaccion["id_bolsillo_destino"])
+            if bolsillo_destino:
+                transaccion_enriquecida["bolsillo_destino"] = bolsillo_destino
+                
+        return transaccion_enriquecida
+
     def crear(self, infoTransaccion):
         nuevaTransaccion = Transaccion(infoTransaccion)
         monto = infoTransaccion["monto"]
@@ -122,17 +219,19 @@ class TransaccionServicio:
 
     def _retiroCuentaBanco(self, infoTransaccion, monto):
         cuenta_origen_data = self.repositorioCuenta.findById(infoTransaccion["id_cuenta_origen"])
-        cuenta_origen = Cuenta(cuenta_origen_data) if cuenta_origen_data else None
 
-        if not cuenta_origen:
+        if not cuenta_origen_data:
             return {"error": "Cuenta origen no encontrada"}, 404
+
+        # ✅ Convertimos el diccionario en una instancia de Transaccion antes de modificarlo
+        cuenta_origen = Cuenta(cuenta_origen_data)
 
         if cuenta_origen.saldo < monto:
             return {"error": "Saldo insuficiente en la cuenta"}, 400
 
         cuenta_origen.saldo -= monto
 
-        # Pasamos directamente el objeto en lugar de usar `vars`
+        # ✅ Guardar la cuenta como objeto, no como diccionario
         self.repositorioCuenta.save(cuenta_origen)
 
         print("✅ Guardando transacción de retiro de cuenta a banco:", infoTransaccion)
@@ -194,7 +293,7 @@ class TransaccionServicio:
         if not cuenta_origen_data:
             return {"error": "Cuenta origen no encontrada"}, 404
 
-        # ✅ Convertimos a objeto Cuenta
+        # ✅ Convertimos el diccionario en una instancia de Transaccion antes de modificarlo
         cuenta_origen = Cuenta(cuenta_origen_data)
 
         if cuenta_origen.saldo < monto:
@@ -278,7 +377,3 @@ class TransaccionServicio:
 
         # ✅ Guardamos el objeto actualizado
         return self.repositorioTransaccion.save(transaccion)
-
-
-
-

@@ -35,6 +35,12 @@ public class ControladorUsuario {
 
     @PostMapping("/autenticacion/registro")
     public ResponseEntity<Usuario> registrarUsuario(@RequestBody Usuario usuario) {
+        System.out.println("DEBUG - Controlador: Datos de registro recibidos:");
+        System.out.println("Email: " + usuario.getEmail());
+        System.out.println("Nombre: " + usuario.getNombre());
+        System.out.println("Apellido: " + usuario.getApellido());
+        System.out.println("Datos completos: " + usuario.toString());
+        
         Usuario nuevoUsuario = usuarioServicio.crearUsuario(usuario);
         return ResponseEntity.ok(nuevoUsuario);
     }
@@ -189,7 +195,16 @@ public class ControladorUsuario {
 
     @PutMapping("/usuarios/{userId}/cuentas/{accountId}")
     public ResponseEntity<Usuario> asignarCuenta(@PathVariable String userId, @PathVariable String accountId) {
-        Usuario usuarioActualizado = usuarioServicio.asignarCuentaAUsuario(userId, accountId);
-        return ResponseEntity.ok(usuarioActualizado);
+        System.out.println("DEBUG - Recibida solicitud para asignar cuenta: " + accountId + " al usuario: " + userId);
+        try {
+            Usuario usuarioActualizado = usuarioServicio.asignarCuentaAUsuario(userId, accountId);
+            System.out.println("DEBUG - Cuenta asignada correctamente. Usuario actualizado: " + usuarioActualizado);
+            return ResponseEntity.ok(usuarioActualizado);
+        } catch (Exception e) {
+            System.err.println("ERROR - Fallo al asignar cuenta: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 }

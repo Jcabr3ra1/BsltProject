@@ -666,6 +666,38 @@ p {
   }
 }
 
+/* Estilos para diálogos personalizados */
+.custom-dialog .mat-mdc-dialog-container {
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+.custom-dialog .mat-mdc-dialog-surface {
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+/* Estilos para snackbars */
+.success-snackbar {
+  background-color: var(--success);
+  color: white;
+}
+
+.error-snackbar {
+  background-color: var(--error);
+  color: white;
+}
+
+.warning-snackbar {
+  background-color: var(--warning);
+  color: white;
+}
+
+.info-snackbar {
+  background-color: var(--info);
+  color: white;
+}
+
 /* Animaciones */
 .fade-in {
   animation: fadeIn 0.3s ease-in;

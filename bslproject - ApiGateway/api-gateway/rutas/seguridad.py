@@ -4,6 +4,7 @@ from fastapi import APIRouter, Request, HTTPException, Depends
 from starlette.responses import JSONResponse
 from middleware.autenticacion import verificar_token, verificar_rol, verificar_roles_permitidos, CLAVE_SECRETA
 import json
+import hashlib
 
 # Cargar configuración
 with open("configuracion/config.json", "r") as archivo_config:
@@ -58,16 +59,6 @@ async def registrar_usuario(request: Request):
     response = requests.post(f"{URL_SEGURIDAD}/seguridad/autenticacion/registro", json=datos)
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al registrar usuario")
 
-@router.post("/cerrar-sesion")
-async def cerrar_sesion(request: Request):
-    """Cerrar sesión de usuario"""
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        raise HTTPException(status_code=401, detail="Token de autorización faltante")
-    response = requests.post(f"{URL_SEGURIDAD}/seguridad/cerrar-sesion", headers={"Authorization": auth_header})
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al cerrar sesión")
-
-
 @router.post("/autenticacion/verificar-token")
 async def verificar_token(request: Request):
     """Verifica la validez de un token JWT"""
@@ -85,11 +76,21 @@ async def verificar_token(request: Request):
         try:
             # Decodificar el token
             contenido = jwt.decode(token, CLAVE_SECRETA, algorithms=["HS256"])
-
+            
+            # Obtener información del token
+            email = contenido.get('sub')
+            roles = contenido.get('roles', [])
+            
+            # Asegurarse de que al menos tenga el rol USER si no tiene ningún rol
+            if not roles:
+                roles = ["USER"]
+            elif "USER" not in roles and "ADMIN" not in roles and "MODERATOR" not in roles:
+                roles.append("USER")
+            
             # Si llegamos aquí, el token es válido
             # Obtener usuario desde el servicio de seguridad
             usuario_response = requests.get(
-                f"{URL_SEGURIDAD}/seguridad/usuarios/email/{contenido.get('sub')}",
+                f"{URL_SEGURIDAD}/seguridad/usuarios/email/{email}",
                 headers={"Authorization": f"Bearer {token}"}
             )
 
@@ -99,12 +100,21 @@ async def verificar_token(request: Request):
                     content={"isValid": True, "user": usuario_response.json()}
                 )
             else:
+                # Extraer ID único del token (usando el hash del token como ID provisional)
+                # Esto es mejor que un "temp-id" fijo
+                import hashlib
+                token_id = hashlib.md5(f"{email}:{roles}".encode()).hexdigest()
+                
+                # Log para debug
+                print(f"No se pudo obtener usuario de seguridad. Generando ID basado en token: {token_id}")
+                print(f"Roles asignados al usuario: {roles}")
+                
                 return JSONResponse(
                     status_code=200,
                     content={"isValid": True, "user": {
-                        "id": "temp-id",
-                        "email": contenido.get('sub'),
-                        "roles": contenido.get('roles', [])
+                        "id": token_id,
+                        "email": email,
+                        "roles": roles
                     }}
                 )
 
@@ -119,6 +129,16 @@ async def verificar_token(request: Request):
     except Exception as e:
         print(f"Error inesperado en verificar_token: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/cerrar-sesion")
+async def cerrar_sesion(request: Request):
+    """Cerrar sesión de usuario"""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        raise HTTPException(status_code=401, detail="Token de autorización faltante")
+    response = requests.post(f"{URL_SEGURIDAD}/seguridad/cerrar-sesion", headers={"Authorization": auth_header})
+    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al cerrar sesión")
+
 
 # USUARIOS
 @router.get("/usuarios")
@@ -178,14 +198,14 @@ async def asignar_rol(userId: str, roleId: str, request: Request, token_data: di
     response = requests.put(f"{URL_SEGURIDAD}/seguridad/usuarios/{userId}/roles/{roleId}", headers={"Authorization": auth_header})
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code)
 
-@router.put("/usuarios/{id}/estado/{statusId}")
-async def asignar_estado_a_usuario(id: str, statusId: str, request: Request):
+@router.put("/usuarios/{userId}/estados/{estadoId}")
+async def asignar_estado_a_usuario(userId: str, estadoId: str, request: Request, token_data: dict = Depends(verificar_roles_permitidos(["ADMIN"]))):
     """Redirige la solicitud al backend de seguridad para asignar un estado a un usuario."""
     auth_header = request.headers.get("Authorization")
     if not auth_header:
         raise HTTPException(status_code=401, detail="Token de autorización faltante")
     response = requests.put(
-        f"{URL_SEGURIDAD}/seguridad/usuarios/{id}/status/{statusId}",
+        f"{URL_SEGURIDAD}/seguridad/usuarios/{userId}/estados/{estadoId}",
         headers={"Authorization": auth_header}
     )
     if response.status_code == 200:
@@ -230,11 +250,11 @@ async def obtener_rol_por_nombre(name: str, request: Request, token_data: dict =
         return response.json()
     raise HTTPException(status_code=response.status_code, detail="Rol no encontrado")
 
-@router.get("/roles/{id}/permissions")
+@router.get("/roles/{id}/permisos")
 async def obtener_permisos_de_rol(id: str, request: Request, token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))):
     """Obtiene los permisos de un rol"""
     auth_header = request.headers.get("Authorization")
-    response = requests.get(f"{URL_SEGURIDAD}/seguridad/roles/{id}/permissions", headers={"Authorization": auth_header})
+    response = requests.get(f"{URL_SEGURIDAD}/seguridad/roles/{id}/permisos", headers={"Authorization": auth_header})
     if response.status_code == 200:
         return response.json()
     raise HTTPException(status_code=response.status_code, detail="Error al obtener permisos del rol")

@@ -62,7 +62,14 @@ async def reenviar_token(request: Request, call_next):
         return JSONResponse(status_code=403, content={"error": "El token no es válido. Debe ser una cadena JWT."})
 
     if auth_header:
+        print(f"Middleware - Reenviando token de autorización: {auth_header[:30]}...")
+        # Asegurarse de que el token se reenvía correctamente
         request.headers.__dict__["_list"].append((b"authorization", auth_header.encode()))
+        
+        # Imprimir todas las cabeceras para depuración
+        print("Middleware - Todas las cabeceras:")
+        for header, value in request.headers.items():
+            print(f"  {header}: {value[:30]}...")
 
     try:
         response = await call_next(request)

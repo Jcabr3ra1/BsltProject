@@ -1,21 +1,88 @@
 import { Account } from './cuenta.model';
-import { Pocket } from './bolsillo.model';
 import { User } from '../seguridad/usuario.model';
+import { EstadoTransaccion } from './estado-transaccion.enum';
 
 /**
- * Estados posibles de una transacción
+ * Modelo de Tipo de Transacción
  */
-export enum TransactionStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-  CANCELLED = 'CANCELLED'
+export interface TipoTransaccion {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+  activo?: boolean;
 }
 
 /**
- * Tipos de transacciones posibles
+ * Modelo unificado de Transacción
  */
-export enum TransactionType {
+export interface Transaccion {
+  id: string;
+  monto: number;
+  descripcion: string;
+  fecha: Date;
+  estado: string;
+  
+  // Campos con nomenclatura snake_case (API)
+  tipo_transaccion_id?: string;
+  cuenta_origen_id?: string;
+  cuenta_destino_id?: string;
+  bolsillo_origen_id?: string;
+  bolsillo_destino_id?: string;
+  usuario_id?: string;
+  fecha_creacion?: Date;
+  fecha_actualizacion?: Date;
+  
+  // Campos con nomenclatura camelCase (Frontend)
+  tipo?: string;
+  tipoTransaccion?: TipoTransaccion;
+  cuentaOrigenId?: string;
+  cuentaDestinoId?: string;
+  bolsilloOrigenId?: string;
+  bolsilloDestinoId?: string;
+  userId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  
+  // Relaciones
+  cuentaOrigen?: Account;
+  cuentaDestino?: Account;
+  estadoTransaccion?: EstadoTransaccion;
+}
+
+/**
+ * Modelo para solicitud de nueva transacción
+ */
+export interface TransaccionRequest {
+  tipo: string;
+  monto: number;
+  descripcion: string;
+  cuentaOrigenId?: string;
+  cuentaDestinoId?: string;
+  bolsilloOrigenId?: string;
+  bolsilloDestinoId?: string;
+  userId?: string;
+}
+
+/**
+ * Filtros para búsqueda de transacciones
+ */
+export interface TransaccionFiltros {
+  accountId?: string;
+  type?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+  montoMinimo?: number;
+  montoMaximo?: number;
+}
+
+// Alias para compatibilidad con código existente
+export type Transaction = Transaccion;
+export type CreateTransactionRequest = TransaccionRequest;
+export type TransactionFilters = TransaccionFiltros;
+
+// Tipos de transacción
+export enum TipoTransaccionEnum {
   CUENTA_CUENTA = 'CUENTA_CUENTA',
   CUENTA_BOLSILLO = 'CUENTA_BOLSILLO',
   BOLSILLO_CUENTA = 'BOLSILLO_CUENTA',
@@ -24,49 +91,14 @@ export enum TransactionType {
   CUENTA_BANCO = 'CUENTA_BANCO'
 }
 
-/**
- * Modelo de Transacción
- * 
- * Representa una transacción financiera en el sistema
- */
-export interface Transaction {
-  id: string;
-  tipo: TransactionType;
-  monto: number;
-  estado: TransactionStatus;
-  descripcion: string;
-  cuentaOrigenId?: string;
-  cuentaDestinoId?: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
+// Estados de transacción
+export enum EstadoTransaccionEnum {
+  PENDIENTE = 'PENDING',
+  APROBADA = 'APPROVED',
+  RECHAZADA = 'REJECTED',
+  CANCELADA = 'CANCELLED'
 }
 
-/**
- * Modelo para solicitud de nueva transacción
- */
-export interface CreateTransactionRequest {
-  tipo: TransactionType;
-  monto: number;
-  descripcion: string;
-  cuentaOrigenId?: string;
-  cuentaDestinoId?: string;
-  userId: string;
-}
-
-/**
- * Filtros para búsqueda de transacciones
- */
-export interface TransactionFilters {
-  accountId?: string;
-  type?: TransactionType;
-  status?: TransactionStatus;
-  startDate?: string;
-  endDate?: string;
-}
-
-// For backward compatibility
-export type Transaccion = Transaction;
-export type TransaccionRequest = CreateTransactionRequest;
-export type TipoTransaccion = TransactionType;
-export type EstadoTransaccion = TransactionStatus;
+// Para compatibilidad con código existente
+export const TransactionType = TipoTransaccionEnum;
+export const TransactionStatus = EstadoTransaccionEnum;

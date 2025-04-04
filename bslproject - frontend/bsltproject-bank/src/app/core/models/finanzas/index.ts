@@ -1,15 +1,31 @@
-// Exportaciones explícitas para evitar ambigüedades
-import { TipoMovimiento } from './tipo-movimiento.model';
-import { Transaccion, TipoTransaccion } from './transaccion.model';
-import { Bolsillo, BolsilloRequest } from './bolsillo.model';
-import { Cuenta } from './cuenta.model';
-
-// Usar 'export type' para interfaces cuando isolatedModules está habilitado
+// Exportar modelos de finanzas de forma explícita
+export type { TipoMovimiento } from './tipo-movimiento.model';
 export type { 
-  TipoMovimiento,
-  Transaccion,
+  Transaccion, 
+  TransaccionRequest,
+  TransaccionFiltros,
   TipoTransaccion,
-  Bolsillo,
+  Transaction,
+  CreateTransactionRequest,
+  TransactionFilters
+} from './transaccion.model';
+export { 
+  TipoTransaccionEnum, 
+  EstadoTransaccionEnum,
+  TransactionType,
+  TransactionStatus 
+} from './transaccion.model';
+export type { 
+  Bolsillo, 
   BolsilloRequest,
-  Cuenta
-};
+  Pocket,
+  PocketRequest 
+} from './bolsillo.model';
+export type { 
+  Cuenta, 
+  Account,
+  TipoCuenta,
+  CreateAccountRequest,
+  AccountFilters
+} from './cuenta.model';
+export { AccountType } from './cuenta.model';

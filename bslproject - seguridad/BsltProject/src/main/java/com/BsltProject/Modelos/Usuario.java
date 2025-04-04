@@ -23,6 +23,7 @@ public class Usuario {
 
     private String email;
     private String nombre;
+    private String apellido; // Campo para almacenar el apellido del usuario
     private String password;
 
     private String cuentaId; // ✅ Solo almacenamos el ID de la cuenta

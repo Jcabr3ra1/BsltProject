@@ -1,80 +1,104 @@
-<h2 mat-dialog-title>{{titulo}}</h2>
+<div class="dialog-container">
+  <h2 mat-dialog-title>
+    <mat-icon class="title-icon">{{ data.modo === 'crear' ? 'add_circle' : 'edit' }}</mat-icon>
+    {{titulo}}
+  </h2>
 
-<form [formGroup]="tipoMovimientoForm" (ngSubmit)="onSubmit()">
-  <mat-dialog-content>
-    <div class="row">
-      <!-- Nombre -->
-      <div class="col-12 mb-3">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Nombre</mat-label>
-          <input matInput formControlName="nombre" placeholder="Ej: Transferencia entre cuentas">
-          <mat-error *ngIf="tipoMovimientoForm.get('nombre')?.hasError('required')">
-            El nombre es requerido
-          </mat-error>
-          <mat-error *ngIf="tipoMovimientoForm.get('nombre')?.hasError('maxlength')">
-            El nombre no puede exceder los 100 caracteres
-          </mat-error>
-        </mat-form-field>
+  <form [formGroup]="tipoMovimientoForm" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+      <div class="row">
+        <!-- Nombre -->
+        <div class="col-12 mb-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" placeholder="Ej: Transferencia entre cuentas">
+            <mat-icon matPrefix class="me-2 text-muted">label</mat-icon>
+            <mat-error *ngIf="tipoMovimientoForm.get('nombre')?.hasError('required') && tipoMovimientoForm.get('nombre')?.touched">
+              El nombre es requerido
+            </mat-error>
+            <mat-error *ngIf="tipoMovimientoForm.get('nombre')?.hasError('maxlength')">
+              El nombre no puede exceder los 100 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Código Origen -->
+        <div class="col-md-6 mb-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Origen</mat-label>
+            <mat-select formControlName="codigo_origen">
+              <mat-option *ngFor="let tipo of tiposOrigen; trackBy: trackByValue" [value]="tipo.valor">
+                {{tipo.nombre}}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix class="me-2 text-muted">call_made</mat-icon>
+            <mat-error *ngIf="tipoMovimientoForm.get('codigo_origen')?.hasError('required') && tipoMovimientoForm.get('codigo_origen')?.touched">
+              El origen es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Código Destino -->
+        <div class="col-md-6 mb-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Destino</mat-label>
+            <mat-select formControlName="codigo_destino">
+              <mat-option *ngFor="let tipo of tiposDestino; trackBy: trackByValue" [value]="tipo.valor">
+                {{tipo.nombre}}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix class="me-2 text-muted">call_received</mat-icon>
+            <mat-error *ngIf="tipoMovimientoForm.get('codigo_destino')?.hasError('required') && tipoMovimientoForm.get('codigo_destino')?.touched">
+              El destino es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Descripción -->
+        <div class="col-12 mb-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="descripcion" rows="3" 
+                     placeholder="Descripción detallada del tipo de movimiento"></textarea>
+            <mat-icon matPrefix class="me-2 text-muted description-icon">description</mat-icon>
+            <mat-error *ngIf="tipoMovimientoForm.get('descripcion')?.hasError('maxlength')">
+              La descripción no puede exceder los 255 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Estado -->
+        <div class="col-12 mb-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="estado">
+              <mat-option [value]="true">
+                <span class="status-option active">
+                  <mat-icon>check_circle</mat-icon> Activo
+                </span>
+              </mat-option>
+              <mat-option [value]="false">
+                <span class="status-option inactive">
+                  <mat-icon>cancel</mat-icon> Inactivo
+                </span>
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix class="me-2 text-muted">toggle_on</mat-icon>
+          </mat-form-field>
+        </div>
       </div>
+    </mat-dialog-content>
 
-      <!-- Código Origen -->
-      <div class="col-md-6 mb-3">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Origen</mat-label>
-          <mat-select formControlName="codigo_origen">
-            <mat-option *ngFor="let tipo of tiposOrigen" [value]="tipo.valor">
-              {{tipo.nombre}}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="tipoMovimientoForm.get('codigo_origen')?.hasError('required')">
-            El origen es requerido
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-      <!-- Código Destino -->
-      <div class="col-md-6 mb-3">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Destino</mat-label>
-          <mat-select formControlName="codigo_destino">
-            <mat-option *ngFor="let tipo of tiposDestino" [value]="tipo.valor">
-              {{tipo.nombre}}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="tipoMovimientoForm.get('codigo_destino')?.hasError('required')">
-            El destino es requerido
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-      <!-- Descripción -->
-      <div class="col-12 mb-3">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Descripción</mat-label>
-          <textarea matInput formControlName="descripcion" rows="3" placeholder="Descripción detallada del tipo de movimiento"></textarea>
-          <mat-error *ngIf="tipoMovimientoForm.get('descripcion')?.hasError('maxlength')">
-            La descripción no puede exceder los 255 caracteres
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-      <!-- Estado -->
-      <div class="col-12 mb-3">
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Estado</mat-label>
-          <mat-select formControlName="estado">
-            <mat-option [value]="true">Activo</mat-option>
-            <mat-option [value]="false">Inactivo</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
-  </mat-dialog-content>
-
-  <mat-dialog-actions align="end">
-    <button mat-button type="button" (click)="onCancel()">Cancelar</button>
-    <button mat-raised-button color="primary" type="submit" [disabled]="tipoMovimientoForm.invalid">
-      Guardar
-    </button>
-  </mat-dialog-actions>
-</form>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="onCancel()" class="cancel-button">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button mat-raised-button color="primary" type="submit" 
+              [disabled]="tipoMovimientoForm.invalid || isSubmitting">
+        <mat-icon>{{ data.modo === 'crear' ? 'save' : 'update' }}</mat-icon>
+        {{ data.modo === 'crear' ? 'Guardar' : 'Actualizar' }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

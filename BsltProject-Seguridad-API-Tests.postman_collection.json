@@ -1,0 +1,805 @@
+{
+	"info": {
+		"_postman_id": "8e6a9f3e-2c4d-4b6c-9d2a-8b7e3f4e5d2c",
+		"name": "BsltProject-Seguridad-API-Tests",
+		"description": "Colección para probar los endpoints del servicio de seguridad del BsltProject.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "Obtener Todos los Usuarios",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/usuarios",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"usuarios"
+							]
+						},
+						"description": "Obtener todos los usuarios registrados en el sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/usuarios/{{userId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"usuarios",
+								"{{userId}}"
+							]
+						},
+						"description": "Obtener información detallada de un usuario específico por su ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Nombre Actualizado\",\n    \"apellido\": \"Apellido Actualizado\",\n    \"email\": \"email@actualizado.com\"\n}"
+						},
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/usuarios/{{userId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"usuarios",
+								"{{userId}}"
+							]
+						},
+						"description": "Actualizar información de un usuario existente"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/usuarios/{{userId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"usuarios",
+								"{{userId}}"
+							]
+						},
+						"description": "Eliminar un usuario del sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Asignar Rol a Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/usuarios/{{userId}}/roles/{{roleId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"usuarios",
+								"{{userId}}",
+								"roles",
+								"{{roleId}}"
+							]
+						},
+						"description": "Asignar un rol específico a un usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Asignar Estado a Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/usuarios/{{userId}}/estados/{{stateId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"usuarios",
+								"{{userId}}",
+								"estados",
+								"{{stateId}}"
+							]
+						},
+						"description": "Asignar un estado específico a un usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Asignar Cuenta a Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/usuarios/{{userId}}/cuentas/{{cuentaId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"usuarios",
+								"{{userId}}",
+								"cuentas",
+								"{{cuentaId}}"
+							]
+						},
+						"description": "Asignar una cuenta específica a un usuario"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints relacionados con la gestión de usuarios"
+		},
+		{
+			"name": "Roles",
+			"item": [
+				{
+					"name": "Obtener Todos los Roles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/roles",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"roles"
+							]
+						},
+						"description": "Obtener todos los roles disponibles en el sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Rol por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/roles/{{roleId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"roles",
+								"{{roleId}}"
+							]
+						},
+						"description": "Obtener información detallada de un rol específico por su ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Rol por Nombre",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/roles/name/ADMIN",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"roles",
+								"name",
+								"ADMIN"
+							]
+						},
+						"description": "Obtener información de un rol por su nombre"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Rol",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"NUEVO_ROL\",\n    \"descripcion\": \"Descripción del nuevo rol\"\n}"
+						},
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/roles",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"roles"
+							]
+						},
+						"description": "Crear un nuevo rol en el sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Rol",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"ROL_ACTUALIZADO\",\n    \"descripcion\": \"Descripción actualizada del rol\"\n}"
+						},
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/roles/{{roleId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"roles",
+								"{{roleId}}"
+							]
+						},
+						"description": "Actualizar información de un rol existente"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Rol",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/roles/{{roleId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"roles",
+								"{{roleId}}"
+							]
+						},
+						"description": "Eliminar un rol del sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Permisos de Rol",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/roles/{{roleId}}/permissions",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"roles",
+								"{{roleId}}",
+								"permissions"
+							]
+						},
+						"description": "Obtener todos los permisos asociados a un rol específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuarios con Rol",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/roles/{{roleId}}/users",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"roles",
+								"{{roleId}}",
+								"users"
+							]
+						},
+						"description": "Obtener todos los usuarios que tienen asignado un rol específico"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints relacionados con la gestión de roles"
+		},
+		{
+			"name": "Permisos",
+			"item": [
+				{
+					"name": "Obtener Todos los Permisos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/permisos",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"permisos"
+							]
+						},
+						"description": "Obtener todos los permisos disponibles en el sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Permiso por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/permisos/{{permisoId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"permisos",
+								"{{permisoId}}"
+							]
+						},
+						"description": "Obtener información detallada de un permiso específico por su ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Permiso por Nombre",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/permisos/nombre/CREAR_USUARIO",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"permisos",
+								"nombre",
+								"CREAR_USUARIO"
+							]
+						},
+						"description": "Obtener información de un permiso por su nombre"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Permiso",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"NUEVO_PERMISO\",\n    \"descripcion\": \"Descripción del nuevo permiso\"\n}"
+						},
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/permisos",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"permisos"
+							]
+						},
+						"description": "Crear un nuevo permiso en el sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Permiso",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"PERMISO_ACTUALIZADO\",\n    \"descripcion\": \"Descripción actualizada del permiso\"\n}"
+						},
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/permisos/{{permisoId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"permisos",
+								"{{permisoId}}"
+							]
+						},
+						"description": "Actualizar información de un permiso existente"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Permiso",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/permisos/{{permisoId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"permisos",
+								"{{permisoId}}"
+							]
+						},
+						"description": "Eliminar un permiso del sistema"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints relacionados con la gestión de permisos"
+		},
+		{
+			"name": "Estados",
+			"item": [
+				{
+					"name": "Obtener Todos los Estados",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/estados",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"estados"
+							]
+						},
+						"description": "Obtener todos los estados disponibles en el sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Estado por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/estados/{{estadoId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"estados",
+								"{{estadoId}}"
+							]
+						},
+						"description": "Obtener información detallada de un estado específico por su ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Estado",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"NUEVO_ESTADO\",\n    \"descripcion\": \"Descripción del nuevo estado\"\n}"
+						},
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/estados",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"estados"
+							]
+						},
+						"description": "Crear un nuevo estado en el sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Estado",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"ESTADO_ACTUALIZADO\",\n    \"descripcion\": \"Descripción actualizada del estado\"\n}"
+						},
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/estados/{{estadoId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"estados",
+								"{{estadoId}}"
+							]
+						},
+						"description": "Actualizar información de un estado existente"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Estado",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiGatewayUrl}}/seguridad/estados/{{estadoId}}",
+							"host": [
+								"{{apiGatewayUrl}}"
+							],
+							"path": [
+								"seguridad",
+								"estados",
+								"{{estadoId}}"
+							]
+						},
+						"description": "Eliminar un estado del sistema"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints relacionados con la gestión de estados"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "apiGatewayUrl",
+			"value": "http://localhost:7778",
+			"type": "string"
+		},
+		{
+			"key": "seguridadUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "roleId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "permisoId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "estadoId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "cuentaId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

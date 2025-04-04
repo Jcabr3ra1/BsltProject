@@ -2,35 +2,35 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Bolsillo } from '@core/models/finanzas/bolsillo.model';
+import { Pocket } from '@core/models/finanzas/bolsillo.model';
 import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BolsilloService {
-  private baseUrl = `${environment.financeUrl}/bolsillos`;
+  private baseUrl = `${environment.apiGatewayUrl}/finanzas/bolsillos`;
   private headers = new HttpHeaders().set('Content-Type', 'application/json');
 
   constructor(private http: HttpClient) {}
 
-  obtenerTodos(): Observable<Bolsillo[]> {
-    return this.http.get<Bolsillo[]>(this.baseUrl, { headers: this.headers })
+  obtenerTodos(): Observable<Pocket[]> {
+    return this.http.get<Pocket[]>(this.baseUrl, { headers: this.headers })
       .pipe(catchError(this.handleError));
   }
 
-  obtenerPorId(id: string): Observable<Bolsillo> {
-    return this.http.get<Bolsillo>(`${this.baseUrl}/${id}`, { headers: this.headers })
+  obtenerPorId(id: string): Observable<Pocket> {
+    return this.http.get<Pocket>(`${this.baseUrl}/${id}`, { headers: this.headers })
       .pipe(catchError(this.handleError));
   }
 
-  crear(bolsillo: Bolsillo): Observable<Bolsillo> {
-    return this.http.post<Bolsillo>(this.baseUrl, bolsillo, { headers: this.headers })
+  crear(bolsillo: Pocket): Observable<Pocket> {
+    return this.http.post<Pocket>(this.baseUrl, bolsillo, { headers: this.headers })
       .pipe(catchError(this.handleError));
   }
 
-  actualizar(id: string, bolsillo: Bolsillo): Observable<Bolsillo> {
-    return this.http.put<Bolsillo>(`${this.baseUrl}/${id}`, bolsillo, { headers: this.headers })
+  actualizar(id: string, bolsillo: Pocket): Observable<Pocket> {
+    return this.http.put<Pocket>(`${this.baseUrl}/${id}`, bolsillo, { headers: this.headers })
       .pipe(catchError(this.handleError));
   }
 
@@ -39,8 +39,8 @@ export class BolsilloService {
       .pipe(catchError(this.handleError));
   }
 
-  obtenerPorCuenta(cuentaId: string): Observable<Bolsillo[]> {
-    return this.http.get<Bolsillo[]>(`${this.baseUrl}/cuenta/${cuentaId}`, { headers: this.headers })
+  obtenerPorCuenta(cuentaId: string): Observable<Pocket[]> {
+    return this.http.get<Pocket[]>(`${this.baseUrl}/cuenta/${cuentaId}`, { headers: this.headers })
       .pipe(catchError(this.handleError));
   }
 

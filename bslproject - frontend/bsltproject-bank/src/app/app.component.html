@@ -1,7 +1,7 @@
 <!-- Main container with GitHub-inspired layout -->
 <div class="app-container">
   <!-- Main content -->
-  @if ((isAuthenticated$ | async) && !isLandingPage()) {
+  @if ((isAuthenticated$ | async) && !isPublicPage()) {
     <!-- Navbar - YouTube-inspired -->
     <mat-toolbar class="modern-navbar">
       <div class="navbar-left">
@@ -86,9 +86,8 @@
     </mat-sidenav-container>
   } @else {
     <router-outlet></router-outlet>
-    @if (!isLandingPage()) {
+    @if (!isPublicPage()) {
       <app-footer></app-footer>
     }
   }
 </div>
-

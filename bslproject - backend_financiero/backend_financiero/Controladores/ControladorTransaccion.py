@@ -169,6 +169,15 @@ def retiro_cuenta_banco(data: dict):
     
     return resultado
 
+@router.get("/usuario/{id_usuario}")
+def obtener_transacciones_por_usuario(id_usuario: str):
+    """Obtiene todas las transacciones asociadas a un usuario específico"""
+    print(f"Buscando transacciones para el usuario: {id_usuario}")
+    resultado = servicio.obtener_por_usuario(id_usuario)
+    if isinstance(resultado, tuple) and len(resultado) > 1 and "error" in resultado[0]:
+        raise HTTPException(status_code=404, detail=resultado[0]["error"])
+    return resultado
+
 @router.get("/historial")
 def historial_transacciones(
     fechaInicio: str = None,

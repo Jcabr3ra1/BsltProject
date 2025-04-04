@@ -216,6 +216,13 @@
   font-weight: 500;
 }
 
+.warning-hint {
+  color: #f57c00; // Color naranja para advertencias
+  font-weight: 500;
+  margin-top: 4px;
+  display: block;
+}
+
 // Responsive styles
 @media (max-width: 600px) {
   .transaction-form {

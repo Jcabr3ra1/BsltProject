@@ -2,6 +2,7 @@ import requests
 from fastapi import APIRouter, Depends, HTTPException, Request
 from middleware.autenticacion import verificar_token, verificar_rol, verificar_roles_permitidos
 import json
+from typing import Dict, Any
 
 # Cargar configuración
 with open("configuracion/config.json", "r") as archivo_config:
@@ -211,6 +212,8 @@ async def obtener_cuentas_por_usuario(id_usuario: str, request: Request):
     if not auth_header:
         raise HTTPException(status_code=401, detail="Token de autorización faltante")
 
+    print(f"API Gateway: Solicitando cuentas para el usuario: {id_usuario}")
+    
     response = requests.get(
         f"{URL_FINANZAS}/finanzas/cuentas/usuario/{id_usuario}",
         headers={"Authorization": auth_header}
@@ -219,7 +222,10 @@ async def obtener_cuentas_por_usuario(id_usuario: str, request: Request):
     if response.status_code == 200:
         return response.json()
 
-    raise HTTPException(status_code=response.status_code, detail=f"Error al obtener cuentas del usuario: {response.text}")
+    raise HTTPException(
+        status_code=response.status_code, 
+        detail=f"Error al obtener cuentas del usuario: {response.text}"
+    )
 
 @router.put("/cuentas/{id}/usuario/{id_usuario}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
 async def asignar_usuario_a_cuenta(id: str, id_usuario: str, request: Request):
@@ -229,10 +235,17 @@ async def asignar_usuario_a_cuenta(id: str, id_usuario: str, request: Request):
     if not auth_header:
         raise HTTPException(status_code=401, detail="Token de autorización faltante")
 
+    # Imprimir información de depuración
+    print(f"Asignando usuario {id_usuario} a cuenta {id}")
+    print(f"URL de destino: {URL_FINANZAS}/finanzas/cuentas/{id}/usuario/{id_usuario}")
+
     response = requests.put(
         f"{URL_FINANZAS}/finanzas/cuentas/{id}/usuario/{id_usuario}",
         headers={"Authorization": auth_header}
     )
+
+    # Imprimir respuesta para depuración
+    print(f"Respuesta del servicio financiero: {response.status_code} - {response.text}")
 
     if response.status_code == 200:
         return response.json()
@@ -244,7 +257,7 @@ async def asignar_usuario_a_cuenta(id: str, id_usuario: str, request: Request):
 async def obtener_transacciones(token: str = Depends(verificar_token)):
     """Obtiene todas las transacciones."""
     response = requests.get(
-        f"{URL_FINANZAS}/transacciones",
+        f"{URL_FINANZAS}/finanzas/transacciones",
         headers={"Authorization": f"Bearer {token}"}
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al obtener transacciones"))
@@ -253,7 +266,7 @@ async def obtener_transacciones(token: str = Depends(verificar_token)):
 async def obtener_transaccion(id: str, token: str = Depends(verificar_token)):
     """Obtiene una transacción por su ID."""
     response = requests.get(
-        f"{URL_FINANZAS}/transacciones/{id}",
+        f"{URL_FINANZAS}/finanzas/transacciones/{id}",
         headers={"Authorization": f"Bearer {token}"}
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Transacción no encontrada"))
@@ -262,7 +275,7 @@ async def obtener_transaccion(id: str, token: str = Depends(verificar_token)):
 async def crear_transaccion(request: Request, token: str = Depends(verificar_token)):
     """Crea una nueva transacción."""
     response = requests.post(
-        f"{URL_FINANZAS}/transacciones",
+        f"{URL_FINANZAS}/finanzas/transacciones",
         json=await request.json(),
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -272,17 +285,66 @@ async def crear_transaccion(request: Request, token: str = Depends(verificar_tok
 async def anular_transaccion(id: str, token: str = Depends(verificar_token)):
     """Anula una transacción."""
     response = requests.put(
-        f"{URL_FINANZAS}/transacciones/{id}/cancel",
+        f"{URL_FINANZAS}/finanzas/transacciones/{id}/cancel",
         headers={"Authorization": f"Bearer {token}"}
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al anular transacción"))
+
+@router.get("/transacciones/usuario/{id_usuario}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))])
+async def obtener_transacciones_por_usuario(id_usuario: str, request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Obtiene todas las transacciones asociadas a un usuario específico."""
+    auth_header = request.headers.get("Authorization")
+    token = token_info["token"]  # Obtener el token directamente de la dependencia verificar_token
+
+    if not auth_header:
+        print("API Gateway: No se encontró header de autorización, usando token de la dependencia")
+        auth_header = f"Bearer {token}"
+
+    print(f"API Gateway: Solicitando transacciones para el usuario: {id_usuario}")
+    print(f"API Gateway: Headers de autorización: {auth_header}")
+    
+    # Extraer el token para debug
+    token_str = auth_header.replace("Bearer ", "") if auth_header and auth_header.startswith("Bearer ") else token
+    print(f"API Gateway: Token extraído: {token_str[:20]}...")
+    
+    # Asegurarse de que la URL incluya el prefijo /finanzas
+    url = f"{URL_FINANZAS}/finanzas/transacciones/usuario/{id_usuario}"
+    print(f"API Gateway: URL de solicitud: {url}")
+    
+    try:
+        # Asegurarse de que el token se envía correctamente
+        headers = {
+            "Authorization": f"Bearer {token_str}",
+            "Content-Type": "application/json"
+        }
+        print(f"API Gateway: Headers enviados al servicio de finanzas: {headers}")
+        
+        response = requests.get(
+            url,
+            headers=headers
+        )
+        
+        print(f"API Gateway: Respuesta del servicio de finanzas: Status {response.status_code}")
+        if response.status_code != 200:
+            print(f"API Gateway: Error del servicio de finanzas: {response.text}")
+        
+        if response.status_code == 200:
+            return response.json()
+        
+        raise HTTPException(
+            status_code=response.status_code, 
+            detail=f"Error al obtener transacciones del usuario: {response.text}"
+        )
+    except Exception as e:
+        print(f"API Gateway: Excepción al comunicarse con el servicio de finanzas: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
 
 ####################################### TRANSACCIONES ESPECÍFICAS #######################################
 @router.post("/transferencias/cuenta-cuenta", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def transferencia_cuenta_cuenta(request: Request, token: str = Depends(verificar_token)):
     """Realiza una transferencia de cuenta a cuenta."""
     response = requests.post(
-        f"{URL_FINANZAS}/transferencias/cuenta-cuenta",
+        f"{URL_FINANZAS}/finanzas/transferencias/cuenta-cuenta",
         json=await request.json(),
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -292,7 +354,7 @@ async def transferencia_cuenta_cuenta(request: Request, token: str = Depends(ver
 async def transferencia_cuenta_bolsillo(request: Request, token: str = Depends(verificar_token)):
     """Realiza una transferencia de cuenta a bolsillo."""
     response = requests.post(
-        f"{URL_FINANZAS}/transferencias/cuenta-bolsillo",
+        f"{URL_FINANZAS}/finanzas/transferencias/cuenta-bolsillo",
         json=await request.json(),
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -302,7 +364,7 @@ async def transferencia_cuenta_bolsillo(request: Request, token: str = Depends(v
 async def transferencia_bolsillo_cuenta(request: Request, token: str = Depends(verificar_token)):
     """Realiza una transferencia de bolsillo a cuenta."""
     response = requests.post(
-        f"{URL_FINANZAS}/transferencias/bolsillo-cuenta",
+        f"{URL_FINANZAS}/finanzas/transferencias/bolsillo-cuenta",
         json=await request.json(),
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -312,7 +374,7 @@ async def transferencia_bolsillo_cuenta(request: Request, token: str = Depends(v
 async def consignacion_banco_cuenta(request: Request, token: str = Depends(verificar_token)):
     """Realiza una consignación de banco a cuenta."""
     response = requests.post(
-        f"{URL_FINANZAS}/consignaciones/banco-cuenta",
+        f"{URL_FINANZAS}/finanzas/consignaciones/banco-cuenta",
         json=await request.json(),
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -322,7 +384,7 @@ async def consignacion_banco_cuenta(request: Request, token: str = Depends(verif
 async def consignacion_banco_bolsillo(request: Request, token: str = Depends(verificar_token)):
     """Realiza una consignación de banco a bolsillo."""
     response = requests.post(
-        f"{URL_FINANZAS}/consignaciones/banco-bolsillo",
+        f"{URL_FINANZAS}/finanzas/consignaciones/banco-bolsillo",
         json=await request.json(),
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -332,7 +394,7 @@ async def consignacion_banco_bolsillo(request: Request, token: str = Depends(ver
 async def retiro_cuenta_banco(request: Request, token: str = Depends(verificar_token)):
     """Realiza un retiro de cuenta a banco."""
     response = requests.post(
-        f"{URL_FINANZAS}/retiros/cuenta-banco",
+        f"{URL_FINANZAS}/finanzas/retiros/cuenta-banco",
         json=await request.json(),
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -356,66 +418,111 @@ async def historial_transacciones(
         params["tipo"] = tipo
 
     response = requests.get(
-        f"{URL_FINANZAS}/transacciones/historial",
+        f"{URL_FINANZAS}/finanzas/transacciones/historial",
         params=params,
         headers={"Authorization": f"Bearer {token}"}
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al obtener historial"))
 
 ####################################### TIPO MOVIMIENTO #######################################
-@router.get("/tipos-movimiento", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
-async def obtener_tipos_movimiento(token: str = Depends(verificar_token)):
+@router.get("/tipos-movimiento")
+async def obtener_tipos_movimiento(request: Request):
     """Obtiene todos los tipos de movimiento."""
+    auth_header = request.headers.get("Authorization")
+    
+    if not auth_header:
+        raise HTTPException(status_code=401, detail="Token de autorización faltante")
+    
     response = requests.get(
-        f"{URL_FINANZAS}/tipos-movimiento",
-        headers={"Authorization": f"Bearer {token}"}
+        f"{URL_FINANZAS}/finanzas/tipos-movimiento",
+        headers={"Authorization": auth_header}  # Enviar el header de autorización original
     )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al obtener tipos de movimiento"))
+    
+    if response.status_code == 200:
+        return response.json()
+    
+    raise HTTPException(status_code=response.status_code, detail=f"Error al obtener tipos de movimiento: {response.text}")
 
-@router.post("/tipos-movimiento", dependencies=[Depends(verificar_roles_permitidos(["ADMIN"]))])
-async def crear_tipo_movimiento(request: Request, token: str = Depends(verificar_token)):
+@router.post("/tipos-movimiento")
+async def crear_tipo_movimiento(request: Request):
     """Crea un nuevo tipo de movimiento."""
+    auth_header = request.headers.get("Authorization")
+    
+    if not auth_header:
+        raise HTTPException(status_code=401, detail="Token de autorización faltante")
+    
     response = requests.post(
-        f"{URL_FINANZAS}/tipos-movimiento",
+        f"{URL_FINANZAS}/finanzas/tipos-movimiento",
         json=await request.json(),
-        headers={"Authorization": f"Bearer {token}"}
+        headers={"Authorization": auth_header, "Content-Type": "application/json"}
     )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al crear tipo de movimiento"))
+    
+    if response.status_code in [200, 201]:
+        return response.json()
+    
+    raise HTTPException(status_code=response.status_code, detail=f"Error al crear tipo de movimiento: {response.text}")
 
-@router.get("/tipos-movimiento/{id}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
-async def obtener_tipo_movimiento(id: str, token: str = Depends(verificar_token)):
+@router.get("/tipos-movimiento/{id}")
+async def obtener_tipo_movimiento(id: str, request: Request):
     """Obtiene un tipo de movimiento por su ID."""
+    auth_header = request.headers.get("Authorization")
+    
+    if not auth_header:
+        raise HTTPException(status_code=401, detail="Token de autorización faltante")
+    
     response = requests.get(
-        f"{URL_FINANZAS}/tipos-movimiento/{id}",
-        headers={"Authorization": f"Bearer {token}"}
+        f"{URL_FINANZAS}/finanzas/tipos-movimiento/{id}",
+        headers={"Authorization": auth_header}
     )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Tipo de movimiento no encontrado"))
+    
+    if response.status_code == 200:
+        return response.json()
+    
+    raise HTTPException(status_code=response.status_code, detail=f"Error al obtener tipo de movimiento: {response.text}")
 
-@router.put("/tipos-movimiento/{id}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN"]))])
-async def actualizar_tipo_movimiento(id: str, request: Request, token: str = Depends(verificar_token)):
+@router.put("/tipos-movimiento/{id}")
+async def actualizar_tipo_movimiento(id: str, request: Request):
     """Actualiza un tipo de movimiento."""
+    auth_header = request.headers.get("Authorization")
+    
+    if not auth_header:
+        raise HTTPException(status_code=401, detail="Token de autorización faltante")
+    
     response = requests.put(
-        f"{URL_FINANZAS}/tipos-movimiento/{id}",
+        f"{URL_FINANZAS}/finanzas/tipos-movimiento/{id}",
         json=await request.json(),
-        headers={"Authorization": f"Bearer {token}"}
+        headers={"Authorization": auth_header, "Content-Type": "application/json"}
     )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al actualizar tipo de movimiento"))
+    
+    if response.status_code == 200:
+        return response.json()
+    
+    raise HTTPException(status_code=response.status_code, detail=f"Error al actualizar tipo de movimiento: {response.text}")
 
-@router.delete("/tipos-movimiento/{id}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN"]))])
-async def eliminar_tipo_movimiento(id: str, token: str = Depends(verificar_token)):
+@router.delete("/tipos-movimiento/{id}")
+async def eliminar_tipo_movimiento(id: str, request: Request):
     """Elimina un tipo de movimiento."""
+    auth_header = request.headers.get("Authorization")
+    
+    if not auth_header:
+        raise HTTPException(status_code=401, detail="Token de autorización faltante")
+    
     response = requests.delete(
-        f"{URL_FINANZAS}/tipos-movimiento/{id}",
-        headers={"Authorization": f"Bearer {token}"}
+        f"{URL_FINANZAS}/finanzas/tipos-movimiento/{id}",
+        headers={"Authorization": auth_header}
     )
-    return {"mensaje": "Tipo de movimiento eliminado correctamente"} if response.status_code in [200, 204] else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al eliminar tipo de movimiento"))
+    
+    if response.status_code in [200, 204]:
+        return {"mensaje": "Tipo de movimiento eliminado correctamente"}
+    
+    raise HTTPException(status_code=response.status_code, detail=f"Error al eliminar tipo de movimiento: {response.text}")
 
 ####################################### TIPO TRANSACCIÓN #######################################
 @router.get("/tipos-transaccion", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def obtener_tipos_transaccion(token: str = Depends(verificar_token)):
     """Obtiene todos los tipos de transacción."""
     response = requests.get(
-        f"{URL_FINANZAS}/tipos-transaccion",
+        f"{URL_FINANZAS}/finanzas/tipos-transaccion",
         headers={"Authorization": f"Bearer {token}"}
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al obtener tipos de transacción"))
@@ -424,7 +531,7 @@ async def obtener_tipos_transaccion(token: str = Depends(verificar_token)):
 async def crear_tipo_transaccion(request: Request, token: str = Depends(verificar_token)):
     """Crea un nuevo tipo de transacción."""
     response = requests.post(
-        f"{URL_FINANZAS}/tipos-transaccion",
+        f"{URL_FINANZAS}/finanzas/tipos-transaccion",
         json=await request.json(),
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -434,7 +541,7 @@ async def crear_tipo_transaccion(request: Request, token: str = Depends(verifica
 async def obtener_tipo_transaccion(id: str, token: str = Depends(verificar_token)):
     """Obtiene un tipo de transacción por su ID."""
     response = requests.get(
-        f"{URL_FINANZAS}/tipos-transaccion/{id}",
+        f"{URL_FINANZAS}/finanzas/tipos-transaccion/{id}",
         headers={"Authorization": f"Bearer {token}"}
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Tipo de transacción no encontrado"))
@@ -443,7 +550,7 @@ async def obtener_tipo_transaccion(id: str, token: str = Depends(verificar_token
 async def actualizar_tipo_transaccion(id: str, request: Request, token: str = Depends(verificar_token)):
     """Actualiza un tipo de transacción."""
     response = requests.put(
-        f"{URL_FINANZAS}/tipos-transaccion/{id}",
+        f"{URL_FINANZAS}/finanzas/tipos-transaccion/{id}",
         json=await request.json(),
         headers={"Authorization": f"Bearer {token}"}
     )
@@ -453,7 +560,7 @@ async def actualizar_tipo_transaccion(id: str, request: Request, token: str = De
 async def eliminar_tipo_transaccion(id: str, token: str = Depends(verificar_token)):
     """Elimina un tipo de transacción."""
     response = requests.delete(
-        f"{URL_FINANZAS}/tipos-transaccion/{id}",
+        f"{URL_FINANZAS}/finanzas/tipos-transaccion/{id}",
         headers={"Authorization": f"Bearer {token}"}
     )
     return {"mensaje": "Tipo de transacción eliminado correctamente"} if response.status_code in [200, 204] else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al eliminar tipo de transacción"))

@@ -1,79 +1,131 @@
-/* 🔹 Estilo general del contenedor */
+/* Estilo general del contenedor */
 .container {
-    width: 90%;
-    margin: 20px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+  width: 90%;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Encabezado con título y botón alineados */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e1e1e;
+  padding: 15px;
+  border-radius: 8px;
   
-  /* 🔹 Encabezado con título y botón alineados */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #1e1e1e;
-    padding: 15px;
-    border-radius: 8px;
+  h2 {
+    margin: 0;
+    color: white;
+    font-size: 1.5rem;
   }
+}
+
+/* Estilos para el formulario */
+.form-card {
+  padding: 20px;
+  background: #212121;
+  border-radius: 8px;
   
-  /* 🔹 Botón de creación */
-  button {
-    font-size: 14px;
-    font-weight: bold;
+  h2 {
+    margin-top: 0;
+    color: white;
   }
+}
+
+/* Ajustar ancho de los inputs */
+mat-form-field.full-width {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+/* Estilo para el checkbox */
+.form-field-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  color: white;
   
-  /* 🔹 Estilos para el formulario */
-  .form-card {
-    padding: 20px;
-    background: #212121;
-    border-radius: 8px;
+  mat-label {
+    margin-right: 15px;
   }
+}
+
+/* Botones de acción del formulario */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Contenedor de la tabla */
+.table-container {
+  background: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Contenedor responsive para la tabla */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Tabla personalizada */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
   
-  /* 🔹 Ajustar ancho de los inputs */
-  mat-form-field.full-width {
-    width: 100%;
-  }
-  
-  /* 🔹 Tabla estilizada */
-  .table-card {
-    padding: 15px;
-    background: #1e1e1e;
-    border-radius: 8px;
-  }
-  
-  /* 🔹 Mejoras en la tabla */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  /* 🔹 Ajuste de encabezados */
-  th {
+  th, td {
+    padding: 12px 16px;
     text-align: left;
-    padding: 10px;
+  }
+  
+  /* Encabezados */
+  th {
+    background-color: #ff7961;
+    color: white;
     font-weight: bold;
+    font-size: 16px;
   }
   
-  /* 🔹 Ajuste de filas */
-  td {
-    padding: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  /* Filas de datos */
+  tbody tr {
+    background-color: #121212;
+    color: white;
+    
+    &:nth-child(odd) {
+      background-color: #1a1a1a;
+    }
+    
+    &:hover {
+      background-color: #2c2c2c;
+    }
   }
   
-  /* 🔹 Centrar las acciones y ajustar espacio */
-  td:last-child {
-    text-align: center;
+  /* Columna de acciones */
+  .actions-column {
+    text-align: right;
     width: 150px;
   }
   
-  /* 🔹 Estilos para los botones de acción */
-  button mat-icon {
-    font-size: 20px;
+  /* Celda de acciones */
+  .actions-cell {
+    text-align: right;
+    white-space: nowrap;
+    
+    button {
+      margin: 0 4px;
+    }
   }
-  
-  /* 🔹 Espaciado entre botones */
-  td button {
-    margin-right: 5px;
-  }
-  
+}
+
+/* Estado vacío */
+.empty-state {
+  padding: 20px;
+  text-align: center;
+  color: #aaa;
+}

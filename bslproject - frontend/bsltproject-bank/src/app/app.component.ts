@@ -52,6 +52,7 @@ export class AppComponent implements OnInit, OnDestroy {
     { icon: 'security', text: 'Inicio de sesión desde un nuevo dispositivo', time: 'Hace 2 horas' },
     { icon: 'credit_card', text: 'Su tarjeta ha sido activada', time: 'Ayer' }
   ];
+  initialNavigation = true;
 
   constructor(
     private readonly authService: AuthService,
@@ -70,12 +71,22 @@ export class AppComponent implements OnInit, OnDestroy {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       this.currentUrl = event.urlAfterRedirects;
+      
+      // Solo verificar token después de la navegación inicial y si no estamos en páginas públicas
+      if (!this.initialNavigation && !this.isPublicPage()) {
+        this.checkAuth();
+      }
+      
+      this.initialNavigation = false;
     });
     
     this.subscriptions.add(routerSub);
   }
 
   ngOnInit(): void {
+    // Verificar y reparar el formato del token al iniciar la aplicación
+    this.authService.verifyAndFixTokenFormat();
+    
     // Suscribirse a cambios del usuario actual
     const userSub = this.authService.currentUser.subscribe(user => {
       this.currentUser = user;
@@ -83,10 +94,10 @@ export class AppComponent implements OnInit, OnDestroy {
     
     this.subscriptions.add(userSub);
     
-    // Solo verificar token si no estamos en login/register
-    if (!this.isLandingPage()) {
-      this.checkInitialAuth();
-    }
+    // Inicializamos currentUrl con la URL actual
+    this.currentUrl = window.location.pathname;
+    
+    // No hacemos verificación de token en la inicialización para permitir que se muestre la landing page
   }
   
   ngOnDestroy(): void {
@@ -95,9 +106,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Verifica la autenticación inicial una sola vez
+   * Verifica la autenticación
    */
-  private checkInitialAuth(): void {
+  private checkAuth(): void {
     const token = localStorage.getItem('token');
     if (token) {
       console.log('Token encontrado en localStorage, verificando...');
@@ -105,21 +116,21 @@ export class AppComponent implements OnInit, OnDestroy {
       const authSub = this.authService.verifyToken().subscribe({
         next: (isValid) => {
           console.log('Resultado de verificación de token:', isValid);
-          if (!isValid && !this.isLandingPage()) {
+          if (!isValid && !this.isPublicPage()) {
             console.log('Token inválido, redirigiendo a login');
             this.router.navigate(['/auth/login']);
           }
         },
         error: (error) => {
-          console.error('Error al verificar token inicial:', error);
-          if (!this.isLandingPage()) {
+          console.error('Error al verificar token:', error);
+          if (!this.isPublicPage()) {
             this.router.navigate(['/auth/login']);
           }
         }
       });
       
       this.subscriptions.add(authSub);
-    } else if (!this.isLandingPage()) {
+    } else if (!this.isPublicPage()) {
       console.log('No hay token, redirigiendo a login');
       this.router.navigate(['/auth/login']);
     }
@@ -144,11 +155,12 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions.add(logoutSub);
   }
   
-  // Check if we're on the landing page or auth pages
-  isLandingPage(): boolean {
+  // Check if we're on a public page (landing or auth pages)
+  isPublicPage(): boolean {
     return this.currentUrl === '/landing' || 
            this.currentUrl === '/' || 
-           this.currentUrl.startsWith('/auth');
+           this.currentUrl.startsWith('/auth') ||
+           this.currentUrl === '/home';
   }
   
   // Get user's full name

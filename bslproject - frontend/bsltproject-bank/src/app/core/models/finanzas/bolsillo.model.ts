@@ -2,57 +2,48 @@ import { Account } from './cuenta.model';
 import { User } from '../seguridad/usuario.model';
 
 /**
- * Model of Pocket
+ * Modelo de Bolsillo
  * 
- * Represents a pocket associated with an account
+ * Representa un bolsillo o subcuenta asociada a una cuenta principal
  */
-export interface Pocket {
+export interface Bolsillo {
   id: string;
-  name: string;
-  balance: number;
+  nombre: string;
+  saldo: number;
+  meta?: number;
+  fechaCreacion: Date;
+  fechaActualizacion?: Date;
+  cuentaId: string;
+  usuarioId?: string;
+  
+  // Propiedades en inglés para compatibilidad
+  name?: string;
+  balance?: number;
   goal?: number;
-  createdAt: Date;
+  createdAt?: Date;
   updatedAt?: Date;
-  accountId: string;
-  account?: Account;
-  user?: User;
+  accountId?: string;
+  userId?: string;
+  
+  // Relaciones
+  cuenta?: Account;
+  usuario?: User;
 }
 
 /**
- * Model for pocket type
+ * Modelo para solicitud de creación de bolsillo
  */
-export interface PocketType {
-  id: string;
-  name: string;
-  description?: string;
+export interface BolsilloRequest {
+  nombre: string;
+  cuentaId: string;
+  meta?: number;
+  
+  // Propiedades en inglés para compatibilidad
+  name?: string;
+  accountId?: string;
+  goal?: number;
 }
 
-/**
- * Model for pocket status
- */
-export interface PocketStatus {
-  id: string;
-  name: string;
-  description?: string;
-}
-
-/**
- * Model for pocket transaction
- */
-export interface PocketTransaction {
-  id: string;
-  amount: number;
-  type: 'DEPOSIT' | 'WITHDRAWAL';
-  description?: string;
-  createdAt: Date;
-  pocketId: string;
-  pocket?: Pocket;
-}
-
-/**
- * Model for pocket creation request
- */
-export interface PocketRequest {
-  name: string;
-  accountId: string;
-}
+// Alias para compatibilidad con código existente
+export type Pocket = Bolsillo;
+export type PocketRequest = BolsilloRequest;

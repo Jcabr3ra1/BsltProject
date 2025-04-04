@@ -8,7 +8,7 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root'
 })
 export class PermisoService {
-  private apiUrl = `${environment.securityUrl}/permisos`;
+  private apiUrl = `${environment.apiGatewayUrl}/seguridad/permisos`;
 
   constructor(private http: HttpClient) {}
 
@@ -29,7 +29,7 @@ export class PermisoService {
 
   // OBTENER TODOS LOS ROLES
   obtenerRoles(): Observable<any> {
-    return this.http.get<any>(`${environment.securityUrl}/roles`, this.getHeaders());
+    return this.http.get<any>(`${environment.apiGatewayUrl}/seguridad/roles`, this.getHeaders());
   }
 
   // CREAR UN NUEVO PERMISO

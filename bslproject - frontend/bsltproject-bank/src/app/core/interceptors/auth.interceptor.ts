@@ -33,19 +33,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('token');
   console.log('AuthInterceptor - Token exists:', !!token);
   
-  // Add token to requests to the API Gateway
-  if (token && (
-    req.url.includes(API_CONFIG.API_GATEWAY_URL) || 
-    req.url.includes('localhost:7777') ||
-    req.url.includes('/finanzas/') || 
-    req.url.includes('/seguridad/')
-  )) {
+  // Add token to ALL requests, not just specific ones
+  if (token) {
     console.log('AuthInterceptor - Adding token to request');
+    
+    // Asegurarse de que el token tenga el formato correcto con el prefijo "Bearer "
+    const formattedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+    console.log('AuthInterceptor - Token formateado:', formattedToken.substring(0, Math.min(27, formattedToken.length)) + '...');
     
     // Create a new request with the Authorization header
     const authReq = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${token}`,
+        Authorization: formattedToken,
         'Content-Type': 'application/json'
       }
     });
@@ -70,6 +69,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           
           // We can't inject Router in a functional interceptor, so use window.location
           window.location.href = '/auth/login';
+        } else if (error.status === 403) {
+          console.log('AuthInterceptor - 403 error, posible problema de permisos');
+          // Podríamos mostrar un mensaje al usuario o redirigir a una página de acceso denegado
+          console.error('Acceso prohibido. No tiene permisos para realizar esta acción.');
         }
         
         return throwError(() => error);
@@ -77,5 +80,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     );
   }
   
+  // If no token is found, proceed with the original request
+  console.warn('AuthInterceptor - No token found, proceeding without authorization');
   return next(req);
 };

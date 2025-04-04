@@ -11,7 +11,7 @@
     <!-- Tipo Column -->
     <ng-container matColumnDef="tipo">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
-      <td mat-cell *matCellDef="let transaction">{{ transaction.tipo }}</td>
+      <td mat-cell *matCellDef="let transaction">{{ getNombreTipo(transaction.tipo) }}</td>
     </ng-container>
 
     <!-- Monto Column -->
@@ -25,7 +25,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
       <td mat-cell *matCellDef="let transaction">
         <span [class]="getEstadoClass(transaction.estado)">
-          {{ transaction.estado }}
+          {{ getNombreEstado(transaction.estado) }}
         </span>
       </td>
     </ng-container>
@@ -35,27 +35,42 @@
       <th mat-header-cell *matHeaderCellDef>Acciones</th>
       <td mat-cell *matCellDef="let transaction">
         <button mat-icon-button color="primary" 
-                (click)="onViewTransaction(transaction)"
-                matTooltip="Ver detalles">
+                (click)="onViewTransaction(transaction); $event.stopPropagation()"
+                matTooltip="Ver detalles"
+                class="action-button">
           <mat-icon>visibility</mat-icon>
         </button>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        [class]="getEstadoClass(row.estado)"
+        (click)="onViewTransaction(row)"></tr>
 
-    <!-- Loading Message -->
-    <tr class="mat-row" *matNoDataRow>
-      <td class="mat-cell" [attr.colspan]="displayedColumns.length">
-        No hay transacciones disponibles
-      </td>
-    </tr>
+    <!-- Empty State Message -->
+    @if (dataSource.data.length === 0) {
+      <tr class="mat-row">
+        <td class="mat-cell empty-state" [attr.colspan]="displayedColumns.length">
+          <div class="empty-state-container">
+            <mat-icon class="empty-icon">account_balance_wallet</mat-icon>
+            <p>No hay transacciones disponibles</p>
+            <button mat-raised-button color="primary" (click)="onCreateTransaction()">
+              <mat-icon>add</mat-icon>
+              Nueva Transacción
+            </button>
+          </div>
+        </td>
+      </tr>
+    }
+
   </table>
 
-  <mat-paginator [pageSize]="10"
-                 [pageSizeOptions]="[5, 10, 25, 100]"
-                 showFirstLastButtons
-                 aria-label="Seleccionar página de transacciones">
-  </mat-paginator>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+</div>
+
+<div class="fab-container">
+  <button mat-fab color="primary" (click)="onCreateTransaction()" matTooltip="Nueva Transacción">
+    <mat-icon>add</mat-icon>
+  </button>
 </div>

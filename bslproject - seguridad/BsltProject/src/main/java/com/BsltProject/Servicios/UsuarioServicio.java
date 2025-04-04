@@ -3,11 +3,11 @@ package com.BsltProject.Servicios;
 import com.BsltProject.Modelos.Usuario;
 import com.BsltProject.Modelos.Rol;
 import com.BsltProject.Modelos.Estado;
-import com.BsltProject.Modelos.Permiso; // ✅ Agregado para manejar permisos
+import com.BsltProject.Modelos.Permiso; // Agregado para manejar permisos
 import com.BsltProject.Repositorios.RepositorioUsuario;
 import com.BsltProject.Repositorios.RepositorioRol;
 import com.BsltProject.Repositorios.RepositorioEstado;
-import com.BsltProject.Repositorios.RepositorioPermiso; // ✅ Agregado para manejar permisos
+import com.BsltProject.Repositorios.RepositorioPermiso; // Agregado para manejar permisos
 import com.BsltProject.Seguridad.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,25 +27,31 @@ public class UsuarioServicio {
     private final RepositorioUsuario repositorioUsuario;
     private final RepositorioRol repositorioRol;
     private final RepositorioEstado repositorioEstado;
-    private final RepositorioPermiso repositorioPermiso; // ✅ Agregado para manejar permisos
+    private final RepositorioPermiso repositorioPermiso; // Agregado para manejar permisos
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     public UsuarioServicio(RepositorioUsuario repositorioUsuario,
                            RepositorioRol repositorioRol,
                            RepositorioEstado repositorioEstado,
-                           RepositorioPermiso repositorioPermiso, // ✅ Agregado en el constructor
+                           RepositorioPermiso repositorioPermiso, // Agregado en el constructor
                            PasswordEncoder passwordEncoder,
                            JwtUtil jwtUtil) {
         this.repositorioUsuario = repositorioUsuario;
         this.repositorioRol = repositorioRol;
         this.repositorioEstado = repositorioEstado;
-        this.repositorioPermiso = repositorioPermiso; // ✅ Guardamos referencia del repositorio de permisos
+        this.repositorioPermiso = repositorioPermiso; // Guardamos referencia del repositorio de permisos
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
 
     public Usuario crearUsuario(Usuario usuario) {
+        // Añadir logs para depuración
+        System.out.println("DEBUG - Datos de usuario recibidos para registro:");
+        System.out.println("Email: " + usuario.getEmail());
+        System.out.println("Nombre: " + usuario.getNombre());
+        System.out.println("Apellido: " + usuario.getApellido());
+        
         // Encripta la contraseña antes de guardarla
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         
@@ -73,17 +79,17 @@ public class UsuarioServicio {
 
     public List<Usuario> obtenerTodosLosUsuarios() {
         List<Usuario> usuarios = repositorioUsuario.findAll();
-        String backendFinancieroURL = "http://localhost:9999/accounts/";
+        String backendFinancieroURL = "http://localhost:9999/finanzas/cuentas/"; // URL corregida
         RestTemplate restTemplate = new RestTemplate();
 
-        // 🔥 Usamos parallelStream() para mejorar el rendimiento
+        // Usamos parallelStream() para mejorar el rendimiento
         usuarios.parallelStream().forEach(usuario -> {
             if (usuario.getCuentaId() != null && !usuario.getCuentaId().isEmpty()) {
                 try {
                     ResponseEntity<Map> respuesta = restTemplate.getForEntity(backendFinancieroURL + usuario.getCuentaId(), Map.class);
 
                     if (respuesta.getStatusCode().is2xxSuccessful() && respuesta.getBody() != null) {
-                        usuario.setCuenta(respuesta.getBody()); // ✅ Agregamos la cuenta en la respuesta
+                        usuario.setCuenta(respuesta.getBody()); // Agregamos la cuenta en la respuesta
                     } else {
                         usuario.setCuenta(Map.of("error", "Cuenta no encontrada"));
                     }
@@ -106,23 +112,23 @@ public class UsuarioServicio {
 
         Usuario usuario = usuarioOptional.get();
 
-        // ✅ Verificar si el usuario tiene una cuenta asignada
+        // Verificar si el usuario tiene una cuenta asignada
         if (usuario.getCuentaId() != null && !usuario.getCuentaId().isEmpty()) {
-            String urlCuenta = "http://localhost:9999/accounts/" + usuario.getCuentaId();  // 🔥 Usa la URL correcta aquí
+            String urlCuenta = "http://localhost:9999/finanzas/cuentas/" + usuario.getCuentaId();  // URL corregida
             RestTemplate restTemplate = new RestTemplate();
 
             try {
-                System.out.println("🔍 Consultando Finanzas en: " + urlCuenta); // 🛠 Mensaje de depuración
+                System.out.println("Consultando Finanzas en: " + urlCuenta); // Mensaje de depuración
 
                 ResponseEntity<Map> respuesta = restTemplate.getForEntity(urlCuenta, Map.class);
 
                 if (respuesta.getStatusCode().is2xxSuccessful()) {
-                    usuario.setCuenta(respuesta.getBody()); // ✅ Asignar datos de la cuenta
+                    usuario.setCuenta(respuesta.getBody()); // Asignar datos de la cuenta
                 } else {
                     usuario.setCuenta(Map.of("error", "No se pudo obtener la cuenta"));
                 }
             } catch (Exception e) {
-                System.err.println("❌ Error conectando con Finanzas: " + e.getMessage()); // 📢 Mostrar error en consola
+                System.err.println("Error conectando con Finanzas: " + e.getMessage()); // Mostrar error en consola
                 usuario.setCuenta(Map.of("error", "No se pudo conectar con Finanzas"));
             }
         } else {
@@ -170,11 +176,11 @@ public class UsuarioServicio {
         usuario.getRoles().add(rol);
         usuario = repositorioUsuario.save(usuario);
 
-        // 🔥 Regenerar el token con los nuevos roles
+        // Regenerar el token con los nuevos roles
         List<String> roles = usuario.getRoles().stream().map(Rol::getNombre).collect(Collectors.toList());
         String nuevoToken = jwtUtil.generarToken(usuario.getEmail(), roles);
 
-        System.out.println("✅ Nuevo token con roles actualizado: " + nuevoToken);
+        System.out.println("Nuevo token con roles actualizado: " + nuevoToken);
 
         return usuario;
     }
@@ -192,21 +198,65 @@ public class UsuarioServicio {
     }
 
     public Usuario asignarCuentaAUsuario(String usuarioId, String cuentaId) {
-        Usuario usuario = repositorioUsuario.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        System.out.println("DEBUG - Servicio: Iniciando asignación de cuenta " + cuentaId + " a usuario " + usuarioId);
+        
+        // Listar todos los usuarios para depuración
+        List<Usuario> todosUsuarios = repositorioUsuario.findAll();
+        System.out.println("DEBUG - Servicio: Total de usuarios en la base de datos: " + todosUsuarios.size());
+        for (Usuario u : todosUsuarios) {
+            System.out.println("DEBUG - Usuario encontrado: ID=" + u.getId() + ", Email=" + u.getEmail());
+        }
+        
+        // Intentar encontrar el usuario por ID
+        Optional<Usuario> usuarioOpt = repositorioUsuario.findById(usuarioId);
+        
+        if (!usuarioOpt.isPresent()) {
+            System.out.println("DEBUG - Servicio: Usuario no encontrado por ID, intentando buscar por otros medios...");
+            
+            // Si no se encuentra por ID, buscar el usuario que tenga un ID similar
+            // (puede haber diferencias en formato o mayúsculas/minúsculas)
+            for (Usuario u : todosUsuarios) {
+                if (u.getId() != null && 
+                    (u.getId().equals(usuarioId) || 
+                     u.getId().toLowerCase().equals(usuarioId.toLowerCase()) ||
+                     u.getId().contains(usuarioId) || 
+                     usuarioId.contains(u.getId()))) {
+                    
+                    System.out.println("DEBUG - Servicio: Usuario encontrado por coincidencia parcial de ID: " + u.getId());
+                    usuarioOpt = Optional.of(u);
+                    break;
+                }
+            }
+            
+            // Si aún no se encuentra, podríamos intentar buscar por email si tenemos esa información
+            // (esto requeriría modificar la API para pasar el email como parámetro adicional)
+        }
+        
+        if (!usuarioOpt.isPresent()) {
+            throw new RuntimeException("Usuario no encontrado con ID: " + usuarioId);
+        }
+        
+        Usuario usuario = usuarioOpt.get();
+        System.out.println("DEBUG - Servicio: Usuario encontrado: " + usuario.getEmail());
+        System.out.println("DEBUG - Servicio: CuentaId actual: " + usuario.getCuentaId());
 
-        usuario.setCuentaId(cuentaId); // ✅ Guardar en la base de datos
+        usuario.setCuentaId(cuentaId); // Guardar en la base de datos
+        System.out.println("DEBUG - Servicio: Nuevo cuentaId asignado: " + cuentaId);
+        
         Usuario usuarioActualizado = repositorioUsuario.save(usuario);
+        System.out.println("DEBUG - Servicio: Usuario guardado en la base de datos");
 
-        // ✅ Verificar si realmente se guardó en la base de datos
-        Usuario usuarioVerificado = repositorioUsuario.findById(usuarioId)
+        // Verificar si realmente se guardó en la base de datos
+        Usuario usuarioVerificado = repositorioUsuario.findById(usuario.getId())
                 .orElseThrow(() -> new RuntimeException("Error al verificar usuario"));
+        
+        System.out.println("DEBUG - Servicio: Usuario verificado, cuentaId: " + usuarioVerificado.getCuentaId());
 
         if (usuarioVerificado.getCuentaId() == null) {
+            System.err.println("ERROR - Servicio: La cuenta no se asignó correctamente en la base de datos");
             throw new RuntimeException("Error al asignar cuenta en Seguridad");
         }
 
-        return usuarioActualizado;  // ✅ Devuelve usuario actualizado con cuentaId
+        return usuarioActualizado;  // Devuelve usuario actualizado con cuentaId
     }
-
 }

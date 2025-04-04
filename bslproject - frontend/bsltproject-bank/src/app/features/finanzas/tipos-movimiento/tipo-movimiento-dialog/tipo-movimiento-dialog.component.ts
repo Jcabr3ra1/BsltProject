@@ -6,11 +6,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TipoMovimiento } from '../../../../core/models/tipo-movimiento.model';
+import { MatIconModule } from '@angular/material/icon';
+import { TipoMovimiento } from '@core/models/finanzas/tipo-movimiento.model';
+
+interface TipoOption {
+  valor: string;
+  nombre: string;
+}
 
 @Component({
   selector: 'app-tipo-movimiento-dialog',
   templateUrl: './tipo-movimiento-dialog.component.html',
+  styleUrls: ['./tipo-movimiento-dialog.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -19,13 +26,15 @@ import { TipoMovimiento } from '../../../../core/models/tipo-movimiento.model';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule
+    MatSelectModule,
+    MatIconModule
   ]
 })
 export class TipoMovimientoDialogComponent implements OnInit {
   tipoMovimientoForm: FormGroup;
   titulo: string;
   tipoMovimiento: TipoMovimiento | null = null;
+  isSubmitting = false;
   
   // Constantes para los tipos de origen y destino
   readonly ACCOUNT = 'ACCOUNT';
@@ -33,24 +42,24 @@ export class TipoMovimientoDialogComponent implements OnInit {
   readonly EXTERNAL = 'EXTERNAL';
   
   // Opciones para los selectores
-  tiposOrigen = [
+  tiposOrigen: TipoOption[] = [
     { valor: this.ACCOUNT, nombre: 'Cuenta' },
     { valor: this.WALLET, nombre: 'Bolsillo' },
     { valor: this.EXTERNAL, nombre: 'Externo' }
   ];
   
-  tiposDestino = [
+  tiposDestino: TipoOption[] = [
     { valor: this.ACCOUNT, nombre: 'Cuenta' },
     { valor: this.WALLET, nombre: 'Bolsillo' },
     { valor: this.EXTERNAL, nombre: 'Externo' }
   ];
 
   constructor(
-    private fb: FormBuilder,
+    private readonly fb: FormBuilder,
     public dialogRef: MatDialogRef<TipoMovimientoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.titulo = data.titulo || 'Tipo de Movimiento';
+    this.titulo = data.modo === 'crear' ? 'Crear Tipo de Movimiento' : 'Editar Tipo de Movimiento';
     this.tipoMovimiento = data.tipoMovimiento || null;
     
     this.tipoMovimientoForm = this.fb.group({
@@ -63,28 +72,41 @@ export class TipoMovimientoDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.tipoMovimiento) {
+    if (this.data.modo === 'editar' && this.tipoMovimiento) {
       this.tipoMovimientoForm.patchValue({
         nombre: this.tipoMovimiento.nombre,
-        codigo_origen: this.tipoMovimiento.codigo_origen,
-        codigo_destino: this.tipoMovimiento.codigo_destino,
+        codigo_origen: this.tipoMovimiento.codigoOrigen,
+        codigo_destino: this.tipoMovimiento.codigoDestino,
         descripcion: this.tipoMovimiento.descripcion,
-        estado: this.tipoMovimiento.estado
+        estado: this.tipoMovimiento.activo
       });
     }
   }
 
   onSubmit(): void {
     if (this.tipoMovimientoForm.valid) {
-      const tipoMovimiento: TipoMovimiento = {
-        ...this.tipoMovimiento,
-        ...this.tipoMovimientoForm.value
+      this.isSubmitting = true;
+      
+      const formValues = this.tipoMovimientoForm.value;
+      const tipoMovimiento = {
+        ...(this.tipoMovimiento ? { id: this.tipoMovimiento.id } : {}),
+        nombre: formValues.nombre,
+        codigoOrigen: formValues.codigo_origen,
+        codigoDestino: formValues.codigo_destino,
+        descripcion: formValues.descripcion,
+        activo: formValues.estado
       };
+      
       this.dialogRef.close(tipoMovimiento);
     }
   }
 
   onCancel(): void {
     this.dialogRef.close();
+  }
+  
+  // Método para optimizar el tracking en listas ngFor
+  trackByValue(index: number, item: TipoOption): string {
+    return item.valor;
   }
 }

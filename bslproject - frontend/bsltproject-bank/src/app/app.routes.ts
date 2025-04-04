@@ -8,6 +8,7 @@ import { LandingPageComponent } from '@app/features/landing-page/landing-page.co
 // Importar directamente las rutas para evitar problemas de carga perezosa
 import { SEGURIDAD_ROUTES } from '@app/features/seguridad/seguridad.routes';
 import { FINANZAS_ROUTES } from '@app/features/finanzas/finanzas.routes';
+import { TokenDiagnosticoComponent } from '@app/features/diagnostico/token-diagnostico.component';
 
 export const routes: Routes = [
   // Rutas públicas
@@ -43,6 +44,9 @@ export const routes: Routes = [
     children: FINANZAS_ROUTES,
     canActivate: [AuthGuard]
   },
+  
+  // Ruta de diagnóstico - accesible sin autenticación para facilitar la depuración
+  { path: 'diagnostico', component: TokenDiagnosticoComponent },
   
   // Ruta de fallback
   { path: '**', redirectTo: '/landing' }

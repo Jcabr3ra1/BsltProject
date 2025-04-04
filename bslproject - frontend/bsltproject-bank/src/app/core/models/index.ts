@@ -1,13 +1,13 @@
-// Exportamos todos los modelos desde sus ubicaciones correctas
+// Re-exportar todos los modelos desde sus módulos correspondientes
 
 // Modelos de finanzas
-export type { TipoMovimiento } from './finanzas/tipo-movimiento.model';
-export type { Transaccion, TipoTransaccion } from './finanzas/transaccion.model';
-export type { Bolsillo, BolsilloRequest } from './finanzas/bolsillo.model';
-export type { Cuenta } from './finanzas/cuenta.model';
+export * from './finanzas';
 
 // Modelos de seguridad
-export type { Usuario, Estado, Rol, Permiso } from './seguridad/usuario.model';
+export * from './seguridad';
 
-// Otros modelos
+// Exportación directa de otros modelos de nivel superior
 export type { User } from './user.model';
+export type { Permiso } from './permiso.model';
+export type { Estado } from './estado.model';
+export type { Rol } from './rol.model';

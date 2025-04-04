@@ -2,7 +2,7 @@
   <div class="header">
     <h2>Transacciones</h2>
     <div class="actions">
-      <button mat-raised-button [matMenuTriggerFor]="menu" color="primary">
+      <button mat-raised-button [matMenuTriggerFor]="menu" color="primary" class="new-transaction-btn">
         Nueva Transacción
         <mat-icon>add</mat-icon>
       </button>
@@ -36,13 +36,122 @@
     </div>
   </div>
 
-  <div class="content">
-    <div *ngIf="loading" class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Cargando transacciones...</p>
-    </div>
+  <!-- Dashboard de estadísticas -->
+  <div class="dashboard">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ totalTransacciones }}</div>
+        <div class="stat-label">Total Transacciones</div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ formatMonto(totalMonto) }}</div>
+        <div class="stat-label">Monto Total</div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="stat-card approved">
+      <mat-card-content>
+        <div class="stat-value">{{ totalAprobadas }}</div>
+        <div class="stat-label">Aprobadas</div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="stat-card pending">
+      <mat-card-content>
+        <div class="stat-value">{{ totalPendientes }}</div>
+        <div class="stat-label">Pendientes</div>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="stat-card rejected">
+      <mat-card-content>
+        <div class="stat-value">{{ totalRechazadas }}</div>
+        <div class="stat-label">Rechazadas/Canceladas</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
 
-    <ng-template #errorTemplate>
+  <!-- Filtros -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>Filtros</mat-card-title>
+      @if (activeFilters) {
+        <button mat-button color="warn" (click)="resetFilters()">
+          <mat-icon>clear</mat-icon> Limpiar filtros
+        </button>
+      }
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filters-form">
+        <div class="filters-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Tipo</mat-label>
+            <mat-select formControlName="type">
+              <mat-option value="">Todos</mat-option>
+              <mat-option [value]="TransactionType.CUENTA_CUENTA">Entre Cuentas</mat-option>
+              <mat-option [value]="TransactionType.CUENTA_BOLSILLO">A Bolsillo</mat-option>
+              <mat-option [value]="TransactionType.BOLSILLO_CUENTA">De Bolsillo a Cuenta</mat-option>
+              <mat-option [value]="TransactionType.BANCO_CUENTA">Consignación a Cuenta</mat-option>
+              <mat-option [value]="TransactionType.BANCO_BOLSILLO">Consignación a Bolsillo</mat-option>
+              <mat-option [value]="TransactionType.CUENTA_BANCO">Retiro a Banco</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="">Todos</mat-option>
+              <mat-option [value]="EstadoTransaccionEnum.APROBADO">Aprobada</mat-option>
+              <mat-option [value]="EstadoTransaccionEnum.PENDIENTE">Pendiente</mat-option>
+              <mat-option [value]="EstadoTransaccionEnum.RECHAZADO">Rechazada</mat-option>
+              <mat-option [value]="EstadoTransaccionEnum.CANCELADO">Cancelada</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="filters-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Desde</mat-label>
+            <input matInput [matDatepicker]="pickerInicio" formControlName="startDate">
+            <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+            <mat-datepicker #pickerInicio></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Hasta</mat-label>
+            <input matInput [matDatepicker]="pickerFin" formControlName="endDate">
+            <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFin></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="filters-row">
+          <mat-form-field appearance="fill">
+            <mat-label>Monto Mínimo</mat-label>
+            <input matInput type="number" formControlName="montoMinimo">
+            <span matPrefix>$&nbsp;</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Monto Máximo</mat-label>
+            <input matInput type="number" formControlName="montoMaximo">
+            <span matPrefix>$&nbsp;</span>
+          </mat-form-field>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="content">
+    @if (loading) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando transacciones...</p>
+      </div>
+    } @else if (error) {
       <div class="error-container">
         <mat-icon color="warn">error_outline</mat-icon>
         <p>{{ error }}</p>
@@ -50,13 +159,11 @@
           Reintentar
         </button>
       </div>
-    </ng-template>
-
-    <div *ngIf="!loading && !error">
+    } @else {
       <app-transaccion-list
-        [transacciones]="transacciones"
+        [transacciones]="transaccionesFiltradas"
         (transactionSelected)="onTransactionUpdated($event)">
       </app-transaccion-list>
-    </div>
+    }
   </div>
 </div>

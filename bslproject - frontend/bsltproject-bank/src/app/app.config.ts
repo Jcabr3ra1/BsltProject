@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { userIdInterceptor } from './core/interceptors/user-id.interceptor';
 
 import { routes } from './app.routes';
 
@@ -19,7 +20,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, userIdInterceptor])),
     importProvidersFrom(
       MatSidenavModule,
       MatToolbarModule,

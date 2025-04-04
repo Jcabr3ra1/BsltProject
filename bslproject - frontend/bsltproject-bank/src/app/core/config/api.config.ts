@@ -67,6 +67,22 @@ export const API_CONFIG = {
       DEPOSIT_TO_ACCOUNT: '/operaciones-bancarias/consignar-cuenta',
       DEPOSIT_TO_POCKET: '/operaciones-bancarias/consignar-bolsillo',
       WITHDRAW_TO_BANK: '/operaciones-bancarias/retirar-banco'
+    },
+    POCKETS: {
+      BASE: '/bolsillos',
+      GET_BY_ID: (id: string) => `/bolsillos/${id}`,
+      GET_BY_ACCOUNT: (accountId: string) => `/bolsillos/cuenta/${accountId}`,
+      CREATE: '/bolsillos',
+      UPDATE: (id: string) => `/bolsillos/${id}`,
+      DELETE: (id: string) => `/bolsillos/${id}`
+    },
+    TRANSACTION_TYPES: {
+      BASE: '/tipos-transaccion',
+      GET_BY_ID: (id: string) => `/tipos-transaccion/${id}`
+    },
+    MOVEMENT_TYPES: {
+      BASE: '/tipos-movimiento',
+      GET_BY_ID: (id: string) => `/tipos-movimiento/${id}`
     }
   }
 };
