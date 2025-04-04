@@ -11,8 +11,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { userIdInterceptor } from './core/interceptors/user-id.interceptor';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
 
 import { routes } from './app.routes';
 
@@ -20,7 +22,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(withInterceptors([authInterceptor, userIdInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor, userIdInterceptor])),
     importProvidersFrom(
       MatSidenavModule,
       MatToolbarModule,
@@ -29,7 +31,8 @@ export const appConfig: ApplicationConfig = {
       MatInputModule,
       MatButtonModule,
       MatIconModule,
-      MatProgressSpinnerModule
+      MatProgressSpinnerModule,
+      MatSnackBarModule
     ),
     provideZoneChangeDetection({ eventCoalescing: true })
   ]

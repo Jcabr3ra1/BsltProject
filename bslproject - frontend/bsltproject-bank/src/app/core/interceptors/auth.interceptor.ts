@@ -1,18 +1,6 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor,
-  HttpErrorResponse,
-  HttpInterceptorFn
-} from '@angular/common/http';
+import { HttpInterceptorFn} from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
-import { AuthService } from '../services/seguridad/auth.service';
-import { LoginResponse } from '../models/seguridad/usuario.model';
-import { Router } from '@angular/router';
-import { API_CONFIG } from '../config/api.config';
+import { catchError } from 'rxjs/operators';
 
 /**
  * Functional interceptor for Angular 16+ to add authentication token to requests
@@ -39,7 +27,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     
     // Asegurarse de que el token tenga el formato correcto con el prefijo "Bearer "
     const formattedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
-    console.log('AuthInterceptor - Token formateado:', formattedToken.substring(0, Math.min(27, formattedToken.length)) + '...');
     
     // Create a new request with the Authorization header
     const authReq = req.clone({
@@ -49,14 +36,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
     });
     
-    // Log the headers for debugging
-    console.log('AuthInterceptor - Headers:');
-    authReq.headers.keys().forEach(key => {
-      console.log(`${key}: ${authReq.headers.get(key)}`);
-    });
-    
     return next(authReq).pipe(
-      catchError((error: HttpErrorResponse) => {
+      catchError((error) => {
         console.log('AuthInterceptor - Error:', error.status, error.message);
         
         // Handle 401 Unauthorized errors
@@ -64,14 +45,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           console.log('AuthInterceptor - 401 error, redirecting to login');
           // Clear tokens and redirect to login
           localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
           localStorage.removeItem('user');
           
           // We can't inject Router in a functional interceptor, so use window.location
           window.location.href = '/auth/login';
         } else if (error.status === 403) {
           console.log('AuthInterceptor - 403 error, posible problema de permisos');
-          // Podríamos mostrar un mensaje al usuario o redirigir a una página de acceso denegado
           console.error('Acceso prohibido. No tiene permisos para realizar esta acción.');
         }
         

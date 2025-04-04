@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, catchError, throwError } from 'rxjs';
-import { environment } from '../../../../environments/environment';
-import { TipoTransaccion } from '@core/models/finanzas/tipo-transaccion.model';
+import { environment } from 'environment/environment';
+import { TipoTransaccion } from '@core/models/finanzas/transaccion.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TipoTransaccionService {
-  private apiGatewayUrl = `${environment.apiGatewayUrl}/finanzas/tipo_transaccion`;
+  private apiGatewayUrl = `${environment.apiGatewayUrl}/finanzas/tipos-transaccion`;
 
   constructor(private http: HttpClient) {
     console.log('TipoTransaccionService inicializado');
@@ -19,7 +19,7 @@ export class TipoTransaccionService {
     const token = localStorage.getItem('token');
     return {
       headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
+        'Authorization': token && token.startsWith('Bearer ') ? token : `Bearer ${token}`,
         'Content-Type': 'application/json'
       })
     };

@@ -1,9 +1,12 @@
-// src/app/core/models/finanzas/bolsillo.model.ts
 export interface Bolsillo {
   id: string;
   nombre: string;
   saldo: number;
-  cuentaId?: string;
+  
+  // Compatibilidad con el backend
+  id_cuenta?: string;     // Campo del backend
+  cuentaId?: string;      // Campo frontend
+  
   meta?: number;
   fechaCreacion?: Date;
   fechaActualizacion?: Date;
@@ -19,6 +22,9 @@ export interface Bolsillo {
 
 export interface BolsilloRequest {
   nombre: string;
-  cuentaId: string;
+  cuentaId?: string;
   meta?: number;
 }
+
+// Aliasing para compatibilidad con código que use el término en inglés
+export type Pocket = Bolsillo;

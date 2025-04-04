@@ -3,11 +3,6 @@
  * 
  * This file contains the base URLs for connecting to different
  * services through the API Gateway.
- * 
- * The API Gateway runs on port 7777 and routes requests to:
- * - Authentication Service: /seguridad/*
- * - Users Service: /seguridad/usuarios/*
- * - Finance Service: /cuentas/*, /transacciones/*, /transferencias/*, /operaciones-bancarias/*
  */
 
 export const API_CONFIG = {
@@ -19,8 +14,7 @@ export const API_CONFIG = {
     BASE: '/seguridad/autenticacion',
     LOGIN: '/seguridad/autenticacion/login',
     REGISTER: '/seguridad/autenticacion/registro',
-    LOGOUT: '/seguridad/autenticacion/cerrar-sesion',
-    REFRESH_TOKEN: '/seguridad/autenticacion/refrescar-token',
+    LOGOUT: '/seguridad/cerrar-sesion',
     VERIFY_TOKEN: '/seguridad/autenticacion/verificar-token'
   },
   
@@ -32,57 +26,62 @@ export const API_CONFIG = {
     CREATE: '/seguridad/usuarios',
     UPDATE: (id: string) => `/seguridad/usuarios/${id}`,
     DELETE: (id: string) => `/seguridad/usuarios/${id}`,
-    PROFILE: '/seguridad/usuarios/profile',
-    UPDATE_PROFILE: '/seguridad/usuarios/profile/update',
-    CHANGE_PASSWORD: '/seguridad/usuarios/profile/change-password'
+    ASSIGN_ROLE: (userId: string, roleId: string) => `/seguridad/usuarios/${userId}/roles/${roleId}`,
+    ASSIGN_STATE: (userId: string, stateId: string) => `/seguridad/usuarios/${userId}/estados/${stateId}`,
+    ASSIGN_ACCOUNT: (userId: string, accountId: string) => `/seguridad/usuarios/${userId}/cuentas/${accountId}`
   },
   
   // Finance service endpoints
   FINANCE_API: {
     ACCOUNTS: {
-      BASE: '/cuentas',
-      GET_BY_ID: (id: string) => `/cuentas/${id}`,
-      CREATE: '/cuentas',
-      UPDATE: (id: string) => `/cuentas/${id}`,
-      DELETE: (id: string) => `/cuentas/${id}`
+      BASE: '/finanzas/cuentas',
+      GET_BY_ID: (id: string) => `/finanzas/cuentas/${id}`,
+      CREATE: '/finanzas/cuentas',
+      UPDATE: (id: string) => `/finanzas/cuentas/${id}`,
+      DELETE: (id: string) => `/finanzas/cuentas/${id}`,
+      GET_BY_USER: (userId: string) => `/finanzas/cuentas/usuario/${userId}`
     },
     TRANSACTIONS: {
-      BASE: '/transacciones',
-      GET_BY_ID: (id: string) => `/transacciones/${id}`,
-      CREATE: '/transacciones',
-      UPDATE: (id: string) => `/transacciones/${id}`,
-      DELETE: (id: string) => `/transacciones/${id}`,
-      APPROVE: (id: string) => `/transacciones/${id}/aprobar`,
-      REJECT: (id: string) => `/transacciones/${id}/rechazar`,
-      CANCEL: (id: string) => `/transacciones/${id}/cancelar`
+      BASE: '/finanzas/transacciones',
+      GET_BY_ID: (id: string) => `/finanzas/transacciones/${id}`,
+      CREATE: '/finanzas/transacciones',
+      CANCEL: (id: string) => `/finanzas/transacciones/${id}/cancel`,
+      GET_BY_USER: (userId: string) => `/finanzas/transacciones/usuario/${userId}`,
+      HISTORY: '/finanzas/transacciones/historial'
     },
     TRANSFERS: {
-      BASE: '/transferencias',
-      ACCOUNT_TO_ACCOUNT: '/transferencias/cuenta-cuenta',
-      ACCOUNT_TO_POCKET: '/transferencias/cuenta-bolsillo',
-      POCKET_TO_ACCOUNT: '/transferencias/bolsillo-cuenta'
+      ACCOUNT_TO_ACCOUNT: '/finanzas/transferencias/cuenta-cuenta',
+      ACCOUNT_TO_POCKET: '/finanzas/transferencias/cuenta-bolsillo',
+      POCKET_TO_ACCOUNT: '/finanzas/transferencias/bolsillo-cuenta'
     },
-    BANK_OPERATIONS: {
-      BASE: '/operaciones-bancarias',
-      DEPOSIT_TO_ACCOUNT: '/operaciones-bancarias/consignar-cuenta',
-      DEPOSIT_TO_POCKET: '/operaciones-bancarias/consignar-bolsillo',
-      WITHDRAW_TO_BANK: '/operaciones-bancarias/retirar-banco'
+    CONSIGNATIONS: {
+      BANK_TO_ACCOUNT: '/finanzas/consignaciones/banco-cuenta',
+      BANK_TO_POCKET: '/finanzas/consignaciones/banco-bolsillo'
+    },
+    WITHDRAWALS: {
+      ACCOUNT_TO_BANK: '/finanzas/retiros/cuenta-banco'
     },
     POCKETS: {
-      BASE: '/bolsillos',
-      GET_BY_ID: (id: string) => `/bolsillos/${id}`,
-      GET_BY_ACCOUNT: (accountId: string) => `/bolsillos/cuenta/${accountId}`,
-      CREATE: '/bolsillos',
-      UPDATE: (id: string) => `/bolsillos/${id}`,
-      DELETE: (id: string) => `/bolsillos/${id}`
-    },
-    TRANSACTION_TYPES: {
-      BASE: '/tipos-transaccion',
-      GET_BY_ID: (id: string) => `/tipos-transaccion/${id}`
+      BASE: '/finanzas/bolsillos',
+      GET_BY_ID: (id: string) => `/finanzas/bolsillos/${id}`,
+      CREATE: '/finanzas/bolsillos',
+      UPDATE: (id: string) => `/finanzas/bolsillos/${id}`,
+      DELETE: (id: string) => `/finanzas/bolsillos/${id}`,
+      ASSIGN_ACCOUNT: (pocketId: string, accountId: string) => `/finanzas/bolsillos/${pocketId}/cuentas/${accountId}`
     },
     MOVEMENT_TYPES: {
-      BASE: '/tipos-movimiento',
-      GET_BY_ID: (id: string) => `/tipos-movimiento/${id}`
+      BASE: '/finanzas/tipos-movimiento',
+      GET_BY_ID: (id: string) => `/finanzas/tipos-movimiento/${id}`,
+      CREATE: '/finanzas/tipos-movimiento',
+      UPDATE: (id: string) => `/finanzas/tipos-movimiento/${id}`,
+      DELETE: (id: string) => `/finanzas/tipos-movimiento/${id}`
+    },
+    TRANSACTION_TYPES: {
+      BASE: '/finanzas/tipos-transaccion',
+      GET_BY_ID: (id: string) => `/finanzas/tipos-transaccion/${id}`,
+      CREATE: '/finanzas/tipos-transaccion',
+      UPDATE: (id: string) => `/finanzas/tipos-transaccion/${id}`,
+      DELETE: (id: string) => `/finanzas/tipos-transaccion/${id}`
     }
   }
 };
