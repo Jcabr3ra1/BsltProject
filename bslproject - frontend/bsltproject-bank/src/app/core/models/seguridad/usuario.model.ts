@@ -1,46 +1,40 @@
 // src/app/core/models/seguridad/usuario.model.ts
+import { Rol } from './rol.model';
+import { Estado } from './estado.model';
+import { Cuenta } from '../finanzas/cuenta.model';
+
 export interface Usuario {
   id: string;
   nombre: string;
   apellido?: string;
   email: string;
   password?: string;
-  rol?: string | Rol;
-  estado?: string | Estado;
-  cuenta?: string | Cuenta;
+  
+  // Relaciones
+  roles?: Rol[] | string[];
+  estado?: Estado | string;
   cuentaId?: string;
-  fechaCreacion?: Date;
-  fechaActualizacion?: Date;
+  
+  // Campos para compatibilidad con el backend
+  _id?: string;
+  id_cuenta?: string;
   
   // Propiedades en inglés para compatibilidad
   name?: string;
   lastName?: string;
   role?: string | Rol;
   state?: string | Estado;
-  account?: string | Cuenta;
+  account?: any;
   accountId?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-export interface Rol {
-  id: string;
-  nombre: string;
-  descripcion?: string;
-  permisos?: any[];
-}
-
-export interface Estado {
-  id: string;
-  nombre: string;
-  descripcion?: string;
-}
-
-export interface Cuenta {
-  id?: string;
-  numero?: string;
-  saldo?: number;
-  tipo?: string;
+  
+  // Relaciones expandidas
+  cuenta?: any;
+  
+  // Fechas
+  fechaCreacion?: Date | string;
+  fechaActualizacion?: Date | string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 export interface LoginRequest {
@@ -50,7 +44,9 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
+  tipo?: string;  // Tipo de token, usualmente "Bearer"
   user: Usuario;
+  mensaje?: string;
   message?: string;
 }
 
