@@ -85,10 +85,10 @@ export class TransaccionesComponent implements OnInit, OnDestroy {
     private readonly router: Router
   ) {
     this.filterForm = this.fb.group({
-      type: [''],
-      status: [''],
-      startDate: [null],
-      endDate: [null],
+      tipo: [''],
+      estado: [''],
+      fechaInicio: [null],
+      fechaFin: [null],
       montoMinimo: [null],
       montoMaximo: [null]
     });
@@ -166,15 +166,15 @@ export class TransaccionesComponent implements OnInit, OnDestroy {
           this.loading = false;
         }))
         .subscribe({
-          next: (transactions) => {
+          next: (transactions: Transaction[]) => {
             console.log('Transacciones recibidas:', transactions);
             this.transacciones = transactions;
             this.transactions = transactions; // Para compatibilidad con spec
             this.applyFilters();
             this.calculateStatistics();
           },
-          error: (err) => {
-            console.error('Error detallado al cargar transacciones:', err);
+          error: (error: any) => {
+            console.error('Error detallado al cargar transacciones:', error);
             this.error = 'Failed to load transactions. Please try again.';
           }
         })
@@ -219,39 +219,52 @@ export class TransaccionesComponent implements OnInit, OnDestroy {
    * Aplica los filtros a las transacciones
    */
   applyFilters(): void {
-    const filters = this.filterForm.value as TransactionFilters;
+    const formValues = this.filterForm.value;
+    const filters: TransactionFilters = {
+      // Asignar valores tanto a propiedades en español como en inglés
+      tipo: formValues.tipo,
+      type: formValues.tipo,
+      estado: formValues.estado,
+      status: formValues.estado,
+      fechaInicio: formValues.fechaInicio,
+      startDate: formValues.fechaInicio,
+      fechaFin: formValues.fechaFin,
+      endDate: formValues.fechaFin,
+      montoMinimo: formValues.montoMinimo,
+      montoMaximo: formValues.montoMaximo
+    };
     
     // Verificar si hay filtros activos
-    this.activeFilters = Object.values(filters).some(value => 
+    this.activeFilters = Object.values(formValues).some(value => 
       value !== null && value !== '' && value !== undefined
     );
     
     // Aplicar filtros
     this.transaccionesFiltradas = this.transacciones.filter(transaction => {
       // Filtro por tipo
-      if (filters.type && transaction.tipo !== filters.type) {
+      if (filters.tipo && transaction.tipoTransaccion?.toString() !== filters.tipo) {
         return false;
       }
       
       // Filtro por estado
-      if (filters.status && transaction.estado !== filters.status) {
+      if (filters.estado && transaction.estado !== filters.estado) {
         return false;
       }
       
       // Filtro por fecha inicio
-      if (filters.startDate) {
-        const startDate = new Date(filters.startDate);
-        const transactionDate = new Date(transaction.createdAt);
+      if (filters.fechaInicio) {
+        const startDate = new Date(filters.fechaInicio);
+        const transactionDate = new Date(transaction.createdAt || transaction.fecha || new Date());
         if (transactionDate < startDate) {
           return false;
         }
       }
       
       // Filtro por fecha fin
-      if (filters.endDate) {
-        const endDate = new Date(filters.endDate);
+      if (filters.fechaFin) {
+        const endDate = new Date(filters.fechaFin);
         endDate.setHours(23, 59, 59, 999); // Fin del día
-        const transactionDate = new Date(transaction.createdAt);
+        const transactionDate = new Date(transaction.createdAt || transaction.fecha || new Date());
         if (transactionDate > endDate) {
           return false;
         }
@@ -286,7 +299,7 @@ export class TransaccionesComponent implements OnInit, OnDestroy {
     );
     
     this.totalAprobadas = this.transaccionesFiltradas.filter(
-      t => t.estado === TransactionStatus.APPROVED
+      t => t.estado === TransactionStatus.COMPLETED
     ).length;
     
     this.totalPendientes = this.transaccionesFiltradas.filter(
@@ -337,7 +350,7 @@ export class TransaccionesComponent implements OnInit, OnDestroy {
         );
         this.loadTransactions();
       },
-      error: (error) => {
+      error: (error: any) => {
         this.snackBar.open(
           'Error approving transaction',
           'Close',
@@ -361,7 +374,7 @@ export class TransaccionesComponent implements OnInit, OnDestroy {
         );
         this.loadTransactions();
       },
-      error: (error) => {
+      error: (error: any) => {
         this.snackBar.open(
           'Error rejecting transaction',
           'Close',
@@ -386,7 +399,7 @@ export class TransaccionesComponent implements OnInit, OnDestroy {
           );
           this.loadTransactions();
         },
-        error: (error) => {
+        error: (error: any) => {
           this.snackBar.open(
             'Error deleting transaction',
             'Close',

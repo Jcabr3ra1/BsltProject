@@ -2,4 +2,4 @@
 export * from './usuario.model';
 export * from './rol.model';
 export * from './estado.model';
-export * from './Permiso.model';
+export * from './permiso.model';

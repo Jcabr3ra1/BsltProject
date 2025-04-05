@@ -10,9 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TransaccionService } from '@core/services/finanzas/transaccion.service';
-import { Transaction, TransactionType } from '@core/models/finanzas/transaccion.model';
-import { TipoTransaccion } from '@core/models/finanzas/tipo-transaccion.model';
-import { Account, AccountType } from '@core/models/finanzas/cuenta.model';
+import { Transaction, TransactionType, TipoTransaccion as TipoTransaccionEnum } from '@core/models/finanzas/transaccion.model';
+import { TipoTransaccion as TipoTransaccionEntity, ConfiguracionTipoTransaccion } from '@core/models/finanzas/tipo-transaccion.model';
+import { Account, TipoCuenta } from '@core/models/finanzas/cuenta.model';
 import { CatalogoService } from '@core/services/common/catalogo.service';
 
 interface DialogData {
@@ -44,7 +44,7 @@ export class TransaccionFormComponent implements OnInit {
   error: string | null = null;
   cuentasOrigen: Account[] = [];
   cuentasDestino: Account[] = [];
-  tiposTransaccion: TipoTransaccion[] = [];
+  tiposTransaccion: ConfiguracionTipoTransaccion[] = [];
   roles: any[] = [];
   estados: any[] = [];
   tipoTransaccionId: string = '';
@@ -93,8 +93,17 @@ export class TransaccionFormComponent implements OnInit {
     this.loading = true;
     this.catalogoService.cargarTodosCatalogos().subscribe({
       next: () => {
-        // Obtener tipos de transacción
-        this.tiposTransaccion = this.catalogoService.getTiposTransaccion();
+        // Convertir los valores del enum TipoTransaccion a objetos ConfiguracionTipoTransaccion
+        const tiposTransaccion = this.catalogoService.getTiposTransaccion();
+        
+        // Crear objetos ConfiguracionTipoTransaccion a partir de los valores del enum
+        this.tiposTransaccion = Object.values(TipoTransaccionEnum).map(tipoValue => ({
+          id: tipoValue,
+          nombre: tipoValue,
+          descripcion: `Transacción de tipo ${tipoValue}`,
+          requiereDestino: true, // Asumimos que todos requieren destino por defecto
+          activo: true
+        }));
         console.log('Tipos de transacción cargados:', this.tiposTransaccion);
         
         // Obtener roles
@@ -154,7 +163,7 @@ export class TransaccionFormComponent implements OnInit {
         if (this.needsOrigen()) {
           this.cuentasOrigen = accounts.filter(account => 
             this.tipoTransaccionId === TransactionType.CUENTA_BOLSILLO ? 
-            account.tipo === AccountType.BOLSILLO : 
+            account.tipo === TipoCuenta.BOLSILLO : 
             this.isCuentaRegular(account.tipo)
           );
           console.log('Cuentas de origen filtradas:', this.cuentasOrigen);
@@ -169,7 +178,7 @@ export class TransaccionFormComponent implements OnInit {
         if (this.needsDestino()) {
           this.cuentasDestino = accounts.filter(account => 
             this.tipoTransaccionId === TransactionType.CUENTA_BOLSILLO ? 
-            account.tipo === AccountType.BOLSILLO : 
+            account.tipo === TipoCuenta.BOLSILLO : 
             this.isCuentaRegular(account.tipo)
           );
           console.log('Cuentas de destino filtradas:', this.cuentasDestino);
@@ -212,7 +221,7 @@ export class TransaccionFormComponent implements OnInit {
    * Verifica si un tipo de cuenta es una cuenta regular (no bolsillo)
    */
   isCuentaRegular(tipo: string): boolean {
-    return tipo === AccountType.CUENTA_CORRIENTE || tipo === AccountType.CUENTA_AHORRO;
+    return tipo === TipoCuenta.CUENTA_CORRIENTE || tipo === TipoCuenta.CUENTA_AHORRO;
   }
 
   getTitulo(): string {
@@ -262,9 +271,14 @@ export class TransaccionFormComponent implements OnInit {
       // Como no hay método updateTransaction, usamos createTransaction
       // En un caso real, deberíamos implementar updateTransaction en el servicio
       this.transaccionService.createTransaction({
-        ...transaccionData,
-        id: this.data.transaction.id
-      } as Transaction).subscribe({
+        monto: transaccionData.monto,
+        descripcion: transaccionData.descripcion,
+        tipoMovimientoId: transaccionData.tipoMovimientoId || '',
+        cuentaOrigenId: transaccionData.cuentaOrigenId,
+        cuentaDestinoId: transaccionData.cuentaDestinoId,
+        bolsilloOrigenId: transaccionData.bolsilloOrigenId,
+        bolsilloDestinoId: transaccionData.bolsilloDestinoId
+      }).subscribe({
         next: (transaction: Transaction) => {
           this.dialogRef.close(transaction);
         },
@@ -274,7 +288,15 @@ export class TransaccionFormComponent implements OnInit {
         }
       });
     } else {
-      this.transaccionService.createTransaction(transaccionData as Transaction).subscribe({
+      this.transaccionService.createTransaction({
+        monto: transaccionData.monto,
+        descripcion: transaccionData.descripcion,
+        tipoMovimientoId: transaccionData.tipoMovimientoId || '',
+        cuentaOrigenId: transaccionData.cuentaOrigenId,
+        cuentaDestinoId: transaccionData.cuentaDestinoId,
+        bolsilloOrigenId: transaccionData.bolsilloOrigenId,
+        bolsilloDestinoId: transaccionData.bolsilloDestinoId
+      }).subscribe({
         next: (transaction: Transaction) => {
           this.dialogRef.close(transaction);
         },

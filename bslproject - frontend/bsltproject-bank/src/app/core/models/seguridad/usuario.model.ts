@@ -3,6 +3,19 @@ import { Rol } from './rol.model';
 import { Estado } from './estado.model';
 import { Cuenta } from '../finanzas/cuenta.model';
 
+// Enums para roles y estados de usuario
+export enum RolUsuario {
+  ADMIN = 'ADMIN',
+  EMPLEADO = 'EMPLEADO',
+  CLIENTE = 'CLIENTE'
+}
+
+export enum EstadoUsuario {
+  ACTIVO = 'ACTIVO',
+  INACTIVO = 'INACTIVO',
+  PENDIENTE = 'PENDIENTE'
+}
+
 export interface Usuario {
   id: string;
   nombre: string;

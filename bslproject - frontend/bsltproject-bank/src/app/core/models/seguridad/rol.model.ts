@@ -1,5 +1,5 @@
 // src/app/core/models/seguridad/rol.model.ts
-import { Permiso } from './Permiso.model';
+import { Permiso } from './permiso.model';
 
 export interface Rol {
   id: string;

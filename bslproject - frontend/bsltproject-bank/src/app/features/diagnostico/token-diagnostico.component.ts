@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { environment } from 'environment/environment';
+import { environment } from '@environments/environment';
 import { catchError, of } from 'rxjs';
 
 @Component({

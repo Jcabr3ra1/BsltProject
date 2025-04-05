@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, catchError, throwError, of } from 'rxjs';
 import { environment } from '@environments/environment';
-import { EstadoTransaccion } from '@core/models/finanzas/estado-transaccion.enum';
+import { EstadoTransaccion } from '@core/models/finanzas/transaccion.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EstadoTransaccionService {
+  // No existe un endpoint específico para estados de transacción en el backend
+  // Usaremos valores predefinidos en lugar de intentar obtenerlos del backend
   private apiGatewayUrl = `${environment.apiGatewayUrl}/finanzas/estados-transaccion`;
 
   constructor(private http: HttpClient) {
@@ -28,14 +30,25 @@ export class EstadoTransaccionService {
 
   // Obtener todos los estados de transacción
   obtenerEstadosTransaccion(): Observable<EstadoTransaccion[]> {
-    console.log('Obteniendo estados de transacción desde:', this.apiGatewayUrl);
-    return this.http.get<EstadoTransaccion[]>(this.apiGatewayUrl, this.getHeaders()).pipe(
+    console.log('Usando estados de transacción predefinidos');
+    
+    // Usar los valores del enum EstadoTransaccion
+    const estadosPredefinidos: EstadoTransaccion[] = [
+      EstadoTransaccion.PENDIENTE,
+      EstadoTransaccion.COMPLETADA,
+      EstadoTransaccion.ANULADA,
+      EstadoTransaccion.RECHAZADA,
+      EstadoTransaccion.APROBADA
+    ];
+    
+    console.log('Estados de transacción predefinidos:', estadosPredefinidos);
+    return of(estadosPredefinidos).pipe(
       tap(estados => {
-        console.log('Estados de transacción obtenidos:', estados);
+        console.log('Estados de transacción proporcionados:', estados);
       }),
       catchError(error => {
-        console.error('Error al obtener estados de transacción:', error);
-        return throwError(() => new Error('Error al obtener estados de transacción'));
+        console.error('Error al proporcionar estados de transacción:', error);
+        return throwError(() => new Error('Error al proporcionar estados de transacción'));
       })
     );
   }

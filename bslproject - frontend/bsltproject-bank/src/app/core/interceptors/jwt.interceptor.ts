@@ -12,9 +12,12 @@ export class JwtInterceptor implements HttpInterceptor {
         const token = this.authService.getToken();
         
         if (token) {
+            // Verificar si el token ya incluye el prefijo 'Bearer'
+            const tokenValue = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+            
             request = request.clone({
                 setHeaders: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: tokenValue
                 }
             });
         }

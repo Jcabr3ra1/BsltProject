@@ -1,34 +1,39 @@
-import { HttpInterceptorFn} from '@angular/common/http';
+import { HttpInterceptorFn } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 /**
- * Functional interceptor for Angular 16+ to add authentication token to requests
- * and handle authentication errors
+ * Interceptor funcional para Angular que añade el token de autenticación a las solicitudes
+ * y maneja errores de autenticación. Este interceptor sigue el nuevo enfoque funcional
+ * de Angular para interceptores HTTP.
+ *
+ * Funcionalidades:
+ * - Añade el token de autenticación a todas las solicitudes excepto login y registro
+ * - Maneja errores 401 (No autorizado) redirigiendo al login
+ * - Maneja errores 403 (Prohibido) mostrando mensaje de error
+ * - Asegura que el token tenga el formato correcto con el prefijo "Bearer"
  */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  console.log('AuthInterceptor - Request URL:', req.url);
+  const snackBar = inject(MatSnackBar);
   
-  // Skip authentication if the Skip-Auth header is present or if it's a login/register request
+  // Omitir autenticación si el encabezado Skip-Auth está presente o si es una solicitud de login/registro
   if (req.headers.has('Skip-Auth') || 
       req.url.includes('/autenticacion/login') || 
       req.url.includes('/autenticacion/registro')) {
-    console.log('AuthInterceptor - Skipping token for auth endpoint:', req.url);
     return next(req);
   }
   
-  // Get token from localStorage directly since we don't have access to AuthService in a functional interceptor
+  // Obtener token del localStorage directamente ya que no tenemos acceso a AuthService en un interceptor funcional
   const token = localStorage.getItem('token');
-  console.log('AuthInterceptor - Token exists:', !!token);
   
-  // Add token to ALL requests, not just specific ones
+  // Añadir token a TODAS las solicitudes, no solo a las específicas
   if (token) {
-    console.log('AuthInterceptor - Adding token to request');
-    
     // Asegurarse de que el token tenga el formato correcto con el prefijo "Bearer "
     const formattedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
     
-    // Create a new request with the Authorization header
+    // Crear una nueva solicitud con el encabezado de autorización
     const authReq = req.clone({
       setHeaders: {
         Authorization: formattedToken,
@@ -38,20 +43,24 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     
     return next(authReq).pipe(
       catchError((error) => {
-        console.log('AuthInterceptor - Error:', error.status, error.message);
-        
-        // Handle 401 Unauthorized errors
+        // Manejar errores 401 (No autorizado)
         if (error.status === 401) {
-          console.log('AuthInterceptor - 401 error, redirecting to login');
-          // Clear tokens and redirect to login
+          // Limpiar tokens y redirigir al login
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           
-          // We can't inject Router in a functional interceptor, so use window.location
+          snackBar.open('Sesión expirada. Por favor inicie sesión nuevamente.', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+          
+          // No podemos inyectar Router en un interceptor funcional, así que usamos window.location
           window.location.href = '/auth/login';
         } else if (error.status === 403) {
-          console.log('AuthInterceptor - 403 error, posible problema de permisos');
-          console.error('Acceso prohibido. No tiene permisos para realizar esta acción.');
+          snackBar.open('No tiene permisos para realizar esta acción', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
         }
         
         return throwError(() => error);
@@ -59,7 +68,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     );
   }
   
-  // If no token is found, proceed with the original request
-  console.warn('AuthInterceptor - No token found, proceeding without authorization');
+  // Si no se encuentra token, continuar con la solicitud original
   return next(req);
 };

@@ -22,7 +22,11 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor, userIdInterceptor])),
+    // El orden de los interceptores es importante:
+    // 1. userIdInterceptor: Añade el ID de usuario a las solicitudes que lo necesiten
+    // 2. authInterceptor: Añade el token de autenticación y maneja errores 401/403
+    // 3. errorInterceptor: Maneja otros errores HTTP
+    provideHttpClient(withInterceptors([userIdInterceptor, authInterceptor, errorInterceptor])),
     importProvidersFrom(
       MatSidenavModule,
       MatToolbarModule,

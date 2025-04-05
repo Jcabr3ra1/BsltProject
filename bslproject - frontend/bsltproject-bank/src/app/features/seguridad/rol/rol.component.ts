@@ -110,12 +110,19 @@ export class RolComponent implements OnInit {
     // Cargar los permisos para cada rol
     for (const rol of this.roles) {
       if (!rol.permisos || rol.permisos.length === 0) {
+        console.log(`Cargando permisos para rol: ${rol.nombre} (ID: ${rol.id})`);
         this.rolService.obtenerPermisosDeRol(rol.id).subscribe({
           next: (permisos) => {
+            console.log(`Permisos cargados para rol ${rol.nombre}:`, permisos);
             rol.permisos = permisos;
           },
           error: (err) => {
-            console.error(`Error al obtener permisos para rol ${rol.nombre}:`, err);
+            // Solo mostramos el error si no es un 403 (que ya manejamos en el servicio)
+            if (err?.status !== 403) {
+              console.error(`Error al obtener permisos para rol ${rol.nombre}:`, err);
+            } else {
+              console.log(`Usando permisos simulados para rol ${rol.nombre} debido a error 403`);
+            }
           }
         });
       }

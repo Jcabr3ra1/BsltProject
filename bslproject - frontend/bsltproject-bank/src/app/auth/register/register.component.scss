@@ -1,9 +1,30 @@
+// Variables
+$primary-color: #3f51b5;
+$primary-hover: #3949ab;
+$text-primary: #2c3e50;
+$text-secondary: #7f8c8d;
+$text-muted: #64748b;
+$link-color: #3b82f6;
+$link-hover: #1d4ed8;
+$error-bg: #fee2e2;
+$error-text: #dc2626;
+$card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+$border-radius: 16px;
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 0.75rem;
+$spacing-lg: 1rem;
+$spacing-xl: 1.5rem;
+$spacing-xxl: 2rem;
+$transition-standard: all 0.3s ease;
+
+// Estilos del componente
 :host {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 1rem;
+  padding: $spacing-lg;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
@@ -11,118 +32,118 @@
   width: 100%;
   max-width: 480px;
   animation: fadeIn 0.5s ease-out;
+}
 
-  .register-card {
+.register-card {
+  width: 100%;
+  padding: $spacing-xxl;
+  box-shadow: $card-shadow;
+  border-radius: $border-radius;
+  background: white;
+}
+
+mat-card-header {
+  margin-bottom: $spacing-xl;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+mat-card-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+mat-card-subtitle {
+  font-size: 1rem;
+  color: $text-secondary;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+mat-form-field {
+  width: 100%;
+  
+  &.full-width {
     width: 100%;
-    padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border-radius: 16px;
-    background: white;
+  }
+}
 
-    mat-card-header {
-      margin-bottom: 1.5rem;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-lg;
+  margin: $spacing-sm 0;
+  border-radius: 8px;
+  background-color: $error-bg;
+  color: $error-text;
+  
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
 
-      mat-card-title {
-        font-size: 1.75rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-      }
+.submit-button {
+  width: 100%;
+  padding: $spacing-md;
+  margin: $spacing-lg 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  transition: $transition-standard;
+  
+  &:hover:not([disabled]) {
+    background-color: $primary-hover;
+  }
+  
+  mat-spinner {
+    margin: 0 $spacing-sm;
+  }
+}
 
-      mat-card-subtitle {
-        font-size: 1rem;
-        color: #7f8c8d;
-      }
-    }
-
-    mat-card-content {
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-
-        mat-form-field {
-          width: 100%;
-
-          &.full-width {
-            width: 100%;
-          }
-        }
-
-        .error-message {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 1rem;
-          margin: 0.5rem 0;
-          border-radius: 8px;
-          background-color: #fee2e2;
-          color: #dc2626;
-
-          mat-icon {
-            font-size: 20px;
-            width: 20px;
-            height: 20px;
-          }
-        }
-
-        .submit-button {
-          width: 100%;
-          padding: 0.75rem;
-          margin: 1rem 0;
-          font-size: 1rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          transition: all 0.3s ease;
-
-          &:hover:not([disabled]) {
-            background-color: #3949ab;
-          }
-
-          mat-spinner {
-            margin: 0 0.5rem;
-          }
-        }
-
-        .toggle-text {
-          text-align: center;
-          margin-top: 1rem;
-          color: #64748b;
-
-          a {
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 500;
-            margin-left: 0.25rem;
-            transition: color 0.3s ease;
-
-            &:hover {
-              text-decoration: underline;
-              color: #1d4ed8;
-            }
-          }
-        }
-      }
+.toggle-text {
+  text-align: center;
+  margin-top: $spacing-lg;
+  color: $text-muted;
+  
+  a {
+    color: $link-color;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: $spacing-xs;
+    transition: color 0.3s ease;
+    
+    &:hover {
+      text-decoration: underline;
+      color: $link-hover;
     }
   }
 }
 
+// Media queries
 @media (max-width: 600px) {
   .register-container {
-    padding: 0.5rem;
+    padding: $spacing-sm;
   }
 
   .register-card {
-    padding: 1.5rem;
+    padding: $spacing-xl;
   }
 }
 
+// Animaciones
 @keyframes fadeIn {
   from {
     opacity: 0;

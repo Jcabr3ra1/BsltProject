@@ -4,13 +4,18 @@ import { HttpClient } from '@angular/common/http';
 import { BaseApiService } from '../base-api.service';
 import { Cuenta } from '@core/models/finanzas/cuenta.model';
 import { environment } from '@environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CuentaService extends BaseApiService<Cuenta> {
-  constructor(http: HttpClient) {
+  constructor(
+    http: HttpClient,
+    private dialog: MatDialog
+  ) {
     super(http, `${environment.apiGatewayUrl}/finanzas/cuentas`);
   }
   
@@ -29,5 +34,35 @@ export class CuentaService extends BaseApiService<Cuenta> {
       {},
       { headers: this.getHeaders() }
     ).pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Abre el diálogo para crear o editar una cuenta
+   * @param cuenta Opcional, cuenta a editar
+   * @returns Referencia al diálogo
+   */
+  abrirDialogoCuenta(cuenta?: Cuenta): MatDialogRef<any> {
+    // Debido a que no podemos importar directamente los componentes de diálogo
+    // (para evitar dependencias circulares), devolvemos un MatDialogRef<any>
+    // que será manejado por el componente que lo llama
+    return this.dialog.open(Object, {
+      width: '500px',
+      data: { account: cuenta }
+    });
+  }
+
+  /**
+   * Abre el diálogo para asignar un usuario a una cuenta
+   * @param cuenta Cuenta a la que se asignará el usuario
+   * @returns Referencia al diálogo
+   */
+  abrirDialogoAsignarUsuario(cuenta: Cuenta): MatDialogRef<any> {
+    // Debido a que no podemos importar directamente los componentes de diálogo
+    // (para evitar dependencias circulares), devolvemos un MatDialogRef<any>
+    // que será manejado por el componente que lo llama
+    return this.dialog.open(Object, {
+      width: '500px',
+      data: { account: cuenta }
+    });
   }
 }

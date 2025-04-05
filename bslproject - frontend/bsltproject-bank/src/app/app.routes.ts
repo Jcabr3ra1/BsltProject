@@ -1,14 +1,14 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from '@app/features/home/home.component';
-import { LoginComponent } from '@app/auth/login/login.component';
-import { RegisterComponent } from '@app/auth/register/register.component';
-import { DashboardComponent } from '@app/features/dashboard/dashboard.component';
-import { AuthGuard } from '@core/guards/auth.guard';
-import { LandingPageComponent } from '@app/features/landing-page/landing-page.component';
+import { HomeComponent } from '@features/home/home.component';
+import { LoginComponent } from './auth';
+import { RegisterComponent } from './auth';
+import { DashboardComponent } from '@features/dashboard/dashboard.component';
+import { authGuard } from '@core/guards/auth.guard';
+import { LandingPageComponent } from '@features/landing-page/landing-page.component';
 // Importar directamente las rutas para evitar problemas de carga perezosa
-import { SEGURIDAD_ROUTES } from '@app/features/seguridad/seguridad.routes';
-import { FINANZAS_ROUTES } from '@app/features/finanzas/finanzas.routes';
-import { TokenDiagnosticoComponent } from '@app/features/diagnostico/token-diagnostico.component';
+import { SEGURIDAD_ROUTES } from '@features/seguridad/seguridad.routes';
+import { FINANZAS_ROUTES } from '@features/finanzas/finanzas.routes';
+import { TokenDiagnosticoComponent } from '@features/diagnostico/token-diagnostico.component';
 
 export const routes: Routes = [
   // Rutas públicas
@@ -30,19 +30,19 @@ export const routes: Routes = [
   { 
     path: 'dashboard', 
     component: DashboardComponent, 
-    canActivate: [AuthGuard] 
+    canActivate: [authGuard] 
   },
   
   // Módulos de características - carga perezosa
   {
     path: 'seguridad',
     children: SEGURIDAD_ROUTES,
-    canActivate: [AuthGuard]
+    canActivate: [authGuard]
   },
   {
     path: 'finanzas',
     children: FINANZAS_ROUTES,
-    canActivate: [AuthGuard]
+    canActivate: [authGuard]
   },
   
   // Ruta de diagnóstico - accesible sin autenticación para facilitar la depuración

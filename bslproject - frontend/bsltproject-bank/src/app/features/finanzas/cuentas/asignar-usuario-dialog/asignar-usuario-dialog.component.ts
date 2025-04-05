@@ -12,7 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UsuarioService } from '@core/services/seguridad/usuario.service';
 import { CuentaService } from '@core/services/finanzas/cuenta.service';
 import { Usuario } from '@core/models/seguridad/usuario.model';
-import { Account } from '@core/models/finanzas/cuenta.model';
+import { Cuenta } from '@core/models/finanzas/cuenta.model';
 import { finalize } from 'rxjs/operators';
 import { AuthService } from '@core/services/seguridad/auth.service';
 
@@ -40,12 +40,12 @@ export class AsignarUsuarioDialogComponent implements OnInit {
   loading = false;
   submitting = false;
   error = '';
-  account: Account | null = null;
+  account: Cuenta | null = null;
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AsignarUsuarioDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { account: Account },
+    @Inject(MAT_DIALOG_DATA) public data: { account: Cuenta },
     private usuarioService: UsuarioService,
     private cuentaService: CuentaService,
     private authService: AuthService,
@@ -61,7 +61,7 @@ export class AsignarUsuarioDialogComponent implements OnInit {
       const accountRaw = data.account as any;
       
       // Normalizar los datos de la cuenta para manejar tanto id como _id
-      const accountData: Account = {
+      const accountData: Cuenta = {
         ...data.account,
         id: data.account.id || accountRaw._id || '',
         numero: data.account.numero || accountRaw.numero_cuenta || `Cuenta-${Math.floor(Math.random() * 10000)}`

@@ -7,27 +7,20 @@ import { TipoTransaccionService } from '../finanzas/tipo-transaccion.service';
 import { RolService } from '../seguridad/rol.service';
 import { EstadoService } from '../seguridad/estado.service';
 
-import { EstadoTransaccion } from '@core/models/finanzas/estado-transaccion.enum';
-import { TipoTransaccion } from '@core/models/finanzas/tipo-transaccion.model';
+import { EstadoTransaccion } from '@core/models/finanzas/transaccion.model';
+import { TipoTransaccion as TipoTransaccionEnum } from '@core/models/finanzas/transaccion.model';
+import { Rol } from '@core/models/seguridad/rol.model';
+import { Estado } from '@core/models/seguridad/estado.model';
 
-/**
- * Servicio centralizado para gestionar todos los catálogos de la aplicación
- * 
- * Este servicio permite obtener y cachear los datos de referencia como:
- * - Estados de transacción
- * - Tipos de transacción
- * - Roles
- * - Estados generales
- */
 @Injectable({
   providedIn: 'root'
 })
 export class CatalogoService {
   // BehaviorSubjects para mantener los datos en memoria
   private estadosTransaccionSubject = new BehaviorSubject<EstadoTransaccion[]>([]);
-  private tiposTransaccionSubject = new BehaviorSubject<TipoTransaccion[]>([]);
-  private rolesSubject = new BehaviorSubject<any[]>([]);
-  private estadosSubject = new BehaviorSubject<any[]>([]);
+  private tiposTransaccionSubject = new BehaviorSubject<TipoTransaccionEnum[]>([]);
+  private rolesSubject = new BehaviorSubject<Rol[]>([]);
+  private estadosSubject = new BehaviorSubject<Estado[]>([]);
 
   // Observables públicos
   readonly estadosTransaccion$ = this.estadosTransaccionSubject.asObservable();
@@ -37,9 +30,9 @@ export class CatalogoService {
 
   // Mapas para acceso rápido por ID
   private estadosTransaccionMap = new Map<string, EstadoTransaccion>();
-  private tiposTransaccionMap = new Map<string, TipoTransaccion>();
-  private rolesMap = new Map<string, any>();
-  private estadosMap = new Map<string, any>();
+  private tiposTransaccionMap = new Map<string, TipoTransaccionEnum>();
+  private rolesMap = new Map<string, Rol>();
+  private estadosMap = new Map<string, Estado>();
 
   // Indicadores de carga
   private catalogosCargados = false;
@@ -86,7 +79,9 @@ export class CatalogoService {
         // Actualizar mapa
         this.estadosTransaccionMap.clear();
         estados.forEach(estado => {
-          this.estadosTransaccionMap.set(estado.id, estado);
+          // Handle both enum values and objects with id property
+          const id = typeof estado === 'object' && (estado as any).id ? (estado as any).id : estado;
+          this.estadosTransaccionMap.set(id, estado);
         });
       }),
       catchError(error => {
@@ -99,14 +94,21 @@ export class CatalogoService {
   /**
    * Carga los tipos de transacción
    */
-  cargarTiposTransaccion(): Observable<TipoTransaccion[]> {
+  cargarTiposTransaccion(): Observable<TipoTransaccionEnum[]> {
     return this.tipoTransaccionService.getTiposTransaccion().pipe(
-      tap(tipos => {
+      // Convertir los objetos TipoTransaccion a valores TipoTransaccionEnum
+      map(tipos => {
+        // Crear un array de valores enum basado en los valores de Object.values(TipoTransaccionEnum)
+        return Object.values(TipoTransaccionEnum);
+      }),
+      tap((tipos: TipoTransaccionEnum[]) => {
         this.tiposTransaccionSubject.next(tipos);
         // Actualizar mapa
         this.tiposTransaccionMap.clear();
-        tipos.forEach(tipo => {
-          this.tiposTransaccionMap.set(tipo.id, tipo);
+        tipos.forEach((tipo: TipoTransaccionEnum) => {
+          // Handle both enum values and objects with id property
+          const id = typeof tipo === 'object' && (tipo as any).id ? (tipo as any).id : tipo;
+          this.tiposTransaccionMap.set(id, tipo);
         });
       }),
       catchError(error => {
@@ -119,7 +121,7 @@ export class CatalogoService {
   /**
    * Carga los roles
    */
-  cargarRoles(): Observable<any[]> {
+  cargarRoles(): Observable<Rol[]> {
     return this.rolService.obtenerRoles().pipe(
       tap(roles => {
         this.rolesSubject.next(roles);
@@ -139,7 +141,7 @@ export class CatalogoService {
   /**
    * Carga los estados generales
    */
-  cargarEstados(): Observable<any[]> {
+  cargarEstados(): Observable<Estado[]> {
     return this.estadoService.obtenerEstados().pipe(
       tap(estados => {
         this.estadosSubject.next(estados);
@@ -166,21 +168,21 @@ export class CatalogoService {
   /**
    * Obtiene un tipo de transacción por su ID
    */
-  getTipoTransaccion(id: string): TipoTransaccion | undefined {
+  getTipoTransaccion(id: string): TipoTransaccionEnum | undefined {
     return this.tiposTransaccionMap.get(id);
   }
 
   /**
    * Obtiene un rol por su ID
    */
-  getRol(id: string): any | undefined {
+  getRol(id: string): Rol | undefined {
     return this.rolesMap.get(id);
   }
 
   /**
    * Obtiene un estado por su ID
    */
-  getEstado(id: string): any | undefined {
+  getEstado(id: string): Estado | undefined {
     return this.estadosMap.get(id);
   }
 
@@ -189,7 +191,10 @@ export class CatalogoService {
    */
   getNombreEstadoTransaccion(id: string): string {
     const estado = this.getEstadoTransaccion(id);
-    return estado ? estado.nombre : id;
+    if (!estado) return 'Desconocido';
+    // Handle both enum values and objects with nombre property
+    if (typeof estado === 'string') return estado;
+    return (estado as any).nombre || (estado as any).toString() || 'Desconocido';
   }
 
   /**
@@ -197,7 +202,10 @@ export class CatalogoService {
    */
   getNombreTipoTransaccion(id: string): string {
     const tipo = this.getTipoTransaccion(id);
-    return tipo ? tipo.nombre : id;
+    if (!tipo) return 'Desconocido';
+    // Handle both enum values and objects with nombre property
+    if (typeof tipo === 'string') return tipo;
+    return (tipo as any).nombre || (tipo as any).toString() || 'Desconocido';
   }
 
   /**
@@ -226,21 +234,21 @@ export class CatalogoService {
   /**
    * Obtiene todos los tipos de transacción
    */
-  getTiposTransaccion(): TipoTransaccion[] {
+  getTiposTransaccion(): TipoTransaccionEnum[] {
     return this.tiposTransaccionSubject.getValue();
   }
 
   /**
    * Obtiene todos los roles
    */
-  getRoles(): any[] {
+  getRoles(): Rol[] {
     return this.rolesSubject.getValue();
   }
 
   /**
    * Obtiene todos los estados
    */
-  getEstados(): any[] {
+  getEstados(): Estado[] {
     return this.estadosSubject.getValue();
   }
 

@@ -1,38 +1,34 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor,
-  HttpErrorResponse,
-  HttpInterceptorFn,
-  HttpHandlerFn,
-  HttpResponse
-} from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { HttpInterceptorFn, HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { AuthService } from '../services/seguridad/auth.service';
 
 /**
- * Interceptor funcional para manejar errores relacionados con la autenticación
+ * Interceptor funcional para añadir el ID del usuario a las solicitudes que lo requieran.
+ * 
+ * Este interceptor complementa al authInterceptor añadiendo el ID del usuario actual
+ * como un encabezado personalizado en solicitudes específicas que lo necesiten.
+ * 
+ * Nota: La mayoría de la funcionalidad de manejo de errores de autenticación se ha
+ * movido al authInterceptor para evitar duplicación.
  */
 export const userIdInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
-  const router = inject(Router);
-  
-  // Continuar con la solicitud y procesar la respuesta
-  return next(req).pipe(
-    catchError((error: HttpErrorResponse) => {
-      // Si el error es 401 (No autorizado) o 403 (Prohibido), redirigir al login
-      if (error.status === 401 || error.status === 403) {
-        console.error('Interceptor: Error de autenticación:', error.status);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        localStorage.removeItem('userId');
-        router.navigate(['/auth/login']);
-      }
+  // Solo añadir el ID de usuario a las solicitudes que lo necesiten
+  if (req.url.includes('/finanzas/') && !req.url.includes('/autenticacion/')) {
+    const authService = inject(AuthService);
+    const userId = authService.getUserId();
+    
+    if (userId) {
+      // Clonar la solicitud y añadir el ID de usuario como encabezado
+      const modifiedReq = req.clone({
+        setHeaders: {
+          'X-User-Id': userId
+        }
+      });
       
-      return throwError(() => error);
-    })
-  );
+      return next(modifiedReq);
+    }
+  }
+  
+  // Para otras solicitudes, continuar sin modificar
+  return next(req);
 };

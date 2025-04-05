@@ -12,7 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { CuentaService } from '@core/services/finanzas/cuenta.service';
-import { Account, AccountType } from '@core/models/finanzas/cuenta.model';
+import { Account, TipoCuenta } from '@core/models/finanzas/cuenta.model';
 
 @Component({
   selector: 'app-cuentas',
@@ -491,7 +491,7 @@ export class CuentasComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  readonly AccountType = AccountType;
+  readonly AccountType = TipoCuenta;
 
   constructor(
     private readonly accountService: CuentaService,
@@ -531,7 +531,7 @@ export class CuentasComponent implements OnInit {
           }
           
           // Normalizar el tipo de cuenta
-          const tipoCuenta = account.tipo || AccountType.CUENTA_CORRIENTE;
+          const tipoCuenta = account.tipo || this.AccountType.CUENTA_CORRIENTE;
           
           // Normalizar el saldo
           const saldoCuenta = typeof account.saldo === 'number' ? account.saldo : 0;
@@ -712,7 +712,7 @@ export class CuentasComponent implements OnInit {
     const validAccount: Account = {
       id: account.id,
       numero: account.numero || 'N/A',
-      tipo: account.tipo || AccountType.CUENTA_CORRIENTE,
+      tipo: account.tipo || this.AccountType.CUENTA_CORRIENTE,
       saldo: account.saldo || 0,
       userId: account.userId || ''
     };
@@ -731,30 +731,30 @@ export class CuentasComponent implements OnInit {
   }
 
   isBolsillo(tipo: string): boolean {
-    return tipo === AccountType.BOLSILLO;
+    return tipo === this.AccountType.BOLSILLO;
   }
 
   isCuentaRegular(tipo: string): boolean {
-    return tipo === AccountType.CUENTA_CORRIENTE ||
-           tipo === AccountType.CUENTA_AHORRO ||
-           tipo === AccountType.CUENTA_NOMINA ||
-           tipo === AccountType.CUENTA_INFANTIL ||
-           tipo === AccountType.CUENTA_JOVEN;
+    return tipo === this.AccountType.CUENTA_CORRIENTE ||
+           tipo === this.AccountType.CUENTA_AHORRO ||
+           tipo === this.AccountType.CUENTA_NOMINA ||
+           tipo === this.AccountType.CUENTA_INFANTIL ||
+           tipo === this.AccountType.CUENTA_JOVEN;
   }
 
   getTypeDisplay(tipo: string): string {
     switch (tipo) {
-      case AccountType.CUENTA_CORRIENTE:
+      case this.AccountType.CUENTA_CORRIENTE:
         return 'Cuenta Corriente';
-      case AccountType.CUENTA_AHORRO:
+      case this.AccountType.CUENTA_AHORRO:
         return 'Cuenta de Ahorro';
-      case AccountType.CUENTA_NOMINA:
+      case this.AccountType.CUENTA_NOMINA:
         return 'Cuenta Nómina';
-      case AccountType.CUENTA_INFANTIL:
+      case this.AccountType.CUENTA_INFANTIL:
         return 'Cuenta Infantil';
-      case AccountType.CUENTA_JOVEN:
+      case this.AccountType.CUENTA_JOVEN:
         return 'Cuenta Joven';
-      case AccountType.BOLSILLO:
+      case this.AccountType.BOLSILLO:
         return 'Bolsillo';
       default:
         return tipo;

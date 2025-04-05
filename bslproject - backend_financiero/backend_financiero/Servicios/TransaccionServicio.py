@@ -246,16 +246,13 @@ class TransaccionServicio:
             return {"error": "Falta id_cuenta_destino en la transacción"}, 400
 
         cuenta_destino_data = self.repositorioCuenta.findById(infoTransaccion["id_cuenta_destino"])
-
         if not cuenta_destino_data:
             return {"error": "Cuenta destino no encontrada"}, 404
 
         cuenta_destino = Cuenta(cuenta_destino_data)
         cuenta_destino.saldo += monto
 
-        print(f"✅ Consignación: Nuevo saldo en cuenta {cuenta_destino._id}: {cuenta_destino.saldo}")  # Debug
-
-        self.repositorioCuenta.save(cuenta_destino)  # ✅ Ahora sí guardamos correctamente
+        self.repositorioCuenta.save(cuenta_destino)
 
         nueva_transaccion = Transaccion(infoTransaccion)
         resultado = self.repositorioTransaccion.save(nueva_transaccion)

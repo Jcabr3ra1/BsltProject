@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { Usuario } from '../../../../core/models/seguridad/usuario.model';
+import { Usuario, RolUsuario, EstadoUsuario } from '../../../../core/models/seguridad/usuario.model';
 import { UsuariosService } from '../../../../core/services/seguridad/usuarios.service';
 
 @Component({
@@ -38,18 +38,8 @@ export class UsuarioDialogComponent implements OnInit {
   modo: 'crear' | 'editar';
   titulo: string;
   
-  roles = [
-    { id: 'ADMIN', name: 'Administrador' },
-    { id: 'CLIENTE', name: 'Cliente' },
-    { id: 'EMPLEADO', name: 'Empleado' }
-  ];
-  
-  estados = [
-    { id: 'ACTIVO', name: 'Activo' },
-    { id: 'INACTIVO', name: 'Inactivo' },
-    { id: 'PENDIENTE', name: 'Pendiente' },
-    { id: 'BLOQUEADO', name: 'Bloqueado' }
-  ];
+  roles: { id: string, name: string }[] = [];
+  estados: { id: string, name: string }[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -63,21 +53,40 @@ export class UsuarioDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.cargarCatalogos();
     this.initForm();
   }
 
+  cargarCatalogos(): void {
+    // Cargar roles desde los enums definidos en el modelo
+    this.roles = [
+      { id: RolUsuario.ADMIN, name: 'Administrador' },
+      { id: RolUsuario.EMPLEADO, name: 'Empleado' },
+      { id: RolUsuario.CLIENTE, name: 'Cliente' }
+    ];
+    
+    // Cargar estados desde los enums definidos en el modelo
+    this.estados = [
+      { id: EstadoUsuario.ACTIVO, name: 'Activo' },
+      { id: EstadoUsuario.INACTIVO, name: 'Inactivo' },
+      { id: EstadoUsuario.PENDIENTE, name: 'Pendiente' }
+    ];
+
+    // Nota: En el futuro, cuando se implemente el CatalogoService, estos datos vendrían de allí
+  }
+
   initForm(): void {
-    const usuario = this.data.usuario;
+    const usuario = this.data.usuario || {} as Usuario;
     
     // Crear formulario con validaciones
     this.usuarioForm = this.fb.group({
-      id: [usuario.id || null],
-      nombre: [usuario.nombre || '', [Validators.required, Validators.minLength(2)]],
-      apellido: [usuario.apellido || '', [Validators.required, Validators.minLength(2)]],
+      id: [usuario.id || usuario._id || null],
+      nombre: [usuario.nombre || usuario.name || '', [Validators.required, Validators.minLength(2)]],
+      apellido: [usuario.apellido || usuario.lastName || '', [Validators.required, Validators.minLength(2)]],
       email: [usuario.email || '', [Validators.required, Validators.email]],
       password: [this.modo === 'crear' ? '' : null, this.modo === 'crear' ? [Validators.required, Validators.minLength(6)] : []],
-      rol: [usuario.rol || 'CLIENTE', Validators.required],
-      estado: [usuario.estado || 'PENDIENTE', Validators.required]
+      role: [usuario.role || RolUsuario.CLIENTE, Validators.required],
+      estado: [usuario.estado || usuario.state || EstadoUsuario.PENDIENTE, Validators.required]
     });
     
     // Si estamos editando, el password es opcional
@@ -98,16 +107,32 @@ export class UsuarioDialogComponent implements OnInit {
     }
     
     this.loading = true;
-    const usuarioData = this.usuarioForm.value;
+    const usuarioData = this.usuarioForm.value as Usuario;
     
     // Si estamos editando y no se cambió la contraseña, no la enviamos
     if (this.modo === 'editar' && !usuarioData.password) {
       delete usuarioData.password;
     }
     
+    // Preparamos los datos para enviar al servicio
+    // El modelo Usuario tiene propiedades tanto en español como en inglés para compatibilidad
+    const usuarioParaEnviar: Partial<Usuario> = {
+      id: usuarioData.id,
+      nombre: usuarioData.nombre,
+      apellido: usuarioData.apellido,
+      email: usuarioData.email,
+      password: usuarioData.password,
+      
+      // Propiedades en inglés para compatibilidad con el backend
+      name: usuarioData.nombre,
+      lastName: usuarioData.apellido,
+      role: usuarioData.role,
+      state: usuarioData.estado
+    };
+    
     const operacion = this.modo === 'crear' 
-      ? this.usuariosService.crearUsuario(usuarioData)
-      : this.usuariosService.actualizarUsuario(usuarioData.id, usuarioData);
+      ? this.usuariosService.crear(usuarioParaEnviar)
+      : this.usuariosService.actualizar(usuarioParaEnviar.id!, usuarioParaEnviar);
     
     operacion.subscribe({
       next: (response) => {
