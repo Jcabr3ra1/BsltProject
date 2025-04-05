@@ -10,8 +10,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { Usuario, RolUsuario, EstadoUsuario } from '../../../../core/models/seguridad/usuario.model';
+import { Usuario } from '../../../../core/models/seguridad/usuario.model';
+import { Rol } from '../../../../core/models/seguridad/rol.model';
+import { Estado } from '../../../../core/models/seguridad/estado.model';
 import { UsuariosService } from '../../../../core/services/seguridad/usuarios.service';
+import { RolService } from '../../../../core/services/seguridad/rol.service';
 
 @Component({
   selector: 'app-usuario-dialog',
@@ -38,14 +41,15 @@ export class UsuarioDialogComponent implements OnInit {
   modo: 'crear' | 'editar';
   titulo: string;
   
-  roles: { id: string, name: string }[] = [];
-  estados: { id: string, name: string }[] = [];
+  roles: Rol[] = [];
+  estados: Estado[] = [];
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<UsuarioDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { usuario: Usuario, modo: 'crear' | 'editar' },
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private usuariosService: UsuariosService,
+    private rolService: RolService,
     private snackBar: MatSnackBar
   ) {
     this.modo = data.modo;
@@ -58,26 +62,42 @@ export class UsuarioDialogComponent implements OnInit {
   }
 
   cargarCatalogos(): void {
-    // Cargar roles desde los enums definidos en el modelo
-    this.roles = [
-      { id: RolUsuario.ADMIN, name: 'Administrador' },
-      { id: RolUsuario.EMPLEADO, name: 'Empleado' },
-      { id: RolUsuario.CLIENTE, name: 'Cliente' }
-    ];
-    
-    // Cargar estados desde los enums definidos en el modelo
-    this.estados = [
-      { id: EstadoUsuario.ACTIVO, name: 'Activo' },
-      { id: EstadoUsuario.INACTIVO, name: 'Inactivo' },
-      { id: EstadoUsuario.PENDIENTE, name: 'Pendiente' }
-    ];
-
-    // Nota: En el futuro, cuando se implemente el CatalogoService, estos datos vendrían de allí
+    this.cargarRoles();
+    this.cargarEstados();
   }
 
+  cargarRoles(): void {
+    this.rolService.obtenerRoles().subscribe({
+      next: (roles) => {
+        console.log('Roles obtenidos del backend:', roles);
+        this.roles = roles;
+      },
+      error: (error) => {
+        console.error('Error al cargar roles:', error);
+        this.snackBar.open('Error al cargar roles', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+  
+  cargarEstados(): void {
+    this.usuariosService.getEstados().subscribe({
+      next: (estados) => {
+        console.log('Estados obtenidos del backend:', estados);
+        this.estados = estados;
+      },
+      error: (error) => {
+        console.error('Error al cargar estados:', error);
+        this.snackBar.open('Error al cargar estados', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+  
   initForm(): void {
     const usuario = this.data.usuario || {} as Usuario;
-    
+    this.inicializarFormulario(usuario);
+  }
+
+  inicializarFormulario(usuario: Usuario = {} as Usuario): void {  
     // Crear formulario con validaciones
     this.usuarioForm = this.fb.group({
       id: [usuario.id || usuario._id || null],
@@ -85,8 +105,8 @@ export class UsuarioDialogComponent implements OnInit {
       apellido: [usuario.apellido || usuario.lastName || '', [Validators.required, Validators.minLength(2)]],
       email: [usuario.email || '', [Validators.required, Validators.email]],
       password: [this.modo === 'crear' ? '' : null, this.modo === 'crear' ? [Validators.required, Validators.minLength(6)] : []],
-      role: [usuario.role || RolUsuario.CLIENTE, Validators.required],
-      estado: [usuario.estado || usuario.state || EstadoUsuario.PENDIENTE, Validators.required]
+      role: [usuario.role || '', Validators.required],
+      estado: [usuario.estado || usuario.state || '', Validators.required]
     });
     
     // Si estamos editando, el password es opcional

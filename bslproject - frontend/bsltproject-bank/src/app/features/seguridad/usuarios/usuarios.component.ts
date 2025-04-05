@@ -15,8 +15,11 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
-import { Usuario, RolUsuario, EstadoUsuario } from '../../../core/models/seguridad/usuario.model';
+import { Usuario } from '../../../core/models/seguridad/usuario.model';
+import { Rol } from '../../../core/models/seguridad/rol.model';
+import { Estado } from '../../../core/models/seguridad/estado.model';
 import { UsuariosService } from '../../../core/services/seguridad/usuarios.service';
+import { RolService } from '../../../core/services/seguridad/rol.service';
 import { UsuarioDialogComponent } from './usuario-dialog/usuario-dialog.component';
 
 @Component({
@@ -48,34 +51,54 @@ export class UsuariosComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  filtroRol: RolUsuario | null = null;
-  filtroEstado: EstadoUsuario | null = null;
+  filtroRol: string | null = null;
+  filtroEstado: string | null = null;
 
-  roles = [
-    { id: RolUsuario.ADMIN, name: 'Administrador' },
-    { id: RolUsuario.EMPLEADO, name: 'Empleado' },
-    { id: RolUsuario.CLIENTE, name: 'Cliente' }
-  ];
-
-  estados = [
-    { id: EstadoUsuario.ACTIVO, name: 'Activo' },
-    { id: EstadoUsuario.INACTIVO, name: 'Inactivo' },
-    { id: EstadoUsuario.PENDIENTE, name: 'Pendiente' }
-  ];
+  roles: Rol[] = [];
+  estados: Estado[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private usuariosService: UsuariosService,
-    private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private rolService: RolService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
     this.dataSource = new MatTableDataSource<Usuario>();
   }
 
   ngOnInit(): void {
     this.cargarUsuarios();
+    this.cargarRoles();
+    this.cargarEstados();
+  }
+  
+  cargarRoles(): void {
+    this.rolService.obtenerRoles().subscribe({
+      next: (roles) => {
+        console.log('Roles obtenidos del backend:', roles);
+        this.roles = roles;
+      },
+      error: (error) => {
+        console.error('Error al cargar roles:', error);
+        this.snackBar.open('Error al cargar roles', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+  
+  cargarEstados(): void {
+    this.usuariosService.getEstados().subscribe({
+      next: (estados) => {
+        console.log('Estados obtenidos del backend:', estados);
+        this.estados = estados;
+      },
+      error: (error) => {
+        console.error('Error al cargar estados:', error);
+        this.snackBar.open('Error al cargar estados', 'Cerrar', { duration: 3000 });
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -134,7 +157,7 @@ export class UsuariosComponent implements OnInit {
     }
   }
 
-  onRolChange(usuario: Usuario, nuevoRol: RolUsuario) {
+  onRolChange(usuario: Usuario, nuevoRol: string) {
     this.usuariosService.actualizarRol(usuario.id, nuevoRol).subscribe({
       next: () => {
         usuario.role = nuevoRol;
@@ -146,7 +169,7 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
-  onEstadoChange(usuario: Usuario, nuevoEstado: EstadoUsuario) {
+  onEstadoChange(usuario: Usuario, nuevoEstado: string) {
     this.usuariosService.actualizarEstado(usuario.id, nuevoEstado).subscribe({
       next: () => {
         usuario.estado = nuevoEstado;
@@ -222,12 +245,12 @@ export class UsuariosComponent implements OnInit {
 
   getRolName(rolId: string): string {
     const rol = this.roles.find(r => r.id === rolId);
-    return rol ? rol.name : 'Desconocido';
+    return rol ? rol.nombre : 'Desconocido';
   }
 
   getEstadoName(estadoId: string): string {
     const estado = this.estados.find(e => e.id === estadoId);
-    return estado ? estado.name : 'Desconocido';
+    return estado ? estado.nombre : 'Desconocido';
   }
 
   compareWithFn(item1: any, item2: any): boolean {

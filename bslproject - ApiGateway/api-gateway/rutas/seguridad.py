@@ -251,13 +251,62 @@ async def obtener_rol_por_nombre(name: str, request: Request, token_data: dict =
     raise HTTPException(status_code=response.status_code, detail="Rol no encontrado")
 
 @router.get("/roles/{id}/permisos")
-async def obtener_permisos_de_rol(id: str, request: Request, token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))):
+async def obtener_permisos_de_rol(id: str, request: Request, token_data: dict = Depends(verificar_token)):
     """Obtiene los permisos de un rol"""
-    auth_header = request.headers.get("Authorization")
-    response = requests.get(f"{URL_SEGURIDAD}/seguridad/roles/{id}/permisos", headers={"Authorization": auth_header})
-    if response.status_code == 200:
-        return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error al obtener permisos del rol")
+    try:
+        # Obtener el token del header de autorización
+        auth_header = request.headers.get("Authorization")
+        token = token_data.get("token")
+        
+        # Si no hay header de autorización, usar el token de la dependencia
+        if not auth_header and token:
+            auth_header = f"Bearer {token}"
+            
+        print(f"API Gateway: Obteniendo permisos para el rol con ID: {id}")
+        print(f"API Gateway: Tipo de ID: {type(id)}")
+        print(f"API Gateway: Headers de autorización: {auth_header}")
+        
+        # Construir la URL correcta
+        # Verificar si URL_SEGURIDAD ya termina con /seguridad para evitar duplicación
+        if URL_SEGURIDAD.endswith('/seguridad'):
+            url = f"{URL_SEGURIDAD}/roles/{id}/permisos"
+        else:
+            url = f"{URL_SEGURIDAD}/seguridad/roles/{id}/permisos"
+        print(f"API Gateway: URL de solicitud: {url}")
+        
+        # Realizar la solicitud al servicio de seguridad
+        headers = {"Authorization": auth_header, "Content-Type": "application/json"}
+        print(f"API Gateway: Headers enviados al servicio de seguridad: {headers}")
+        
+        response = requests.get(url, headers=headers)
+        
+        print(f"API Gateway: Respuesta del servicio de seguridad: Status {response.status_code}")
+        print(f"API Gateway: Headers de respuesta: {response.headers}")
+        if response.status_code != 200:
+            print(f"API Gateway: Error del servicio de seguridad: {response.text}")
+            try:
+                error_json = response.json()
+                print(f"API Gateway: Error JSON: {error_json}")
+            except Exception as json_error:
+                print(f"API Gateway: No se pudo parsear la respuesta como JSON: {str(json_error)}")
+        
+        if response.status_code == 200:
+            return response.json()
+            
+        # Manejar errores específicos
+        if response.status_code == 400:
+            raise HTTPException(status_code=400, detail="Formato de datos inválido en la solicitud al servicio de seguridad")
+        elif response.status_code == 401:
+            raise HTTPException(status_code=401, detail="No autorizado para acceder a los permisos del rol")
+        elif response.status_code == 403:
+            raise HTTPException(status_code=403, detail="Prohibido el acceso a los permisos del rol")
+        elif response.status_code == 404:
+            raise HTTPException(status_code=404, detail="Rol no encontrado en el servicio de seguridad")
+        else:
+            raise HTTPException(status_code=response.status_code, detail=f"Error al obtener permisos del rol: {response.text}")
+    except Exception as e:
+        print(f"API Gateway: Excepción al comunicarse con el servicio de seguridad: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
 
 @router.get("/roles/{id}/users")
 async def obtener_usuarios_con_rol(id: str, request: Request, token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))):

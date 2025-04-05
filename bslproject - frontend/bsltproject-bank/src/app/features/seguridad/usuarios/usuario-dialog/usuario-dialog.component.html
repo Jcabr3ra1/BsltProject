@@ -62,14 +62,8 @@
           @for (rol of roles; track rol.id) {
             <mat-option [value]="rol.id">
               <div class="rol-option">
-                @if (rol.id === 'ADMIN') {
-                  <mat-icon>admin_panel_settings</mat-icon>
-                } @else if (rol.id === 'EMPLEADO') {
-                  <mat-icon>badge</mat-icon>
-                } @else {
-                  <mat-icon>person</mat-icon>
-                }
-                {{rol.name}}
+                <mat-icon>{{rol.id === 'ADMIN' ? 'admin_panel_settings' : rol.id === 'EMPLEADO' ? 'badge' : 'person'}}</mat-icon>
+                {{rol.nombre}}
               </div>
             </mat-option>
           }
@@ -87,7 +81,7 @@
             <mat-option [value]="estado.id">
               <div class="estado-option">
                 <span class="estado-badge" [ngClass]="estado.id.toLowerCase()">●</span>
-                {{estado.name}}
+                {{estado.nombre}}
               </div>
             </mat-option>
           }

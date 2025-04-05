@@ -38,6 +38,15 @@ async def anular_transaccion(id: str):
         status_code=500, detail="Error al anular transacción"
     )
 
+@router.get("/usuario/{id_usuario}/proximos-pagos")
+def obtener_proximos_pagos(id_usuario: str):
+    """Obtiene los próximos pagos programados para un usuario"""
+    try:
+        resultado = servicio.obtener_proximos_pagos(id_usuario)
+        return resultado
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener próximos pagos: {str(e)}")
+
 # Rutas específicas para las operaciones de transferencia
 
 @router.post("/cuenta-cuenta")

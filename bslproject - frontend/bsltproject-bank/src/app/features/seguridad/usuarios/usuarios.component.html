@@ -32,7 +32,7 @@
           <mat-option [value]="null">Todos los roles</mat-option>
           @for (rol of roles; track rol.id) {
             <mat-option [value]="rol.id">
-              {{rol.name}}
+              {{rol.nombre}}
             </mat-option>
           }
         </mat-select>
@@ -45,7 +45,7 @@
           <mat-option [value]="null">Todos los estados</mat-option>
           @for (estado of estados; track estado.id) {
             <mat-option [value]="estado.id">
-              {{estado.name}}
+              {{estado.nombre}}
             </mat-option>
           }
         </mat-select>
@@ -122,7 +122,7 @@
                     } @else {
                       <mat-icon>person</mat-icon>
                     }
-                    {{rol.name}}
+                    {{rol.nombre}}
                   </div>
                 </mat-option>
               }
@@ -141,7 +141,7 @@
                 <mat-option [value]="estado.id">
                   <div class="estado-option">
                     <span class="estado-badge" [ngClass]="estado.id.toLowerCase()">●</span>
-                    {{estado.name}}
+                    {{estado.nombre}}
                   </div>
                 </mat-option>
               }

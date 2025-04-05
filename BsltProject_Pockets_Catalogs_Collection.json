@@ -1,0 +1,582 @@
+{
+  "info": {
+    "name": "BsltProject - Pockets & Catalogs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345678"
+  },
+  "item": [
+    {
+      "name": "Pockets",
+      "item": [
+        {
+          "name": "Get All Pockets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos"]
+            },
+            "description": "Get all pockets"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Pocket",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Pocket Name\",\n  \"saldo\": 500,\n  \"descripcion\": \"Pocket description\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos"]
+            },
+            "description": "Create a new pocket (requires ADMIN or MODERATOR role)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pocket by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos/{{pocket_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos", "{{pocket_id}}"]
+            },
+            "description": "Get a pocket by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Pocket",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Updated Pocket\",\n  \"saldo\": 750,\n  \"descripcion\": \"Updated pocket description\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos/{{pocket_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos", "{{pocket_id}}"]
+            },
+            "description": "Update a pocket (requires ADMIN or MODERATOR role)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Pocket",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos/{{pocket_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos", "{{pocket_id}}"]
+            },
+            "description": "Delete a pocket (requires ADMIN role)"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Account to Pocket",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos/{{pocket_id}}/cuentas/{{account_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos", "{{pocket_id}}", "cuentas", "{{account_id}}"]
+            },
+            "description": "Assign an account to a pocket"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Movement Types",
+      "item": [
+        {
+          "name": "Get All Movement Types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-movimiento",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-movimiento"]
+            },
+            "description": "Get all movement types"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Movement Type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"NEW_MOVEMENT_TYPE\",\n  \"descripcion\": \"Description of the new movement type\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-movimiento",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-movimiento"]
+            },
+            "description": "Create a new movement type"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Movement Type by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-movimiento/{{movement_type_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-movimiento", "{{movement_type_id}}"]
+            },
+            "description": "Get a movement type by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Movement Type",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"UPDATED_MOVEMENT_TYPE\",\n  \"descripcion\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-movimiento/{{movement_type_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-movimiento", "{{movement_type_id}}"]
+            },
+            "description": "Update a movement type"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Movement Type",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-movimiento/{{movement_type_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-movimiento", "{{movement_type_id}}"]
+            },
+            "description": "Delete a movement type"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transaction Types",
+      "item": [
+        {
+          "name": "Get All Transaction Types",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-transaccion",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-transaccion"]
+            },
+            "description": "Get all transaction types"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Transaction Type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"NEW_TRANSACTION_TYPE\",\n  \"descripcion\": \"Description of the new transaction type\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-transaccion",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-transaccion"]
+            },
+            "description": "Create a new transaction type"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transaction Type by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-transaccion/{{transaction_type_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-transaccion", "{{transaction_type_id}}"]
+            },
+            "description": "Get a transaction type by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Transaction Type",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"UPDATED_TRANSACTION_TYPE\",\n  \"descripcion\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-transaccion/{{transaction_type_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-transaccion", "{{transaction_type_id}}"]
+            },
+            "description": "Update a transaction type"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Transaction Type",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-transaccion/{{transaction_type_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-transaccion", "{{transaction_type_id}}"]
+            },
+            "description": "Delete a transaction type"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transaction States",
+      "item": [
+        {
+          "name": "Get All Transaction States",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion"]
+            },
+            "description": "Get all transaction states"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transaction State by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion/{{transaction_state_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion", "{{transaction_state_id}}"]
+            },
+            "description": "Get a transaction state by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Transaction State",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"NEW_TRANSACTION_STATE\",\n  \"descripcion\": \"Description of the new transaction state\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion"]
+            },
+            "description": "Create a new transaction state"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Transaction State",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"UPDATED_TRANSACTION_STATE\",\n  \"descripcion\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion/{{transaction_state_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion", "{{transaction_state_id}}"]
+            },
+            "description": "Update a transaction state"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Transaction State",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion/{{transaction_state_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion", "{{transaction_state_id}}"]
+            },
+            "description": "Delete a transaction state"
+          },
+          "response": []
+        },
+        {
+          "name": "Initialize Default States",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion/inicializar",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion", "inicializar"]
+            },
+            "description": "Initialize default transaction states"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "pocket_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "account_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "movement_type_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transaction_type_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transaction_state_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

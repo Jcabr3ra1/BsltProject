@@ -16,10 +16,16 @@ export class RolService {
 
   // Método para obtener los headers con el token
   private getHeaders() {
-    const token = localStorage.getItem('token');
+    let token = localStorage.getItem('token') || '';
+    
+    // Verificar si el token ya tiene el prefijo 'Bearer '
+    if (token && !token.startsWith('Bearer ')) {
+      token = `Bearer ${token}`;
+    }
+    
     return {
       headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
+        'Authorization': token,
         'Content-Type': 'application/json'
       })
     };
@@ -71,52 +77,15 @@ export class RolService {
   obtenerPermisosDeRol(id: string): Observable<any> {
     console.log('Obteniendo permisos de rol desde:', `${this.apiGatewayUrl}/${id}/permisos`);
     
-    // Proporcionar directamente datos simulados para evitar errores 403
-    // Esto es una solución temporal hasta que se resuelva el problema en el backend
-    console.log('AVISO: Usando permisos simulados para todos los roles debido a problemas con el backend');
-    
-    // Permisos simulados basados en el rol
-    const permisosSimulados = [
-      { id: 'perm1', nombre: 'Ver usuarios', descripcion: 'Permite ver la lista de usuarios' },
-      { id: 'perm2', nombre: 'Editar usuarios', descripcion: 'Permite editar usuarios existentes' },
-      { id: 'perm3', nombre: 'Crear usuarios', descripcion: 'Permite crear nuevos usuarios' },
-      { id: 'perm4', nombre: 'Eliminar usuarios', descripcion: 'Permite eliminar usuarios' },
-      { id: 'perm5', nombre: 'Ver transacciones', descripcion: 'Permite ver transacciones' },
-      { id: 'perm6', nombre: 'Crear transacciones', descripcion: 'Permite crear nuevas transacciones' }
-    ];
-    
-    return of(permisosSimulados);
-    
-    // Código original comentado para referencia futura
-    /*
     return this.http.get<any>(`${this.apiGatewayUrl}/${id}/permisos`, this.getHeaders()).pipe(
       tap(permisos => {
         console.log('Permisos de rol obtenidos:', permisos);
       }),
       catchError(error => {
         console.error('Error al obtener permisos de rol:', error);
-        
-        // Si recibimos un error 403, proporcionamos datos simulados
-        if (error.status === 403) {
-          console.log('Proporcionando permisos simulados para el rol con ID:', id);
-          
-          // Permisos simulados basados en el rol
-          const permisosSimulados = [
-            { id: 'perm1', nombre: 'Ver usuarios', descripcion: 'Permite ver la lista de usuarios' },
-            { id: 'perm2', nombre: 'Editar usuarios', descripcion: 'Permite editar usuarios existentes' },
-            { id: 'perm3', nombre: 'Crear usuarios', descripcion: 'Permite crear nuevos usuarios' },
-            { id: 'perm4', nombre: 'Eliminar usuarios', descripcion: 'Permite eliminar usuarios' },
-            { id: 'perm5', nombre: 'Ver transacciones', descripcion: 'Permite ver transacciones' },
-            { id: 'perm6', nombre: 'Crear transacciones', descripcion: 'Permite crear nuevas transacciones' }
-          ];
-          
-          return of(permisosSimulados);
-        }
-        
         return throwError(() => new Error('Error al obtener permisos de rol'));
       })
     );
-    */
   }
 
   // Obtener usuarios asociados a un rol

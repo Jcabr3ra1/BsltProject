@@ -69,6 +69,7 @@ try:
     from Controladores.ControladorTipoMovimiento import router as tipo_movimiento_router
     from Controladores.ControladorTipoTransaccion import router as tipo_transaccion_router
     from Controladores.ControladorTransaccion import router as transaccion_router
+    from Controladores.ControladorEstadoTransaccion import router as estado_transaccion_router
 
     print("🔗 Registrando rutas en FastAPI...")
     # Usar el prefijo /finanzas para todas las rutas en español
@@ -78,6 +79,7 @@ try:
     app.include_router(tipo_movimiento_router, prefix=f"{api_prefix}/tipos-movimiento")
     app.include_router(tipo_transaccion_router, prefix=f"{api_prefix}/tipos-transaccion")
     app.include_router(transaccion_router, prefix=f"{api_prefix}/transacciones")
+    app.include_router(estado_transaccion_router, prefix=f"{api_prefix}/estados-transaccion")
     print("✅ Rutas registradas correctamente.")
 
 except Exception as e:

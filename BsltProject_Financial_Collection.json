@@ -1,0 +1,572 @@
+{
+  "info": {
+    "name": "BsltProject - Financial Services",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345678"
+  },
+  "item": [
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Create Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Account Name\",\n  \"saldo\": 1000,\n  \"tipo\": \"SAVINGS\",\n  \"usuario_id\": \"{{user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas"]
+            },
+            "description": "Create a new account (requires ADMIN or MODERATOR role)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Accounts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas"]
+            },
+            "description": "Get all accounts"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Account by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas/{{account_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas", "{{account_id}}"]
+            },
+            "description": "Get an account by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Account",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Updated Account\",\n  \"saldo\": 2000,\n  \"tipo\": \"CHECKING\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas/{{account_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas", "{{account_id}}"]
+            },
+            "description": "Update an account (requires ADMIN or MODERATOR role)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas/{{account_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas", "{{account_id}}"]
+            },
+            "description": "Delete an account (requires ADMIN role)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Accounts by User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas/usuario/{{user_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas", "usuario", "{{user_id}}"]
+            },
+            "description": "Get accounts associated with a user"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign User to Account",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas/{{account_id}}/usuario/{{user_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas", "{{account_id}}", "usuario", "{{user_id}}"]
+            },
+            "description": "Assign a user to an account"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Get All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones"]
+            },
+            "description": "Get all transactions"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/{{transaction_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "{{transaction_id}}"]
+            },
+            "description": "Get a transaction by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Test transaction\",\n  \"monto\": 100,\n  \"id_cuenta_origen\": \"{{account_id_origin}}\",\n  \"id_cuenta_destino\": \"{{account_id_destination}}\",\n  \"id_tipo_movimiento\": \"{{movement_type_id}}\",\n  \"id_tipo_transaccion\": \"{{transaction_type_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones"]
+            },
+            "description": "Create a new transaction"
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Transaction",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/anular/{{transaction_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "anular", "{{transaction_id}}"]
+            },
+            "description": "Cancel a transaction"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/usuario/{{user_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "usuario", "{{user_id}}"]
+            },
+            "description": "Get transactions associated with a user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Upcoming Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/proximos-pagos/{{user_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "proximos-pagos", "{{user_id}}"]
+            },
+            "description": "Get upcoming payments for a user"
+          },
+          "response": []
+        },
+        {
+          "name": "Transaction History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/historial?fechaInicio=2023-01-01&fechaFin=2023-12-31&tipo=TRANSFER",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "historial"],
+              "query": [
+                {
+                  "key": "fechaInicio",
+                  "value": "2023-01-01"
+                },
+                {
+                  "key": "fechaFin",
+                  "value": "2023-12-31"
+                },
+                {
+                  "key": "tipo",
+                  "value": "TRANSFER"
+                }
+              ]
+            },
+            "description": "Get transaction history with filters"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Specific Transactions",
+      "item": [
+        {
+          "name": "Account to Account Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Transfer between accounts\",\n  \"monto\": 100,\n  \"id_cuenta_origen\": \"{{account_id_origin}}\",\n  \"id_cuenta_destino\": \"{{account_id_destination}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/transferencia-cuenta-cuenta",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "transferencia-cuenta-cuenta"]
+            },
+            "description": "Transfer money from one account to another"
+          },
+          "response": []
+        },
+        {
+          "name": "Account to Pocket Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Transfer from account to pocket\",\n  \"monto\": 50,\n  \"id_cuenta_origen\": \"{{account_id_origin}}\",\n  \"id_bolsillo_destino\": \"{{pocket_id_destination}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/transferencia-cuenta-bolsillo",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "transferencia-cuenta-bolsillo"]
+            },
+            "description": "Transfer money from an account to a pocket"
+          },
+          "response": []
+        },
+        {
+          "name": "Pocket to Account Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Transfer from pocket to account\",\n  \"monto\": 50,\n  \"id_bolsillo_origen\": \"{{pocket_id_origin}}\",\n  \"id_cuenta_destino\": \"{{account_id_destination}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/transferencia-bolsillo-cuenta",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "transferencia-bolsillo-cuenta"]
+            },
+            "description": "Transfer money from a pocket to an account"
+          },
+          "response": []
+        },
+        {
+          "name": "Bank to Account Deposit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Deposit from bank to account\",\n  \"monto\": 200,\n  \"id_cuenta_destino\": \"{{account_id_destination}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/consignacion-banco-cuenta",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "consignacion-banco-cuenta"]
+            },
+            "description": "Deposit money from bank to an account"
+          },
+          "response": []
+        },
+        {
+          "name": "Bank to Pocket Deposit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Deposit from bank to pocket\",\n  \"monto\": 100,\n  \"id_bolsillo_destino\": \"{{pocket_id_destination}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/consignacion-banco-bolsillo",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "consignacion-banco-bolsillo"]
+            },
+            "description": "Deposit money from bank to a pocket"
+          },
+          "response": []
+        },
+        {
+          "name": "Account to Bank Withdrawal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Withdrawal from account to bank\",\n  \"monto\": 150,\n  \"id_cuenta_origen\": \"{{account_id_origin}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/retiro-cuenta-banco",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "retiro-cuenta-banco"]
+            },
+            "description": "Withdraw money from an account to bank"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "account_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "account_id_origin",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "account_id_destination",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pocket_id_origin",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pocket_id_destination",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "movement_type_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transaction_type_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

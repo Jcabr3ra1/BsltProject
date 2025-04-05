@@ -58,9 +58,33 @@ public class RolServicio {
 
     // ✅ NUEVO: Obtener permisos de un rol
     public List<Permiso> obtenerPermisosDeRol(String id) {
-        Rol rol = repositorioRol.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-        return rol.getPermisos();
+        try {
+            System.out.println("RolServicio: Buscando rol con ID: " + id);
+            
+            // Verificar si el ID tiene un formato válido
+            if (id == null || id.isEmpty()) {
+                System.err.println("RolServicio: ID de rol inválido (nulo o vacío)");
+                throw new IllegalArgumentException("ID de rol inválido");
+            }
+            
+            // Intentar encontrar el rol por ID
+            Optional<Rol> rolOptional = repositorioRol.findById(id);
+            
+            if (rolOptional.isPresent()) {
+                Rol rol = rolOptional.get();
+                System.out.println("RolServicio: Rol encontrado: " + rol.getNombre());
+                List<Permiso> permisos = rol.getPermisos();
+                System.out.println("RolServicio: Permisos obtenidos: " + permisos);
+                return permisos;
+            } else {
+                System.err.println("RolServicio: Rol no encontrado con ID: " + id);
+                throw new RuntimeException("Rol no encontrado con ID: " + id);
+            }
+        } catch (Exception e) {
+            System.err.println("RolServicio: Error al obtener permisos de rol: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     // ✅ NUEVO: Obtener usuarios con un rol

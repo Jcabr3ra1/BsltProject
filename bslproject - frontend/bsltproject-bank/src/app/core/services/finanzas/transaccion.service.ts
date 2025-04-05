@@ -145,4 +145,30 @@ export class TransaccionService extends BaseApiService<Transaccion> {
     
     return this.obtenerTransaccionesPorUsuario(userId);
   }
+  
+  // Método para obtener todas las transacciones
+  getAllTransactions(): Observable<Transaccion[]> {
+    return this.obtenerTodos().pipe(
+      catchError(error => {
+        console.error('Error al obtener transacciones:', error);
+        return throwError(() => new Error('Error al obtener transacciones'));
+      })
+    );
+  }
+  
+  // Método para obtener próximos pagos
+  getUpcomingPayments(userId: string): Observable<any[]> {
+    const httpOptions = {
+      headers: this.getHeaders(),
+      observe: 'body' as const,
+      responseType: 'json' as const
+    };
+    
+    return this.http.get<any[]>(`${this.baseUrl}/usuario/${userId}/proximos-pagos`, httpOptions).pipe(
+      catchError(error => {
+        console.error('Error al obtener próximos pagos:', error);
+        return throwError(() => new Error('Error al obtener próximos pagos'));
+      })
+    );
+  }
 }

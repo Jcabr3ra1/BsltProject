@@ -64,10 +64,22 @@ public class ControladorRol {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/permissions")
-    public ResponseEntity<List<Permiso>> obtenerPermisosDeRol(@PathVariable String id) {
-        List<Permiso> permisos = rolServicio.obtenerPermisosDeRol(id);
-        return ResponseEntity.ok(permisos);
+    @GetMapping("/{id}/permisos")
+    public ResponseEntity<?> obtenerPermisosDeRol(@PathVariable String id) {
+        try {
+            System.out.println("ControladorRol: Obteniendo permisos para el rol con ID: " + id);
+            System.out.println("ControladorRol: Tipo de ID: " + id.getClass().getName());
+            
+            List<Permiso> permisos = rolServicio.obtenerPermisosDeRol(id);
+            System.out.println("ControladorRol: Permisos obtenidos: " + permisos);
+            
+            return ResponseEntity.ok(permisos);
+        } catch (Exception e) {
+            System.err.println("ControladorRol: Error al obtener permisos de rol: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al obtener permisos del rol", "detalle", e.getMessage()));
+        }
     }
 
     @GetMapping("/{id}/users")

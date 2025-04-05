@@ -8,14 +8,24 @@ import { Bolsillo } from './bolsillo.model';
 import { TipoMovimiento } from './tipo-movimiento.model';
 
 /**
- * Estados posibles para una transacción
+ * Estados posibles para una transacción (enum)
  */
-export enum EstadoTransaccion {
+export enum EstadoTransaccionEnum {
   PENDIENTE = 'PENDIENTE',
   COMPLETADA = 'COMPLETADA',
   ANULADA = 'ANULADA',
   RECHAZADA = 'RECHAZADA',
   APROBADA = 'APROBADA'
+}
+
+/**
+ * Interfaz para estados de transacción
+ */
+export interface EstadoTransaccion {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  activo: boolean;
 }
 
 /**
@@ -153,11 +163,11 @@ export interface TransactionFilters extends Omit<TransaccionFiltros, 'tipo' | 'e
 }
 
 export enum TransactionStatus {
-  PENDING = EstadoTransaccion.PENDIENTE,
-  COMPLETED = EstadoTransaccion.COMPLETADA,
-  CANCELLED = EstadoTransaccion.ANULADA,
-  REJECTED = EstadoTransaccion.RECHAZADA,
-  APPROVED = EstadoTransaccion.APROBADA
+  PENDING = EstadoTransaccionEnum.PENDIENTE,
+  COMPLETED = EstadoTransaccionEnum.COMPLETADA,
+  CANCELLED = EstadoTransaccionEnum.ANULADA,
+  REJECTED = EstadoTransaccionEnum.RECHAZADA,
+  APPROVED = EstadoTransaccionEnum.APROBADA
 }
 
 export enum TransactionType {

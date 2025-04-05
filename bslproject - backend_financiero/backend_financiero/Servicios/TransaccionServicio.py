@@ -76,6 +76,31 @@ class TransaccionServicio:
         print(f"Transacciones encontradas para el usuario {id_usuario}: {len(transacciones_usuario)}")
         return transacciones_usuario
         
+    def obtener_proximos_pagos(self, id_usuario):
+        """
+        Obtiene los próximos pagos programados para un usuario específico.
+        
+        Args:
+            id_usuario (str): ID del usuario para filtrar los pagos
+            
+        Returns:
+            list: Lista de próximos pagos del usuario
+        """
+        print(f"Servicio: Buscando próximos pagos para el usuario: {id_usuario}")
+        
+        # Obtenemos todas las transacciones del usuario
+        transacciones_usuario = self.obtener_por_usuario(id_usuario)
+        
+        # Filtramos solo las transacciones que son pagos programados y están pendientes
+        proximos_pagos = []
+        for transaccion in transacciones_usuario:
+            # Verificamos si es un pago programado (podemos usar algún campo específico)
+            if transaccion.get("es_pago_programado", False) and transaccion.get("estado", "") == "PENDIENTE":
+                proximos_pagos.append(transaccion)
+        
+        print(f"Próximos pagos encontrados para el usuario {id_usuario}: {len(proximos_pagos)}")
+        return proximos_pagos
+        
     def _enriquecer_transaccion(self, transaccion):
         """
         Enriquece una transacción con información de las entidades relacionadas

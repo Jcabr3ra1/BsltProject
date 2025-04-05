@@ -17,7 +17,7 @@ import { AuthService } from '@core/services/seguridad/auth.service';
 import { CatalogoService } from '@core/services/common/catalogo.service';
 
 // Importar modelos
-import { Transaccion, Transaction, EstadoTransaccion } from '@core/models/finanzas/transaccion.model';
+import { Transaccion, Transaction, EstadoTransaccionEnum } from '@core/models/finanzas/transaccion.model';
 import { Cuenta } from '@core/models/finanzas/cuenta.model';
 
 // Interfaces específicas para el dashboard
@@ -86,18 +86,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     type: string;
   }[] = [];
   
-  // Próximos pagos (simulados por ahora)
-  upcomingPayments: Payment[] = [
-    { id: '1', description: 'Pago de hipoteca', amount: 800, dueDate: '2025-04-15', status: 'PENDIENTE' },
-    { id: '2', description: 'Suscripción Netflix', amount: 15, dueDate: '2025-04-20', status: 'PENDIENTE' },
-    { id: '3', description: 'Seguro de auto', amount: 120, dueDate: '2025-04-25', status: 'PENDIENTE' }
-  ];
+  // Próximos pagos
+  upcomingPayments: Payment[] = [];
   
   // Cuentas
   accounts: Cuenta[] = [];
   
   // Para exponer enums al template
-  readonly EstadoTransaccion = EstadoTransaccion;
+  readonly EstadoTransaccion = EstadoTransaccionEnum;
   
   // Subscripciones
   private subscriptions = new Subscription();
@@ -147,27 +143,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       forkJoin({
         transactions: this.transaccionService.getTransactions(),
-        accounts: this.cuentaService.obtenerCuentasPorUsuario(userId)
+        accounts: this.cuentaService.obtenerCuentasPorUsuario(userId),
+        upcomingPayments: this.transaccionService.getUpcomingPayments(userId)
       }).pipe(
         catchError(error => {
           console.error('Error al cargar datos del dashboard:', error);
           this.error = 'Error al cargar los datos. Por favor, intente nuevamente.';
-          return of({ transactions: [], accounts: [] });
+          return of({ transactions: [], accounts: [], upcomingPayments: [] });
         }),
         finalize(() => {
           this.loading = false;
         })
-      ).subscribe({
-        next: (result) => {
-          // Procesar transacciones
-          this.recentTransactions = this.processTransactions(result.transactions);
-          
-          // Procesar cuentas
-          this.accounts = result.accounts;
-          
-          // Calcular resumen financiero
-          this.calculateFinancialSummary();
-        }
+      ).subscribe(({ transactions, accounts, upcomingPayments }) => {
+        // Procesar transacciones
+        this.recentTransactions = this.processTransactions(transactions);
+        
+        // Procesar cuentas
+        this.accounts = accounts;
+        
+        // Procesar próximos pagos
+        this.upcomingPayments = upcomingPayments;
+        
+        // Calcular resumen financiero
+        this.calculateFinancialSummary();
       })
     );
   }

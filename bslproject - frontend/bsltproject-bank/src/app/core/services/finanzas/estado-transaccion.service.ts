@@ -3,60 +3,44 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, catchError, throwError, of } from 'rxjs';
 import { environment } from '@environments/environment';
 import { EstadoTransaccion } from '@core/models/finanzas/transaccion.model';
+import { BaseApiService } from '@core/services/base-api.service';
+import { AuthService } from '@core/services/seguridad/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class EstadoTransaccionService {
-  // No existe un endpoint específico para estados de transacción en el backend
-  // Usaremos valores predefinidos en lugar de intentar obtenerlos del backend
-  private apiGatewayUrl = `${environment.apiGatewayUrl}/finanzas/estados-transaccion`;
+export class EstadoTransaccionService extends BaseApiService<EstadoTransaccion> {
+  // Endpoint para estados de transacción en el backend
+  private apiUrl = `${environment.apiGatewayUrl}/finanzas/estados-transaccion`;
 
-  constructor(private http: HttpClient) {
+  constructor(
+    protected override http: HttpClient,
+    protected override authService: AuthService
+  ) {
+    super(http, environment.apiGatewayUrl, authService);
     console.log('EstadoTransaccionService inicializado');
-    console.log('URL de la API de estados de transacción:', this.apiGatewayUrl);
-  }
-
-  // Método para obtener los encabezados con token
-  private getHeaders() {
-    const token = localStorage.getItem('token');
-    return {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      })
-    };
+    console.log('URL de la API de estados de transacción:', this.apiUrl);
   }
 
   // Obtener todos los estados de transacción
   obtenerEstadosTransaccion(): Observable<EstadoTransaccion[]> {
-    console.log('Usando estados de transacción predefinidos');
+    console.log('Obteniendo estados de transacción del backend');
     
-    // Usar los valores del enum EstadoTransaccion
-    const estadosPredefinidos: EstadoTransaccion[] = [
-      EstadoTransaccion.PENDIENTE,
-      EstadoTransaccion.COMPLETADA,
-      EstadoTransaccion.ANULADA,
-      EstadoTransaccion.RECHAZADA,
-      EstadoTransaccion.APROBADA
-    ];
-    
-    console.log('Estados de transacción predefinidos:', estadosPredefinidos);
-    return of(estadosPredefinidos).pipe(
+    return this.http.get<EstadoTransaccion[]>(this.apiUrl, { headers: this.getHeaders() }).pipe(
       tap(estados => {
-        console.log('Estados de transacción proporcionados:', estados);
+        console.log('Estados de transacción obtenidos del backend:', estados);
       }),
       catchError(error => {
-        console.error('Error al proporcionar estados de transacción:', error);
-        return throwError(() => new Error('Error al proporcionar estados de transacción'));
+        console.error('Error al obtener estados de transacción:', error);
+        return throwError(() => new Error('Error al obtener estados de transacción'));
       })
     );
   }
 
   // Obtener un estado de transacción por ID
   obtenerEstadoTransaccionPorId(id: string): Observable<EstadoTransaccion> {
-    console.log('Obteniendo estado de transacción por ID desde:', `${this.apiGatewayUrl}/${id}`);
-    return this.http.get<EstadoTransaccion>(`${this.apiGatewayUrl}/${id}`, this.getHeaders()).pipe(
+    console.log('Obteniendo estado de transacción por ID desde:', `${this.apiUrl}/${id}`);
+    return this.http.get<EstadoTransaccion>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() }).pipe(
       tap(estado => {
         console.log('Estado de transacción obtenido por ID:', estado);
       }),
@@ -69,8 +53,8 @@ export class EstadoTransaccionService {
 
   // Crear un nuevo estado de transacción
   crearEstadoTransaccion(estado: Partial<EstadoTransaccion>): Observable<EstadoTransaccion> {
-    console.log('Creando estado de transacción en:', this.apiGatewayUrl);
-    return this.http.post<EstadoTransaccion>(this.apiGatewayUrl, estado, this.getHeaders()).pipe(
+    console.log('Creando estado de transacción en:', this.apiUrl);
+    return this.http.post<EstadoTransaccion>(this.apiUrl, estado, { headers: this.getHeaders() }).pipe(
       tap(estadoCreado => {
         console.log('Estado de transacción creado:', estadoCreado);
       }),
@@ -83,8 +67,8 @@ export class EstadoTransaccionService {
 
   // Actualizar un estado de transacción
   actualizarEstadoTransaccion(id: string, estado: Partial<EstadoTransaccion>): Observable<EstadoTransaccion> {
-    console.log('Actualizando estado de transacción en:', `${this.apiGatewayUrl}/${id}`);
-    return this.http.put<EstadoTransaccion>(`${this.apiGatewayUrl}/${id}`, estado, this.getHeaders()).pipe(
+    console.log('Actualizando estado de transacción en:', `${this.apiUrl}/${id}`);
+    return this.http.put<EstadoTransaccion>(`${this.apiUrl}/${id}`, estado, { headers: this.getHeaders() }).pipe(
       tap(estadoActualizado => {
         console.log('Estado de transacción actualizado:', estadoActualizado);
       }),
@@ -97,14 +81,28 @@ export class EstadoTransaccionService {
 
   // Eliminar un estado de transacción
   eliminarEstadoTransaccion(id: string): Observable<void> {
-    console.log('Eliminando estado de transacción desde:', `${this.apiGatewayUrl}/${id}`);
-    return this.http.delete<void>(`${this.apiGatewayUrl}/${id}`, this.getHeaders()).pipe(
+    console.log('Eliminando estado de transacción desde:', `${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() }).pipe(
       tap(() => {
         console.log('Estado de transacción eliminado');
       }),
       catchError(error => {
         console.error('Error al eliminar estado de transacción:', error);
         return throwError(() => new Error('Error al eliminar estado de transacción'));
+      })
+    );
+  }
+
+  // Inicializar estados predeterminados
+  inicializarEstadosPredeterminados(): Observable<any> {
+    console.log('Inicializando estados de transacción predeterminados');
+    return this.http.post<any>(`${this.apiUrl}/inicializar`, {}, { headers: this.getHeaders() }).pipe(
+      tap(resultado => {
+        console.log('Estados de transacción inicializados:', resultado);
+      }),
+      catchError(error => {
+        console.error('Error al inicializar estados de transacción:', error);
+        return throwError(() => new Error('Error al inicializar estados de transacción'));
       })
     );
   }
