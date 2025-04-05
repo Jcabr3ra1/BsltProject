@@ -101,7 +101,7 @@ async def eliminar_bolsillo(id: str, request: Request):
         headers={"Authorization": request.headers.get("Authorization")}
     )
 
-    if response.status_code == 204:
+    if response.status_code == 200:
         return {"mensaje": "Bolsillo eliminado correctamente"}
     else:
         return HTTPException(status_code=response.status_code, detail=f"Error al eliminar bolsillo: {response.text}")
@@ -282,11 +282,11 @@ async def crear_transaccion(request: Request, token: str = Depends(verificar_tok
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al crear transacción"))
 
-@router.put("/transacciones/{id}/cancel", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
+@router.put("/transacciones/{id}/anular", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
 async def anular_transaccion(id: str, token: str = Depends(verificar_token)):
     """Anula una transacción."""
     response = requests.put(
-        f"{URL_FINANZAS}/finanzas/transacciones/{id}/cancel",
+        f"{URL_FINANZAS}/finanzas/transacciones/{id}/anular",
         headers={"Authorization": f"Bearer {token}"}
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al anular transacción"))
@@ -701,7 +701,8 @@ async def eliminar_estado_transaccion(id: str, request: Request):
         headers={"Authorization": request.headers.get("Authorization")}
     )
 
-    if response.status_code == 204:
+    # Aceptar tanto 200 como 204 como códigos de éxito
+    if response.status_code in [200, 204]:
         return {"mensaje": "Estado de transacción eliminado correctamente"}
     else:
         return HTTPException(status_code=response.status_code, detail=f"Error al eliminar estado de transacción: {response.text}")

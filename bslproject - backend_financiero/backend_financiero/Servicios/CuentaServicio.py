@@ -248,53 +248,60 @@ class CuentaServicio:
         return cuenta_guardada
 
     def obtener_por_usuario(self, id_usuario):
-        """
-        Obtiene todas las cuentas asociadas a un usuario específico.
-        
-        Args:
-            id_usuario (str): ID del usuario para filtrar las cuentas
-            
-        Returns:
-            list: Lista de cuentas del usuario
-        """
-        print(f"Servicio: Buscando cuentas para el usuario: {id_usuario}")
-        
+        print(f"🔍 INICIO - Buscando cuentas para el usuario: {id_usuario}")
+        print(f"🔎 Tipo de ID: {type(id_usuario)}")
+        print(f"🔎 Valor completo del ID: '{id_usuario}'")
+
         try:
-            # Intentar con todos los posibles campos de usuario
-            # Primero con usuario_id
-            cuentas_usuario = self.repositorioCuenta.query({"usuario_id": id_usuario})
-            
-            if not cuentas_usuario:
-                # Si no hay resultados, intentar con userId
-                print(f"No se encontraron cuentas con usuario_id={id_usuario}, intentando con userId")
-                cuentas_usuario = self.repositorioCuenta.query({"userId": id_usuario})
-            
-            if not cuentas_usuario:
-                # Si no hay resultados, intentar con id_usuario
-                print(f"No se encontraron cuentas con userId={id_usuario}, intentando con id_usuario")
-                cuentas_usuario = self.repositorioCuenta.query({"id_usuario": id_usuario})
-            
-            if not cuentas_usuario:
-                print(f"No se encontraron cuentas para el usuario {id_usuario}")
-                return []
-                
-            print(f"Cuentas encontradas para el usuario {id_usuario}: {len(cuentas_usuario)}")
-            
-            # Enriquecemos la información de cada cuenta
-            for cuenta in cuentas_usuario:
-                # Asegurarse de que todos los campos de usuario estén disponibles
-                cuenta["usuario_id"] = id_usuario
-                cuenta["id_usuario"] = id_usuario
-                cuenta["userId"] = id_usuario
-                
-                # Agregar información del bolsillo si existe
-                if cuenta.get("id_bolsillo"):
-                    bolsillo = self.repositorioBolsillo.findById(cuenta["id_bolsillo"])
-                    if bolsillo:
-                        cuenta["bolsillo"] = bolsillo
-            
-            return cuentas_usuario
-            
+            # Imprimir TODOS los documentos de cuentas
+            todas_cuentas = self.repositorioCuenta.findAll()
+            print(f"🏦 Total de cuentas en la base de datos: {len(todas_cuentas)}")
+
+            print("Detalles de TODAS las cuentas:")
+            for cuenta in todas_cuentas:
+                print("---")
+                print(f"Cuenta ID: {cuenta.get('_id')}")
+                print(f"Campos de usuario:")
+                print(f"  usuario_id: {cuenta.get('usuario_id')}")
+                print(f"  userId: {cuenta.get('userId')}")
+                print(f"  id_usuario: {cuenta.get('id_usuario')}")
+
+            # Búsquedas exhaustivas
+            consultas = [
+                {"usuario_id": id_usuario},
+                {"userId": id_usuario},
+                {"id_usuario": id_usuario}
+            ]
+
+            cuentas_encontradas = []
+            for consulta in consultas:
+                print(f"\n🔍 Probando consulta: {consulta}")
+                resultado = self.repositorioCuenta.query(consulta)
+                print(f"🏦 Cuentas encontradas con esta consulta: {len(resultado)}")
+
+                for cuenta in resultado:
+                    print("Cuenta encontrada:")
+                    print(cuenta)
+
+                cuentas_encontradas.extend(resultado)
+
+            # Eliminar duplicados
+            cuentas_unicas = []
+            ids_vistos = set()
+            for cuenta in cuentas_encontradas:
+                cuenta_id = cuenta.get('_id')
+                if cuenta_id not in ids_vistos:
+                    ids_vistos.add(cuenta_id)
+                    cuentas_unicas.append(cuenta)
+
+            print(f"\n✅ Cuentas únicas encontradas: {len(cuentas_unicas)}")
+            for cuenta in cuentas_unicas:
+                print(f"Cuenta final: {cuenta}")
+
+            return cuentas_unicas
+
         except Exception as e:
-            print(f"Error al buscar cuentas por usuario: {str(e)}")
+            print(f"❌ Error completo: {e}")
+            import traceback
+            traceback.print_exc()
             return []

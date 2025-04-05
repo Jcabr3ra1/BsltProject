@@ -20,9 +20,12 @@ class TipoTransaccionServicio:
         tipo_actual = self.repositorioTipoTransaccion.findById(id)  # Buscar en la BD
 
         if tipo_actual:
-            # ✅ Modificar los valores directamente en el diccionario
-            tipo_actual["codigo"] = data.get("codigo", tipo_actual["codigo"])
-            tipo_actual["descripcion"] = data.get("descripcion", tipo_actual["descripcion"])
+            # Solo actualizar los campos que vienen en los datos
+            if "codigo" in data:
+                tipo_actual["codigo"] = data["codigo"]
+
+            if "descripcion" in data:
+                tipo_actual["descripcion"] = data["descripcion"]
 
             # ✅ Convertirlo en una instancia de TipoTransaccion antes de guardarlo
             return self.repositorioTipoTransaccion.save(TipoTransaccion(tipo_actual))

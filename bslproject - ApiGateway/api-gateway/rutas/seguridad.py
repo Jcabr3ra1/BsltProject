@@ -273,93 +273,6 @@ async def obtener_rol_por_nombre(name: str, request: Request, token_data: dict =
     raise HTTPException(status_code=response.status_code, detail="Rol no encontrado")
 
 
-@router.get("/roles/{id}/permisos")
-async def obtener_permisos_de_rol(
-        id: str,
-        request: Request,
-        token_data: dict = Depends(verificar_token)
-):
-    try:
-        # Validar ID (más flexible)
-        if not id:
-            raise HTTPException(status_code=400, detail="ID de rol no proporcionado")
-
-        # Extraer token
-        token = token_data.get("token")
-        if not token:
-            raise HTTPException(status_code=401, detail="Token no proporcionado")
-
-        # URL del microservicio
-        url = f"{URL_SEGURIDAD}/seguridad/roles/{id}/permisos"
-
-        # Cabeceras limpias
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        }
-
-        # Log de la solicitud
-        print(f"🔍 Enviando solicitud a: {url}")
-        print(f"🔑 Cabeceras: {headers}")
-
-        # Realizar solicitud con manejo de errores
-        try:
-            response = requests.get(url, headers=headers, timeout=15)
-
-            # Log de la respuesta
-            print(f"🟢 Código de respuesta: {response.status_code}")
-            print(f"📄 Tipo de contenido: {response.headers.get('Content-Type', 'No especificado')}")
-
-            # Verificar respuesta
-            if response.status_code == 200:
-                try:
-                    # Intentar parsear como JSON
-                    resultado = response.json()
-                    print(f"✅ Respuesta parseada correctamente")
-                    return resultado
-                except json.JSONDecodeError as json_err:
-                    print(f"❌ Error al parsear JSON: {str(json_err)}")
-                    print(f"📋 Texto de respuesta: {response.text[:500]}")  # Limitado por seguridad
-                    return {
-                        "error": "Error al procesar la respuesta",
-                        "detalle": "El servicio no devolvió un JSON válido",
-                        "statusCode": response.status_code
-                    }
-            elif response.status_code == 404:
-                return {"error": "Rol no encontrado", "id": id}
-            else:
-                error_detail = "Error desconocido"
-                try:
-                    error_detail = response.json()
-                except:
-                    error_detail = response.text[:500]  # Limitado por seguridad
-
-                print(f"❌ Error en respuesta: {error_detail}")
-                return {
-                    "error": f"Error del servicio ({response.status_code})",
-                    "detalle": error_detail
-                }
-
-        except requests.Timeout:
-            print("❌ Timeout en la solicitud")
-            return {"error": "Timeout al comunicarse con el servicio"}
-        except requests.ConnectionError:
-            print("❌ Error de conexión")
-            return {"error": "No se pudo conectar con el servicio"}
-        except requests.RequestException as req_err:
-            print(f"❌ Error en la solicitud: {str(req_err)}")
-            return {"error": f"Error de comunicación: {str(req_err)}"}
-
-    except HTTPException as http_ex:
-        # Re-lanzar excepciones HTTP ya formateadas
-        raise http_ex
-    except Exception as e:
-        print(f"❌ Excepción general: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return {"error": f"Error interno: {str(e)}"}
-
 @router.get("/roles/{id}/users")
 async def obtener_usuarios_con_rol(id: str, request: Request, token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))):
     """Obtiene los usuarios asociados a un rol"""
@@ -413,11 +326,11 @@ async def obtener_permiso(id: str, request: Request, token_data: dict = Depends(
         return response.json()
     raise HTTPException(status_code=response.status_code, detail="Permiso no encontrado")
 
-@router.get("/permisos/name/{name}")
-async def obtener_permiso_por_nombre(name: str, request: Request, token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))):
+@router.get("/permisos/nombre/{nombre}")
+async def obtener_permiso_por_nombre(nombre: str, request: Request, token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))):
     """Obtiene un permiso por su nombre"""
     auth_header = request.headers.get("Authorization")
-    response = requests.get(f"{URL_SEGURIDAD}/seguridad/permisos/name/{name}", headers={"Authorization": auth_header})
+    response = requests.get(f"{URL_SEGURIDAD}/seguridad/permisos/nombre/{nombre}", headers={"Authorization": auth_header})
     if response.status_code == 200:
         return response.json()
     raise HTTPException(status_code=response.status_code, detail="Permiso no encontrado")
@@ -428,7 +341,7 @@ async def crear_permiso(request: Request, token_data: dict = Depends(verificar_r
     auth_header = request.headers.get("Authorization")
     datos = await request.json()
     response = requests.post(f"{URL_SEGURIDAD}/seguridad/permisos", json=datos, headers={"Authorization": auth_header})
-    if response.status_code == 201:
+    if response.status_code == 200:
         return response.json()
     raise HTTPException(status_code=response.status_code, detail="Error al crear permiso")
 
@@ -457,16 +370,42 @@ async def eliminar_permiso(id: str, request: Request, token_data: dict = Depends
 
 # ASIGNAR PERMISO A UN ROL
 @router.put("/roles/{roleId}/permisos/{permissionId}")
-async def asignar_permiso_a_rol(permissionId: str, roleId: str, request: Request, token_data: dict = Depends(verificar_rol("ADMIN"))):
+async def asignar_permiso_a_rol(permissionId: str, roleId: str, request: Request,
+                                token_data: dict = Depends(verificar_rol("ADMIN"))):
     """Asigna un permiso a un rol"""
-    auth_header = request.headers.get("Authorization")
-    response = requests.put(
-        f"{URL_SEGURIDAD}/seguridad/roles/{roleId}/permisos/{permissionId}",
-        headers={"Authorization": auth_header}
-    )
-    if response.status_code == 200:
-        return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error al asignar permiso al rol")
+    try:
+        print(f"🔍 Asignando permiso")
+        print(f"📌 Role ID: {roleId}")
+        print(f"📋 Permission ID: {permissionId}")
+        print(f"🔐 Token info: {token_data}")
+
+        auth_header = request.headers.get("Authorization")
+
+        response = requests.put(
+            f"{URL_SEGURIDAD}/seguridad/roles/{roleId}/permisos/{permissionId}",
+            headers={
+                "Authorization": auth_header,
+                "Content-Type": "application/json"
+            }
+        )
+
+        print(f"📡 Código de respuesta: {response.status_code}")
+        print(f"📄 Contenido de respuesta: {response.text}")
+
+        if response.status_code == 200:
+            return response.json()
+
+        raise HTTPException(
+            status_code=response.status_code,
+            detail=f"Error al asignar permiso al rol: {response.text}"
+        )
+
+    except requests.RequestException as req_error:
+        print(f"❌ Error de solicitud: {str(req_error)}")
+        raise HTTPException(status_code=500, detail=f"Error de comunicación: {str(req_error)}")
+    except Exception as e:
+        print(f"❌ Excepción global: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
 # ELIMINAR PERMISO DE UN ROL
 @router.delete("/roles/{roleId}/permisos/{permissionId}")
@@ -477,7 +416,7 @@ async def eliminar_permiso_de_rol(permissionId: str, roleId: str, request: Reque
         f"{URL_SEGURIDAD}/seguridad/roles/{roleId}/permisos/{permissionId}",
         headers={"Authorization": auth_header}
     )
-    if response.status_code == 204:
+    if response.status_code == 200:
         return {"mensaje": "Permiso eliminado del rol correctamente"}
     raise HTTPException(status_code=response.status_code, detail="Error al eliminar permiso del rol")
 
@@ -506,7 +445,7 @@ async def crear_estado(request: Request, token_data: dict = Depends(verificar_ro
     auth_header = request.headers.get("Authorization")
     datos = await request.json()
     response = requests.post(f"{URL_SEGURIDAD}/seguridad/estados", json=datos, headers={"Authorization": auth_header})
-    if response.status_code == 201:
+    if response.status_code == 200:
         return response.json()
     raise HTTPException(status_code=response.status_code, detail="Error al crear estado")
 

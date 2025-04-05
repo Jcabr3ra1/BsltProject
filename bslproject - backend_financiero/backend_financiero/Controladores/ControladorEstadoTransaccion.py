@@ -49,6 +49,11 @@ def eliminar_estado_transaccion(id: str):
     resultado = servicio.eliminar(id)
     if "error" in resultado:
         raise HTTPException(status_code=400, detail=resultado["error"])
+
+    # Asegurar que se devuelve un formato limpio para respuestas exitosas
+    if "mensaje" in resultado:
+        return {"mensaje": resultado["mensaje"]}
+
     return resultado
 
 @router.post("/inicializar")

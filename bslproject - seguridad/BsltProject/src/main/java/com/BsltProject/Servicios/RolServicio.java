@@ -108,6 +108,38 @@ public class RolServicio {
         return permisos;
     }
 
+    public Rol asignarPermiso(String roleId, String permissionId) {
+        // Buscar el rol
+        Rol rol = repositorioRol.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+
+        // Buscar el permiso
+        Permiso permiso = repositorioPermiso.findById(permissionId)
+                .orElseThrow(() -> new RuntimeException("Permiso no encontrado"));
+
+        // Agregar el permiso al rol
+        rol.agregarPermiso(permiso);
+
+        // Guardar y devolver el rol actualizado
+        return repositorioRol.save(rol);
+    }
+
+    public Rol eliminarPermiso(String roleId, String permissionId) {
+        // Buscar el rol
+        Rol rol = repositorioRol.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+
+        // Buscar el permiso (opcional, solo para validación)
+        Permiso permiso = repositorioPermiso.findById(permissionId)
+                .orElseThrow(() -> new RuntimeException("Permiso no encontrado"));
+
+        // Eliminar el permiso del rol
+        rol.eliminarPermisoPorId(permissionId);
+
+        // Guardar y devolver el rol actualizado
+        return repositorioRol.save(rol);
+    }
+
 
 
     public List<Usuario> obtenerUsuariosConRol(String id) {

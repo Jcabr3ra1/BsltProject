@@ -30,7 +30,7 @@ def actualizar_bolsillo(id: str, info_bolsillo: dict):
 def eliminar_bolsillo(id: str):
     return servicio.eliminar(id)
 
-@router.put("/{id_bolsillo}/cuenta/{id_cuenta}")
+@router.put("/{id_bolsillo}/cuentas/{id_cuenta}")
 def asignar_cuenta_a_bolsillo(id_bolsillo: str, id_cuenta: str):
     resultado = servicio.asignar_cuenta(id_bolsillo, id_cuenta)
     if "error" in resultado:

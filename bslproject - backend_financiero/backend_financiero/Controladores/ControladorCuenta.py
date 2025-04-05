@@ -51,13 +51,23 @@ def eliminar_cuenta(id: str):
     resultado = servicio.eliminar(id)
     return resultado
 
+
 @router.get("/usuario/{id_usuario}")
 def obtener_cuentas_por_usuario(id_usuario: str):
     """Obtiene todas las cuentas asociadas a un usuario específico"""
-    print(f"Buscando cuentas para el usuario: {id_usuario}")
+    print(f"📍 CONTROLADOR - ID Usuario recibido: {id_usuario}")
+    print(f"📍 Tipo de ID: {type(id_usuario)}")
+
     resultado = servicio.obtener_por_usuario(id_usuario)
-    if isinstance(resultado, tuple) and len(resultado) > 1 and "error" in resultado[0]:
-        raise HTTPException(status_code=404, detail=resultado[0]["error"])
+
+    print(f"\n🏦 Cuentas encontradas: {len(resultado)}")
+    if not resultado:
+        print("❌ NO SE ENCONTRARON CUENTAS")
+    else:
+        print("✅ CUENTAS ENCONTRADAS:")
+        for cuenta in resultado:
+            print(cuenta)
+
     return resultado
 
 @router.put("/{id}/usuario/{id_usuario}")

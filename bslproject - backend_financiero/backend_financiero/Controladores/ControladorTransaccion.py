@@ -30,13 +30,21 @@ def actualizar_transaccion(id: str, info_transaccion: dict):
         raise HTTPException(status_code=400, detail=resultado["error"])
     return resultado
 
+
 @router.put("/{id}/anular")
 async def anular_transaccion(id: str):
-    """Cambia el estado de una transacción a 'ANULADA' en lugar de eliminarla"""
+    """Cambia el estado de una transacción a 'ANULADA'"""
+    print(f"Solicitud para anular transacción con ID: {id}")
+
     resultado = servicio.anular(id)
-    return resultado if isinstance(resultado, dict) else HTTPException(
-        status_code=500, detail="Error al anular transacción"
-    )
+
+    # Verificar si el resultado es una tupla (error, código de estado)
+    if isinstance(resultado, tuple):
+        error_msg, error_code = resultado
+        raise HTTPException(status_code=error_code, detail=error_msg)
+
+    print(f"Transacción anulada correctamente: {resultado}")
+    return resultado
 
 @router.get("/usuario/{id_usuario}/proximos-pagos")
 def obtener_proximos_pagos(id_usuario: str):

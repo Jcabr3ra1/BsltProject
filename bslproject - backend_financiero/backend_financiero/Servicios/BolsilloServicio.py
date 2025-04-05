@@ -38,11 +38,18 @@ class BolsilloServicio:
         if not bolsillo_actual:
             return {"error": "Bolsillo no encontrado"}, 404
 
+        # Crear un nuevo objeto Bolsillo con los datos actuales
         bolsillo_objeto = Bolsillo(bolsillo_actual)
-        bolsillo_objeto.color = infoBolsillo.get("color", bolsillo_objeto.color)
-        bolsillo_objeto.nombre = infoBolsillo.get("nombre", bolsillo_objeto.nombre)
-        bolsillo_objeto.saldo = infoBolsillo.get("saldo", bolsillo_objeto.saldo)
 
+        # Actualizar solo los campos proporcionados
+        if "color" in infoBolsillo:
+            bolsillo_objeto.color = infoBolsillo["color"]
+        if "nombre" in infoBolsillo:
+            bolsillo_objeto.nombre = infoBolsillo["nombre"]
+        if "saldo" in infoBolsillo:
+            bolsillo_objeto.saldo = infoBolsillo["saldo"]
+
+        # Guardar el objeto actualizado
         return self.repositorioBolsillo.save(bolsillo_objeto)
 
     def eliminar(self, id):
