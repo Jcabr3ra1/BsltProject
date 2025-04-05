@@ -1,0 +1,349 @@
+{
+  "info": {
+    "name": "BSLTProject - Finanzas - Transacciones",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección para probar los endpoints de transacciones del servicio financiero"
+  },
+  "item": [
+    {
+      "name": "Transacciones Básicas",
+      "item": [
+        {
+          "name": "Obtener Todas las Transacciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones"]
+            },
+            "description": "Obtiene todas las transacciones"
+          }
+        },
+        {
+          "name": "Crear Transacción",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"descripcion\": \"Transferencia de prueba\",\n    \"monto\": 100,\n    \"id_cuenta_origen\": \"{{cuentaOrigenId}}\",\n    \"id_cuenta_destino\": \"{{cuentaDestinoId}}\",\n    \"id_tipo_movimiento\": \"{{tipoMovimientoId}}\",\n    \"id_tipo_transaccion\": \"{{tipoTransaccionId}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones"]
+            },
+            "description": "Crea una nueva transacción"
+          }
+        },
+        {
+          "name": "Obtener Transacción por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/{{transaccionId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "{{transaccionId}}"]
+            },
+            "description": "Obtiene una transacción específica por su ID"
+          }
+        },
+        {
+          "name": "Anular Transacción",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/{{transaccionId}}/anular",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "{{transaccionId}}", "anular"]
+            },
+            "description": "Anula una transacción existente"
+          }
+        },
+        {
+          "name": "Obtener Transacciones por Usuario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/usuario/{{userId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "usuario", "{{userId}}"]
+            },
+            "description": "Obtiene todas las transacciones asociadas a un usuario específico"
+          }
+        },
+        {
+          "name": "Obtener Próximos Pagos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/usuario/{{userId}}/proximos-pagos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "usuario", "{{userId}}", "proximos-pagos"]
+            },
+            "description": "Obtiene los próximos pagos programados para un usuario"
+          }
+        },
+        {
+          "name": "Historial de Transacciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/historial?fechaInicio=2023-01-01&fechaFin=2023-12-31&tipo=TRANSFERENCIA",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "historial"],
+              "query": [
+                {
+                  "key": "fechaInicio",
+                  "value": "2023-01-01"
+                },
+                {
+                  "key": "fechaFin",
+                  "value": "2023-12-31"
+                },
+                {
+                  "key": "tipo",
+                  "value": "TRANSFERENCIA"
+                }
+              ]
+            },
+            "description": "Obtiene el historial de transacciones con filtros opcionales"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transacciones Específicas",
+      "item": [
+        {
+          "name": "Transferencia Cuenta a Cuenta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"cuentaOrigenId\": \"{{cuentaOrigenId}}\",\n    \"cuentaDestinoId\": \"{{cuentaDestinoId}}\",\n    \"tipoMovimientoId\": \"{{tipoMovimientoId}}\",\n    \"monto\": 100,\n    \"descripcion\": \"Transferencia entre cuentas\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/cuenta-cuenta",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "cuenta-cuenta"]
+            },
+            "description": "Realiza una transferencia de cuenta a cuenta"
+          }
+        },
+        {
+          "name": "Transferencia Cuenta a Bolsillo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"cuentaOrigenId\": \"{{cuentaOrigenId}}\",\n    \"bolsilloDestinoId\": \"{{bolsilloDestinoId}}\",\n    \"tipoMovimientoId\": \"{{tipoMovimientoId}}\",\n    \"monto\": 100,\n    \"descripcion\": \"Transferencia de cuenta a bolsillo\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/cuenta-bolsillo",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "cuenta-bolsillo"]
+            },
+            "description": "Realiza una transferencia de cuenta a bolsillo"
+          }
+        },
+        {
+          "name": "Transferencia Bolsillo a Cuenta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bolsilloOrigenId\": \"{{bolsilloOrigenId}}\",\n    \"cuentaDestinoId\": \"{{cuentaDestinoId}}\",\n    \"tipoMovimientoId\": \"{{tipoMovimientoId}}\",\n    \"monto\": 100,\n    \"descripcion\": \"Transferencia de bolsillo a cuenta\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/bolsillo-cuenta",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "bolsillo-cuenta"]
+            },
+            "description": "Realiza una transferencia de bolsillo a cuenta"
+          }
+        },
+        {
+          "name": "Consignación Banco a Cuenta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"cuentaDestinoId\": \"{{cuentaDestinoId}}\",\n    \"tipoMovimientoId\": \"{{tipoMovimientoId}}\",\n    \"monto\": 100,\n    \"descripcion\": \"Consignación de banco a cuenta\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/banco-cuenta",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "banco-cuenta"]
+            },
+            "description": "Realiza una consignación de banco a cuenta"
+          }
+        },
+        {
+          "name": "Consignación Banco a Bolsillo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bolsilloDestinoId\": \"{{bolsilloDestinoId}}\",\n    \"tipoMovimientoId\": \"{{tipoMovimientoId}}\",\n    \"monto\": 100,\n    \"descripcion\": \"Consignación de banco a bolsillo\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/banco-bolsillo",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "banco-bolsillo"]
+            },
+            "description": "Realiza una consignación de banco a bolsillo"
+          }
+        },
+        {
+          "name": "Retiro Cuenta a Banco",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"cuentaOrigenId\": \"{{cuentaOrigenId}}\",\n    \"tipoMovimientoId\": \"{{tipoMovimientoId}}\",\n    \"monto\": 100,\n    \"descripcion\": \"Retiro de cuenta a banco\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/transacciones/cuenta-banco",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "transacciones", "cuenta-banco"]
+            },
+            "description": "Realiza un retiro de cuenta a banco"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -181,15 +181,37 @@ async def actualizar_usuario(id: str, request: Request, token_data: dict = Depen
         return HTTPException(status_code=response.status_code, detail="Error al actualizar usuario")
     return response.json()
 
+
 @router.delete("/usuarios/{id}")
-async def eliminar_usuario(id: str, request: Request, token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))):
+async def eliminar_usuario(id: str, request: Request,
+                           token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))):
     """Eliminar usuario"""
     auth_header = request.headers.get("Authorization")
     response = requests.delete(f"{URL_SEGURIDAD}/seguridad/usuarios/{id}", headers={"Authorization": auth_header})
-    if response.status_code == 204:
+
+    # Si el código es 204 o 200, consideramos que la eliminación fue exitosa
+    if response.status_code in [204, 200]:
         return {"mensaje": "Usuario eliminado correctamente"}
     else:
-        return HTTPException(status_code=response.status_code, detail="Error al eliminar usuario")
+        # Aquí usamos raise en lugar de return
+        raise HTTPException(status_code=response.status_code, detail=f"Error al eliminar usuario: {response.text}")
+
+
+@router.put("/usuarios/{userId}/cuentas/{accountId}")
+async def asignar_cuenta_a_usuario(userId: str, accountId: str, request: Request,
+                                   token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))):
+    """Asigna una cuenta a un usuario en el sistema de seguridad."""
+    auth_header = request.headers.get("Authorization")
+    response = requests.put(
+        f"{URL_SEGURIDAD}/seguridad/usuarios/{userId}/cuentas/{accountId}",
+        headers={"Authorization": auth_header}
+    )
+
+    if response.status_code in [200, 201, 204]:
+        return response.json()
+    else:
+        raise HTTPException(status_code=response.status_code,
+                            detail=f"Error al asignar cuenta a usuario: {response.text}")
 
 @router.put("/usuarios/{userId}/roles/{roleId}")
 async def asignar_rol(userId: str, roleId: str, request: Request, token_data: dict = Depends(verificar_rol("ADMIN"))):
@@ -250,63 +272,93 @@ async def obtener_rol_por_nombre(name: str, request: Request, token_data: dict =
         return response.json()
     raise HTTPException(status_code=response.status_code, detail="Rol no encontrado")
 
+
 @router.get("/roles/{id}/permisos")
-async def obtener_permisos_de_rol(id: str, request: Request, token_data: dict = Depends(verificar_token)):
-    """Obtiene los permisos de un rol"""
+async def obtener_permisos_de_rol(
+        id: str,
+        request: Request,
+        token_data: dict = Depends(verificar_token)
+):
     try:
-        # Obtener el token del header de autorización
-        auth_header = request.headers.get("Authorization")
+        # Validar ID (más flexible)
+        if not id:
+            raise HTTPException(status_code=400, detail="ID de rol no proporcionado")
+
+        # Extraer token
         token = token_data.get("token")
-        
-        # Si no hay header de autorización, usar el token de la dependencia
-        if not auth_header and token:
-            auth_header = f"Bearer {token}"
-            
-        print(f"API Gateway: Obteniendo permisos para el rol con ID: {id}")
-        print(f"API Gateway: Tipo de ID: {type(id)}")
-        print(f"API Gateway: Headers de autorización: {auth_header}")
-        
-        # Construir la URL correcta
-        # Verificar si URL_SEGURIDAD ya termina con /seguridad para evitar duplicación
-        if URL_SEGURIDAD.endswith('/seguridad'):
-            url = f"{URL_SEGURIDAD}/roles/{id}/permisos"
-        else:
-            url = f"{URL_SEGURIDAD}/seguridad/roles/{id}/permisos"
-        print(f"API Gateway: URL de solicitud: {url}")
-        
-        # Realizar la solicitud al servicio de seguridad
-        headers = {"Authorization": auth_header, "Content-Type": "application/json"}
-        print(f"API Gateway: Headers enviados al servicio de seguridad: {headers}")
-        
-        response = requests.get(url, headers=headers)
-        
-        print(f"API Gateway: Respuesta del servicio de seguridad: Status {response.status_code}")
-        print(f"API Gateway: Headers de respuesta: {response.headers}")
-        if response.status_code != 200:
-            print(f"API Gateway: Error del servicio de seguridad: {response.text}")
-            try:
-                error_json = response.json()
-                print(f"API Gateway: Error JSON: {error_json}")
-            except Exception as json_error:
-                print(f"API Gateway: No se pudo parsear la respuesta como JSON: {str(json_error)}")
-        
-        if response.status_code == 200:
-            return response.json()
-            
-        # Manejar errores específicos
-        if response.status_code == 400:
-            raise HTTPException(status_code=400, detail="Formato de datos inválido en la solicitud al servicio de seguridad")
-        elif response.status_code == 401:
-            raise HTTPException(status_code=401, detail="No autorizado para acceder a los permisos del rol")
-        elif response.status_code == 403:
-            raise HTTPException(status_code=403, detail="Prohibido el acceso a los permisos del rol")
-        elif response.status_code == 404:
-            raise HTTPException(status_code=404, detail="Rol no encontrado en el servicio de seguridad")
-        else:
-            raise HTTPException(status_code=response.status_code, detail=f"Error al obtener permisos del rol: {response.text}")
+        if not token:
+            raise HTTPException(status_code=401, detail="Token no proporcionado")
+
+        # URL del microservicio
+        url = f"{URL_SEGURIDAD}/seguridad/roles/{id}/permisos"
+
+        # Cabeceras limpias
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
+
+        # Log de la solicitud
+        print(f"🔍 Enviando solicitud a: {url}")
+        print(f"🔑 Cabeceras: {headers}")
+
+        # Realizar solicitud con manejo de errores
+        try:
+            response = requests.get(url, headers=headers, timeout=15)
+
+            # Log de la respuesta
+            print(f"🟢 Código de respuesta: {response.status_code}")
+            print(f"📄 Tipo de contenido: {response.headers.get('Content-Type', 'No especificado')}")
+
+            # Verificar respuesta
+            if response.status_code == 200:
+                try:
+                    # Intentar parsear como JSON
+                    resultado = response.json()
+                    print(f"✅ Respuesta parseada correctamente")
+                    return resultado
+                except json.JSONDecodeError as json_err:
+                    print(f"❌ Error al parsear JSON: {str(json_err)}")
+                    print(f"📋 Texto de respuesta: {response.text[:500]}")  # Limitado por seguridad
+                    return {
+                        "error": "Error al procesar la respuesta",
+                        "detalle": "El servicio no devolvió un JSON válido",
+                        "statusCode": response.status_code
+                    }
+            elif response.status_code == 404:
+                return {"error": "Rol no encontrado", "id": id}
+            else:
+                error_detail = "Error desconocido"
+                try:
+                    error_detail = response.json()
+                except:
+                    error_detail = response.text[:500]  # Limitado por seguridad
+
+                print(f"❌ Error en respuesta: {error_detail}")
+                return {
+                    "error": f"Error del servicio ({response.status_code})",
+                    "detalle": error_detail
+                }
+
+        except requests.Timeout:
+            print("❌ Timeout en la solicitud")
+            return {"error": "Timeout al comunicarse con el servicio"}
+        except requests.ConnectionError:
+            print("❌ Error de conexión")
+            return {"error": "No se pudo conectar con el servicio"}
+        except requests.RequestException as req_err:
+            print(f"❌ Error en la solicitud: {str(req_err)}")
+            return {"error": f"Error de comunicación: {str(req_err)}"}
+
+    except HTTPException as http_ex:
+        # Re-lanzar excepciones HTTP ya formateadas
+        raise http_ex
     except Exception as e:
-        print(f"API Gateway: Excepción al comunicarse con el servicio de seguridad: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
+        print(f"❌ Excepción general: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return {"error": f"Error interno: {str(e)}"}
 
 @router.get("/roles/{id}/users")
 async def obtener_usuarios_con_rol(id: str, request: Request, token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))):
@@ -473,6 +525,13 @@ async def actualizar_estado(id: str, request: Request, token_data: dict = Depend
     raise HTTPException(status_code=response.status_code, detail="Error al actualizar estado")
 
 @router.delete("/estados/{id}")
+async def eliminar_estado(id: str, request: Request, token_data: dict = Depends(verificar_rol("ADMIN"))):
+    """Elimina un estado en el sistema de seguridad."""
+    auth_header = request.headers.get("Authorization")
+    response = requests.delete(f"{URL_SEGURIDAD}/seguridad/estados/{id}", headers={"Authorization": auth_header})
+    if response.status_code == 204:
+        return {"mensaje": "Estado eliminado correctamente"}
+    raise HTTPException(status_code=response.status_code, detail="Error al eliminar estado")
 async def eliminar_estado(id: str, request: Request, token_data: dict = Depends(verificar_rol("ADMIN"))):
     """Elimina un estado en el sistema de seguridad."""
     auth_header = request.headers.get("Authorization")

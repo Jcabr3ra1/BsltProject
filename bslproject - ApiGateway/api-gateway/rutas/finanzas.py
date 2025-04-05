@@ -199,10 +199,11 @@ async def eliminar_cuenta(id: str, request: Request):
         headers={"Authorization": request.headers.get("Authorization")}
     )
 
-    if response.status_code == 204:
+    if response.status_code in [200, 204]:
         return {"mensaje": "Cuenta eliminada correctamente"}
     else:
-        return HTTPException(status_code=response.status_code, detail=f"Error al eliminar cuenta: {response.text}")
+        # Cambiado de return a raise
+        raise HTTPException(status_code=response.status_code, detail=f"Error al eliminar cuenta: {response.text}")
 
 @router.get("/cuentas/usuario/{id_usuario}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))])
 async def obtener_cuentas_por_usuario(id_usuario: str, request: Request):

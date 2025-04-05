@@ -15,10 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -169,11 +166,13 @@ public class UsuarioServicio {
         Rol rol = repositorioRol.findById(rolId)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 
-        if (usuario.getRoles() == null) {
-            usuario.setRoles(new HashSet<>());
-        }
+        // Crear un nuevo conjunto de roles y agregar solo el nuevo rol
+        Set<Rol> nuevosRoles = new HashSet<>();
+        nuevosRoles.add(rol);
 
-        usuario.getRoles().add(rol);
+        // Reemplazar completamente la colección de roles
+        usuario.setRoles(nuevosRoles);
+
         usuario = repositorioUsuario.save(usuario);
 
         // Regenerar el token con los nuevos roles

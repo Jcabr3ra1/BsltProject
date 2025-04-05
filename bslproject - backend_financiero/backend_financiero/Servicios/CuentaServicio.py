@@ -106,34 +106,31 @@ class CuentaServicio:
             numero = ''.join(random.choice(digitos) for _ in range(10))
             
         return numero
-        
+
     def _notificar_seguridad_asociacion(self, id_cuenta, id_usuario, auth_token=None):
         """Notifica al servicio de seguridad sobre la asociación de un usuario con una cuenta"""
         try:
             # Cargar configuración
             with open("Config/config.json", "r") as archivo_config:
                 configuracion = json.load(archivo_config)
-                
-            seguridad_url = f"{configuracion.get('url-seguridad', 'http://localhost:8080')}/seguridad/permisos/cuenta"
-            
+
+            # URL correcta para el endpoint de seguridad
+            seguridad_url = configuracion.get('servicios', {}).get('seguridad', 'http://localhost:7777')
+            url_completa = f"{seguridad_url}/usuarios/{id_usuario}/cuentas/{id_cuenta}"
+
             headers = {
                 "Content-Type": "application/json"
             }
-            
+
             if auth_token:
                 headers["Authorization"] = auth_token
-                
-            datos_seguridad = {
-                "usuarioId": id_usuario,
-                "cuentaId": id_cuenta
-            }
-            
-            print(f"Enviando notificación a seguridad: URL={seguridad_url}, Datos={datos_seguridad}")
-            
-            response = requests.put(seguridad_url, json=datos_seguridad, headers=headers, timeout=5)
+
+            print(f"Enviando notificación a seguridad: URL={url_completa}, Headers={headers}")
+
+            response = requests.put(url_completa, json={}, headers=headers, timeout=5)
             print(f"Respuesta de Seguridad: {response.status_code} - {response.text}")
-            
-            if response.status_code == 200:
+
+            if response.status_code in [200, 201, 204]:
                 print("Notificación a Seguridad exitosa")
                 return True
             else:
@@ -204,41 +201,49 @@ class CuentaServicio:
     def asignar_usuario_a_cuenta(self, id_cuenta, id_usuario, auth_token=None):
         """
         Asigna un usuario a una cuenta existente.
-        
+
         Args:
             id_cuenta (str): ID de la cuenta a modificar
             id_usuario (str): ID del usuario a asignar
             auth_token (str, optional): Token de autorización para el servicio de seguridad
-            
+
         Returns:
             dict: Cuenta actualizada
         """
         print(f"Asignando usuario {id_usuario} a cuenta {id_cuenta}")
-        
+
         # Verificar que la cuenta existe
         cuenta_actual = self.repositorioCuenta.findById(id_cuenta)
         if not cuenta_actual:
             return {"error": "Cuenta no encontrada"}, 404
-            
+
         # Crear objeto Cuenta
         cuenta_objeto = Cuenta(cuenta_actual)
-        
-        # Asignar el usuario
+
+        # Asignar el usuario a todos los campos para garantizar compatibilidad
         cuenta_objeto.usuario_id = id_usuario
-        
+        cuenta_objeto.id_usuario = id_usuario
+        cuenta_objeto.userId = id_usuario
+
         # Actualizar fecha de modificación
         cuenta_objeto.updatedAt = datetime.now().isoformat()
-        
+
         # Guardar los cambios
         print(f"Guardando cuenta con usuario asignado: {cuenta_objeto.__dict__}")
         cuenta_guardada = self.repositorioCuenta.save(cuenta_objeto)
-        
-        # Notificar al servicio de seguridad
-        notificacion_exitosa = self._notificar_seguridad_asociacion(id_cuenta, id_usuario, auth_token)
-        
+
+        # Intentar notificar al servicio de seguridad varias veces si es necesario
+        notificacion_exitosa = False
+        for intento in range(3):  # Intentar hasta 3 veces
+            notificacion_exitosa = self._notificar_seguridad_asociacion(id_cuenta, id_usuario, auth_token)
+            if notificacion_exitosa:
+                break
+            print(f"Reintentando notificación a seguridad (intento {intento + 1}/3)")
+
         if not notificacion_exitosa:
-            print("Advertencia: No se pudo notificar al servicio de seguridad, pero la cuenta fue actualizada")
-        
+            print("ADVERTENCIA: No se pudo notificar al servicio de seguridad, pero la cuenta fue actualizada")
+            print("Se recomienda actualizar manualmente el usuario en el servicio de seguridad")
+
         # Siempre devolvemos la cuenta guardada, incluso si falló la notificación
         return cuenta_guardada
 
