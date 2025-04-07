@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, HTTPException, Depends
 from starlette.responses import JSONResponse
 from middleware.autenticacion import verificar_token, verificar_rol, verificar_roles_permitidos, CLAVE_SECRETA
 import json
-import hashlib
+
 
 # Cargar configuración
 with open("configuracion/config.json", "r") as archivo_config:

@@ -21,9 +21,7 @@ class TransaccionServicio:
     def obtener_por_id(self, id):
         transaccion = self.repositorioTransaccion.findById(id)
         if transaccion:
-            # Enriquecer la transacción con información relacionada
-            transaccion_enriquecida = self._enriquecer_transaccion(transaccion)
-            return transaccion_enriquecida
+            return transaccion
         return {"error": "Transacción no encontrada"}, 404
 
     def obtener_por_usuario(self, id_usuario):
