@@ -90,6 +90,35 @@ public class ControladorRol {
         }
     }
 
+    @GetMapping("/{id}/permisos")
+    public ResponseEntity<?> obtenerPermisosDelRol(@PathVariable String id) {
+        try {
+            System.out.println("🔍 Obteniendo permisos para rol con ID: " + id);
+
+            // Verificar que el rol existe
+            Rol rol = repositorioRol.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+
+            // Obtener los permisos del rol
+            List<Permiso> permisos = rolServicio.obtenerPermisosDeRol(id);
+
+            // Log de éxito
+            System.out.println("✅ Permisos encontrados para rol '" + rol.getNombre() + "': " + permisos.size());
+
+            return ResponseEntity.ok(permisos);
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener permisos: " + e.getMessage());
+            e.printStackTrace();
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of(
+                            "error", "No se pudieron obtener los permisos",
+                            "detalle", e.getMessage()
+                    ));
+        }
+
+    }
+
     @PutMapping("/{roleId}/permisos/{permissionId}")
     public ResponseEntity<?> asignarPermisoARol(
             @PathVariable String roleId,

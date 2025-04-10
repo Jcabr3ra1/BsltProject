@@ -335,6 +335,40 @@ async def obtener_permiso_por_nombre(nombre: str, request: Request, token_data: 
         return response.json()
     raise HTTPException(status_code=response.status_code, detail="Permiso no encontrado")
 
+
+@router.get("/roles/{id}/permisos")
+async def obtener_permisos_de_rol(id: str, request: Request,
+                                  token_data: dict = Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))):
+    """Obtiene los permisos asociados a un rol"""
+    try:
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            raise HTTPException(status_code=401, detail="Token de autorización faltante")
+
+        print(f"🔍 API Gateway: Consultando permisos para rol con ID: {id}")
+
+        response = requests.get(
+            f"{URL_SEGURIDAD}/seguridad/roles/{id}/permisos",
+            headers={"Authorization": auth_header}
+        )
+
+        print(f"📡 Código de respuesta: {response.status_code}")
+
+        if response.status_code == 200:
+            return response.json()
+
+        raise HTTPException(
+            status_code=response.status_code,
+            detail=f"Error al obtener permisos del rol: {response.text}"
+        )
+
+    except requests.RequestException as req_error:
+        print(f"❌ Error de solicitud: {str(req_error)}")
+        raise HTTPException(status_code=500, detail=f"Error de comunicación: {str(req_error)}")
+    except Exception as e:
+        print(f"❌ Excepción global: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
+
 @router.post("/permisos")
 async def crear_permiso(request: Request, token_data: dict = Depends(verificar_rol("ADMIN"))):
     """Crea un nuevo permiso"""

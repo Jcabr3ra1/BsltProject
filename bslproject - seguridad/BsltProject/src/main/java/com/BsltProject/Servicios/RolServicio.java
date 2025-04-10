@@ -72,40 +72,55 @@ public class RolServicio {
     }
 
     public List<Permiso> obtenerPermisosDeRol(String id) {
+        // Log detallado para seguimiento
+        System.out.println("🔎 Buscando permisos para rol con ID: " + id);
+
         // Validación del ID
-        if (id == null || id.trim().isEmpty()) {
-            System.err.println("❌ ID de rol inválido: " + (id == null ? "null" : "vacío"));
+        if (!esIdValido(id)) {
+            System.err.println("❌ ID de rol inválido o con formato incorrecto: " + id);
             return Collections.emptyList();
         }
 
-        // Buscar el rol por ID
-        Optional<Rol> rolOptional = repositorioRol.findById(id);
+        try {
+            // Buscar el rol por ID
+            Optional<Rol> rolOptional = repositorioRol.findById(id);
 
-        // Si no se encuentra el rol
-        if (!rolOptional.isPresent()) {
-            System.err.println("❌ Rol no encontrado con ID: " + id);
+            // Si no se encuentra el rol
+            if (!rolOptional.isPresent()) {
+                System.err.println("❌ Rol no encontrado con ID: " + id);
+                return Collections.emptyList();
+            }
+
+            // Obtener el rol
+            Rol rol = rolOptional.get();
+            System.out.println("✅ Rol encontrado: " + rol.getNombre());
+
+            // Obtener permisos, asegurándose de que no sea nulo
+            List<Permiso> permisos = rol.getPermisos();
+            if (permisos == null) {
+                System.out.println("ℹ️ El rol no tiene permisos asociados (null)");
+                return new ArrayList<>();
+            }
+
+            // Filtrar permisos nulos (por si acaso)
+            List<Permiso> permisosValidos = permisos.stream()
+                    .filter(p -> p != null)
+                    .collect(Collectors.toList());
+
+            // Log detallado
+            if (permisosValidos.isEmpty()) {
+                System.out.println("ℹ️ El rol no tiene permisos asociados (lista vacía)");
+            } else {
+                System.out.println("🔑 Permisos encontrados: " + permisosValidos.size());
+                permisosValidos.forEach(p -> System.out.println("  - " + p.getNombre()));
+            }
+
+            return permisosValidos;
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener permisos del rol: " + e.getMessage());
+            e.printStackTrace();
             return Collections.emptyList();
         }
-
-        // Obtener el rol
-        Rol rol = rolOptional.get();
-
-        // Obtener permisos, asegurándose de que no sea nulo
-        List<Permiso> permisos = rol.getPermisos();
-        if (permisos == null) {
-            permisos = new ArrayList<>();
-        }
-
-        // Filtrar permisos nulos (por si acaso)
-        permisos = permisos.stream()
-                .filter(p -> p != null)
-                .collect(Collectors.toList());
-
-        // Log detallado
-        System.out.println("🔍 Rol encontrado: " + rol.getNombre());
-        System.out.println("🔑 Permisos: Cantidad: " + permisos.size());
-
-        return permisos;
     }
 
     public Rol asignarPermiso(String roleId, String permissionId) {
@@ -160,5 +175,21 @@ public class RolServicio {
 
         System.out.println("✅ Permisos para el rol " + nombreRol + ": " + permisos);
         return permisos;
+    }
+
+    /**
+     * Valida si un ID tiene el formato correcto de ObjectId de MongoDB
+     * @param id El ID a validar
+     * @return true si el formato es válido, false en caso contrario
+     */
+    private boolean esIdValido(String id) {
+        if (id == null || id.trim().isEmpty()) {
+            return false;
+        }
+
+        // Patrón hexadecimal para ObjectId MongoDB (24 caracteres hexadecimales)
+        String patronHex = "^[0-9a-fA-F]{24}$";
+
+        return id.matches(patronHex);
     }
 }
