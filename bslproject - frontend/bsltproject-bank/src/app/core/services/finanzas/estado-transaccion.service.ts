@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, catchError, throwError, of } from 'rxjs';
 import { environment } from '@environments/environment';
-import { EstadoTransaccion } from '@core/models/finanzas/transaccion.model';
+import { EstadoTransaccion } from '@core/models/finanzas/estado-transaccion.model';
 import { BaseApiService } from '@core/services/base-api.service';
 import { AuthService } from '@core/services/seguridad/auth.service';
 

@@ -1,269 +1,362 @@
+// Usando variables definidas globalmente en styles.scss
+:root {
+  --navbar-height: 64px;
+  --navbar-padding: 0 24px;
+  --avatar-size: 32px;
+  --avatar-size-large: 48px;
+  --transition-speed: 0.3s;
+  --primary: #8A2BE2;
+  --primary-dark: #5D1C9E; /* Morado más oscuro */
+  --light: #FFFFFF;
+  --dark: #333333;
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --error: #FF4081;
+}
+
+/* Estilos del navbar */
 .navbar {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-  color: white;
-  padding: 0 1rem;
-  height: 64px;
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  background-color: var(--primary-dark);
+  color: var(--light);
+  height: var(--navbar-height);
+  padding: var(--navbar-padding);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  z-index: 1000;
 
+  /* Estilos para el logo y marca */
   .navbar-brand {
+    display: flex;
+    align-items: center;
+    
+    .sidebar-toggle {
+      margin-right: 12px;
+      color: var(--light);
+      transition: all var(--transition-normal);
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+      }
+      
+      mat-icon {
+        font-size: 24px;
+        height: 24px;
+        width: 24px;
+      }
+    }
+    
     .brand-logo {
       display: flex;
       align-items: center;
       text-decoration: none;
-      color: white;
-      gap: 0.5rem;
-
-      .logo-container {
-        width: 40px;
-        height: 40px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
+      color: var(--light);
+      font-weight: 600;
+      transition: all var(--transition-speed) ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+      }
+      
+      .logo-icon {
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
-
+        width: 36px;
+        height: 36px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: var(--border-radius-md);
+        margin-right: 12px;
+        
         mat-icon {
+          color: var(--light);
           font-size: 24px;
-          width: 24px;
           height: 24px;
-          color: white;
+          width: 24px;
         }
       }
-
-      h1 {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 500;
-        letter-spacing: 0.5px;
-      }
-
-      &:hover {
-        .logo-container {
-          background: rgba(255, 255, 255, 0.3);
-          transform: scale(1.05);
-        }
+      
+      span {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
       }
     }
   }
 
   .spacer {
-    flex: 1;
+    flex: 1 1 auto;
   }
-
+  
+  /* Estilos para la sección derecha del navbar */
   .navbar-end {
     display: flex;
     align-items: center;
-    gap: 1rem;
-
-    .notification-btn {
-      color: white;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      width: 40px;
-      height: 40px;
-      line-height: 40px;
-      transition: all 0.3s ease;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.2);
-      }
-
-      ::ng-deep .mat-badge-content {
-        background: #ff4081;
-        color: white;
-        font-weight: 500;
-      }
-    }
-
-    .user-menu {
-      .user-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.25rem 0.75rem;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        height: 40px;
-        transition: all 0.3s ease;
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-
-        .user-avatar {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          background: #ff4081;
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 500;
-          font-size: 0.875rem;
-        }
-
-        .user-name {
-          margin: 0;
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: white;
-          max-width: 150px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        mat-icon {
-          color: rgba(255, 255, 255, 0.7);
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-        }
-      }
-    }
-
-    .login-btn {
+    
+    .nav-actions {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0 1rem;
-      height: 40px;
-      background: #ff4081;
-      color: white;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-
-      &:hover {
-        background: #f50057;
-      }
-
+      gap: 8px;
+    }
+    
+    /* Botón de notificaciones */
+    .notification-btn {
+      margin-right: 8px;
+      
       mat-icon {
+        color: var(--light);
+      }
+    }
+    
+    /* Botón de usuario */
+    .user-button {
+      display: flex;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 4px 8px 4px 4px;
+      transition: all var(--transition-speed) ease;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      
+      .avatar-circle {
+        width: var(--avatar-size);
+        height: var(--avatar-size);
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin-right: 8px;
+      }
+      
+      .user-name {
+        font-size: 14px;
+        font-weight: 500;
+        margin-right: 4px;
+        color: var(--light);
+      }
+      
+      .dropdown-icon {
         font-size: 20px;
-        width: 20px;
         height: 20px;
+        width: 20px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
+    
+    .auth-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .login-btn {
+      color: var(--light);
+      border-radius: 20px;
+      padding: 4px 16px;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: all var(--transition-speed) ease;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+
+    .register-btn {
+      background-color: var(--light);
+      color: var(--primary);
+      border-radius: 20px;
+      padding: 4px 16px;
+      box-shadow: var(--shadow-md);
+      transition: all var(--transition-speed) ease;
+      
+      &:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+      
+      mat-icon {
+        margin-right: 4px;
       }
     }
   }
 }
 
+/* Estilos para los menús desplegables */
 ::ng-deep {
-  .user-dropdown {
-    margin-top: 0.5rem !important;
-    min-width: 240px !important;
-    border-radius: 8px !important;
-    overflow: hidden !important;
-
-    .menu-header {
-      padding: 1rem;
-      background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-      color: white;
-
-      .user-info {
+  .user-menu-panel, .notifications-menu-panel {
+    .mat-mdc-menu-panel {
+      border-radius: var(--border-radius-lg) !important;
+      overflow: hidden !important;
+      margin-top: 8px !important;
+      background-color: var(--dark) !important;
+      min-width: 280px !important;
+      max-width: 320px !important;
+      
+      .menu-header {
+        padding: 12px 16px;
+        background-color: var(--primary-dark);
+        color: var(--light);
         display: flex;
         align-items: center;
-        gap: 1rem;
-
-        .user-avatar {
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        
+        h3 {
+          margin: 0;
+          font-size: 16px;
+          font-weight: 500;
+        }
+        
+        button {
+          color: var(--light);
+          font-size: 12px;
+          padding: 0 8px;
+        }
+        
+        .avatar-circle {
           &.large {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: #ff4081;
-            color: white;
+            width: var(--avatar-size-large);
+            height: var(--avatar-size-large);
+            background-color: rgba(255, 255, 255, 0.9);
+            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 500;
-            font-size: 1.25rem;
+            font-weight: 600;
+            border-radius: 50%;
+            margin-right: 12px;
+            font-size: 20px;
+            margin-right: 16px;
           }
         }
-
-        .user-details {
+        
+        .user-info {
           h3 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 500;
+            margin: 0 0 4px;
+            font-size: 16px;
+            font-weight: 600;
           }
-
+          
           p {
-            margin: 0.25rem 0 0;
-            font-size: 0.875rem;
+            margin: 0;
+            font-size: 12px;
             opacity: 0.8;
           }
         }
       }
-    }
-
-    .mat-mdc-menu-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      height: 48px;
-      font-size: 0.875rem;
-
-      mat-icon {
-        margin: 0;
-        color: rgba(0, 0, 0, 0.54);
+      
+      .mat-mdc-menu-item {
+        padding: 0 16px;
+        height: 48px;
+        color: var(--light);
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .mat-icon {
+          color: rgba(255, 255, 255, 0.7);
+        }
+        
+        &.logout-btn {
+          .mat-icon {
+            color: var(--error);
+          }
+        }
       }
-
-      &.logout-btn {
-        color: #f44336;
-
+      
+      /* Estilos para los items de notificaciones */
+      .notification-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all var(--transition-speed) ease;
+        cursor: pointer;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .notification-icon {
+          margin-right: 12px;
+          color: var(--primary);
+        }
+        
+        .notification-content {
+          flex: 1;
+          
+          .notification-text {
+            margin: 0 0 4px;
+            font-size: 14px;
+            color: var(--light);
+          }
+          
+          .notification-time {
+            margin: 0;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+          }
+        }
+      }
+      
+      /* Estilo para cuando no hay notificaciones */
+      .empty-notifications {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+        color: rgba(255, 255, 255, 0.6);
+        
         mat-icon {
-          color: #f44336;
+          font-size: 32px;
+          height: 32px;
+          width: 32px;
+          margin-bottom: 8px;
+        }
+        
+        p {
+          margin: 0;
+          font-size: 14px;
         }
       }
     }
   }
 }
 
-.user-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 8px;
-
-  .user-name {
-    margin-right: 8px;
-  }
-}
-
-.mat-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  mat-icon {
-    margin-right: 8px;
-  }
-}
-
-/* Responsive */
+/* Estilos responsivos */
 @media (max-width: 768px) {
   .navbar {
-    .menu-toggle {
-      display: block;
-    }
-
-    .navbar-menu {
-      display: none;
-      position: absolute;
-      top: 60px;
-      left: 0;
-      width: 100%;
-      background: white;
-      border-bottom: 1px solid #ddd;
-      padding: 1rem;
-
-      .navbar-list {
-        flex-direction: column;
-        text-align: center;
-      }
-    }
+    padding: 0 16px;
+  }
+  
+  .navbar-brand .brand-logo span {
+    font-size: 1.2rem;
+  }
+  
+  .navbar-end .notification-btn {
+    margin-right: 4px;
+  }
+  
+  .navbar-end .user-button .user-name {
+    display: none;
   }
 }

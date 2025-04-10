@@ -32,8 +32,8 @@
           <mat-form-field class="form-field">
             <mat-label>Cuenta de Origen</mat-label>
             <mat-select formControlName="cuentaOrigen">
-              @for (cuenta of cuentasOrigen; track cuenta.id) {
-                <mat-option [value]="cuenta.id">{{ cuenta.numero }} - {{ cuenta.tipo }}</mat-option>
+              @for (cuenta of cuentasOrigen; track $index) {
+                <mat-option [value]="cuenta._id || cuenta.id">{{ cuenta.numero || cuenta.numero_cuenta }} - {{ cuenta.tipo }}</mat-option>
               }
             </mat-select>
             @if (transaccionForm.get('cuentaOrigen')?.errors && transaccionForm.get('cuentaOrigen')?.touched) {
@@ -49,8 +49,8 @@
           <mat-form-field class="form-field">
             <mat-label>Cuenta de Destino</mat-label>
             <mat-select formControlName="cuentaDestino">
-              @for (cuenta of cuentasDestino; track cuenta.id) {
-                <mat-option [value]="cuenta.id">{{ cuenta.numero }} - {{ cuenta.tipo }}</mat-option>
+              @for (cuenta of cuentasDestino; track $index) {
+                <mat-option [value]="cuenta._id || cuenta.id">{{ cuenta.numero || cuenta.numero_cuenta }} - {{ cuenta.tipo }}</mat-option>
               }
             </mat-select>
             @if (transaccionForm.get('cuentaDestino')?.errors && transaccionForm.get('cuentaDestino')?.touched) {

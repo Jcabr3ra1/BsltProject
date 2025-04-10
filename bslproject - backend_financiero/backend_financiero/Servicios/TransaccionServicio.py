@@ -151,29 +151,28 @@ class TransaccionServicio:
             if tipo_movimiento:
                 transaccion_enriquecida["tipo_movimiento"] = tipo_movimiento
 
+        # Añadir información del usuario que realizó la transacción
+        if "id_usuario" in transaccion and transaccion["id_usuario"]:
+            try:
+                # Aquí deberías hacer una llamada al servicio de seguridad
+                # Por ahora solo incluimos el ID
+                transaccion_enriquecida["usuario"] = {
+                    "id": transaccion["id_usuario"]
+                }
+            except Exception as e:
+                print(f"Error al obtener datos de usuario: {e}")
+
         # Añadir información de cuenta origen y su usuario
         if "id_cuenta_origen" in transaccion and transaccion["id_cuenta_origen"]:
             cuenta_origen = self.repositorioCuenta.findById(transaccion["id_cuenta_origen"])
             if cuenta_origen:
                 transaccion_enriquecida["cuenta_origen"] = cuenta_origen
 
-                # Agregar información del usuario de la cuenta origen
-                if "usuario_id" in cuenta_origen and cuenta_origen["usuario_id"]:
-                    usuario_origen = self.repositorioUsuario.obtener_por_id(cuenta_origen["usuario_id"])
-                    if usuario_origen:
-                        transaccion_enriquecida["usuario_origen"] = usuario_origen
-
-        # Añadir información de cuenta destino y su usuario
+        # Añadir información de cuenta destino
         if "id_cuenta_destino" in transaccion and transaccion["id_cuenta_destino"]:
             cuenta_destino = self.repositorioCuenta.findById(transaccion["id_cuenta_destino"])
             if cuenta_destino:
                 transaccion_enriquecida["cuenta_destino"] = cuenta_destino
-
-                # Agregar información del usuario de la cuenta destino
-                if "usuario_id" in cuenta_destino and cuenta_destino["usuario_id"]:
-                    usuario_destino = self.repositorioUsuario.obtener_por_id(cuenta_destino["usuario_id"])
-                    if usuario_destino:
-                        transaccion_enriquecida["usuario_destino"] = usuario_destino
 
         # Añadir información de bolsillo origen
         if "id_bolsillo_origen" in transaccion and transaccion["id_bolsillo_origen"]:
@@ -240,6 +239,13 @@ class TransaccionServicio:
         if cuenta_origen_data["saldo"] < monto:
             return {"error": "Saldo insuficiente en la cuenta origen"}, 400
 
+        # Obtener el ID del usuario de la cuenta origen si no está en la transacción
+        if "id_usuario" not in infoTransaccion:
+            if "usuario_id" in cuenta_origen_data and cuenta_origen_data["usuario_id"]:
+                infoTransaccion["id_usuario"] = cuenta_origen_data["usuario_id"]
+            elif "userId" in cuenta_origen_data and cuenta_origen_data["userId"]:
+                infoTransaccion["id_usuario"] = cuenta_origen_data["userId"]
+
         cuenta_origen = Cuenta(cuenta_origen_data)
         cuenta_destino = Cuenta(cuenta_destino_data)
 
@@ -265,6 +271,13 @@ class TransaccionServicio:
 
         if not cuenta_origen or not bolsillo_destino:
             return {"error": "Cuenta origen o bolsillo destino no encontrado"}, 404
+
+        # Obtener el ID del usuario de la cuenta origen si no está en la transacción
+        if "id_usuario" not in infoTransaccion:
+            if "usuario_id" in cuenta_origen_data and cuenta_origen_data["usuario_id"]:
+                infoTransaccion["id_usuario"] = cuenta_origen_data["usuario_id"]
+            elif "userId" in cuenta_origen_data and cuenta_origen_data["userId"]:
+                infoTransaccion["id_usuario"] = cuenta_origen_data["userId"]
 
         # ✅ Corrección: Usar atributos del objeto en lugar de índices de diccionario
         if cuenta_origen.saldo < monto:
@@ -317,6 +330,13 @@ class TransaccionServicio:
         if not cuenta_destino_data:
             return {"error": "Cuenta destino no encontrada"}, 404
 
+        # Obtener el ID del usuario de la cuenta destino si no viene en la transacción
+        if "id_usuario" not in infoTransaccion:
+            if "usuario_id" in cuenta_destino_data and cuenta_destino_data["usuario_id"]:
+                infoTransaccion["id_usuario"] = cuenta_destino_data["usuario_id"]
+            elif "userId" in cuenta_destino_data and cuenta_destino_data["userId"]:
+                infoTransaccion["id_usuario"] = cuenta_destino_data["userId"]
+
         cuenta_destino = Cuenta(cuenta_destino_data)
         cuenta_destino.saldo += monto
 
@@ -335,6 +355,16 @@ class TransaccionServicio:
         bolsillo_destino_data = self.repositorioBolsillo.findById(infoTransaccion["id_bolsillo_destino"])
         if not bolsillo_destino_data:
             return {"error": "Bolsillo destino no encontrado"}, 404
+
+        # Obtener el ID del usuario si es posible
+        if "id_usuario" not in infoTransaccion:
+            # Intentar obtener el usuario del bolsillo
+            if "id_cuenta" in bolsillo_destino_data:
+                cuenta_data = self.repositorioCuenta.findById(bolsillo_destino_data["id_cuenta"])
+                if cuenta_data and "usuario_id" in cuenta_data:
+                    infoTransaccion["id_usuario"] = cuenta_data["usuario_id"]
+                elif cuenta_data and "userId" in cuenta_data:
+                    infoTransaccion["id_usuario"] = cuenta_data["userId"]
 
         # Convertir el diccionario en un objeto Bolsillo
         bolsillo_destino = Bolsillo(bolsillo_destino_data)
@@ -382,6 +412,13 @@ class TransaccionServicio:
 
         if not bolsillo_origen_data or not cuenta_destino_data:
             return {"error": "Bolsillo origen o cuenta destino no encontrada"}, 404
+
+        # Obtener el ID del usuario de la cuenta destino si no viene en la transacción
+        if "id_usuario" not in infoTransaccion:
+            if "usuario_id" in cuenta_destino_data and cuenta_destino_data["usuario_id"]:
+                infoTransaccion["id_usuario"] = cuenta_destino_data["usuario_id"]
+            elif "userId" in cuenta_destino_data and cuenta_destino_data["userId"]:
+                infoTransaccion["id_usuario"] = cuenta_destino_data["userId"]
 
         bolsillo_origen = Bolsillo(bolsillo_origen_data)
         cuenta_destino = Cuenta(cuenta_destino_data)

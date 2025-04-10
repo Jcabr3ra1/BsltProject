@@ -1,139 +1,257 @@
+// Variables CSS para colores y temas
+:host {
+  --primary-rgb: 138, 43, 226;
+  --primary-dark-rgb: 93, 28, 158;
+  --primary-light-rgb: 178, 75, 243;
+  --primary: rgb(var(--primary-rgb));
+  --primary-dark: rgb(var(--primary-dark-rgb));
+  --primary-light: rgb(var(--primary-light-rgb));
+}
+
 .transacciones-container {
-  padding: 20px;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
   
-  .header {
+  .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(var(--primary-dark-rgb), 0.2);
     
-    h2 {
-      font-size: 24px;
-      font-weight: 500;
-      margin: 0;
-      color: #212121;
+    .header-content {
+      .page-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: var(--primary-dark);
+        letter-spacing: -0.5px;
+      }
+      
+      .page-subtitle {
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.6);
+        margin: 0;
+      }
     }
     
     .actions {
-      .new-transaction-btn {
-        background-color: #d32f2f;
+      .nueva-transaccion-btn {
+        background-color: var(--primary-dark);
         color: white;
         font-weight: 500;
-        padding: 0 16px;
+        padding: 0 20px;
         height: 48px;
         border-radius: 24px;
-        box-shadow: 0 4px 8px rgba(211, 47, 47, 0.3);
+        box-shadow: 0 4px 12px rgba(93, 28, 158, 0.3);
+        transition: all 0.3s ease;
         
         &:hover {
-          background-color: #b71c1c;
-          box-shadow: 0 6px 10px rgba(211, 47, 47, 0.4);
+          background-color: var(--primary);
+          box-shadow: 0 6px 14px rgba(93, 28, 158, 0.4);
+          transform: translateY(-2px);
         }
         
-        mat-icon {
-          margin-left: 8px;
+        span {
+          margin-right: 8px;
         }
       }
     }
   }
   
-  .dashboard {
+  // Acciones rápidas
+  .quick-actions {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+    
+    .action-card {
+      background-color: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+        border-color: var(--primary-light);
+        
+        .action-icon {
+          background-color: var(--primary);
+          
+          mat-icon {
+            color: white;
+          }
+        }
+      }
+      
+      .action-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background-color: rgba(var(--primary-rgb), 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        transition: all 0.3s ease;
+        
+        mat-icon {
+          font-size: 32px;
+          height: 32px;
+          width: 32px;
+          color: var(--primary);
+          transition: all 0.3s ease;
+        }
+      }
+      
+      .action-text {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        margin-top: 8px;
+      }
+    }
+  }
+  
+  .dashboard-cards {
+    margin-bottom: 32px;
+    
+    .card-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      
+      &.status-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+    }
     
     .stat-card {
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      flex: 1;
+      min-width: 250px;
+      border-radius: 16px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: all 0.3s ease;
       
-      &:first-child {
-        background-color: #212121;
-        border-left: none;
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+      }
+      
+      &.primary-card {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+        color: white;
+      }
+      
+      &.secondary-card {
+        background: linear-gradient(135deg, #424242 0%, #616161 100%);
+        color: white;
+      }
+      
+      &.aprobada {
+        background-color: #f1f8e9;
+        border-left: 5px solid #4caf50;
         
-        .mat-mdc-card-content {
-          .stat-value, .stat-label {
-            color: white;
-          }
+        .card-icon {
+          background-color: rgba(76, 175, 80, 0.15);
+          color: #2e7d32;
+        }
+        
+        .stat-value {
+          color: #2e7d32;
+        }
+        
+        .stat-label {
+          color: rgba(46, 125, 50, 0.8);
         }
       }
       
-      &:nth-child(2) {
-        background-color: #424242;
-        border-left: none;
-        
-        .mat-mdc-card-content {
-          .stat-value, .stat-label {
-            color: white;
-          }
-        }
-      }
-      
-      &.approved {
-        background-color: #e8f5e9;
-        border-left: 4px solid #2e7d32;
-        
-        .mat-mdc-card-content {
-          .stat-value {
-            color: #2e7d32;
-          }
-          
-          .stat-label {
-            color: #2e7d32;
-            opacity: 0.8;
-          }
-        }
-      }
-      
-      &.pending {
+      &.pendiente {
         background-color: #fff8e1;
-        border-left: 4px solid #ef6c00;
+        border-left: 5px solid #ff9800;
         
-        .mat-mdc-card-content {
-          .stat-value {
-            color: #ef6c00;
-          }
-          
-          .stat-label {
-            color: #ef6c00;
-            opacity: 0.8;
-          }
+        .card-icon {
+          background-color: rgba(255, 152, 0, 0.15);
+          color: #ef6c00;
+        }
+        
+        .stat-value {
+          color: #ef6c00;
+        }
+        
+        .stat-label {
+          color: rgba(239, 108, 0, 0.8);
         }
       }
       
-      &.rejected {
+      &.rechazada {
         background-color: #ffebee;
-        border-left: 4px solid #d32f2f;
+        border-left: 5px solid #f44336;
         
-        .mat-mdc-card-content {
-          .stat-value {
-            color: #d32f2f;
-          }
-          
-          .stat-label {
-            color: #d32f2f;
-            opacity: 0.8;
-          }
+        .card-icon {
+          background-color: rgba(244, 67, 54, 0.15);
+          color: #d32f2f;
+        }
+        
+        .stat-value {
+          color: #d32f2f;
+        }
+        
+        .stat-label {
+          color: rgba(211, 47, 47, 0.8);
         }
       }
       
       .mat-mdc-card-content {
-        padding: 16px;
+        padding: 20px;
         display: flex;
-        flex-direction: column;
         align-items: center;
+        gap: 16px;
+        
+        .card-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          background-color: rgba(255, 255, 255, 0.2);
+          
+          mat-icon {
+            font-size: 28px;
+            height: 28px;
+            width: 28px;
+          }
+        }
+        
+        .card-info {
+          flex: 1;
+        }
         
         .stat-value {
-          font-size: 28px;
+          font-size: 32px;
           font-weight: 700;
-          margin-bottom: 8px;
-          color: #212121;
+          margin-bottom: 4px;
+          line-height: 1.2;
         }
         
         .stat-label {
           font-size: 14px;
           font-weight: 500;
-          color: #616161;
-          text-align: center;
         }
       }
     }

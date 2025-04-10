@@ -19,7 +19,7 @@ except Exception as e:
 
 # Obtener valores del archivo de configuración
 HOST = configuracion.get("servidor", {}).get("host", "127.0.0.1")
-PUERTO = configuracion.get("servidor", {}).get("puerto", 7778)
+PUERTO = configuracion.get("servidor", {}).get("puerto", 7777)
 
 URL_SEGURIDAD = configuracion.get("servicios", {}).get("seguridad", "http://localhost:8080")
 URL_FINANZAS = configuracion.get("servicios", {}).get("finanzas", "http://localhost:9999")

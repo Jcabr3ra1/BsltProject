@@ -1,76 +1,72 @@
 <div class="mat-elevation-z2">
-  <table mat-table [dataSource]="dataSource" matSort>
-    <!-- Fecha Column -->
+  <table mat-table [dataSource]="fuenteDatos" matSort>
+    <!-- Columna Fecha -->
     <ng-container matColumnDef="fecha">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
-      <td mat-cell *matCellDef="let transaction">
-        {{ transaction.createdAt | date:'dd/MM/yyyy HH:mm' }}
+      <td mat-cell *matCellDef="let transaccion">
+        {{ (transaccion.fecha || transaccion.createdAt || transaccion.fecha_creacion) | date:'dd/MM/yyyy HH:mm' }}
       </td>
     </ng-container>
 
-    <!-- Tipo Column -->
+    <!-- Columna Tipo -->
     <ng-container matColumnDef="tipo">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
-      <td mat-cell *matCellDef="let transaction">{{ getNombreTipo(transaction.tipo) }}</td>
+      <td mat-cell *matCellDef="let transaccion">{{ getNombreTipo(transaccion.tipo || '') }}</td>
     </ng-container>
 
-    <!-- Monto Column -->
+    <!-- Columna Monto -->
     <ng-container matColumnDef="monto">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Monto</th>
-      <td mat-cell *matCellDef="let transaction">{{ formatMonto(transaction.monto) }}</td>
+      <td mat-cell *matCellDef="let transaccion">{{ formatearMonto(transaccion.monto) }}</td>
     </ng-container>
 
-    <!-- Estado Column -->
+    <!-- Columna Estado -->
     <ng-container matColumnDef="estado">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-      <td mat-cell *matCellDef="let transaction">
-        <span [class]="getEstadoClass(transaction.estado)">
-          {{ getNombreEstado(transaction.estado) }}
+      <td mat-cell *matCellDef="let transaccion">
+        <span [class]="getClaseEstado(transaccion.estado || '')">
+          {{ getNombreEstado(transaccion.estado || '') }}
         </span>
       </td>
     </ng-container>
 
-    <!-- Acciones Column -->
+    <!-- Columna Acciones -->
     <ng-container matColumnDef="acciones">
       <th mat-header-cell *matHeaderCellDef>Acciones</th>
-      <td mat-cell *matCellDef="let transaction">
+      <td mat-cell *matCellDef="let transaccion">
         <button mat-icon-button color="primary" 
-                (click)="onViewTransaction(transaction); $event.stopPropagation()"
+                (click)="verTransaccion(transaccion); $event.stopPropagation()"
                 matTooltip="Ver detalles"
-                class="action-button">
+                class="boton-accion">
           <mat-icon>visibility</mat-icon>
         </button>
       </td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-        [class]="getEstadoClass(row.estado)"
-        (click)="onViewTransaction(row)"></tr>
+    <tr mat-header-row *matHeaderRowDef="columnasVisibles"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnasVisibles;"
+        [class]="getClaseEstado(row.estado || '')"
+        (click)="verTransaccion(row)"></tr>
 
-    <!-- Empty State Message -->
-    @if (dataSource.data.length === 0) {
-      <tr class="mat-row">
-        <td class="mat-cell empty-state" [attr.colspan]="displayedColumns.length">
-          <div class="empty-state-container">
-            <mat-icon class="empty-icon">account_balance_wallet</mat-icon>
-            <p>No hay transacciones disponibles</p>
-            <button mat-raised-button color="primary" (click)="onCreateTransaction()">
-              <mat-icon>add</mat-icon>
-              Nueva Transacción
-            </button>
-          </div>
-        </td>
-      </tr>
-    }
-
+    <!-- Mensaje de estado vacío -->
+    <tr *ngIf="fuenteDatos.data.length === 0">
+      <td [attr.colspan]="columnasVisibles.length" class="mensaje-vacio">
+        <div class="contenedor-estado-vacio">
+          <mat-icon class="icono-vacio">account_balance_wallet</mat-icon>
+          <p>No hay transacciones disponibles</p>
+          <button mat-raised-button color="primary" (click)="nuevaTransaccion()">
+            <mat-icon>add</mat-icon>
+            Nueva Transacción
+          </button>
+        </div>
+      </td>
+    </tr>
   </table>
-
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
 </div>
 
-<div class="fab-container">
-  <button mat-fab color="primary" (click)="onCreateTransaction()" matTooltip="Nueva Transacción">
+<div class="contenedor-fab">
+  <button mat-fab color="primary" (click)="nuevaTransaccion()" matTooltip="Nueva Transacción">
     <mat-icon>add</mat-icon>
   </button>
 </div>

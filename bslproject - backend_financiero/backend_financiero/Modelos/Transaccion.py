@@ -10,6 +10,9 @@ class Transaccion(AbstractModelo):
         self.monto = data.get("monto", 0.0)
         self.estado = data.get("estado", "PENDIENTE")  # Añadir campo de estado
 
+        # Añadir campo para el usuario que realiza la transacción
+        self.id_usuario = data.get("id_usuario", None)
+
         # Relaciones con otras tablas (IDs)
         self.id_tipo_movimiento = data.get("id_tipo_movimiento", None)
         self.id_tipo_transaccion = data.get("id_tipo_transaccion", None)

@@ -1,19 +1,39 @@
+/* Variables para el sidebar */
+:root {
+  --sidebar-width: 200px;
+  --sidebar-collapsed-width: 80px;
+  --transition-speed: 0.3s;
+}
+
 /* Estilos del contenedor principal estilo moderno */
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: var(--light-dark);
+  position: relative;
+  overflow-x: hidden;
+  width: 100%;
 }
 
-/* Variables de colores */
-$primary-color: #f44336;
-$primary-dark: #d32f2f;
-$dark-bg: #0f0f0f;
-$light-text: #ffffff;
+/* Estilos para el contenedor de páginas públicas */
+.public-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--dark);
+}
+
+/* Variables de colores - Usando la paleta morada definida en styles.scss */
+$primary-color: var(--primary);
+$primary-dark: var(--primary-dark);
+$primary-light: var(--primary-light);
+$dark-bg: var(--dark);
+$light-text: var(--light);
 $hover-bg: rgba(255, 255, 255, 0.1);
-$shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-$transition: all 0.2s ease;
+$shadow: var(--shadow-md);
+$transition: var(--transition-normal);
 
 /* Estilos para la barra de navegación superior estilo YouTube */
 .modern-navbar {
@@ -241,32 +261,41 @@ $transition: all 0.2s ease;
 
 /* Estilos para el contenedor de sidenav */
 .sidenav-container {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - var(--navbar-height));
+  background-color: var(--light-dark);
+  transition: all var(--transition-speed) ease;
+  
+  &.sidebar-collapsed {
+    .sidebar-wrapper {
+      width: var(--sidebar-collapsed-width);
+    }
+  }
+}
+
+.sidebar-wrapper {
+  width: var(--sidebar-width);
+  background-color: var(--dark);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  transition: width var(--transition-speed) ease;
+}
+
+.content-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  
-  .github-sidenav {
-    width: 240px;
-    background-color: $dark-bg;
-    box-shadow: none;
-  }
-  
-  mat-sidenav-content {
-    background-color: #f9f9f9;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+  overflow: auto;
 }
 
 /* Estilos para el contenido principal */
 .main-content {
   padding: 24px;
   flex: 1;
-  overflow-y: auto;
-  background-color: #f9f9f9; /* Fondo gris muy claro */
-  color: rgba(0, 0, 0, 0.87); /* Color de texto oscuro para mejor contraste */
+  min-height: calc(100vh - var(--navbar-height) - var(--footer-height));
+  overflow: auto;
+  background-color: var(--light-dark); /* Usando variable global */
+  color: var(--dark); /* Usando variable global */
   box-shadow: none; /* Eliminamos sombras que puedan causar problemas visuales */
 }
 
@@ -277,7 +306,11 @@ $transition: all 0.2s ease;
   }
   
   .main-content {
-    padding: 16px;
+    padding: var(--spacing-md);
+  }
+  
+  .sidenav-container {
+    height: calc(100vh - var(--navbar-height));
   }
 }
 

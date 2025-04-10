@@ -1,93 +1,28 @@
-<!-- Main container with GitHub-inspired layout -->
+<!-- Main container with modern layout -->
 <div class="app-container">
   <!-- Main content -->
   @if ((isAuthenticated$ | async) && !isPublicPage()) {
-    <!-- Navbar - YouTube-inspired -->
-    <mat-toolbar class="modern-navbar">
-      <div class="navbar-left">
-        <button mat-icon-button (click)="toggleSidenav()" class="menu-button">
-          <mat-icon>menu</mat-icon>
-        </button>
-        <div class="navbar-logo">
-          <mat-icon>account_balance</mat-icon>
-          <span class="app-title">BSLT</span>
-        </div>
-      </div>
-      
-      <div class="navbar-spacer"></div>
-      
-      <div class="navbar-right">
-        <!-- Notifications Menu -->
-        <button mat-icon-button class="icon-button" [matMenuTriggerFor]="notificationsMenu">
-          <mat-icon [matBadge]="'3'" 
-                    matBadgeColor="warn" 
-                    aria-hidden="false" 
-                    [attr.aria-label]="'Tienes 3 notificaciones'">
-            notifications
-          </mat-icon>
-        </button>
-        
-        <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
-          <div class="notification-header">
-            <h3>Notificaciones</h3>
-            <button mat-button>Marcar todas como leídas</button>
-          </div>
-          <mat-divider></mat-divider>
-          @for (notification of notifications; track notification.text) {
-            <div class="notification-item">
-              <mat-icon class="notification-icon">{{notification.icon}}</mat-icon>
-              <div class="notification-content">
-                <p class="notification-text">{{notification.text}}</p>
-                <p class="notification-time">{{notification.time}}</p>
-              </div>
-            </div>
-            <mat-divider></mat-divider>
-          }
-        </mat-menu>
-        
-        <!-- User Menu -->
-        <button mat-icon-button class="icon-button" [matMenuTriggerFor]="userMenu">
-          <mat-icon>account_circle</mat-icon>
-        </button>
-        
-        <mat-menu #userMenu="matMenu" class="user-menu">
-          <div class="user-menu-header">
-            <div class="user-avatar-large">
-              <mat-icon>account_circle</mat-icon>
-            </div>
-            <div class="user-info">
-              <h3>{{ getUserFullName() }}</h3>
-              <p>{{ getUserEmail() }}</p>
-            </div>
-          </div>
-          <mat-divider></mat-divider>
-          @for (item of userMenuItems; track item.text) {
-            <button mat-menu-item (click)="item.action()">
-              <mat-icon>{{item.icon}}</mat-icon>
-              <span>{{item.text}}</span>
-            </button>
-          }
-        </mat-menu>
-      </div>
-    </mat-toolbar>
-
+    <!-- Layout para páginas autenticadas (dashboard, etc) -->
+    <!-- Navbar con diseño moderno -->
+    <app-navbar></app-navbar>
+    
     <!-- Main container with sidebar and content -->
-    <mat-sidenav-container class="sidenav-container">
-      <mat-sidenav [opened]="sidenavOpened" mode="side" class="github-sidenav">
+    <div class="sidenav-container" [class.sidebar-collapsed]="isSidebarCollapsed">
+      <div class="sidebar-wrapper">
         <app-sidebar></app-sidebar>
-      </mat-sidenav>
+      </div>
       
-      <mat-sidenav-content>
+      <div class="content-wrapper">
         <div class="main-content">
           <router-outlet></router-outlet>
         </div>
         <app-footer></app-footer>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
+      </div>
+    </div>
   } @else {
-    <router-outlet></router-outlet>
-    @if (!isPublicPage()) {
-      <app-footer></app-footer>
-    }
+    <!-- Layout para páginas públicas (landing, login, etc) -->
+    <div class="public-page-container">
+      <router-outlet></router-outlet>
+    </div>
   }
 </div>

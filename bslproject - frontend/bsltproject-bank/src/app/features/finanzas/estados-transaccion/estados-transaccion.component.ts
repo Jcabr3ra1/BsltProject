@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { EstadoTransaccion } from '@core/models/finanzas/estado-transaccion.model';
 import { EstadoTransaccionService } from '@core/services/finanzas/estado-transaccion.service';
-import { EstadoTransaccion } from '@core/models/finanzas/transaccion.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';

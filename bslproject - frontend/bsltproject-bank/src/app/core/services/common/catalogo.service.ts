@@ -7,7 +7,7 @@ import { TipoTransaccionService } from '../finanzas/tipo-transaccion.service';
 import { RolService } from '../seguridad/rol.service';
 import { EstadoService } from '../seguridad/estado.service';
 
-import { EstadoTransaccion } from '@core/models/finanzas/transaccion.model';
+import { EstadoTransaccion } from '@core/models/finanzas/estado-transaccion.model';
 import { TipoTransaccion as TipoTransaccionEnum } from '@core/models/finanzas/transaccion.model';
 import { Rol } from '@core/models/seguridad/rol.model';
 import { Estado } from '@core/models/seguridad/estado.model';

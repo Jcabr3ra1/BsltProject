@@ -74,7 +74,7 @@
         }
 
         <!-- Submit Button -->
-        <button mat-raised-button color="primary" type="submit" [disabled]="isLoading || registerForm.invalid" class="submit-button">
+        <button mat-raised-button type="submit" [disabled]="isLoading || registerForm.invalid" class="submit-button">
           @if (!isLoading) {
             <ng-container>
               <mat-icon>person_add</mat-icon>
