@@ -63,6 +63,9 @@ export abstract class BaseApiService<T> {
     if (token) {
       const formattedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
       headers = headers.set('Authorization', formattedToken);
+      console.log(`Headers configurados con token: ${formattedToken.substring(0, 15)}...`);
+    } else {
+      console.warn('No se encontró token de autenticación para los headers');
     }
     
     return headers;
@@ -216,22 +219,53 @@ export abstract class BaseApiService<T> {
   }
 
   /**
-   * Maneja errores HTTP y los transforma en mensajes amigables
+   * Maneja errores HTTP de manera genérica
    * @param error Error HTTP recibido
-   * @returns Observable que emite un error
+   * @returns Observable con error para ser capturado por el suscriptor
    */
   protected handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Ha ocurrido un error desconocido';
+    let errorMessage = 'Error desconocido';
     
     if (error.error instanceof ErrorEvent) {
       // Error del lado del cliente
-      errorMessage = `Error de red: ${error.error.message}`;
+      errorMessage = `Error de cliente: ${error.error.message}`;
+      console.error('Error de cliente:', error.error);
     } else {
       // Error del lado del servidor
-      errorMessage = this.getServerErrorMessage(error);
+      console.error(`Error de servidor (${error.status}):`, error);
+      
+      // Manejar códigos de error específicos
+      if (error.status === 401) {
+        errorMessage = 'No autorizado. Por favor, inicie sesión nuevamente.';
+        // Si tenemos servicio de autenticación, intentar cerrar sesión
+        if (this.authService) {
+          console.warn('Cerrando sesión debido a error 401');
+          this.authService.logout().subscribe();
+        }
+      } else if (error.status === 403) {
+        errorMessage = 'Acceso prohibido. No tiene permisos para realizar esta acción.';
+      } else if (error.status === 404) {
+        errorMessage = 'Recurso no encontrado.';
+      } else if (error.status === 500) {
+        errorMessage = 'Error interno del servidor. Intente nuevamente más tarde.';
+      } else {
+        errorMessage = `Error (${error.status}): ${error.message}`;
+      }
+      
+      // Intentar extraer mensaje de error del backend si existe
+      if (error.error) {
+        console.log('Contenido del error:', error.error);
+        if (typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (error.error.message) {
+          errorMessage = error.error.message;
+        } else if (error.error.error) {
+          errorMessage = error.error.error;
+        }
+      }
     }
     
-    console.error('Error en API:', error, errorMessage);
+    console.error('Error en petición API:', errorMessage);
     return throwError(() => new Error(errorMessage));
   }
 

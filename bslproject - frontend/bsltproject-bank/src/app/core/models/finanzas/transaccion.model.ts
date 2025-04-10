@@ -8,20 +8,20 @@ import { Bolsillo } from './bolsillo.model';
 import { TipoMovimiento } from './tipo-movimiento.model';
 
 /**
- * Estados posibles para una transacción (enum)
+ * Estados posibles para una transacción
  */
-export enum EstadoTransaccionEnum {
+export enum EstadoTransaccion {
   PENDIENTE = 'PENDIENTE',
   COMPLETADA = 'COMPLETADA',
-  ANULADA = 'ANULADA',
+  CANCELADA = 'CANCELADA',
   RECHAZADA = 'RECHAZADA',
   APROBADA = 'APROBADA'
 }
 
 /**
- * Interfaz para estados de transacción
+ * Interfaz para entidad de estado de transacción
  */
-export interface EstadoTransaccion {
+export interface EstadoTransaccionEntidad {
   id: string;
   nombre: string;
   descripcion: string;
@@ -61,7 +61,7 @@ export interface Transaccion {
   // Datos básicos
   monto: number;
   descripcion: string;
-  estado: EstadoTransaccion | string;
+  estado: string; // Usar valores de enum EstadoTransaccion
   
   // Fechas (con diferentes formatos para compatibilidad)
   fecha: Date | string;
@@ -80,6 +80,7 @@ export interface Transaccion {
   bolsilloOrigenId?: string;
   bolsilloDestinoId?: string;
   usuarioId?: string;
+  userId?: string; // Añadido para compatibilidad con formatos de MongoDB
   
   // IDs de relaciones (formato snake_case para compatibilidad con backend)
   id_tipo_transaccion?: string;
@@ -106,6 +107,9 @@ export interface Transaccion {
   cuenta_destino?: Cuenta | null;
   bolsillo_origen?: Bolsillo | null;
   bolsillo_destino?: Bolsillo | null;
+  
+  // Propiedades adicionales para manejar cualquier formato de datos inesperado
+  [key: string]: any;
 }
 
 /**
@@ -126,9 +130,9 @@ export interface TransaccionRequest {
 /**
  * Interfaz para filtros de búsqueda de transacciones
  */
-export interface TransaccionFiltros {
+export interface FiltrosTransaccion {
   tipo?: string | null;
-  estado?: EstadoTransaccion | string | null;
+  estado?: string | null;
   fechaInicio?: Date | string | null;
   fechaFin?: Date | string | null;
   montoMinimo?: number | null;
@@ -138,46 +142,6 @@ export interface TransaccionFiltros {
   bolsilloId?: string | null;
 }
 
-// Alias en inglés para compatibilidad con componentes existentes
-export type Transaction = Transaccion;
-export type TransactionRequest = TransaccionRequest;
+// Ya no necesitamos estos alias, usaremos los nombres en español directamente
 
-/**
- * Alias en inglés para TransaccionFiltros con propiedades mapeadas
- * para mantener compatibilidad con componentes existentes
- */
-export interface TransactionFilters extends Omit<TransaccionFiltros, 'tipo' | 'estado' | 'fechaInicio' | 'fechaFin'> {
-  // Propiedades en inglés
-  type?: string | null;
-  status?: EstadoTransaccion | string | null;
-  startDate?: Date | string | null;
-  endDate?: Date | string | null;
-  
-  // Propiedades en español para compatibilidad con componentes existentes
-  tipo?: string | null;
-  estado?: EstadoTransaccion | string | null;
-  fechaInicio?: Date | string | null;
-  fechaFin?: Date | string | null;
-  
-  // Las demás propiedades se heredan directamente
-}
-
-export enum TransactionStatus {
-  PENDING = EstadoTransaccionEnum.PENDIENTE,
-  COMPLETED = EstadoTransaccionEnum.COMPLETADA,
-  CANCELLED = EstadoTransaccionEnum.ANULADA,
-  REJECTED = EstadoTransaccionEnum.RECHAZADA,
-  APPROVED = EstadoTransaccionEnum.APROBADA
-}
-
-export enum TransactionType {
-  INGRESO = TipoMovimientoEnum.INGRESO,
-  EGRESO = TipoMovimientoEnum.EGRESO,
-  TRANSFERENCIA = TipoMovimientoEnum.TRANSFERENCIA,
-  CUENTA_CUENTA = TipoTransaccion.CUENTA_CUENTA,
-  CUENTA_BOLSILLO = TipoTransaccion.CUENTA_BOLSILLO,
-  BOLSILLO_CUENTA = TipoTransaccion.BOLSILLO_CUENTA,
-  BANCO_CUENTA = TipoTransaccion.BANCO_CUENTA,
-  BANCO_BOLSILLO = TipoTransaccion.BANCO_BOLSILLO,
-  CUENTA_BANCO = TipoTransaccion.CUENTA_BANCO
-}
+// Ya no necesitamos estos enum en inglés, usaremos los nombres en español directamente

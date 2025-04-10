@@ -10,14 +10,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TransaccionService } from '@core/services/finanzas/transaccion.service';
-import { Transaction, TransactionType, TipoTransaccion as TipoTransaccionEnum } from '@core/models/finanzas/transaccion.model';
-import { TipoTransaccion as TipoTransaccionEntity, ConfiguracionTipoTransaccion } from '@core/models/finanzas/tipo-transaccion.model';
-import { Account, TipoCuenta } from '@core/models/finanzas/cuenta.model';
+import { CuentaService } from '@core/services/finanzas/cuenta.service';
 import { CatalogoService } from '@core/services/common/catalogo.service';
+import { AuthService } from '@core/services/seguridad/auth.service';
+import { Transaccion, TipoTransaccion, EstadoTransaccion, TransaccionRequest } from '@core/models/finanzas/transaccion.model';
+import { ConfiguracionTipoTransaccion } from '@core/models/finanzas/tipo-transaccion.model';
+import { Cuenta, TipoCuenta } from '@core/models/finanzas/cuenta.model';
+import { catchError, of } from 'rxjs';
 
 interface DialogData {
   tipo?: string; 
-  transaction?: Transaction;
+  transaccion?: Transaccion;
   readonly?: boolean;
 }
 
@@ -42,21 +45,23 @@ export class TransaccionFormComponent implements OnInit {
   transaccionForm: FormGroup;
   loading = false;
   error: string | null = null;
-  cuentasOrigen: Account[] = [];
-  cuentasDestino: Account[] = [];
+  cuentasOrigen: Cuenta[] = [];
+  cuentasDestino: Cuenta[] = [];
   tiposTransaccion: ConfiguracionTipoTransaccion[] = [];
   roles: any[] = [];
   estados: any[] = [];
   tipoTransaccionId: string = '';
 
-  readonly TransactionType = TransactionType;
+  readonly TipoTransaccion = TipoTransaccion;
 
   constructor(
     private fb: FormBuilder,
     private transaccionService: TransaccionService,
+    private cuentaService: CuentaService,
     private catalogoService: CatalogoService,
+    private authService: AuthService,
     private dialogRef: MatDialogRef<TransaccionFormComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: DialogData
+    @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
     this.transaccionForm = this.fb.group({
       tipo: [data.tipo || '', Validators.required],
@@ -70,23 +75,31 @@ export class TransaccionFormComponent implements OnInit {
       this.transaccionForm.disable();
     }
 
-    if (data.transaction) {
-      this.transaccionForm.patchValue(data.transaction);
-      this.tipoTransaccionId = data.transaction.tipo ?? '';
+    if (data.transaccion) {
+      this.transaccionForm.patchValue({
+        tipo: data.transaccion.tipo,
+        cuentaOrigen: data.transaccion.cuentaOrigenId,
+        cuentaDestino: data.transaccion.cuentaDestinoId,
+        monto: data.transaccion.monto,
+        descripcion: data.transaccion.descripcion
+      });
+      this.tipoTransaccionId = data.transaccion.tipo || '';
     } else if (data.tipo) {
       this.tipoTransaccionId = data.tipo;
     }
 
     this.transaccionForm.get('tipo')?.valueChanges.subscribe(tipo => {
-      this.tipoTransaccionId = tipo;
-      this.updateFormValidators();
-      this.loadAccounts();
+      if (tipo) {
+        this.tipoTransaccionId = tipo;
+        this.updateFormValidators();
+        this.loadCuentas();
+      }
     });
   }
 
   ngOnInit(): void {
     this.loadCatalogos();
-    this.loadAccounts();
+    this.loadCuentas();
   }
 
   loadCatalogos(): void {
@@ -97,7 +110,7 @@ export class TransaccionFormComponent implements OnInit {
         const tiposTransaccion = this.catalogoService.getTiposTransaccion();
         
         // Crear objetos ConfiguracionTipoTransaccion a partir de los valores del enum
-        this.tiposTransaccion = Object.values(TipoTransaccionEnum).map(tipoValue => ({
+        this.tiposTransaccion = Object.values(TipoTransaccion).map(tipoValue => ({
           id: tipoValue,
           nombre: tipoValue,
           descripcion: `Transacción de tipo ${tipoValue}`,
@@ -145,46 +158,58 @@ export class TransaccionFormComponent implements OnInit {
     }
   }
 
-  loadAccounts(): void {
+  loadCuentas(): void {
     if (!this.tipoTransaccionId) return;
     
     this.loading = true;
     this.error = null;
     console.log('Iniciando carga de cuentas para tipo de transacción:', this.tipoTransaccionId);
     
-    this.transaccionService.getAccounts().subscribe({
-      next: (accounts: Account[]) => {
-        console.log('Cuentas obtenidas del servicio:', accounts);
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      this.error = 'No se pudo obtener el ID del usuario';
+      this.loading = false;
+      return;
+    }
+    
+    console.log('Obteniendo todas las cuentas');
+    // Usando el operador pipe para mejor manejo de errores y transformaciones
+    this.cuentaService.obtenerTodos().pipe(
+      catchError((error: any) => {
+        console.error('Error al cargar las cuentas:', error);
+        this.error = 'Error al cargar las cuentas. Por favor, intente nuevamente.';
+        this.loading = false;
+        return of([]);
+      })
+    ).subscribe({
+      next: (cuentas: Cuenta[]) => {
+        console.log('Cuentas obtenidas del servicio:', cuentas);
         
-        if (accounts.length === 0) {
+        if (cuentas.length === 0) {
           console.warn('No se encontraron cuentas disponibles');
         }
         
         if (this.needsOrigen()) {
-          this.cuentasOrigen = accounts.filter(account => 
-            this.tipoTransaccionId === TransactionType.CUENTA_BOLSILLO ? 
-            account.tipo === TipoCuenta.BOLSILLO : 
-            this.isCuentaRegular(account.tipo)
-          );
-          console.log('Cuentas de origen filtradas:', this.cuentasOrigen);
+          console.log('Mostrando todas las cuentas para origen');
+          // Mostrar todas las cuentas sin filtrar
+          this.cuentasOrigen = cuentas;
+          console.log('Cuentas de origen disponibles:', this.cuentasOrigen);
           
           if (this.cuentasOrigen.length === 0) {
-            console.warn('No hay cuentas de origen disponibles para el tipo de transacción seleccionado');
+            console.warn('No hay cuentas de origen disponibles');
           }
         } else {
           this.cuentasOrigen = [];
         }
 
         if (this.needsDestino()) {
-          this.cuentasDestino = accounts.filter(account => 
-            this.tipoTransaccionId === TransactionType.CUENTA_BOLSILLO ? 
-            account.tipo === TipoCuenta.BOLSILLO : 
-            this.isCuentaRegular(account.tipo)
-          );
-          console.log('Cuentas de destino filtradas:', this.cuentasDestino);
+          console.log('Mostrando todas las cuentas para destino');
+          // Mostrar todas las cuentas sin filtrar
+          this.cuentasDestino = cuentas;
+          console.log('Cuentas de destino disponibles:', this.cuentasDestino);
           
           if (this.cuentasDestino.length === 0) {
-            console.warn('No hay cuentas de destino disponibles para el tipo de transacción seleccionado');
+            console.warn('No hay cuentas de destino disponibles');
           }
         } else {
           this.cuentasDestino = [];
@@ -203,25 +228,28 @@ export class TransaccionFormComponent implements OnInit {
   }
 
   needsOrigen(): boolean {
-    return this.tipoTransaccionId === TransactionType.CUENTA_CUENTA ||
-           this.tipoTransaccionId === TransactionType.CUENTA_BOLSILLO ||
-           this.tipoTransaccionId === TransactionType.BOLSILLO_CUENTA ||
-           this.tipoTransaccionId === TransactionType.CUENTA_BANCO;
+    return this.tipoTransaccionId === TipoTransaccion.CUENTA_CUENTA ||
+           this.tipoTransaccionId === TipoTransaccion.CUENTA_BOLSILLO ||
+           this.tipoTransaccionId === TipoTransaccion.BOLSILLO_CUENTA ||
+           this.tipoTransaccionId === TipoTransaccion.CUENTA_BANCO;
   }
 
   needsDestino(): boolean {
-    return this.tipoTransaccionId === TransactionType.CUENTA_CUENTA ||
-           this.tipoTransaccionId === TransactionType.CUENTA_BOLSILLO ||
-           this.tipoTransaccionId === TransactionType.BOLSILLO_CUENTA ||
-           this.tipoTransaccionId === TransactionType.BANCO_CUENTA ||
-           this.tipoTransaccionId === TransactionType.BANCO_BOLSILLO;
+    return this.tipoTransaccionId === TipoTransaccion.CUENTA_CUENTA ||
+           this.tipoTransaccionId === TipoTransaccion.CUENTA_BOLSILLO ||
+           this.tipoTransaccionId === TipoTransaccion.BOLSILLO_CUENTA ||
+           this.tipoTransaccionId === TipoTransaccion.BANCO_CUENTA ||
+           this.tipoTransaccionId === TipoTransaccion.BANCO_BOLSILLO;
   }
 
   /**
    * Verifica si un tipo de cuenta es una cuenta regular (no bolsillo)
    */
   isCuentaRegular(tipo: string): boolean {
-    return tipo === TipoCuenta.CUENTA_CORRIENTE || tipo === TipoCuenta.CUENTA_AHORRO;
+    console.log('Verificando si el tipo de cuenta es regular:', tipo);
+    const esRegular = tipo === TipoCuenta.CUENTA_CORRIENTE || tipo === TipoCuenta.CUENTA_AHORRO;
+    console.log('¿Es cuenta regular?', esRegular);
+    return esRegular;
   }
 
   getTitulo(): string {
@@ -229,7 +257,7 @@ export class TransaccionFormComponent implements OnInit {
       return 'Detalles de Transacción';
     }
     
-    if (this.data.transaction) {
+    if (this.data.transaccion) {
       return 'Editar Transacción';
     }
 
@@ -263,48 +291,54 @@ export class TransaccionFormComponent implements OnInit {
       return;
     }
 
-    const transaccionData = this.transaccionForm.value;
+    const formValues = this.transaccionForm.getRawValue();
+    console.log('Valores del formulario:', formValues);
+    
+    // Preparar datos de la transacción
+    const transaccionRequest: TransaccionRequest = {
+      monto: formValues.monto,
+      descripcion: formValues.descripcion,
+      // Usamos el valor directo del formulario para cuentaOrigen y cuentaDestino
+      cuentaOrigenId: formValues.cuentaOrigen,
+      cuentaDestinoId: formValues.cuentaDestino,
+      // Estos campos pueden ser undefined si no aplican al tipo de transacción
+      tipoMovimientoId: '1' // ID por defecto para transferencias
+    };
+    
+    console.log('Datos de transacción a enviar:', transaccionRequest);
     
     this.loading = true;
+    this.error = null;
     
-    if (this.data.transaction) {
-      // Como no hay método updateTransaction, usamos createTransaction
-      // En un caso real, deberíamos implementar updateTransaction en el servicio
-      this.transaccionService.createTransaction({
-        monto: transaccionData.monto,
-        descripcion: transaccionData.descripcion,
-        tipoMovimientoId: transaccionData.tipoMovimientoId || '',
-        cuentaOrigenId: transaccionData.cuentaOrigenId,
-        cuentaDestinoId: transaccionData.cuentaDestinoId,
-        bolsilloOrigenId: transaccionData.bolsilloOrigenId,
-        bolsilloDestinoId: transaccionData.bolsilloDestinoId
-      }).subscribe({
-        next: (transaction: Transaction) => {
-          this.dialogRef.close(transaction);
-        },
-        error: (error: any) => {
-          this.error = error.message;
-          this.loading = false;
-        }
-      });
-    } else {
-      this.transaccionService.createTransaction({
-        monto: transaccionData.monto,
-        descripcion: transaccionData.descripcion,
-        tipoMovimientoId: transaccionData.tipoMovimientoId || '',
-        cuentaOrigenId: transaccionData.cuentaOrigenId,
-        cuentaDestinoId: transaccionData.cuentaDestinoId,
-        bolsilloOrigenId: transaccionData.bolsilloOrigenId,
-        bolsilloDestinoId: transaccionData.bolsilloDestinoId
-      }).subscribe({
-        next: (transaction: Transaction) => {
-          this.dialogRef.close(transaction);
-        },
-        error: (error: any) => {
-          this.error = error.message;
-          this.loading = false;
-        }
-      });
+    // Seleccionar el método adecuado según el tipo de transacción
+    let transaccionObservable;
+    
+    // Si es una transacción de cuenta a cuenta (CUENTA_CUENTA)
+    if (this.tipoTransaccionId === TipoTransaccion.CUENTA_CUENTA) {
+      console.log('Ejecutando transferencia cuenta a cuenta');
+      transaccionObservable = this.transaccionService.transferenciaCuentaCuenta(transaccionRequest);
+    } 
+    // Si es otro tipo de transacción, usar el método genérico
+    else {
+      console.log('Ejecutando creación de transacción genérica');
+      transaccionObservable = this.transaccionService.crearTransaccion(transaccionRequest);
     }
+    
+    transaccionObservable.pipe(
+      catchError((error: any) => {
+        console.error('Error al procesar la transacción:', error);
+        this.error = error.message || 'Error al procesar la transacción';
+        this.loading = false;
+        return of(null);
+      })
+    ).subscribe({
+      next: (transaccion: Transaccion | null) => {
+        if (transaccion) {
+          console.log('Transacción creada exitosamente:', transaccion);
+          this.loading = false;
+          this.dialogRef.close(transaccion);
+        }
+      }
+    });
   }
 }

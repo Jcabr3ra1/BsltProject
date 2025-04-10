@@ -1,44 +1,106 @@
 <mat-toolbar class="navbar">
   <div class="navbar-brand">
+    <!-- Botón para controlar el sidebar -->
+    @if (isAuthenticated$ | async) {
+      <button mat-icon-button class="sidebar-toggle" (click)="toggleSidebar()" [matTooltip]="isSidebarCollapsed ? 'Expandir menú' : 'Colapsar menú'">
+        <mat-icon>{{ isSidebarCollapsed ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
+    }
+    
     <a class="brand-logo" routerLink="/">
-      <div class="logo-container">
+      <div class="logo-icon">
         <mat-icon>account_balance</mat-icon>
       </div>
-      <h1>BSLTBank</h1>
+      <span>BSLTBank</span>
     </a>
   </div>
 
   <span class="spacer"></span>
 
   <div class="navbar-end">
-    <ng-container *ngIf="isAuthenticated">
-      <button mat-icon-button class="notification-btn" [matBadge]="3" matBadgeSize="small">
-        <mat-icon>notifications</mat-icon>
-      </button>
-
-      <div class="user-menu">
-        <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
-          <span class="user-name">{{ userName }}</span>
-          <mat-icon>account_circle</mat-icon>
+    @if (isAuthenticated$ | async) {
+      <div class="nav-actions">
+        <!-- Botón de notificaciones con badge -->
+        <button mat-icon-button class="notification-btn" 
+                [matMenuTriggerFor]="notificationsMenu"
+                [matBadge]="notifications.length" 
+                matBadgeSize="small" 
+                matBadgeColor="accent" 
+                aria-label="Notificaciones">
+          <mat-icon>notifications</mat-icon>
         </button>
         
-        <mat-menu #userMenu="matMenu">
-          <button mat-menu-item>
-            <mat-icon>person</mat-icon>
-            <span>Mi Perfil</span>
-          </button>
-          <mat-divider></mat-divider>
-          <button mat-menu-item (click)="logout()">
-            <mat-icon>exit_to_app</mat-icon>
-            <span>Cerrar Sesión</span>
-          </button>
+        <!-- Menú de notificaciones -->
+        <mat-menu #notificationsMenu="matMenu" class="notifications-menu-panel">
+          <div class="menu-header">
+            <h3>Notificaciones</h3>
+            <button mat-button color="primary">Ver todas</button>
+          </div>
+          
+          @for (notification of notifications; track notification.text) {
+            <div class="notification-item">
+              <mat-icon class="notification-icon">{{ notification.icon }}</mat-icon>
+              <div class="notification-content">
+                <p class="notification-text">{{ notification.text }}</p>
+                <p class="notification-time">{{ notification.time }}</p>
+              </div>
+            </div>
+          }
+          
+          @if (notifications.length === 0) {
+            <div class="empty-notifications">
+              <mat-icon>notifications_off</mat-icon>
+              <p>No tienes notificaciones</p>
+            </div>
+          }
         </mat-menu>
-      </div>
-    </ng-container>
 
-    <button *ngIf="!isAuthenticated" mat-flat-button color="accent" class="login-btn" routerLink="/auth/login">
-      <mat-icon>login</mat-icon>
-      <span>Iniciar Sesión</span>
-    </button>
+        <!-- Botón de usuario con menú desplegable -->
+        <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
+          <div class="avatar-circle">
+            <span>{{ userInitials }}</span>
+          </div>
+          <span class="user-name">{{ getUserFullName() }}</span>
+          <mat-icon class="dropdown-icon">expand_more</mat-icon>
+        </button>
+      </div>
+      
+      <!-- Menú de usuario -->
+      <mat-menu #userMenu="matMenu" class="user-menu-panel">
+        <div class="menu-header">
+          <div class="avatar-circle large">
+            <span>{{ userInitials }}</span>
+          </div>
+          <div class="user-info">
+            <h3>{{ getUserFullName() }}</h3>
+            <p>{{ userEmail }}</p>
+          </div>
+        </div>
+        <button mat-menu-item (click)="navigateToProfile()">
+          <mat-icon>person</mat-icon>
+          <span>Mi Perfil</span>
+        </button>
+        <button mat-menu-item (click)="navigateToSettings()">
+          <mat-icon>settings</mat-icon>
+          <span>Configuración</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()" class="logout-btn">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
+    } @else {
+      <div class="auth-buttons">
+        <button mat-button class="login-btn" routerLink="/auth/login">
+          <mat-icon>login</mat-icon>
+          <span>Iniciar Sesión</span>
+        </button>
+        <button mat-raised-button class="register-btn" routerLink="/auth/register">
+          <mat-icon>person_add</mat-icon>
+          <span>Registrarse</span>
+        </button>
+      </div>
+    }
   </div>
 </mat-toolbar>

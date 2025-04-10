@@ -9,16 +9,14 @@ import { TipoTransaccion as TipoTransaccionEntity } from './tipo-transaccion.mod
 
 // Exportar selectivamente desde transaccion.model
 // Valores
-export { EstadoTransaccion } from './transaccion.model';
+export { EstadoTransaccion, TipoTransaccion, TipoMovimientoEnum } from './transaccion.model';
 
 // Tipos
 export type { 
   Transaccion,
   TransaccionRequest,
-  Transaction,
-  TransactionType,
-  TransactionStatus,
-  TransactionFilters
+  FiltrosTransaccion,
+  EstadoTransaccionEntidad
 } from './transaccion.model';
 
 // Exportar selectivamente desde tipo-transaccion.model

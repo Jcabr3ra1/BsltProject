@@ -13,8 +13,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
-import { SidebarComponent } from '@shared/components/sidebar/sidebar.component';
-import { FooterComponent } from '@shared/components/footer/footer.component';
+import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
+import { FooterComponent } from './shared/components/footer/footer.component';
+import { NavbarComponent } from './shared/components/navbar/navbar.component';
+import { SidebarService } from './core/services/sidebar.service';
 
 @Component({
   selector: 'app-root',
@@ -32,12 +34,14 @@ import { FooterComponent } from '@shared/components/footer/footer.component';
     MatDividerModule,
     MatBadgeModule,
     FooterComponent,
-    SidebarComponent
+    SidebarComponent,
+    NavbarComponent
   ]
 })
 export class AppComponent implements OnInit, OnDestroy {
   isAuthenticated$: Observable<boolean>;
   sidenavOpened = true;
+  isSidebarCollapsed = false;
   currentYear: number = new Date().getFullYear();
   currentUrl: string = '';
   currentUser: Usuario | null = null;
@@ -56,7 +60,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly authService: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly sidebarService: SidebarService
   ) {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
     
@@ -88,11 +93,18 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authService.verifyAndFixTokenFormat();
     
     // Suscribirse a cambios del usuario actual
-    const userSub = this.authService.currentUser.subscribe(user => {
+    const userSub = this.authService.currentUser.subscribe((user: Usuario | null) => {
       this.currentUser = user;
     });
     
+    // Suscribirse a cambios en el estado del sidebar
+    const sidebarSub = this.sidebarService.isCollapsed$.subscribe((isCollapsed: boolean) => {
+      this.isSidebarCollapsed = isCollapsed;
+      this.sidenavOpened = !isCollapsed; // Actualizar sidenavOpened para mantener consistencia
+    });
+    
     this.subscriptions.add(userSub);
+    this.subscriptions.add(sidebarSub);
     
     // Inicializamos currentUrl con la URL actual
     this.currentUrl = window.location.pathname;
@@ -114,14 +126,14 @@ export class AppComponent implements OnInit, OnDestroy {
       console.log('Token encontrado en localStorage, verificando...');
       
       const authSub = this.authService.verifyToken().subscribe({
-        next: (isValid) => {
+        next: (isValid: boolean) => {
           console.log('Resultado de verificación de token:', isValid);
           if (!isValid && !this.isPublicPage()) {
             console.log('Token inválido, redirigiendo a login');
             this.router.navigate(['/auth/login']);
           }
         },
-        error: (error) => {
+        error: (error: Error) => {
           console.error('Error al verificar token:', error);
           if (!this.isPublicPage()) {
             this.router.navigate(['/auth/login']);
@@ -137,7 +149,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   toggleSidenav(): void {
-    this.sidenavOpened = !this.sidenavOpened;
+    this.sidebarService.toggleSidebar();
   }
 
   logout(): void {
@@ -157,10 +169,12 @@ export class AppComponent implements OnInit, OnDestroy {
   
   // Check if we're on a public page (landing or auth pages)
   isPublicPage(): boolean {
+    // Considerar todas las rutas públicas
     return this.currentUrl === '/landing' || 
            this.currentUrl === '/' || 
            this.currentUrl.startsWith('/auth') ||
-           this.currentUrl === '/home';
+           this.currentUrl === '/home' ||
+           this.currentUrl === '/diagnostico';
   }
   
   // Get user's full name

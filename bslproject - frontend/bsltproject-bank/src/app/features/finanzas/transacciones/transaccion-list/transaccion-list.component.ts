@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 
-import { Transaction, TransactionStatus, TransactionType } from '@core/models/finanzas/transaccion.model';
+import { Transaccion, EstadoTransaccion, TipoTransaccion } from '@core/models/finanzas/transaccion.model';
 import { TransaccionFormComponent } from '../transaccion-form/transaccion-form.component';
 
 @Component({
@@ -27,107 +27,158 @@ import { TransaccionFormComponent } from '../transaccion-form/transaccion-form.c
   ]
 })
 export class TransaccionListComponent implements OnInit, AfterViewInit {
-  @Input() transacciones: Transaction[] = [];
-  @Output() transactionSelected = new EventEmitter<Transaction>();
-  @Output() createTransaction = new EventEmitter<void>();
+  @Input() transacciones: Transaccion[] = [];
+  @Output() transaccionSeleccionada = new EventEmitter<Transaccion>();
+  @Output() crearTransaccion = new EventEmitter<void>();
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  displayedColumns: string[] = ['fecha', 'tipo', 'monto', 'estado', 'acciones'];
-  dataSource = new MatTableDataSource<Transaction>([]);
+  columnasVisibles: string[] = ['fecha', 'tipo', 'monto', 'estado', 'acciones'];
+  fuenteDatos = new MatTableDataSource<Transaccion>([]);
 
-  readonly TransactionType = TransactionType;
-  readonly TransactionStatus = TransactionStatus;
+  readonly TipoTransaccion = TipoTransaccion;
+  readonly EstadoTransaccion = EstadoTransaccion;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private readonly dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.updateDataSource();
+    this.actualizarFuenteDatos();
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
+    this.fuenteDatos.sort = this.sort;
+    this.fuenteDatos.paginator = this.paginator;
   }
 
-  // Update when input changes
+  // Actualizar cuando cambian las entradas
   ngOnChanges(): void {
-    this.updateDataSource();
+    this.actualizarFuenteDatos();
   }
   
-  updateDataSource(): void {
-    this.dataSource.data = this.transacciones;
+  actualizarFuenteDatos(): void {
+    this.fuenteDatos.data = this.transacciones;
     if (this.sort) {
-      this.dataSource.sort = this.sort;
+      this.fuenteDatos.sort = this.sort;
     }
     if (this.paginator) {
-      this.dataSource.paginator = this.paginator;
+      this.fuenteDatos.paginator = this.paginator;
     }
   }
 
-  onViewTransaction(transaction: Transaction): void {
-    this.transactionSelected.emit(transaction);
+  verTransaccion(transaccion: Transaccion): void {
+    this.transaccionSeleccionada.emit(transaccion);
   }
 
-  onCreateTransaction(): void {
-    this.createTransaction.emit();
+  nuevaTransaccion(): void {
+    this.crearTransaccion.emit();
   }
 
   getNombreTipo(tipo: string): string {
-    switch (tipo) {
-      case TransactionType.CUENTA_CUENTA:
+    if (!tipo) return 'Desconocido';
+    
+    // Normalizar el tipo para manejar diferentes formatos
+    const tipoNormalizado = tipo.toUpperCase();
+    
+    switch (tipoNormalizado) {
+      case TipoTransaccion.CUENTA_CUENTA:
         return 'Entre Cuentas';
-      case TransactionType.CUENTA_BOLSILLO:
+      case TipoTransaccion.CUENTA_BOLSILLO:
         return 'A Bolsillo';
-      case TransactionType.BOLSILLO_CUENTA:
+      case TipoTransaccion.BOLSILLO_CUENTA:
         return 'De Bolsillo a Cuenta';
-      case TransactionType.BANCO_CUENTA:
+      case TipoTransaccion.BANCO_CUENTA:
         return 'Consignación a Cuenta';
-      case TransactionType.BANCO_BOLSILLO:
+      case TipoTransaccion.BANCO_BOLSILLO:
         return 'Consignación a Bolsillo';
-      case TransactionType.CUENTA_BANCO:
+      case TipoTransaccion.CUENTA_BANCO:
         return 'Retiro a Banco';
       default:
+        // Si no coincide con ninguno de los tipos conocidos, intentar inferir
+        if (tipoNormalizado.includes('CUENTA') && tipoNormalizado.includes('CUENTA')) {
+          return 'Entre Cuentas';
+        } else if (tipoNormalizado.includes('BOLSILLO')) {
+          return 'Operación con Bolsillo';
+        } else if (tipoNormalizado.includes('BANCO')) {
+          return 'Operación Bancaria';
+        }
         return tipo;
     }
   }
 
   getNombreEstado(estado: string): string {
-    switch (estado) {
-      case TransactionStatus.APPROVED:
+    if (!estado) return 'Desconocido';
+    
+    // Normalizar el estado para manejar diferentes formatos
+    const estadoNormalizado = estado.toUpperCase();
+    
+    switch (estadoNormalizado) {
+      case this.EstadoTransaccion.APROBADA:
+      case this.EstadoTransaccion.COMPLETADA:
+      case 'APPROVED':
+      case 'COMPLETED':
         return 'Aprobada';
-      case TransactionStatus.PENDING:
+      case this.EstadoTransaccion.PENDIENTE:
+      case 'PENDING':
         return 'Pendiente';
-      case TransactionStatus.REJECTED:
+      case this.EstadoTransaccion.RECHAZADA:
+      case 'REJECTED':
         return 'Rechazada';
-      case TransactionStatus.CANCELLED:
+      case this.EstadoTransaccion.CANCELADA:
+      case 'CANCELED':
+      case 'CANCELLED':
         return 'Cancelada';
       default:
         return estado;
     }
   }
 
-  getEstadoClass(estado: string): string {
-    switch (estado) {
-      case TransactionStatus.APPROVED:
-        return 'status-approved';
-      case TransactionStatus.PENDING:
-        return 'status-pending';
-      case TransactionStatus.REJECTED:
-        return 'status-rejected';
-      case TransactionStatus.CANCELLED:
-        return 'status-cancelled';
+  getClaseEstado(estado: string): string {
+    if (!estado) return 'estado-desconocido';
+    
+    // Normalizar el estado para manejar diferentes formatos
+    const estadoNormalizado = estado.toUpperCase();
+    
+    switch (estadoNormalizado) {
+      case this.EstadoTransaccion.APROBADA:
+      case this.EstadoTransaccion.COMPLETADA:
+      case 'APPROVED':
+      case 'COMPLETED':
+        return 'estado-aprobada';
+      case this.EstadoTransaccion.PENDIENTE:
+      case 'PENDING':
+        return 'estado-pendiente';
+      case this.EstadoTransaccion.RECHAZADA:
+      case 'REJECTED':
+        return 'estado-rechazada';
+      case this.EstadoTransaccion.CANCELADA:
+      case 'CANCELED':
+      case 'CANCELLED':
+        return 'estado-cancelada';
       default:
-        return '';
+        return 'estado-desconocido';
     }
   }
 
-  formatMonto(monto: number): string {
+  formatearMonto(monto: number): string {
+    // Manejar valores nulos o indefinidos
+    if (monto === null || monto === undefined) {
+      return '$0';
+    }
+    
+    // Asegurar que monto sea un número
+    const montoNumerico = typeof monto === 'string' ? parseFloat(monto) : monto;
+    
+    // Si no es un número válido después de la conversión, devolver $0
+    if (isNaN(montoNumerico)) {
+      return '$0';
+    }
+    
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 0
-    }).format(monto);
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(montoNumerico);
   }
 }

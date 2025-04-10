@@ -1,165 +1,351 @@
 <div class="landing-page">
-  <!-- Sección Hero -->
+  <!-- Header con botón de inicio de sesión estilo Netflix -->
+  <header class="landing-header">
+    <div class="logo">BSL<span>Bank</span></div>
+    <a routerLink="/auth/login" class="login-button">Iniciar sesión</a>
+  </header>
+
+  <!-- Hero Section - Estilo Netflix -->
   <section class="hero-section">
-    <div class="container">
-      <div class="hero-content">
-        <h1 class="hero-title">Banca digital para un mundo moderno</h1>
-        <p class="hero-subtitle">Gestiona tus finanzas de manera segura, rápida y eficiente con nuestra plataforma bancaria líder en el mercado.</p>
-        <div class="hero-cta">
-          <button mat-raised-button color="primary" class="cta-button" routerLink="/auth/login">Iniciar Sesión</button>
-          <button mat-stroked-button color="accent" class="cta-button-secondary" routerLink="/auth/register">Crear Cuenta</button>
-        </div>
-      </div>
-      <div class="hero-image">
-        <div class="hero-illustration">
-          <mat-icon class="hero-icon">account_balance</mat-icon>
-          <mat-icon class="hero-icon">credit_card</mat-icon>
-          <mat-icon class="hero-icon">phone_iphone</mat-icon>
-          <mat-icon class="hero-icon">trending_up</mat-icon>
-        </div>
-      </div>
+    <div class="hero-background">
+      <div class="overlay"></div>
     </div>
-    <div class="hero-wave">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-        <path fill="#ffffff" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,149.3C960,160,1056,160,1152,138.7C1248,117,1344,75,1392,53.3L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-      </svg>
+    <div class="hero-content">
+      <h1 class="hero-title">Banca digital para el futuro</h1>
+      <p class="hero-subtitle">Gestiona tus finanzas con tecnología de vanguardia, seguridad absoluta y experiencia personalizada</p>
+      <div class="hero-form">
+        <p class="form-title">¿Listo para revolucionar tus finanzas?</p>
+        <div class="form-container">
+          <button mat-flat-button class="start-button" routerLink="/auth/register">COMENZAR AHORA</button>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Sección de Características -->
+  <!-- Features Section - Cards horizontales con imágenes -->
   <section class="features-section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Características Principales</h2>
-        <p class="section-subtitle">Descubre por qué miles de personas confían en nuestra plataforma bancaria</p>
+    <div class="feature-card reversed">
+      <div class="feature-content">
+        <h2>Transacciones seguras en tiempo real</h2>
+        <p>Transfiere dinero instantáneamente a cualquier cuenta con la máxima seguridad. Nuestro sistema utiliza encriptación avanzada y autenticación de múltiples factores para proteger cada operación.</p>
       </div>
-      
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <mat-icon>security</mat-icon>
+      <div class="feature-media">
+        <div class="feature-image-container">
+          <div class="feature-icon-container">
+            <mat-icon class="feature-icon">security</mat-icon>
           </div>
-          <h3 class="feature-title">Seguridad Avanzada</h3>
-          <p class="feature-description">Protegemos tu información con la más alta tecnología de encriptación y autenticación de múltiples factores.</p>
+          <div class="animation-container">
+            <div class="animation-circle"></div>
+          </div>
         </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <mat-icon>speed</mat-icon>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-media">
+        <div class="feature-image-container">
+          <div class="feature-icon-container">
+            <mat-icon class="feature-icon">insights</mat-icon>
           </div>
-          <h3 class="feature-title">Transacciones Rápidas</h3>
-          <p class="feature-description">Realiza transferencias y pagos en segundos, sin esperas ni complicaciones.</p>
+          <div class="animation-container">
+            <div class="animation-circle"></div>
+          </div>
         </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <mat-icon>insights</mat-icon>
+      </div>
+      <div class="feature-content">
+        <h2>Análisis financiero inteligente</h2>
+        <p>Visualiza y comprende tus finanzas con nuestras herramientas de análisis avanzado. Obtén insights personalizados, detecta patrones de gasto y optimiza tu presupuesto con recomendaciones basadas en IA.</p>
+      </div>
+    </div>
+
+    <div class="feature-card reversed">
+      <div class="feature-content">
+        <h2>Acceso desde cualquier dispositivo</h2>
+        <p>Gestiona tus cuentas desde cualquier lugar y en cualquier momento. Nuestra plataforma está optimizada para todos los dispositivos, permitiéndote mantener el control total de tus finanzas estés donde estés.</p>
+      </div>
+      <div class="feature-media">
+        <div class="feature-image-container">
+          <div class="feature-icon-container">
+            <mat-icon class="feature-icon">devices</mat-icon>
           </div>
-          <h3 class="feature-title">Análisis Financiero</h3>
-          <p class="feature-description">Obtén informes detallados y visualizaciones de tus finanzas para tomar mejores decisiones.</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <mat-icon>phone_iphone</mat-icon>
+          <div class="animation-container">
+            <div class="animation-circle"></div>
           </div>
-          <h3 class="feature-title">Banca Móvil</h3>
-          <p class="feature-description">Accede a tu cuenta desde cualquier lugar con nuestra aplicación móvil intuitiva y completa.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Sección de Testimonios -->
+  <!-- Planes Section -->
+  <section class="plans-section">
+    <div class="section-header">
+      <h2>Elige el plan que mejor se adapte a ti</h2>
+      <p>Todos nuestros planes incluyen seguridad avanzada y soporte 24/7</p>
+    </div>
+
+    <div class="plans-container">
+      <div class="plan-card">
+        <div class="plan-header">
+          <h3>Básico</h3>
+          <div class="plan-price">Gratis</div>
+        </div>
+        <ul class="plan-features">
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>Cuenta de ahorro básica</span>
+          </li>
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>Transferencias entre cuentas</span>
+          </li>
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>App móvil</span>
+          </li>
+          <li class="disabled">
+            <mat-icon>close</mat-icon>
+            <span>Análisis financiero</span>
+          </li>
+        </ul>
+        <button mat-flat-button class="plan-button">Seleccionar</button>
+      </div>
+
+      <div class="plan-card featured">
+        <div class="plan-tag">Más popular</div>
+        <div class="plan-header">
+          <h3>Premium</h3>
+          <div class="plan-price">$9.99<span>/mes</span></div>
+        </div>
+        <ul class="plan-features">
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>Todo lo del plan Básico</span>
+          </li>
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>Múltiples cuentas y bolsillos</span>
+          </li>
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>Análisis financiero avanzado</span>
+          </li>
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>Inversiones automatizadas</span>
+          </li>
+        </ul>
+        <button mat-flat-button class="plan-button">Seleccionar</button>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-header">
+          <h3>Empresarial</h3>
+          <div class="plan-price">$24.99<span>/mes</span></div>
+        </div>
+        <ul class="plan-features">
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>Todo lo del plan Premium</span>
+          </li>
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>Múltiples usuarios</span>
+          </li>
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>API para integración</span>
+          </li>
+          <li>
+            <mat-icon>check</mat-icon>
+            <span>Soporte prioritario</span>
+          </li>
+        </ul>
+        <button mat-flat-button class="plan-button">Seleccionar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
   <section class="testimonials-section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Lo que dicen nuestros clientes</h2>
-        <p class="section-subtitle">Experiencias reales de usuarios que confían en nuestra plataforma</p>
-      </div>
-      
-      <div class="testimonials-slider">
-        <div class="testimonial-card">
-          <div class="testimonial-content">
-            <p class="testimonial-text">"La mejor plataforma bancaria que he utilizado. Intuitiva, rápida y con todas las funciones que necesito para gestionar mis finanzas personales y empresariales."</p>
+    <div class="section-header">
+      <h2>Lo que dicen nuestros clientes</h2>
+    </div>
+
+    <div class="testimonials-container">
+      <div class="testimonial-card">
+        <div class="testimonial-rating">
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+        </div>
+        <p class="testimonial-text">"BSLBank ha transformado completamente la manera en que manejo mis finanzas. La interfaz es intuitiva y las herramientas de análisis son increíblemente útiles."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">
+            <mat-icon>person</mat-icon>
           </div>
-          <div class="testimonial-author">
-            <div class="author-avatar">
-              <mat-icon>person</mat-icon>
-            </div>
-            <div class="author-info">
-              <h4 class="author-name">Carlos Rodríguez</h4>
-              <p class="author-role">Empresario</p>
-            </div>
+          <div>
+            <h4>María González</h4>
+            <p>Emprendedora</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-rating">
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+        </div>
+        <p class="testimonial-text">"Como dueño de un pequeño negocio, BSLBank me ha permitido gestionar mis finanzas empresariales de manera eficiente. El soporte al cliente es excepcional."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div>
+            <h4>Carlos Rodríguez</h4>
+            <p>Empresario</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-rating">
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+          <mat-icon>star</mat-icon>
+          <mat-icon>star_half</mat-icon>
+        </div>
+        <p class="testimonial-text">"La seguridad y rapidez de las transacciones es impresionante. Puedo gestionar mis cuentas desde cualquier lugar con total tranquilidad."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div>
+            <h4>Ana Martínez</h4>
+            <p>Profesional</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Sección de Ventajas -->
-  <section class="advantages-section">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">Ventajas de nuestra banca digital</h2>
-        <p class="section-subtitle">Descubre por qué cada vez más personas confían en nosotros para gestionar sus finanzas</p>
-      </div>
-      
-      <div class="advantages-grid">
-        <div class="advantage-card">
-          <div class="advantage-icon">
-            <mat-icon>lock</mat-icon>
-          </div>
-          <h3 class="advantage-title">Seguridad garantizada</h3>
-          <p class="advantage-description">Utilizamos tecnología de encriptación de última generación para proteger tus datos y transacciones.</p>
-          <a href="#" class="advantage-link">Conoce más <mat-icon>arrow_forward</mat-icon></a>
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="section-header">
+      <h2>Preguntas frecuentes</h2>
+    </div>
+
+    <div class="faq-container">
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>¿Cómo puedo abrir una cuenta?</h3>
+          <mat-icon>add</mat-icon>
         </div>
-        
-        <div class="advantage-card">
-          <div class="advantage-icon">
-            <mat-icon>savings</mat-icon>
-          </div>
-          <h3 class="advantage-title">Sin comisiones ocultas</h3>
-          <p class="advantage-description">Nuestras tarifas son transparentes. No hay sorpresas ni cargos adicionales en tus operaciones.</p>
-          <a href="#" class="advantage-link">Conoce más <mat-icon>arrow_forward</mat-icon></a>
-        </div>
-        
-        <div class="advantage-card">
-          <div class="advantage-icon">
-            <mat-icon>support_agent</mat-icon>
-          </div>
-          <h3 class="advantage-title">Soporte 24/7</h3>
-          <p class="advantage-description">Nuestro equipo de atención al cliente está disponible todos los días para resolver tus dudas.</p>
-          <a href="#" class="advantage-link">Conoce más <mat-icon>arrow_forward</mat-icon></a>
-        </div>
-        
-        <div class="advantage-card">
-          <div class="advantage-icon">
-            <mat-icon>bolt</mat-icon>
-          </div>
-          <h3 class="advantage-title">Operaciones instantáneas</h3>
-          <p class="advantage-description">Realiza transferencias y pagos en tiempo real sin esperas ni complicaciones.</p>
-          <a href="#" class="advantage-link">Conoce más <mat-icon>arrow_forward</mat-icon></a>
+        <div class="faq-answer">
+          <p>Puedes abrir una cuenta en minutos directamente desde nuestra plataforma. Solo necesitas completar un formulario y verificar tu identidad con un documento oficial.</p>
         </div>
       </div>
-      
-      <div class="advantages-cta">
-        <button mat-raised-button color="primary" class="cta-button" routerLink="/auth/register">Comenzar ahora</button>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>¿Qué medidas de seguridad implementan?</h3>
+          <mat-icon>add</mat-icon>
+        </div>
+        <div class="faq-answer">
+          <p>Utilizamos encriptación de nivel bancario, autenticación de dos factores, monitoreo continuo de actividades sospechosas y cumplimos con los más altos estándares de seguridad de la industria.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>¿Puedo acceder a mi cuenta desde el extranjero?</h3>
+          <mat-icon>add</mat-icon>
+        </div>
+        <div class="faq-answer">
+          <p>Sí, puedes acceder a tu cuenta desde cualquier parte del mundo. Sin embargo, te recomendamos notificarnos previamente sobre tus viajes para evitar bloqueos de seguridad.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>¿Cómo funciona el análisis financiero?</h3>
+          <mat-icon>add</mat-icon>
+        </div>
+        <div class="faq-answer">
+          <p>Nuestro sistema analiza automáticamente tus transacciones, categoriza tus gastos y te ofrece insights personalizados para ayudarte a optimizar tu presupuesto y alcanzar tus metas financieras.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Sección de Llamada a la Acción -->
+  <!-- CTA Section -->
   <section class="cta-section">
-    <div class="container">
-      <div class="cta-content">
-        <h2 class="cta-title">Comienza tu viaje financiero hoy</h2>
-        <p class="cta-description">Únete a miles de personas que ya confían en nuestra plataforma para gestionar sus finanzas de manera inteligente.</p>
-        <div class="cta-buttons">
-          <button mat-raised-button color="primary" class="cta-button" routerLink="/auth/register">Crear Cuenta Gratis</button>
-          <button mat-stroked-button color="accent" class="cta-button-secondary" routerLink="/auth/login">Iniciar Sesión</button>
+    <div class="cta-content">
+      <h2>Comienza tu viaje financiero hoy</h2>
+      <p>Únete a miles de personas que ya han transformado su relación con el dinero</p>
+      <button mat-flat-button class="cta-button" routerLink="/auth/register">CREAR CUENTA GRATIS</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <div class="logo">BSL<span>Bank</span></div>
+        <p>La banca digital del futuro</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Producto</h4>
+          <ul>
+            <li><a href="#">Características</a></li>
+            <li><a href="#">Planes</a></li>
+            <li><a href="#">Seguridad</a></li>
+            <li><a href="#">Empresas</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Compañía</h4>
+          <ul>
+            <li><a href="#">Sobre nosotros</a></li>
+            <li><a href="#">Carreras</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Prensa</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Soporte</h4>
+          <ul>
+            <li><a href="#">Centro de ayuda</a></li>
+            <li><a href="#">Contacto</a></li>
+            <li><a href="#">Comunidad</a></li>
+            <li><a href="#">Estado del sistema</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacidad</a></li>
+            <li><a href="#">Términos</a></li>
+            <li><a href="#">Cookies</a></li>
+            <li><a href="#">Licencias</a></li>
+          </ul>
         </div>
       </div>
     </div>
-  </section>
+    <div class="footer-bottom">
+      <p>&copy; 2025 BSLBank. Todos los derechos reservados.</p>
+      <div class="social-links">
+        <a href="#" class="social-link"><mat-icon>facebook</mat-icon></a>
+        <a href="#" class="social-link"><mat-icon>twitter</mat-icon></a>
+        <a href="#" class="social-link"><mat-icon>instagram</mat-icon></a>
+        <a href="#" class="social-link"><mat-icon>linkedin</mat-icon></a>
+      </div>
+    </div>
+  </footer>
 </div>

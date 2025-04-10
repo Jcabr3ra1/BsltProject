@@ -1,151 +1,237 @@
 <div class="transacciones-container">
-  <div class="header">
-    <h2>Transacciones</h2>
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Transacciones</h1>
+      <p class="page-subtitle">Gestiona tus transferencias y movimientos financieros</p>
+    </div>
     <div class="actions">
-      <button mat-raised-button [matMenuTriggerFor]="menu" color="primary" class="new-transaction-btn">
-        Nueva Transacción
+      <button mat-raised-button class="nueva-transaccion-btn" [matMenuTriggerFor]="transaccionMenu">
+        <span>Nueva Transacción</span>
         <mat-icon>add</mat-icon>
       </button>
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="onCreateTransaction(TransactionType.CUENTA_CUENTA)">
-          <mat-icon>swap_horiz</mat-icon>
-          <span>Entre Cuentas</span>
-        </button>
-        <button mat-menu-item (click)="onCreateTransaction(TransactionType.CUENTA_BOLSILLO)">
-          <mat-icon>savings</mat-icon>
-          <span>A Bolsillo</span>
-        </button>
-        <button mat-menu-item (click)="onCreateTransaction(TransactionType.BOLSILLO_CUENTA)">
-          <mat-icon>account_balance_wallet</mat-icon>
-          <span>De Bolsillo a Cuenta</span>
-        </button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="onCreateTransaction(TransactionType.BANCO_CUENTA)">
-          <mat-icon>add_circle</mat-icon>
-          <span>Consignar a Cuenta</span>
-        </button>
-        <button mat-menu-item (click)="onCreateTransaction(TransactionType.BANCO_BOLSILLO)">
-          <mat-icon>add_circle</mat-icon>
-          <span>Consignar a Bolsillo</span>
-        </button>
-        <button mat-menu-item (click)="onCreateTransaction(TransactionType.CUENTA_BANCO)">
-          <mat-icon>remove_circle</mat-icon>
-          <span>Retirar a Banco</span>
-        </button>
+      
+      <mat-menu #transaccionMenu="matMenu" class="transaccion-menu">
+        <div class="menu-header">Selecciona un tipo de transacción</div>
+        <div class="menu-section">
+          <button mat-menu-item (click)="crearTransaccion(TipoTransaccion.CUENTA_CUENTA)">
+            <mat-icon>swap_horiz</mat-icon>
+            <span>Transferir entre cuentas</span>
+          </button>
+          <button mat-menu-item (click)="crearTransaccion(TipoTransaccion.CUENTA_BOLSILLO)">
+            <mat-icon>account_balance_wallet</mat-icon>
+            <span>Transferir a bolsillo</span>
+          </button>
+          <button mat-menu-item (click)="crearTransaccion(TipoTransaccion.BANCO_CUENTA)">
+            <mat-icon>add_circle</mat-icon>
+            <span>Consignar</span>
+          </button>
+          <button mat-menu-item (click)="crearTransaccion(TipoTransaccion.CUENTA_BANCO)">
+            <mat-icon>remove_circle</mat-icon>
+            <span>Retirar</span>
+          </button>
+        </div>
       </mat-menu>
     </div>
   </div>
 
-  <!-- Dashboard de estadísticas -->
-  <div class="dashboard">
-    <mat-card class="stat-card">
-      <mat-card-content>
-        <div class="stat-value">{{ totalTransacciones }}</div>
-        <div class="stat-label">Total Transacciones</div>
-      </mat-card-content>
-    </mat-card>
+  <!-- Estadísticas -->
+  <div class="dashboard-cards">
+    <div class="card-row">
+      <mat-card class="stat-card primary-card">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>receipt_long</mat-icon>
+          </div>
+          <div class="card-info">
+            <div class="stat-value">{{ totalTransacciones }}</div>
+            <div class="stat-label">Total Transacciones</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="stat-card secondary-card">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>payments</mat-icon>
+          </div>
+          <div class="card-info">
+            <div class="stat-value">{{ formatearMonto(totalMonto) }}</div>
+            <div class="stat-label">Monto Total</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
     
-    <mat-card class="stat-card">
-      <mat-card-content>
-        <div class="stat-value">{{ formatMonto(totalMonto) }}</div>
-        <div class="stat-label">Monto Total</div>
-      </mat-card-content>
-    </mat-card>
+    <div class="card-row status-cards">
+      <mat-card class="stat-card aprobada">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="card-info">
+            <div class="stat-value">{{ totalAprobadas }}</div>
+            <div class="stat-label">Aprobadas</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="stat-card pendiente">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>schedule</mat-icon>
+          </div>
+          <div class="card-info">
+            <div class="stat-value">{{ totalPendientes }}</div>
+            <div class="stat-label">Pendientes</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="stat-card rechazada">
+        <mat-card-content>
+          <div class="card-icon">
+            <mat-icon>cancel</mat-icon>
+          </div>
+          <div class="card-info">
+            <div class="stat-value">{{ totalRechazadas }}</div>
+            <div class="stat-label">Rechazadas/Canceladas</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="quick-actions">
+    <div class="action-card" (click)="crearTransaccion(TipoTransaccion.CUENTA_CUENTA)">
+      <div class="action-icon">
+        <mat-icon>swap_horiz</mat-icon>
+      </div>
+      <span class="action-text">Transferir entre cuentas</span>
+    </div>
     
-    <mat-card class="stat-card approved">
-      <mat-card-content>
-        <div class="stat-value">{{ totalAprobadas }}</div>
-        <div class="stat-label">Aprobadas</div>
-      </mat-card-content>
-    </mat-card>
+    <div class="action-card" (click)="crearTransaccion(TipoTransaccion.CUENTA_BOLSILLO)">
+      <div class="action-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <span class="action-text">Transferir a bolsillo</span>
+    </div>
     
-    <mat-card class="stat-card pending">
-      <mat-card-content>
-        <div class="stat-value">{{ totalPendientes }}</div>
-        <div class="stat-label">Pendientes</div>
-      </mat-card-content>
-    </mat-card>
+    <div class="action-card" (click)="crearTransaccion(TipoTransaccion.BANCO_CUENTA)">
+      <div class="action-icon">
+        <mat-icon>add_circle</mat-icon>
+      </div>
+      <span class="action-text">Consignar</span>
+    </div>
     
-    <mat-card class="stat-card rejected">
-      <mat-card-content>
-        <div class="stat-value">{{ totalRechazadas }}</div>
-        <div class="stat-label">Rechazadas/Canceladas</div>
-      </mat-card-content>
-    </mat-card>
+    <div class="action-card" (click)="crearTransaccion(TipoTransaccion.CUENTA_BANCO)">
+      <div class="action-icon">
+        <mat-icon>remove_circle</mat-icon>
+      </div>
+      <span class="action-text">Retirar</span>
+    </div>
   </div>
 
   <!-- Filtros -->
-  <mat-card class="filters-card">
-    <mat-card-header>
-      <mat-card-title>Filtros</mat-card-title>
-      @if (activeFilters) {
-        <button mat-button color="warn" (click)="resetFilters()">
-          <mat-icon>clear</mat-icon> Limpiar filtros
+  <mat-expansion-panel class="filtros-panel">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>filter_list</mat-icon>
+        Filtros
+      </mat-panel-title>
+      <mat-panel-description>
+        @if (filtrosActivos) {
+          <span class="filtros-activos-badge">Filtros activos</span>
+        }
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    
+    <form [formGroup]="formularioFiltro" class="filtros-form" (ngSubmit)="aplicarFiltros()">
+      <div class="filtros-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de transacción</mat-label>
+          <mat-select formControlName="tipo">
+            <mat-option [value]="">Todos</mat-option>
+            <mat-option [value]="TipoTransaccion.CUENTA_CUENTA">Transferencia entre cuentas</mat-option>
+            <mat-option [value]="TipoTransaccion.CUENTA_BOLSILLO">Transferencia a bolsillo</mat-option>
+            <mat-option [value]="TipoTransaccion.BOLSILLO_CUENTA">Transferencia desde bolsillo</mat-option>
+            <mat-option [value]="TipoTransaccion.BANCO_CUENTA">Consignación</mat-option>
+            <mat-option [value]="TipoTransaccion.CUENTA_BANCO">Retiro</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="estado">
+            <mat-option [value]="">Todos</mat-option>
+            <mat-option [value]="EstadoTransaccion.APROBADA">Aprobada</mat-option>
+            <mat-option [value]="EstadoTransaccion.PENDIENTE">Pendiente</mat-option>
+            <mat-option [value]="EstadoTransaccion.RECHAZADA">Rechazada</mat-option>
+            <mat-option [value]="EstadoTransaccion.CANCELADA">Cancelada</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha inicio</mat-label>
+          <input matInput [matDatepicker]="fechaInicioPicker" formControlName="fechaInicio">
+          <mat-datepicker-toggle matSuffix [for]="fechaInicioPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fechaInicioPicker></mat-datepicker>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha fin</mat-label>
+          <input matInput [matDatepicker]="fechaFinPicker" formControlName="fechaFin">
+          <mat-datepicker-toggle matSuffix [for]="fechaFinPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fechaFinPicker></mat-datepicker>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Monto mínimo</mat-label>
+          <input matInput type="number" formControlName="montoMinimo">
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Monto máximo</mat-label>
+          <input matInput type="number" formControlName="montoMaximo">
+        </mat-form-field>
+      </div>
+      
+      <div class="filtros-actions">
+        <button mat-button type="button" (click)="resetearFiltros()">Limpiar filtros</button>
+        <button mat-raised-button color="primary" type="submit">Aplicar filtros</button>
+      </div>
+    </form>
+  </mat-expansion-panel>
+
+  <!-- Lista de transacciones -->
+  <div class="transactions-content">
+    <div class="content-header">
+      <h2 class="section-title">Historial de transacciones</h2>
+      <div class="view-options">
+        <button mat-button [matMenuTriggerFor]="viewMenu" class="view-selector">
+          <mat-icon>sort</mat-icon> Ordenar por
         </button>
-      }
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="filterForm" class="filters-form">
-        <div class="filters-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Tipo</mat-label>
-            <mat-select formControlName="tipo">
-              <mat-option value="">Todos</mat-option>
-              <mat-option [value]="TransactionType.CUENTA_CUENTA">Entre Cuentas</mat-option>
-              <mat-option [value]="TransactionType.CUENTA_BOLSILLO">A Bolsillo</mat-option>
-              <mat-option [value]="TransactionType.BOLSILLO_CUENTA">De Bolsillo a Cuenta</mat-option>
-              <mat-option [value]="TransactionType.BANCO_CUENTA">Consignación a Cuenta</mat-option>
-              <mat-option [value]="TransactionType.BANCO_BOLSILLO">Consignación a Bolsillo</mat-option>
-              <mat-option [value]="TransactionType.CUENTA_BANCO">Retiro a Banco</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Estado</mat-label>
-            <mat-select formControlName="estado">
-              <mat-option value="">Todos</mat-option>
-              <mat-option [value]="TransactionStatus.COMPLETED">Aprobada</mat-option>
-              <mat-option [value]="TransactionStatus.PENDING">Pendiente</mat-option>
-              <mat-option [value]="TransactionStatus.REJECTED">Rechazada</mat-option>
-              <mat-option [value]="TransactionStatus.CANCELLED">Cancelada</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-
-        <div class="filters-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Desde</mat-label>
-            <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
-            <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-            <mat-datepicker #pickerInicio></mat-datepicker>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Hasta</mat-label>
-            <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin">
-            <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
-            <mat-datepicker #pickerFin></mat-datepicker>
-          </mat-form-field>
-        </div>
-
-        <div class="filters-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Monto Mínimo</mat-label>
-            <input matInput type="number" formControlName="montoMinimo">
-            <span matPrefix>$&nbsp;</span>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Monto Máximo</mat-label>
-            <input matInput type="number" formControlName="montoMaximo">
-            <span matPrefix>$&nbsp;</span>
-          </mat-form-field>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-
-  <div class="content">
+        <mat-menu #viewMenu="matMenu">
+          <button mat-menu-item (click)="ordenarPor('fecha', 'desc')">
+            <mat-icon>arrow_downward</mat-icon>
+            <span>Más recientes primero</span>
+          </button>
+          <button mat-menu-item (click)="ordenarPor('fecha', 'asc')">
+            <mat-icon>arrow_upward</mat-icon>
+            <span>Más antiguas primero</span>
+          </button>
+          <button mat-menu-item (click)="ordenarPor('monto', 'desc')">
+            <mat-icon>arrow_downward</mat-icon>
+            <span>Mayor monto primero</span>
+          </button>
+          <button mat-menu-item (click)="ordenarPor('monto', 'asc')">
+            <mat-icon>arrow_upward</mat-icon>
+            <span>Menor monto primero</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+    
     @if (loading) {
       <div class="loading-container">
         <mat-spinner diameter="40"></mat-spinner>
@@ -155,15 +241,37 @@
       <div class="error-container">
         <mat-icon color="warn">error_outline</mat-icon>
         <p>{{ error }}</p>
-        <button mat-raised-button color="primary" (click)="loadTransactions()">
+        <button mat-raised-button color="primary" (click)="cargarTransacciones()">
           Reintentar
         </button>
+      </div>
+    } @else if (transaccionesFiltradas.length === 0) {
+      <div class="empty-state">
+        <img src="assets/images/empty-transactions.svg" alt="No hay transacciones" class="empty-image">
+        <h3>No hay transacciones</h3>
+        <p>No se encontraron transacciones con los filtros seleccionados</p>
+        @if (filtrosActivos) {
+          <button mat-raised-button color="primary" (click)="resetearFiltros()">
+            <mat-icon>refresh</mat-icon> Limpiar filtros
+          </button>
+        } @else {
+          <button mat-raised-button color="primary" (click)="crearTransaccion(TipoTransaccion.CUENTA_CUENTA)">
+            <mat-icon>add</mat-icon> Realizar una transacción
+          </button>
+        }
       </div>
     } @else {
       <app-transaccion-list
         [transacciones]="transaccionesFiltradas"
-        (transactionSelected)="onTransactionUpdated($event)">
+        (transaccionSeleccionada)="actualizarTransaccion($event)">
       </app-transaccion-list>
+      
+      <mat-paginator 
+        [length]="totalTransacciones"
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="cambiarPagina($event)">
+      </mat-paginator>
     }
   </div>
 </div>

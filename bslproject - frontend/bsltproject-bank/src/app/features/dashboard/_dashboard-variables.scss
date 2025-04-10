@@ -1,32 +1,32 @@
 // Variables específicas para el dashboard
 
-// Colores principales
-$dashboard-primary: #121212;
-$dashboard-secondary: #ffffff;
-$dashboard-accent: #f44336;
-$dashboard-accent-dark: #d32f2f;
-$dashboard-text-light: #ffffff;
-$dashboard-text-dark: #121212;
-$dashboard-text-muted: #9e9e9e;
-$dashboard-background: #f5f5f5;
+// Colores principales - Paleta morado, blanco y negro
+$dashboard-primary: #121212; // Negro
+$dashboard-secondary: #ffffff; // Blanco
+$dashboard-accent: #8A2BE2; // Morado principal
+$dashboard-accent-dark: #5D1C9E; // Morado oscuro
+$dashboard-accent-light: #B24BF3; // Morado claro
+$dashboard-text-light: #ffffff; // Texto blanco
+$dashboard-text-dark: #121212; // Texto negro
+$dashboard-text-muted: #9e9e9e; // Texto gris
+$dashboard-background: #ffffff; // Fondo blanco
 
 // Gradientes para las tarjetas
-$gradient-balance: linear-gradient(135deg, #121212 0%, #2c2c2c 100%);
-$gradient-income: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
-$gradient-expense: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
-$gradient-savings: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+$gradient-balance: linear-gradient(135deg, #8A2BE2 0%, #5D1C9E 100%);
+$gradient-income: linear-gradient(135deg, #8A2BE2 0%, #5D1C9E 100%);
+$gradient-expense: linear-gradient(135deg, #121212 0%, #2c2c2c 100%);
+$gradient-savings: linear-gradient(135deg, #B24BF3 0%, #8A2BE2 100%);
 
-// Patrones de fondo
-$pattern-dots: radial-gradient(circle, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-$pattern-grid: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-               linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+// Patrones de fondo (simplificados)
+$pattern-dots: none;
+$pattern-grid: none;
 
-// Bordes y sombras
+// Bordes y sombras (simplificados)
 $dashboard-card-radius: 8px;
-$dashboard-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-$dashboard-card-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-$dashboard-card-border: 1px solid rgba(0, 0, 0, 0.05);
-$dashboard-card-hover-transform: translateY(-4px);
+$dashboard-card-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+$dashboard-card-hover-shadow: 0 4px 8px rgba(138, 43, 226, 0.2);
+$dashboard-card-border: 1px solid rgba(138, 43, 226, 0.1);
+$dashboard-card-hover-transform: translateY(-2px);
 
 // Animaciones
 $transition-speed: 0.3s;
