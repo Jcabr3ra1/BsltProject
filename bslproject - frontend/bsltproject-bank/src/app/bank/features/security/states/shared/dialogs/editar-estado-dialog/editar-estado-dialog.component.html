@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Editar Estado</h2>
+
+<form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-estado">
+  <mat-form-field appearance="outline" class="campo">
+    <mat-label>Nombre del Estado</mat-label>
+    <input matInput formControlName="nombre" />
+    <mat-error *ngIf="form.controls['nombre'].hasError('required')">
+      El nombre es obligatorio
+    </mat-error>
+    <mat-error *ngIf="form.controls['nombre'].hasError('minlength')">
+      Debe tener al menos 3 caracteres
+    </mat-error>
+  </mat-form-field>
+
+  <div class="acciones">
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+      Actualizar
+    </button>
+    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+  </div>
+</form>

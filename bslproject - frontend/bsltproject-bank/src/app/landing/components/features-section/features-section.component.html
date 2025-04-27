@@ -1,0 +1,16 @@
+<section class="features-section">
+    <div
+      *ngFor="let feature of features; let i = index"
+      class="feature-card"
+      [class.reversed]="i % 2 !== 0"
+    >
+      <div class="feature-content">
+        <h2>{{ feature.title }}</h2>
+        <p>{{ feature.description }}</p>
+      </div>
+      <div class="feature-media">
+        <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+      </div>
+    </div>
+  </section>
+  

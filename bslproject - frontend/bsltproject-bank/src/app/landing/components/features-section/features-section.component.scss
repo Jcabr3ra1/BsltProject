@@ -1,0 +1,33 @@
+.features-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    padding: 5rem 2rem;
+    align-items: center;
+  
+    .feature-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+      max-width: 1000px;
+  
+      &.reversed {
+        flex-direction: row-reverse;
+      }
+  
+      .feature-content {
+        flex: 1 1 400px;
+      }
+  
+      .feature-media {
+        flex: 0 0 auto;
+        .feature-icon {
+          font-size: 64px;
+          color: #1976d2;
+        }
+      }
+    }
+  }
+  

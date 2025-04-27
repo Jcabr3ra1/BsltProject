@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>Asignar a cuenta</h2>
+
+<form [formGroup]="form" (ngSubmit)="guardar()" class="form-container">
+  <mat-form-field class="full-width">
+    <mat-label>Selecciona una cuenta</mat-label>
+    <mat-select formControlName="id_cuenta">
+      <mat-option *ngFor="let cuenta of cuentasDisponibles" [value]="cuenta.id || cuenta._id">
+        {{ cuenta.tipo }} - {{ cuenta.numero_cuenta }}
+      </mat-option>
+      <mat-option *ngIf="cuentasDisponibles.length === 0" disabled>
+        No hay cuentas disponibles
+      </mat-option>
+      
+    </mat-select>
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+      Asignar
+    </button>
+  </div>
+</form>

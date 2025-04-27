@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Permisos Asignados</h2>
+
+<div *ngIf="data.permisos.length > 0; else sinPermisos" class="permiso-container">
+  <div class="permiso-chip" *ngFor="let permiso of data.permisos">
+    <div class="nombre">{{ permiso.nombre }}</div>
+    <div class="descripcion">{{ permiso.descripcion }}</div>
+  </div>
+</div>
+
+<ng-template #sinPermisos>
+  <p class="no-permisos">No hay permisos asignados a este rol.</p>
+</ng-template>
+
+<div class="acciones">
+  <button mat-raised-button color="primary" (click)="cerrar()">Cerrar</button>
+</div>

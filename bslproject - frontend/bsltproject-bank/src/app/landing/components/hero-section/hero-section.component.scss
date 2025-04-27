@@ -1,0 +1,103 @@
+.hero-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+    overflow: hidden;
+  
+    .landing-header {
+      position: absolute;
+      top: 1.5rem;
+      left: 2rem;
+      right: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+  
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+  
+        span {
+          color: #42a5f5;
+        }
+      }
+  
+      .login-button {
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: background 0.3s;
+  
+        &:hover {
+          background: rgba(255, 255, 255, 0.15);
+        }
+      }
+    }
+  
+    .hero-background {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: background-image 1s ease-in-out;
+      z-index: -2;
+    }
+  
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+  
+    .hero-content {
+      z-index: 1;
+      max-width: 800px;
+      padding: 2rem;
+  
+      .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+  
+      .hero-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+      }
+  
+      .form-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+      }
+  
+      .form-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+  
+      .start-button {
+        background-color: #ff4081;
+        color: white;
+        font-weight: bold;
+      }
+  
+      .login-alt {
+        color: white;
+        border-color: white;
+      }
+    }
+  }
+  

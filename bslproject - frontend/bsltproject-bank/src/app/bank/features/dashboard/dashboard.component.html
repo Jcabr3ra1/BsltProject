@@ -1,1 +1,154 @@
-<p>dashboard works!</p>
+<section class="dashboard-container">
+  <div class="dashboard-header">
+    <div class="greeting-section">
+      <div class="left-section">
+        <h1>Hola, <span class="user-name">{{ user?.nombre || 'Usuario' }}</span> 👋</h1>
+        <p>Bienvenido a tu panel financiero. Aquí encontrarás un resumen de tus finanzas.</p>
+      </div>
+      <div class="right-section">
+        <div class="date-display">
+          <mat-icon>calendar_today</mat-icon>
+          <span class="current-date">{{ currentDate | date:'EEEE, d MMMM, yyyy' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <div class="dashboard-grid">
+      <mat-card class="dashboard-card">
+        <div class="card-header">
+          <h3>Total en cuentas</h3>
+          <div class="card-icon-container">
+            <mat-icon>account_balance</mat-icon>
+          </div>
+        </div>
+        <div class="card-value">
+          <span class="currency">$</span>12,540.00
+        </div>
+        <div class="stat-trend positive">
+          <mat-icon>trending_up</mat-icon> +5.2% desde el mes pasado
+        </div>
+        <mat-icon class="card-background-icon">account_balance</mat-icon>
+      </mat-card>
+
+      <mat-card class="dashboard-card">
+        <div class="card-header">
+          <h3>Transacciones este mes</h3>
+          <div class="card-icon-container">
+            <mat-icon>sync_alt</mat-icon>
+          </div>
+        </div>
+        <div class="card-value">18</div>
+        <div class="stat-trend negative">
+          <mat-icon>trending_down</mat-icon> -3 comparado con el mes anterior
+        </div>
+        <mat-icon class="card-background-icon">sync_alt</mat-icon>
+      </mat-card>
+
+      <mat-card class="dashboard-card">
+        <div class="card-header">
+          <h3>Meta de ahorro</h3>
+          <div class="card-icon-container">
+            <mat-icon>savings</mat-icon>
+          </div>
+        </div>
+        <div class="card-value">75%</div>
+        <div class="progress-container">
+          <div class="progress-bar" [style.width]="'75%'"></div>
+          <div class="progress-markers">
+            <div class="marker"></div>
+            <div class="marker"></div>
+            <div class="marker"></div>
+            <div class="marker"></div>
+          </div>
+        </div>
+        <div class="progress-info">
+          <span>$9,375.00</span>
+          <span>Meta: $12,500.00</span>
+        </div>
+        <mat-icon class="card-background-icon">savings</mat-icon>
+      </mat-card>
+    </div>
+
+    <div class="chart-section">
+      <h2 class="section-title">Resumen financiero</h2>
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3>Balance de ingresos y gastos</h3>
+          <div class="chart-filters">
+            <button [class.active]="activeChartPeriod === 'week'">Semana</button>
+            <button [class.active]="activeChartPeriod === 'month'" class="active">Mes</button>
+            <button [class.active]="activeChartPeriod === 'year'">Año</button>
+          </div>
+        </div>
+        <div class="chart" style="height: 300px;">
+          <!-- Aquí iría tu gráfico (se puede usar cualquier librería de charts) -->
+          <p style="color: #666; text-align: center; margin-top: 130px;">
+            [Visualización del balance de ingresos y gastos]
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="transactions-container">
+      <div class="transactions-header">
+        <h3>Movimientos recientes</h3>
+        <button (click)="viewAllTransactions()">
+          Ver todos <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th>Fecha</th>
+            <th>Categoría</th>
+            <th>Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let transaction of recentTransactions">
+            <td class="transaction-title">{{ transaction.descripcion }}</td>
+            <td class="transaction-date">{{ transaction.fecha }}</td>
+            <td>
+              <span [ngStyle]="{'color': getCategoryColor(transaction.categoria)}">
+                {{ transaction.categoria }}
+              </span>
+            </td>
+            <td class="transaction-amount" [ngClass]="{'positive': transaction.monto > 0, 'negative': transaction.monto < 0}">
+              {{ transaction.monto | currency }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="quick-actions">
+      <a class="action-button" routerLink="/transacciones/nueva">
+        <div class="icon-container">
+          <mat-icon>add_circle</mat-icon>
+        </div>
+        <span class="action-title">Nueva transacción</span>
+      </a>
+      <a class="action-button" routerLink="/cuentas">
+        <div class="icon-container">
+          <mat-icon>account_balance</mat-icon>
+        </div>
+        <span class="action-title">Administrar cuentas</span>
+      </a>
+      <a class="action-button" routerLink="/bolsillos/crear">
+        <div class="icon-container">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <span class="action-title">Crear bolsillo</span>
+      </a>
+      <a class="action-button" routerLink="/reportes">
+        <div class="icon-container">
+          <mat-icon>bar_chart</mat-icon>
+        </div>
+        <span class="action-title">Ver reportes</span>
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,1 +1,25 @@
-<p>navbar works!</p>
+<mat-toolbar class="navbar">
+  <button mat-icon-button (click)="toggleSidebar()" class="menu-toggle" aria-label="Menú lateral">
+    <mat-icon>{{ isSidebarOpen ? 'menu_open' : 'menu' }}</mat-icon>
+  </button>
+  
+  <span class="logo">BSLBank</span>
+  <span class="spacer"></span>
+
+  <div class="user-info">
+    <mat-icon>account_circle</mat-icon>
+    <span>{{ user?.nombre || 'Usuario' }}</span>
+    <button mat-icon-button (click)="logout()" title="Cerrar sesión">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
+
+<!-- Botón flotante para mostrar sidebar cuando está oculto -->
+<div class="sidebar-toggle-button" *ngIf="!isSidebarOpen">
+  <button mat-mini-fab (click)="toggleSidebar()" class="toggle-fab" color="primary" aria-label="Mostrar menú">
+    <div class="toggle-icon-container">
+      <mat-icon>chevron_right</mat-icon>
+    </div>
+  </button>
+</div>

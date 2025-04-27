@@ -55,6 +55,25 @@ class BolsilloServicio:
     def eliminar(self, id):
         return self.repositorioBolsillo.delete(id)
 
+    def eliminar_y_quitar_referencia(self, id_bolsillo):
+        bolsillo = self.repositorioBolsillo.findById(id_bolsillo)
+
+        if not bolsillo:
+            return {"error": "Bolsillo no encontrado"}, 404
+
+        id_cuenta = bolsillo.get("id_cuenta")
+        self.repositorioBolsillo.delete(id_bolsillo)
+
+        # Si hay una cuenta asociada, quitarle la referencia
+        if id_cuenta:
+            cuenta = self.repositorioCuenta.findById(id_cuenta)
+            if cuenta:
+                cuenta_objeto = Cuenta(cuenta)
+                cuenta_objeto.id_bolsillo = None
+                self.repositorioCuenta.save(cuenta_objeto)
+
+        return {"mensaje": "Bolsillo eliminado y referencia en cuenta actualizada"}
+
     def asignar_cuenta(self, id_bolsillo, id_cuenta):
         bolsillo_actual = self.repositorioBolsillo.findById(id_bolsillo)
         cuenta_actual = self.repositorioCuenta.findById(id_cuenta)

@@ -1,1 +1,229 @@
-<p>user-page works!</p>
+<!-- user-page.component.html - Rediseñado -->
+<mat-card>
+  <div class="header-actions">
+    <h2>
+      <mat-icon>people_alt</mat-icon>
+      Gestión de usuarios
+    </h2>
+    <button mat-raised-button (click)="abrirFormularioUsuario()">
+      <mat-icon>add</mat-icon> Nuevo usuario
+    </button>
+  </div>
+
+  <!-- Estadísticas y filtros (nuevo) -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-value">{{ totalUsers }}</div>
+      <div class="stat-label">Total usuarios</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-value">{{ activeUsers }}</div>
+      <div class="stat-label">Usuarios activos</div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-value">{{ adminUsers }}</div>
+      <div class="stat-label">Administradores</div>
+    </div>
+    
+    <!-- Filtro y búsqueda (nuevo) -->
+    <div class="filter-actions">
+      <div class="search-box">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Buscar usuario..." [(ngModel)]="searchTerm" (keyup)="filtrarUsuarios()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de usuarios rediseñada -->
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" class="full-width-table" matSort>
+      <!-- Nombre completo -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+        <td mat-cell *matCellDef="let user">
+          <div class="user-info">
+            <div class="user-avatar" [ngStyle]="{'background-color': getAvatarColor(user.nombre)}">
+              {{ getInitials(user.nombre, user.apellido) }}
+            </div>
+            <div class="user-details">
+              {{ user.nombre }} {{ user.apellido }}
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+      </ng-container>
+
+      <!-- ¿Tiene cuenta? -->
+      <ng-container matColumnDef="tieneCuenta">
+        <th mat-header-cell *matHeaderCellDef>Cuenta</th>
+        <td mat-cell *matCellDef="let user">
+          <div class="account-status">
+            <mat-icon *ngIf="user.tieneCuenta" class="account-active">account_balance_wallet</mat-icon>
+            <mat-icon *ngIf="!user.tieneCuenta" class="account-inactive">money_off</mat-icon>
+            <span>{{ user.tieneCuenta ? 'Activa' : 'Sin cuenta' }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+        <td mat-cell *matCellDef="let user">
+          <div class="selector-container">
+            <div class="estado-badge" 
+                 [ngClass]="{'activo': user.estado?.nombre === 'Activo', 
+                             'inactivo': user.estado?.nombre === 'Inactivo',
+                             'pendiente': user.estado?.nombre === 'Pendiente'}">
+              {{ user.estado?.nombre }}
+            </div>
+            <button mat-icon-button [matMenuTriggerFor]="estadoMenu" class="selector-button">
+              <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+            <mat-menu #estadoMenu="matMenu">
+              <button mat-menu-item *ngFor="let estado of estados" (click)="cambiarEstado(user, estado.id)">
+                <span [class.current-item]="user.estado?.id === estado.id">{{ estado.nombre }}</span>
+              </button>
+            </mat-menu>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Rol -->
+      <ng-container matColumnDef="rol">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
+        <td mat-cell *matCellDef="let user">
+          <div class="selector-container">
+            <div class="rol-badge" 
+                 [ngClass]="{'admin': user.roles?.[0]?.nombre === 'ADMIN', 
+                             'user': user.roles?.[0]?.nombre === 'USER',
+                             'manager': user.roles?.[0]?.nombre === 'MANAGER'}">
+              {{ user.roles?.[0]?.nombre }}
+            </div>
+            <button mat-icon-button [matMenuTriggerFor]="rolMenu" class="selector-button">
+              <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+            <mat-menu #rolMenu="matMenu">
+              <button mat-menu-item *ngFor="let rol of roles" (click)="cambiarRol(user, rol.id)">
+                <span [class.current-item]="user.roles?.[0]?.id === rol.id">{{ rol.nombre }}</span>
+              </button>
+            </mat-menu>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let user">
+          <div class="action-buttons">
+            <button mat-icon-button (click)="editarUsuario(user)" class="edit-button" matTooltip="Editar usuario">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="eliminarUsuario(user)" class="delete-button" matTooltip="Eliminar usuario">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Header y Rows -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+          [ngClass]="{'selected-row': selectedUser?.id === row.id}"
+          (click)="selectUser(row)"></tr>
+    </table>
+    
+    <!-- Mensaje cuando no hay datos -->
+    <div class="no-data-message" *ngIf="dataSource.data.length === 0">
+      <mat-icon>sentiment_dissatisfied</mat-icon>
+      <p>No se encontraron usuarios</p>
+    </div>
+    
+    <!-- Paginador (nuevo) -->
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+  </div>
+  
+  <!-- Vista de detalles de usuario (nuevo) - Se muestra cuando se selecciona un usuario -->
+  <div class="user-detail-panel" *ngIf="selectedUser" [@fadeInOut]>
+    <div class="panel-header">
+      <h3>Detalles del Usuario</h3>
+      <button mat-icon-button class="close-button" (click)="selectedUser = null">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="user-profile">
+      <div class="profile-header">
+        <div class="large-avatar" [ngStyle]="{'background-color': getAvatarColor(selectedUser.nombre)}">
+          {{ getInitials(selectedUser.nombre, selectedUser.apellido) }}
+        </div>
+        <div class="user-main-info">
+          <h4>{{ selectedUser.nombre }} {{ selectedUser.apellido }}</h4>
+          <p>{{ selectedUser.email }}</p>
+          <div class="rol-badge large" 
+               [ngClass]="{'admin': selectedUser.roles?.[0]?.nombre === 'ADMIN', 
+                           'user': selectedUser.roles?.[0]?.nombre === 'USER',
+                           'manager': selectedUser.roles?.[0]?.nombre === 'MANAGER'}">
+            {{ selectedUser.roles?.[0]?.nombre }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <div class="detail-item">
+          <div class="detail-label">ID de Usuario</div>
+          <div class="detail-value">{{ selectedUser.id }}</div>
+        </div>
+        
+        <div class="detail-item">
+          <div class="detail-label">Cuenta Asociada</div>
+          <div class="detail-value">
+            <div class="account-status">
+              <mat-icon *ngIf="selectedUser.tieneCuenta" class="account-active">account_balance_wallet</mat-icon>
+              <mat-icon *ngIf="!selectedUser.tieneCuenta" class="account-inactive">money_off</mat-icon>
+              <span>{{ selectedUser.tieneCuenta ? 'Activa' : 'Sin cuenta' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="detail-item">
+          <div class="detail-label">Estado</div>
+          <div class="detail-value">
+            <div class="estado-badge large" 
+                 [ngClass]="{'activo': selectedUser.estado?.nombre === 'Activo', 
+                             'inactivo': selectedUser.estado?.nombre === 'Inactivo',
+                             'pendiente': selectedUser.estado?.nombre === 'Pendiente'}">
+              {{ selectedUser.estado?.nombre }}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="action-section">
+        <button class="detail-button edit" (click)="editarUsuario(selectedUser)">
+          <mat-icon>edit</mat-icon>
+          Editar Usuario
+        </button>
+        
+        <button class="detail-button delete" (click)="eliminarUsuario(selectedUser)">
+          <mat-icon>delete</mat-icon>
+          Eliminar Usuario
+        </button>
+        
+        <button class="detail-button" 
+                [ngClass]="{'disable': selectedUser.estado?.nombre === 'Activo', 'enable': selectedUser.estado?.nombre !== 'Activo'}"
+                (click)="cambiarEstado(selectedUser, getEstadoIdByName(selectedUser.estado?.nombre === 'Activo' ? 'Inactivo' : 'Activo'))">
+          <mat-icon>{{ selectedUser.estado?.nombre === 'Activo' ? 'block' : 'check_circle' }}</mat-icon>
+          {{ selectedUser.estado?.nombre === 'Activo' ? 'Desactivar' : 'Activar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</mat-card>

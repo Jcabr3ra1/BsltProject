@@ -1,0 +1,27 @@
+<section class="testimonials-section">
+    <div class="section-header">
+      <h2>Lo que dicen nuestros clientes</h2>
+    </div>
+  
+    <div class="testimonials-container">
+      <div *ngFor="let t of testimonials" class="testimonial-card">
+        <div class="testimonial-rating">
+          <ng-container *ngFor="let star of [].constructor(Math.floor(t.rating))">
+            <mat-icon>star</mat-icon>
+          </ng-container>
+          <ng-container *ngIf="t.rating % 1 !== 0">
+            <mat-icon>star_half</mat-icon>
+          </ng-container>
+        </div>
+        <p class="testimonial-text">"{{ t.message }}"</p>
+        <div class="testimonial-author">
+          <mat-icon>person</mat-icon>
+          <div>
+            <h4>{{ t.name }}</h4>
+            <p>{{ t.role }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  

@@ -1,0 +1,750 @@
+/* user-page.component.scss - Rediseñado */
+/* Basado en la paleta de colores del sidebar:
+   - Morado principal: #a46cf5
+   - Negro/Oscuro: Degradado de #2c1658 a #1f1f1f
+   - Blanco/Claro: #ffffff, #e0e0e0
+*/
+
+// Variables de color para mantener consistencia
+$primary-purple: #a46cf5;
+$light-purple: rgba(164, 108, 245, 0.2);
+$dark-purple: #2c1658;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+$medium-text: #e0e0e0;
+$divider-color: rgba(164, 108, 245, 0.3);
+
+// Rediseño del card contenedor
+mat-card {
+  background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+  color: $light-text;
+  padding: 1.5rem;
+  margin: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(164, 108, 245, 0.2);
+  
+  h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: $light-text;
+    position: relative;
+    padding-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 70%;
+      width: 3px;
+      background-color: $primary-purple;
+      border-radius: 3px;
+    }
+    
+    mat-icon {
+      margin-right: 0.75rem;
+      color: $primary-purple;
+    }
+  }
+}
+
+// Header con acciones
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  
+  button[mat-raised-button] {
+    background: linear-gradient(45deg, $primary-purple, #8e57d6);
+    color: $light-text;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(164, 108, 245, 0.3);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(164, 108, 245, 0.4);
+      background: linear-gradient(45deg, #8e57d6, $primary-purple);
+    }
+    
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+// Contenedor de estadísticas y filtros
+.stats-container {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  
+  .stat-card {
+    background: linear-gradient(135deg, rgba(164, 108, 245, 0.2), rgba(44, 22, 88, 0.3));
+    border-radius: 10px;
+    padding: 1rem;
+    min-width: 140px;
+    text-align: center;
+    border: 1px solid rgba(164, 108, 245, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: $primary-purple;
+      margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: $medium-text;
+      letter-spacing: 0.5px;
+    }
+  }
+  
+  .filter-actions {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto;
+  }
+}
+
+// Tabla principal
+.table-container {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.full-width-table {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  overflow: hidden;
+  
+  // Encabezados de tabla
+  th.mat-header-cell {
+    background-color: rgba(44, 22, 88, 0.8);
+    color: $light-text;
+    font-weight: 600;
+    padding: 1rem 0.75rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    border-bottom: none;
+  }
+  
+  // Celdas de la tabla
+  td.mat-cell {
+    padding: 0.8rem 0.75rem;
+    color: $medium-text;
+    border-bottom: 1px solid rgba(164, 108, 245, 0.1);
+    font-size: 0.95rem;
+  }
+  
+  // Filas de la tabla
+  tr.mat-row {
+    background-color: rgba(255, 255, 255, 0.03);
+    transition: all 0.2s ease;
+    
+    &:nth-child(odd) {
+      background-color: rgba(255, 255, 255, 0.01);
+    }
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.08);
+      cursor: pointer;
+    }
+  }
+}
+
+// Selectores de estado y rol
+.selector-container {
+  display: flex;
+  align-items: center;
+  
+  span {
+    font-size: 0.95rem;
+  }
+  
+  .selector-button {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    margin-left: 4px;
+    
+    mat-icon {
+      color: $primary-purple;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      line-height: 18px;
+    }
+  }
+}
+
+// Elemento actualmente seleccionado
+.current-item {
+  font-weight: 600;
+  color: $primary-purple;
+}
+
+// Resaltado de íconos
+mat-icon[color="primary"] {
+  color: $primary-purple !important;
+}
+
+mat-icon[color="warn"] {
+  color: #ff5252 !important;
+}
+
+// Botones de acción en la tabla
+button[mat-icon-button] {
+  color: $medium-text;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    color: $primary-purple;
+    transform: scale(1.1);
+  }
+  
+  &[color="primary"]:hover {
+    color: $primary-purple;
+  }
+  
+  &[color="warn"]:hover {
+    color: #ff5252;
+  }
+}
+
+// Estilo de menús desplegables
+::ng-deep {
+  .mat-menu-panel {
+    background-color: #2d2d2d;
+    border: 1px solid rgba(164, 108, 245, 0.2);
+    border-radius: 8px;
+    
+    .mat-menu-item {
+      color: $medium-text;
+      
+      &:hover {
+        background-color: rgba(164, 108, 245, 0.1);
+      }
+      
+      .current-item {
+        color: $primary-purple;
+      }
+    }
+  }
+  
+  // Estilos para los diálogos
+  .mat-dialog-container {
+    background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+    color: $light-text;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(164, 108, 245, 0.2);
+  }
+  
+  // Estilos para los inputs de formularios
+  .mat-form-field {
+    width: 100%;
+    
+    .mat-input-element {
+      color: $light-text;
+    }
+    
+    .mat-form-field-label {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .mat-form-field-underline {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    &.mat-focused {
+      .mat-form-field-ripple {
+        background-color: $primary-purple;
+      }
+      
+      .mat-form-field-label {
+        color: $primary-purple;
+      }
+    }
+  }
+}
+
+// Badges de estados
+.estado-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  
+  &.activo {
+    background-color: rgba(76, 217, 100, 0.15);
+    color: #4cd964;
+    border: 1px solid rgba(76, 217, 100, 0.3);
+  }
+  
+  &.inactivo {
+    background-color: rgba(255, 59, 48, 0.15);
+    color: #ff3b30;
+    border: 1px solid rgba(255, 59, 48, 0.3);
+  }
+  
+  &.pendiente {
+    background-color: rgba(255, 204, 0, 0.15);
+    color: #ffcc00;
+    border: 1px solid rgba(255, 204, 0, 0.3);
+  }
+}
+
+// Badges de rol
+.rol-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  
+  &.admin {
+    background-color: rgba(164, 108, 245, 0.15);
+    color: $primary-purple;
+    border: 1px solid rgba(164, 108, 245, 0.3);
+  }
+  
+  &.user {
+    background-color: rgba(90, 200, 250, 0.15);
+    color: #5ac8fa;
+    border: 1px solid rgba(90, 200, 250, 0.3);
+  }
+  
+  &.manager {
+    background-color: rgba(255, 149, 0, 0.15);
+    color: #ff9500;
+    border: 1px solid rgba(255, 149, 0, 0.3);
+  }
+}
+
+// Estilo para mensajes de error o cuando no hay datos
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: $medium-text;
+  
+  mat-icon {
+    font-size: 3rem;
+    height: 3rem;
+    width: 3rem;
+    margin-bottom: 1rem;
+    color: rgba(164, 108, 245, 0.5);
+  }
+  
+  p {
+    font-size: 1.1rem;
+  }
+}
+
+// Diseño de los avatares de usuario en la tabla
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    text-transform: uppercase;
+  }
+  
+  .user-details {
+    font-weight: 500;
+  }
+}
+
+// Estilo para el status de la cuenta
+.account-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  mat-icon {
+    font-size: 1.1rem;
+    height: 1.1rem;
+    width: 1.1rem;
+    
+    &.account-active {
+      color: #4cd964;
+    }
+    
+    &.account-inactive {
+      color: #ff3b30;
+    }
+  }
+  
+  span {
+    font-size: 0.9rem;
+  }
+}
+
+// Estilos para los botones de acción
+.action-buttons {
+  display: flex;
+  gap: 0.25rem;
+  
+  button.edit-button:hover {
+    color: #a46cf5;
+    background-color: rgba(164, 108, 245, 0.1);
+  }
+  
+  button.delete-button:hover {
+    color: #ff3b30;
+    background-color: rgba(255, 59, 48, 0.1);
+  }
+}
+
+// Estilos para filas seleccionadas
+tr.selected-row {
+  background-color: rgba(164, 108, 245, 0.15) !important;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background-color: #a46cf5;
+  }
+  
+  td {
+    font-weight: 500;
+  }
+}
+
+// Panel de detalles de usuario
+.user-detail-panel {
+  background: linear-gradient(135deg, rgba(44, 22, 88, 0.95), rgba(31, 31, 31, 0.95));
+  border-radius: 12px;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(164, 108, 245, 0.3);
+  
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin: 0;
+    }
+    
+    .close-button {
+      color: rgba(255, 255, 255, 0.7);
+      
+      &:hover {
+        color: #ffffff;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+  
+  // Cabecera del perfil con avatar grande
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    
+    .large-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #ffffff;
+      font-size: 1.75rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+    }
+    
+    .user-main-info {
+      h4 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin: 0 0 0.3rem 0;
+      }
+      
+      p {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 0.75rem 0;
+      }
+      
+      // Badge de rol grande
+      .rol-badge.large {
+        padding: 0.35rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  // Sección de detalles
+  .detail-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    
+    .detail-item {
+      .detail-label {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 0.3rem;
+      }
+      
+      .detail-value {
+        font-size: 1rem;
+        color: #ffffff;
+        font-weight: 500;
+      }
+      
+      // Badge de estado grande
+      .estado-badge.large {
+        padding: 0.35rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  // Sección de acciones
+  .action-section {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    
+    .detail-button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+      }
+      
+      &.edit {
+        background-color: rgba(164, 108, 245, 0.2);
+        color: #a46cf5;
+        
+        &:hover {
+          background-color: rgba(164, 108, 245, 0.3);
+        }
+      }
+      
+      &.delete {
+        background-color: rgba(255, 59, 48, 0.2);
+        color: #ff3b30;
+        
+        &:hover {
+          background-color: rgba(255, 59, 48, 0.3);
+        }
+      }
+      
+      &.enable {
+        background-color: rgba(76, 217, 100, 0.2);
+        color: #4cd964;
+        
+        &:hover {
+          background-color: rgba(76, 217, 100, 0.3);
+        }
+      }
+      
+      &.disable {
+        background-color: rgba(255, 59, 48, 0.2);
+        color: #ff3b30;
+        
+        &:hover {
+          background-color: rgba(255, 59, 48, 0.3);
+        }
+      }
+    }
+  }
+}
+
+// Estilos para la caja de búsqueda
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  min-width: 250px;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  
+  &:focus-within {
+    background-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.5);
+  }
+  
+  mat-icon {
+    color: #a46cf5;
+  }
+  
+  input {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    outline: none;
+    width: 100%;
+    font-size: 0.95rem;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+// Estilos para el paginador
+::ng-deep {
+  .mat-paginator {
+    background-color: transparent;
+    color: #e0e0e0;
+    
+    .mat-paginator-container {
+      min-height: 48px;
+    }
+    
+    .mat-paginator-page-size-label,
+    .mat-paginator-range-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .mat-paginator-navigation-previous,
+    .mat-paginator-navigation-next,
+    .mat-paginator-navigation-first,
+    .mat-paginator-navigation-last {
+      color: #a46cf5;
+    }
+    
+    .mat-paginator-page-size-select {
+      .mat-select-value {
+        color: #e0e0e0;
+      }
+      
+      .mat-select-arrow {
+        color: #a46cf5;
+      }
+    }
+  }
+  
+  // Estilos adicionales para los diálogos personalizados
+  .custom-dialog {
+    .mat-dialog-container {
+      background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+      color: #ffffff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(164, 108, 245, 0.2);
+    }
+    
+    .mat-dialog-title {
+      color: #ffffff;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      position: relative;
+      padding-left: 0.5rem;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 70%;
+        width: 3px;
+        background-color: #a46cf5;
+        border-radius: 3px;
+      }
+    }
+    
+    .mat-dialog-actions {
+      padding: 1rem 0 0;
+      gap: 1rem;
+      
+      button {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 0.5rem 1.25rem;
+        
+        &.mat-primary {
+          background: linear-gradient(45deg, #a46cf5, #8e57d6);
+          color: #ffffff;
+        }
+      }
+    }
+  }
+  
+  // Animaciones
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  // Asegurar que el paginador tenga colores correctos
+  .mat-paginator-range-actions {
+    button.mat-icon-button[disabled] {
+      color: rgba(255, 255, 255, 0.3) !important;
+    }
+  }
+}

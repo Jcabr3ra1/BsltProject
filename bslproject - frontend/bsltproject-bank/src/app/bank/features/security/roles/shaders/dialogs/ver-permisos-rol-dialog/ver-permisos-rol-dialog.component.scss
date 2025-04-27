@@ -1,0 +1,44 @@
+.permiso-container {
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 8px;
+  }
+  
+  .permiso-chip {
+    background-color: #f9f9f9;
+    border-left: 4px solid #673ab7;
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+    .nombre {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+  
+    .descripcion {
+      font-size: 13px;
+      color: #555;
+    }
+  }
+  
+  .no-permisos {
+    text-align: center;
+    margin-top: 24px;
+    font-style: italic;
+    color: #888;
+  }
+  
+  .acciones {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px;
+  }
+  

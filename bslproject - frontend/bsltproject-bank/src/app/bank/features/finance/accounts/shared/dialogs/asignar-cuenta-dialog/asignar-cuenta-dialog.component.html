@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Asignar cuenta a usuario</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Selecciona un usuario</mat-label>
+      <mat-select formControlName="usuario_id">
+        <mat-option *ngFor="let user of usuarios" [value]="user.id">
+          {{ user.nombre }} {{ user.apellido }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="asignar()">Asignar</button>
+</mat-dialog-actions>

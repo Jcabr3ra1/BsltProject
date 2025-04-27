@@ -234,6 +234,7 @@ async def asignar_estado_a_usuario(userId: str, estadoId: str, request: Request,
         return response.json()
     raise HTTPException(status_code=response.status_code, detail=f"Error al asignar estado: {response.text}")
 
+
 # ROLES
 @router.post("/roles")
 async def crear_rol(request: Request, token_data: dict = Depends(verificar_rol("ADMIN"))):

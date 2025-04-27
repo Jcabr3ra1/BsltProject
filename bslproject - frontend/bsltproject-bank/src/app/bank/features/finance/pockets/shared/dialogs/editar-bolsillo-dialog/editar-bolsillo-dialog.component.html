@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>Editar bolsillo</h2>
+
+<form [formGroup]="form" (ngSubmit)="guardar()" class="form-container">
+
+  <!-- Tipo de bolsillo -->
+  <mat-form-field class="full-width">
+    <mat-label>Tipo de bolsillo</mat-label>
+    <mat-select formControlName="tipo">
+      <mat-option *ngFor="let tipo of tiposBolsillo" [value]="tipo">
+        {{ tipo }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Si es personalizado -->
+  <div *ngIf="form.value.tipo === 'Personalizado'" class="personalizado-section">
+    <mat-form-field class="full-width">
+      <mat-label>Nombre personalizado</mat-label>
+      <input matInput formControlName="nombrePersonalizado" />
+    </mat-form-field>
+
+    <div class="color-picker-group">
+      <label>Color personalizado</label>
+      <input type="color" formControlName="colorPersonalizado" class="color-picker" />
+    </div>
+  </div>
+
+  <!-- Si es otro tipo, muestra vista previa de color -->
+  <div *ngIf="form.value.tipo !== 'Personalizado'" class="color-preview">
+    <label>Color</label>
+    <div class="color-box" [style.background]="getColorPorTipo(form.value.tipo)">
+      {{ getColorPorTipo(form.value.tipo) }}
+    </div>
+  </div>
+
+  <!-- Saldo -->
+  <mat-form-field class="full-width">
+    <mat-label>Saldo</mat-label>
+    <input matInput type="number" formControlName="saldo" />
+  </mat-form-field>
+
+  <!-- Botones -->
+  <div class="actions">
+    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-flat-button color="primary" type="button" (click)="guardar()">Guardar</button>
+  </div>
+
+</form>

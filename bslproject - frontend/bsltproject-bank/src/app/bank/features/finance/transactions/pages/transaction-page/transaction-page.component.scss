@@ -1,0 +1,502 @@
+// Variables de color
+$color-primary: #6200ea; // Morado principal
+$color-primary-light: #9e47ff; // Morado claro
+$color-primary-dark: #3700b3; // Morado oscuro
+$color-black: #121212; // Negro elegante
+$color-dark-bg: #1e1e1e; // Fondo oscuro
+$color-dark-card: #2d2d2d; // Tarjetas oscuras
+$color-white: #ffffff; // Blanco puro
+$color-light-gray: #f5f5f5; // Gris claro
+$color-text-dark: #212121; // Texto oscuro
+$color-text-light: #e0e0e0; // Texto claro
+$color-error: #cf6679; // Color de error en tema oscuro
+$color-success: #4caf50; // Verde éxito
+
+.transacciones-container {
+  padding: 28px;
+  background-color: $color-light-gray;
+  border-radius: 8px;
+  min-height: calc(100vh - 120px);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(90deg, $color-primary-light, $color-primary, $color-primary-dark);
+    box-shadow: 0 0 10px rgba(98, 0, 234, 0.5);
+  }
+}
+
+// Encabezado estilizado
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+
+  .header-content {
+    .page-title {
+      margin: 0 0 5px 0;
+      font-size: 32px;
+      font-weight: 700;
+      color: $color-black;
+      position: relative;
+      display: inline-block;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -3px;
+        width: 40px;
+        height: 3px;
+        background-color: $color-primary;
+        border-radius: 5px;
+      }
+    }
+
+    .page-subtitle {
+      margin: 0;
+      font-size: 15px;
+      color: rgba(0, 0, 0, 0.7);
+      font-weight: 400;
+    }
+  }
+
+  .actions {
+    button {
+      background-color: $color-primary;
+      color: $color-white;
+      padding: 0 20px;
+      height: 42px;
+      border-radius: 21px;
+      font-weight: 500;
+      box-shadow: 0 3px 5px rgba(98, 0, 234, 0.3);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: $color-primary-dark;
+        box-shadow: 0 5px 15px rgba(98, 0, 234, 0.4);
+        transform: translateY(-2px);
+      }
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+// Tarjetas de resumen con diseño moderno
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 35px;
+
+  .stat-card {
+    padding: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    background-color: $color-white;
+    border: none;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    mat-card-content {
+      padding: 0;
+    }
+    
+    .card-header {
+      background-color: $color-primary;
+      height: 8px;
+    }
+    
+    .card-body {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .card-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      margin-right: 20px;
+      background-color: rgba(98, 0, 234, 0.08);
+      
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    .card-info {
+      flex: 1;
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: $color-black;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.6);
+        font-weight: 500;
+      }
+    }
+
+    // Colores específicos para cada tarjeta
+    &.cuentas {
+      .card-header { background-color: $color-primary; }
+      .card-icon { 
+        background-color: rgba(98, 0, 234, 0.08);
+        mat-icon { color: $color-primary; }
+      }
+    }
+    
+    &.bolsillos {
+      .card-header { background-color: $color-primary-light; }
+      .card-icon { 
+        background-color: rgba(158, 71, 255, 0.08);
+        mat-icon { color: $color-primary-light; }
+      }
+    }
+    
+    &.total {
+      .card-header { background-color: $color-primary-dark; }
+      .card-icon { 
+        background-color: rgba(55, 0, 179, 0.08);
+        mat-icon { color: $color-primary-dark; }
+      }
+    }
+  }
+}
+
+// Tabla mejorada con paginación
+.tabla-transacciones {
+  overflow-x: auto;
+  background-color: $color-white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  padding: 5px;
+  
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    
+    th {
+      background-color: rgba(98, 0, 234, 0.05);
+      color: $color-black;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid $color-primary;
+      white-space: nowrap;
+    }
+    
+    td {
+      padding: 16px;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      vertical-align: middle;
+      color: $color-text-dark;
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    tr:hover td {
+      background-color: rgba(98, 0, 234, 0.03);
+    }
+    
+    .estado-anulada {
+      color: $color-error;
+      font-weight: 600;
+      background-color: rgba(207, 102, 121, 0.1);
+      padding: 4px 10px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    
+    .estado-activa {
+      color: $color-success;
+      font-weight: 600;
+      background-color: rgba(76, 175, 80, 0.1);
+      padding: 4px 10px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    
+    button[mat-icon-button] {
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      
+      &[color="warn"] {
+        color: $color-error;
+      }
+      
+      &[color="primary"] {
+        color: $color-primary;
+      }
+    }
+  }
+  
+  // Estilos para el paginador
+  mat-paginator {
+    background: transparent;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    
+    .mat-paginator-container {
+      min-height: 64px;
+      padding: 0 16px;
+      justify-content: flex-end;
+      
+      .mat-paginator-page-size {
+        margin-right: 16px;
+        
+        .mat-paginator-page-size-label {
+          font-weight: 500;
+          color: rgba(0, 0, 0, 0.6);
+        }
+        
+        .mat-select-trigger {
+          font-weight: 600;
+          color: $color-text-dark;
+        }
+      }
+      
+      .mat-paginator-range-label {
+        color: rgba(0, 0, 0, 0.6);
+        font-weight: 500;
+        margin: 0 32px 0 24px;
+      }
+      
+      .mat-paginator-navigation-previous, 
+      .mat-paginator-navigation-next,
+      .mat-paginator-navigation-first,
+      .mat-paginator-navigation-last {
+        border-radius: 50%;
+        
+        &:hover {
+          background-color: rgba(98, 0, 234, 0.08);
+        }
+        
+        .mat-icon {
+          color: $color-primary;
+        }
+        
+        &.mat-button-disabled .mat-icon {
+          color: rgba(0, 0, 0, 0.3);
+        }
+      }
+    }
+  }
+}
+
+// Estilos de carga
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(3px);
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(98, 0, 234, 0.2);
+    border-top-color: $color-primary;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Modo oscuro
+.dark-theme {
+  .transacciones-container {
+    background-color: $color-dark-bg;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .page-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    
+    .header-content {
+      .page-title {
+        color: $color-white;
+      }
+      
+      .page-subtitle {
+        color: $color-text-light;
+      }
+    }
+  }
+  
+  .dashboard-cards {
+    .stat-card {
+      background-color: $color-dark-card;
+      
+      .card-info {
+        .stat-value {
+          color: $color-white;
+        }
+        
+        .stat-label {
+          color: $color-text-light;
+        }
+      }
+    }
+  }
+  
+  .tabla-transacciones {
+    background-color: $color-dark-card;
+    
+    table {
+      th {
+        background-color: rgba(98, 0, 234, 0.2);
+        color: $color-white;
+      }
+      
+      td {
+        color: $color-text-light;
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+      }
+      
+      tr:hover td {
+        background-color: rgba(98, 0, 234, 0.1);
+      }
+    }
+    
+    mat-paginator {
+      border-top-color: rgba(255, 255, 255, 0.1);
+      
+      .mat-paginator-container {
+        .mat-paginator-page-size-label,
+        .mat-paginator-range-label {
+          color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .mat-select-trigger {
+          color: $color-white;
+        }
+        
+        .mat-paginator-navigation-previous, 
+        .mat-paginator-navigation-next,
+        .mat-paginator-navigation-first,
+        .mat-paginator-navigation-last {
+          &.mat-button-disabled .mat-icon {
+            color: rgba(255, 255, 255, 0.3);
+          }
+        }
+      }
+    }
+  }
+  
+  .loading-overlay {
+    background-color: rgba(18, 18, 18, 0.7);
+  }
+  
+  .dark-snackbar {
+    background-color: $color-dark-card;
+    color: $color-white;
+  }
+}
+
+// Estilos para filtro de búsqueda
+.search-filter {
+  display: flex;
+  margin-bottom: 16px;
+  
+  .mat-form-field {
+    width: 100%;
+    max-width: 400px;
+    
+    .mat-icon {
+      color: rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+// Media queries para responsividad
+@media (max-width: 768px) {
+  .transacciones-container {
+    padding: 16px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    
+    .actions {
+      margin-top: 16px;
+      width: 100%;
+      
+      button {
+        width: 100%;
+      }
+    }
+  }
+  
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .tabla-transacciones {
+    table {
+      td, th {
+        padding: 12px 8px;
+        font-size: 13px;
+      }
+    }
+    
+    mat-paginator {
+      .mat-paginator-container {
+        padding: 0 8px;
+        
+        .mat-paginator-page-size {
+          margin-right: 8px;
+        }
+        
+        .mat-paginator-range-label {
+          margin: 0 8px;
+        }
+      }
+    }
+  }
+}

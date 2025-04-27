@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>
+    {{ modoEdicion ? 'Editar Rol' : 'Crear Nuevo Rol' }}
+  </h2>
+  
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-rol">
+    <mat-form-field appearance="outline" class="campo">
+      <mat-label>Nombre del Rol</mat-label>
+      <input matInput formControlName="nombre" placeholder="Ej: ADMIN, USER" />
+      <mat-error *ngIf="form.controls['nombre'].hasError('required')">
+        El nombre es obligatorio
+      </mat-error>
+      <mat-error *ngIf="form.controls['nombre'].hasError('minlength')">
+        Debe tener al menos 3 caracteres
+      </mat-error>
+    </mat-form-field>
+  
+    <div class="acciones">
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+        {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+      </button>
+      <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+  

@@ -1,0 +1,358 @@
+.navbar {
+  background: linear-gradient(90deg, #121212 0%, #1a1a1a 40%, #2c1658 100%) !important;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  height: 64px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 10;
+
+  .menu-toggle {
+    margin-right: 0.5rem;
+    transition: all 0.2s ease;
+    
+    mat-icon {
+      color: #a46cf5;
+      transition: transform 0.3s ease;
+    }
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.15);
+      
+      mat-icon {
+        transform: rotate(90deg);
+        color: white;
+      }
+    }
+  }
+
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 1px;
+    position: relative;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(90deg, #a46cf5, #ffffff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0px 0px 10px rgba(164, 108, 245, 0.3);
+  }
+
+  .spacer {
+    flex: 1;
+  }
+
+  a {
+    color: white !important;
+    font-weight: 500;
+    text-decoration: none;
+    margin: 0 0.5rem;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: #a46cf5 !important;
+    }
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 24px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.15);
+      border-color: rgba(164, 108, 245, 0.3);
+    }
+
+    span {
+      color: white;
+      font-weight: 500;
+      margin-right: 0.5rem;
+    }
+
+    mat-icon {
+      color: #a46cf5;
+    }
+
+    button {
+      color: white;
+      margin-left: 0.5rem;
+      transition: all 0.2s ease;
+      
+      mat-icon {
+        color: #a46cf5;
+        transition: color 0.2s ease, transform 0.3s ease;
+      }
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        
+        mat-icon {
+          color: white;
+          transform: translateX(2px);
+        }
+      }
+    }
+  }
+}
+
+.navbar {
+  background: linear-gradient(90deg, #2c1658 0%, #1f1f1f 100%) !important; // Mismo gradiente que el sidebar pero horizontal
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  height: 64px;
+  box-shadow: none !important; // Eliminar sombra para una integración perfecta
+  position: relative;
+  z-index: 10;
+
+  .menu-toggle {
+    margin-right: 0.5rem;
+    transition: all 0.2s ease;
+    
+    mat-icon {
+      color: #a46cf5;
+      transition: transform 0.3s ease;
+    }
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.15);
+      
+      mat-icon {
+        transform: rotate(90deg);
+        color: white;
+      }
+    }
+  }
+
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 1px;
+    position: relative;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(90deg, #a46cf5, #ffffff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0px 0px 10px rgba(164, 108, 245, 0.3);
+  }
+
+  .spacer {
+    flex: 1;
+  }
+
+  a {
+    color: white !important;
+    font-weight: 500;
+    text-decoration: none;
+    margin: 0 0.5rem;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: #a46cf5 !important;
+    }
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 24px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.15);
+      border-color: rgba(164, 108, 245, 0.3);
+    }
+
+    span {
+      color: white;
+      font-weight: 500;
+      margin-right: 0.5rem;
+    }
+
+    mat-icon {
+      color: #a46cf5;
+    }
+
+    button {
+      color: white;
+      margin-left: 0.5rem;
+      transition: all 0.2s ease;
+      
+      mat-icon {
+        color: #a46cf5;
+        transition: color 0.2s ease, transform 0.3s ease;
+      }
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        
+        mat-icon {
+          color: white;
+          transform: translateX(2px);
+        }
+      }
+    }
+  }
+}
+
+.navbar {
+  background: linear-gradient(90deg, #2c1658 0%, #1f1f1f 100%) !important;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  height: 64px;
+  box-shadow: none !important;
+  position: relative;
+  z-index: 10;
+
+  .menu-toggle {
+    margin-right: 0.5rem;
+    transition: all 0.2s ease;
+    
+    mat-icon {
+      color: #a46cf5;
+      transition: transform 0.3s ease;
+    }
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.15);
+      
+      mat-icon {
+        color: white;
+      }
+    }
+  }
+
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 1px;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(90deg, #a46cf5, #ffffff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0px 0px 10px rgba(164, 108, 245, 0.3);
+  }
+
+  .spacer {
+    flex: 1;
+  }
+
+  a {
+    color: white !important;
+    font-weight: 500;
+    text-decoration: none;
+    margin: 0 0.5rem;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: #a46cf5 !important;
+    }
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 24px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.15);
+      border-color: rgba(164, 108, 245, 0.3);
+    }
+
+    span {
+      color: white;
+      font-weight: 500;
+      margin-right: 0.5rem;
+    }
+
+    mat-icon {
+      color: #a46cf5;
+    }
+
+    button {
+      color: white;
+      margin-left: 0.5rem;
+      transition: all 0.2s ease;
+      
+      mat-icon {
+        color: #a46cf5;
+        transition: color 0.2s ease, transform 0.3s ease;
+      }
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        
+        mat-icon {
+          color: white;
+          transform: translateX(2px);
+        }
+      }
+    }
+  }
+}
+
+// Botón flotante para mostrar sidebar cuando está oculto
+.sidebar-toggle-button {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  
+  .toggle-fab {
+    background: linear-gradient(135deg, #2c1658, #a46cf5) !important;
+    border-radius: 0 25px 25px 0 !important;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    
+    .toggle-icon-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      mat-icon {
+        margin-left: 5px;
+      }
+    }
+    
+    &:hover {
+      width: 44px;
+    }
+  }
+}

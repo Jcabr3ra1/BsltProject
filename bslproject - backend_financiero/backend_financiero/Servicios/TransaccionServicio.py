@@ -2,6 +2,7 @@ from Repositorios.RepositorioTransaccion import RepositorioTransaccion
 from Repositorios.RepositorioCuenta import RepositorioCuenta
 from Repositorios.RepositorioBolsillo import RepositorioBolsillo
 from Repositorios.RepositorioTipoMovimiento import RepositorioTipoMovimiento
+from Repositorios.RepositorioTipoTransaccion import RepositorioTipoTransaccion
 from Modelos.Transaccion import Transaccion
 from Modelos.Cuenta import Cuenta
 from Modelos.Bolsillo import Bolsillo
@@ -12,6 +13,7 @@ class TransaccionServicio:
         self.repositorioCuenta = RepositorioCuenta()
         self.repositorioBolsillo = RepositorioBolsillo()
         self.repositorioTipoMovimiento = RepositorioTipoMovimiento()
+        self.repositorioTipoTransaccion = RepositorioTipoTransaccion()
 
     def obtener_todas(self):
         transacciones = self.repositorioTransaccion.findAll()
@@ -151,6 +153,12 @@ class TransaccionServicio:
             if tipo_movimiento:
                 transaccion_enriquecida["tipo_movimiento"] = tipo_movimiento
 
+        # Añadir información del tipo de transacción
+        if "id_tipo_transaccion" in transaccion and transaccion["id_tipo_transaccion"]:
+            tipo_transaccion = self.repositorioTipoTransaccion.findById(transaccion["id_tipo_transaccion"])
+            if tipo_transaccion:
+                transaccion_enriquecida["tipo_transaccion"] = tipo_transaccion
+
         # Añadir información del usuario que realizó la transacción
         if "id_usuario" in transaccion and transaccion["id_usuario"]:
             try:
@@ -223,6 +231,12 @@ class TransaccionServicio:
         if origen == "ACCOUNT" and destino == "BANK":
             return self._retiroCuentaBanco(infoTransaccion, monto)
 
+        if origen == "WALLET" and destino == "BANK":
+            return self._retiroBolsilloBanco(infoTransaccion, monto)
+
+        if origen == "WALLET" and destino == "WALLET":
+            return self._transferenciaBolsilloBolsillo(infoTransaccion, monto)
+
         return {"error": "Tipo de movimiento no reconocido"}, 400
 
     """
@@ -261,6 +275,50 @@ class TransaccionServicio:
 
         print("✅ Resultado de guardar transacción:", resultado)  # <-- Debug print
 
+        return resultado
+
+    def _retiroBolsilloBanco(self, infoTransaccion, monto):
+        bolsillo_origen_data = self.repositorioBolsillo.findById(infoTransaccion["id_bolsillo_origen"])
+        if not bolsillo_origen_data:
+            return {"error": "Bolsillo origen no encontrado"}, 404
+
+        bolsillo_origen = Bolsillo(bolsillo_origen_data)
+
+        if bolsillo_origen.saldo < monto:
+            return {"error": "Saldo insuficiente en el bolsillo"}, 400
+
+        bolsillo_origen.saldo -= monto
+        self.repositorioBolsillo.save(bolsillo_origen)
+
+        nueva_transaccion = Transaccion(infoTransaccion)
+        resultado = self.repositorioTransaccion.save(nueva_transaccion)
+
+        print("✅ Retiro de bolsillo a banco guardado:", resultado)
+        return resultado
+
+    def _transferenciaBolsilloBolsillo(self, infoTransaccion, monto):
+        bolsillo_origen_data = self.repositorioBolsillo.findById(infoTransaccion["id_bolsillo_origen"])
+        bolsillo_destino_data = self.repositorioBolsillo.findById(infoTransaccion["id_bolsillo_destino"])
+
+        if not bolsillo_origen_data or not bolsillo_destino_data:
+            return {"error": "Bolsillo origen o destino no encontrado"}, 404
+
+        bolsillo_origen = Bolsillo(bolsillo_origen_data)
+        bolsillo_destino = Bolsillo(bolsillo_destino_data)
+
+        if bolsillo_origen.saldo < monto:
+            return {"error": "Saldo insuficiente en el bolsillo origen"}, 400
+
+        bolsillo_origen.saldo -= monto
+        bolsillo_destino.saldo += monto
+
+        self.repositorioBolsillo.save(bolsillo_origen)
+        self.repositorioBolsillo.save(bolsillo_destino)
+
+        nueva_transaccion = Transaccion(infoTransaccion)
+        resultado = self.repositorioTransaccion.save(nueva_transaccion)
+
+        print("✅ Transferencia entre bolsillos guardada:", resultado)
         return resultado
 
     def _transferenciaCuentaBolsillo(self, infoTransaccion, monto):

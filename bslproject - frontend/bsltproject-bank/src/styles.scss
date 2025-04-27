@@ -1,19 +1,345 @@
+/* ===== VARIABLES DEL TEMA ===== */
+:root {
+  /* Colores principales */
+  --primary-color: #a46cf5;
+  --primary-light: #c39af7;
+  --primary-dark: #7b4dbd;
+  --accent-purple: #a46cf5;
+  
+  /* Colores de gradiente */
+  --sidebar-gradient-top: #2c1658;
+  --sidebar-gradient-bottom: #1f1f1f;
+  --footer-gradient-bottom: #18121e;
+  
+  /* Colores de fondo */
+  --background-dark: #121212;
+  --background-light: #1a1a1a;
+  
+  /* Colores de texto */
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  
+  /* Colores de acento y estados */
+  --accent-color: #603f9f;
+  --danger-color: #f44336;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --info-color: #2196f3;
+  
+  /* Dimensiones */
+  --navbar-height: 64px;
+  --footer-height: 56px;
+  --sidebar-width: 260px;
+}
 
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
-@use '@angular/material' as mat;
+/* ===== ESTILOS BASE ===== */
+html, body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background-color: #f5f5f5;
+  color: #333;
+}
 
-html {
-  @include mat.theme((
-    color: (
-      theme-type: light,
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
-}/* You can add global styles to this file, and also import other style files */
+/* ===== LAYOUT PRINCIPAL ===== */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.sidenav-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--sidebar-gradient-top), var(--sidebar-gradient-bottom)) !important;
+}
+
+.mat-sidenav, .mat-sidenav-content {
+  transition: all 0.3s ease;
+}
+
+.layout-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+  padding: 20px;
+  height: calc(100vh - var(--navbar-height) - var(--footer-height));
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== COMPONENTES PRINCIPALES ===== */
+app-navbar, app-sidebar, app-footer {
+  display: block;
+  width: 100%;
+}
+
+/* ===== SIDEBAR ===== */
+.mat-drawer-container {
+  background: transparent !important;
+}
+
+.mat-sidenav {
+  width: var(--sidebar-width);
+  background-color: transparent !important;
+  z-index: 2 !important;
+  overflow: hidden !important;
+  border-right: none !important;
+}
+
+.mat-drawer-side {
+  border-right: none !important;
+  overflow: hidden !important;
+}
+
+.mat-drawer-inner-container {
+  overflow: hidden !important;
+  background-color: transparent !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background-color: var(--sidebar-gradient-bottom);
+  }
+  
+  &::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.sidebar-hidden {
+  width: 0 !important;
+  min-width: 0 !important;
+}
+
+.sidebar-container, 
+.sidebar-content {
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+app-sidebar {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+
+/* ===== NAVBAR ===== */
+.mat-toolbar.navbar {
+  background: linear-gradient(90deg, var(--sidebar-gradient-top), var(--sidebar-gradient-bottom)) !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  z-index: 2;
+  position: relative;
+}
+
+/* ===== FOOTER ===== */
+app-footer .footer {
+  background: linear-gradient(180deg, var(--sidebar-gradient-bottom), var(--footer-gradient-bottom)) !important;
+  border-top: none !important;
+  box-shadow: none !important;
+  position: relative;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--sidebar-gradient-bottom);
+  }
+  
+  .brand,
+  .footer-links a,
+  .version {
+    color: var(--primary-color) !important;
+  }
+  
+  .footer-links a:hover {
+    color: var(--text-primary) !important;
+  }
+  
+  .footer-divider {
+    background: linear-gradient(90deg, transparent, rgba(164, 108, 245, 0.3), transparent) !important;
+  }
+}
+
+/* ===== CONTENIDO PRINCIPAL ===== */
+.mat-drawer-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.mat-sidenav-content {
+  background-color: #ffffff !important;
+  border-radius: 0 !important;
+  overflow: hidden;
+}
+
+/* ===== TRANSICIONES ===== */
+.mat-drawer-transition .mat-drawer-content {
+  transition-duration: 0.4s;
+  transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ===== COMPONENTES DE MATERIAL ===== */
+
+/* Tablas */
+table.mat-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  
+  th.mat-header-cell {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    padding: 1rem;
+  }
+  
+  td.mat-cell {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  tr.mat-row:hover {
+    background-color: rgba(164, 108, 245, 0.05);
+  }
+}
+
+/* Tarjetas */
+.mat-card, .mat-mdc-card {
+  border-radius: 12px !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1) !important;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  border: none !important;
+}
+
+.mat-card-title, .mat-mdc-card-title {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  color: var(--primary-dark);
+}
+
+.mat-card-subtitle, .mat-mdc-card-subtitle {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Botones */
+.mat-button.mat-primary,
+.mat-raised-button.mat-primary,
+.mat-flat-button.mat-primary,
+.mat-mdc-raised-button.mat-primary {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+.mat-button.mat-accent,
+.mat-raised-button.mat-accent,
+.mat-flat-button.mat-accent,
+.mat-mdc-raised-button.mat-accent {
+  background-color: var(--accent-color) !important;
+  color: white !important;
+}
+
+/* ===== ELEMENTOS DE UI ===== */
+.section-header {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--primary-dark);
+  border-bottom: 2px solid var(--primary-light);
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.form-field-full {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* ===== MODO OSCURO ===== */
+.dark-theme {
+  background-color: var(--background-dark);
+  color: var(--text-primary);
+  
+  .mat-card, .mat-mdc-card {
+    background-color: var(--background-light) !important;
+    color: var(--text-primary);
+  }
+  
+  .mat-card-title, .mat-mdc-card-title {
+    color: var(--primary-light) !important;
+  }
+  
+  .mat-card-subtitle, .mat-mdc-card-subtitle {
+    color: var(--text-secondary) !important;
+  }
+  
+  table.mat-table {
+    background-color: var(--background-light);
+    
+    td.mat-cell {
+      color: var(--text-primary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    tr.mat-row:hover {
+      background-color: rgba(164, 108, 245, 0.15);
+    }
+  }
+  
+  .section-header {
+    color: var(--primary-light);
+    border-bottom: 2px solid var(--primary-color);
+  }
+  
+  .layout-content {
+    background-color: var(--background-dark);
+  }
+  
+  .mat-drawer-container, 
+  .sidenav-container {
+    background-color: var(--background-dark);
+  }
+}
+
+/* Asegurar que el sidebar mantenga su gradiente morado-negro */
+.mat-drawer,
+.mat-drawer-inner-container,
+app-sidebar,
+.sidebar-container {
+  background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%) !important;
+}
+
+/* Corregir caso en que se aplica 'transparent' y se pierde el color */
+.sidenav {
+  background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%) !important;
+}
+
+/* Asegurar que todos los contenedores del sidebar muestren el gradiente */
+.mat-drawer-container .mat-drawer-side,
+.mat-sidenav-container .mat-sidenav {
+  background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%) !important;
+}

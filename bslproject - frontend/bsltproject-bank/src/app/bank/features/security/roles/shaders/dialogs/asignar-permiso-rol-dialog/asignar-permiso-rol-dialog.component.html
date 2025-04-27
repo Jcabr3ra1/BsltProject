@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Asignar Permisos al Rol</h2>
+
+<div *ngIf="cargando" class="cargando">
+  <mat-spinner></mat-spinner>
+</div>
+
+<div *ngIf="!cargando" class="permisos-lista">
+  <div class="permiso-item" *ngFor="let permiso of permisosDisponibles">
+    <div class="permiso-info">
+      <strong>{{ permiso.nombre }}</strong>
+      <small>{{ permiso.descripcion }}</small>
+    </div>
+    <div class="acciones">
+      <button mat-icon-button color="primary" (click)="togglePermiso(permiso)">
+        <mat-icon>
+          {{ permisoAsignado(permiso.id!) ? 'remove_circle' : 'add_circle' }}
+        </mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="acciones-finales">
+    <button mat-raised-button color="primary" (click)="cerrar()">Cerrar</button>
+  </div>
+</div>

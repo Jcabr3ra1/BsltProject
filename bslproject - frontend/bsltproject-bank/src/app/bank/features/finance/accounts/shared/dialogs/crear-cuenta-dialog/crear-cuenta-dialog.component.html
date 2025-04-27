@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>Crear nueva cuenta</h2>
+
+<mat-dialog-content>
+    <form [formGroup]="form" class="dialog-form">
+        <mat-form-field class="full-width">
+            <mat-label>Tipo de cuenta</mat-label>
+            <mat-select formControlName="tipo">
+                <mat-option value="CUENTA_AHORRO">Cuenta de ahorro</mat-option>
+                <mat-option value="CUENTA_CORRIENTE">Cuenta corriente</mat-option>
+                <mat-option value="CUENTA_NOMINA">Cuenta nómina</mat-option>
+                <mat-option value="OTRO">Otro</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Número de cuenta</mat-label>
+            <input matInput formControlName="numero_cuenta" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Saldo inicial</mat-label>
+            <input matInput type="number" formControlName="saldo" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Meta de ahorro</mat-label>
+            <input matInput type="number" formControlName="meta_ahorro" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Color</mat-label>
+            <input matInput type="color" formControlName="color" />
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" type="button" (click)="guardar()" [disabled]="form.invalid">
+        Guardar
+    </button>
+</mat-dialog-actions>

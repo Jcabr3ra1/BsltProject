@@ -1,0 +1,49 @@
+.permissions-page-container {
+    padding: 24px;
+  
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+  
+      h1 {
+        margin: 0;
+        font-weight: bold;
+      }
+    }
+  
+    .cargando {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+  
+    .sin-permisos {
+      text-align: center;
+      margin-top: 40px;
+      font-style: italic;
+      color: #888;
+    }
+  
+    .permissions-table {
+      margin-top: 20px;
+      overflow-x: auto;
+  
+      .permiso-nombre {
+        font-weight: 600;
+        color: #333;
+      }
+  
+      .permiso-descripcion {
+        color: #555;
+      }
+  
+      .acciones {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+  }
+  

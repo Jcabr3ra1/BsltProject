@@ -1,0 +1,29 @@
+<section class="hero-section">
+    <header class="landing-header">
+      <div class="logo">BSL<span>Bank</span></div>
+      <a routerLink="/auth/login" class="login-button">Iniciar sesión</a>
+    </header>
+  
+    <div class="hero-background" [ngStyle]="{ 'background-image': 'url(' + currentImage + ')' }">
+      <div class="overlay"></div>
+    </div>
+  
+    <div class="hero-content">
+      <h1 class="hero-title">Banca digital para el futuro</h1>
+      <p class="hero-subtitle">
+        Gestiona tus finanzas con tecnología de vanguardia, seguridad absoluta y experiencia personalizada
+      </p>
+      <div class="hero-form">
+        <p class="form-title">¿Listo para revolucionar tus finanzas?</p>
+        <div class="form-container">
+          <button mat-flat-button class="start-button" routerLink="/auth/register">
+            CREAR CUENTA
+          </button>
+          <button mat-stroked-button class="login-alt" routerLink="/auth/login">
+            YA TENGO UNA CUENTA
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+  

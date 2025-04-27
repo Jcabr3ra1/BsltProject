@@ -15,6 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -144,19 +148,77 @@ public class UsuarioServicio {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         usuario.setNombre(usuarioDetalles.getNombre());
+        usuario.setApellido(usuarioDetalles.getApellido()); // <- Ahora sí actualiza apellido
         usuario.setEmail(usuarioDetalles.getEmail());
 
         if (usuarioDetalles.getPassword() != null && !usuarioDetalles.getPassword().isEmpty()) {
             usuario.setPassword(passwordEncoder.encode(usuarioDetalles.getPassword()));
         }
 
+        // Actualizar Rol
+        if (usuarioDetalles.getRoles() != null && !usuarioDetalles.getRoles().isEmpty()) {
+            Set<Rol> nuevosRoles = new HashSet<>();
+            for (Rol rol : usuarioDetalles.getRoles()) {
+                Rol rolExistente = repositorioRol.findById(rol.getId())
+                        .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + rol.getId()));
+                nuevosRoles.add(rolExistente);
+            }
+            usuario.setRoles(nuevosRoles);
+        }
+
+        // Actualizar Estado
+        if (usuarioDetalles.getEstado() != null) {
+            Estado estadoExistente = repositorioEstado.findById(usuarioDetalles.getEstado().getId())
+                    .orElseThrow(() -> new RuntimeException("Estado no encontrado: " + usuarioDetalles.getEstado().getId()));
+            usuario.setEstado(estadoExistente);
+        }
+
         return repositorioUsuario.save(usuario);
     }
 
-    public void eliminarUsuario(String id) {
-        Usuario usuario = repositorioUsuario.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        repositorioUsuario.delete(usuario);
+    public void desasociarCuenta(String userId, String cuentaId) {
+        Optional<Usuario> optionalUsuario = repositorioUsuario.findById(userId);
+        if (optionalUsuario.isPresent()) {
+            Usuario usuario = optionalUsuario.get();
+            if (cuentaId.equals(usuario.getCuentaId())) {
+                usuario.setCuentaId(null); // <--- aquí desasocias realmente
+                repositorioUsuario.save(usuario);
+            }
+        } else {
+            throw new RuntimeException("Usuario no encontrado para desasociar cuenta");
+        }
+    }
+    public boolean eliminar(String idUsuario) {
+        Optional<Usuario> optionalUsuario = repositorioUsuario.findById(idUsuario);
+
+        if (optionalUsuario.isPresent()) {
+            Usuario usuario = optionalUsuario.get();
+
+            // Si el usuario tiene una cuenta asociada, notifica al backend financiero
+            if (usuario.getCuentaId() != null) {
+                try {
+                    String cuentaId = usuario.getCuentaId();
+                    String urlFinanzas = "http://localhost:9999/finanzas/cuentas/" + cuentaId;
+
+                    HttpClient client = HttpClient.newHttpClient();
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create(urlFinanzas))
+                            .DELETE()
+                            .build();
+
+                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                    System.out.println("Cuenta eliminada en Finanzas. Status: " + response.statusCode());
+                } catch (Exception e) {
+                    System.err.println("Error al eliminar cuenta del backend financiero: " + e.getMessage());
+                }
+            }
+
+            // Finalmente elimina el usuario
+            repositorioUsuario.deleteById(idUsuario);
+            return true;
+        }
+
+        return false;
     }
 
     public Usuario asignarRol(String usuarioId, String rolId) {
@@ -198,64 +260,51 @@ public class UsuarioServicio {
 
     public Usuario asignarCuentaAUsuario(String usuarioId, String cuentaId) {
         System.out.println("DEBUG - Servicio: Iniciando asignación de cuenta " + cuentaId + " a usuario " + usuarioId);
-        
-        // Listar todos los usuarios para depuración
+
+        // Verificación: ¿La cuenta ya está asignada a otro usuario?
         List<Usuario> todosUsuarios = repositorioUsuario.findAll();
-        System.out.println("DEBUG - Servicio: Total de usuarios en la base de datos: " + todosUsuarios.size());
         for (Usuario u : todosUsuarios) {
-            System.out.println("DEBUG - Usuario encontrado: ID=" + u.getId() + ", Email=" + u.getEmail());
+            if (cuentaId.equals(u.getCuentaId()) && !usuarioId.equals(u.getId())) {
+                throw new RuntimeException("❌ La cuenta ya está asignada a otro usuario con ID: " + u.getId());
+            }
         }
-        
-        // Intentar encontrar el usuario por ID
+
+        // Buscar usuario por ID (con tolerancia)
         Optional<Usuario> usuarioOpt = repositorioUsuario.findById(usuarioId);
-        
+
         if (!usuarioOpt.isPresent()) {
-            System.out.println("DEBUG - Servicio: Usuario no encontrado por ID, intentando buscar por otros medios...");
-            
-            // Si no se encuentra por ID, buscar el usuario que tenga un ID similar
-            // (puede haber diferencias en formato o mayúsculas/minúsculas)
+            // Búsqueda alternativa por coincidencia parcial
             for (Usuario u : todosUsuarios) {
-                if (u.getId() != null && 
-                    (u.getId().equals(usuarioId) || 
-                     u.getId().toLowerCase().equals(usuarioId.toLowerCase()) ||
-                     u.getId().contains(usuarioId) || 
-                     usuarioId.contains(u.getId()))) {
-                    
-                    System.out.println("DEBUG - Servicio: Usuario encontrado por coincidencia parcial de ID: " + u.getId());
+                if (u.getId() != null &&
+                        (u.getId().equalsIgnoreCase(usuarioId) ||
+                                u.getId().contains(usuarioId) ||
+                                usuarioId.contains(u.getId()))) {
                     usuarioOpt = Optional.of(u);
                     break;
                 }
             }
-            
-            // Si aún no se encuentra, podríamos intentar buscar por email si tenemos esa información
-            // (esto requeriría modificar la API para pasar el email como parámetro adicional)
         }
-        
+
         if (!usuarioOpt.isPresent()) {
-            throw new RuntimeException("Usuario no encontrado con ID: " + usuarioId);
+            throw new RuntimeException("❌ Usuario no encontrado con ID: " + usuarioId);
         }
-        
+
         Usuario usuario = usuarioOpt.get();
-        System.out.println("DEBUG - Servicio: Usuario encontrado: " + usuario.getEmail());
-        System.out.println("DEBUG - Servicio: CuentaId actual: " + usuario.getCuentaId());
+        System.out.println("DEBUG - Usuario encontrado: " + usuario.getEmail());
 
-        usuario.setCuentaId(cuentaId); // Guardar en la base de datos
-        System.out.println("DEBUG - Servicio: Nuevo cuentaId asignado: " + cuentaId);
-        
+        usuario.setCuentaId(cuentaId); // Asignar la cuenta
         Usuario usuarioActualizado = repositorioUsuario.save(usuario);
-        System.out.println("DEBUG - Servicio: Usuario guardado en la base de datos");
+        System.out.println("✅ Cuenta asignada y usuario guardado");
 
-        // Verificar si realmente se guardó en la base de datos
+        // Verificar persistencia
         Usuario usuarioVerificado = repositorioUsuario.findById(usuario.getId())
                 .orElseThrow(() -> new RuntimeException("Error al verificar usuario"));
-        
-        System.out.println("DEBUG - Servicio: Usuario verificado, cuentaId: " + usuarioVerificado.getCuentaId());
 
-        if (usuarioVerificado.getCuentaId() == null) {
-            System.err.println("ERROR - Servicio: La cuenta no se asignó correctamente en la base de datos");
-            throw new RuntimeException("Error al asignar cuenta en Seguridad");
+        if (usuarioVerificado.getCuentaId() == null || !usuarioVerificado.getCuentaId().equals(cuentaId)) {
+            throw new RuntimeException("❌ Error al asignar cuenta en Seguridad");
         }
 
-        return usuarioActualizado;  // Devuelve usuario actualizado con cuentaId
+        return usuarioActualizado;
     }
+
 }

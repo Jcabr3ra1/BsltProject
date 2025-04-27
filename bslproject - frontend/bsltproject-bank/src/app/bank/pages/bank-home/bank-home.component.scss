@@ -1,0 +1,133 @@
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .sidenav-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%);
+    transition: all 0.3s ease;
+  }
+  
+  .sidenav {
+    width: 260px;
+    border-right: none !important;
+    box-shadow: none !important;
+    z-index: 2;
+    background: transparent;
+    transition: all 0.3s ease;
+    overflow: hidden !important;
+  }
+  
+  .sidebar-hidden {
+    width: 0 !important;
+    min-width: 0 !important;
+    
+    ::ng-deep .mat-drawer-inner-container {
+      width: 0 !important;
+      overflow: hidden !important;
+    }
+  }
+  
+  .mat-drawer-inner-container {
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: transparent;
+    transition: width 0.3s ease;
+    
+    /* Añadir un degradado sutil en la parte inferior para armonizar con el footer */
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background-color: #1f1f1f;
+    }
+  }
+  
+  .mat-sidenav-content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background: #ffffff;
+    border-radius: 0 !important;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .layout-content {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    position: relative;
+    height: calc(100vh - 64px - 56px); 
+    z-index: 1;
+    padding: 20px;
+  }
+  
+  :host ::ng-deep {
+    // Eliminar bordes entre componentes
+    .mat-drawer-side {
+      border-right: none !important;
+    }
+    
+    // Eliminar el espacio entre el contenido y el sidebar
+    .mat-drawer-container, .mat-drawer-content {
+      overflow: visible;
+    }
+    
+    // Aplicar gradiente al contenedor del sidebar
+    .mat-drawer-container {
+      background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%);
+    }
+    
+    // Eliminar la sombra entre el sidebar y el contenido
+    .mat-drawer {
+      box-shadow: none !important;
+      overflow: hidden !important;
+    }
+    
+    // Asegurar que el navbar se muestre correctamente
+    app-navbar {
+      display: block;
+      position: relative;
+      z-index: 2;
+    }
+    
+    // Asegurar que el footer esté dentro del contenido principal
+    app-footer {
+      z-index: 2;
+      position: relative;
+    }
+    
+    // Aplicar fondo blanco solo al contenido principal, no al sidebar
+    .mat-sidenav-content {
+      border-radius: 0 !important;
+      overflow: hidden;
+    }
+    
+    // Forzar que el sidebar no tenga scroll 
+    .mat-drawer-inner-container {
+      overflow: hidden !important;
+    }
+    
+    app-sidebar {
+      overflow: hidden !important;
+      height: 100% !important;
+    }
+    
+    // Integración perfecta entre footer y sidebar
+    app-footer .footer {
+      background: linear-gradient(180deg, #1f1f1f 0%, #18121e 100%) !important;
+      border-top: none !important;
+    }
+  }

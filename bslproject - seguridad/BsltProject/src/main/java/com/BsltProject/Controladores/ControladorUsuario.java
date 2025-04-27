@@ -2,6 +2,7 @@ package com.BsltProject.Controladores;
 
 import com.BsltProject.Modelos.Rol;
 import com.BsltProject.Modelos.Usuario;
+import com.BsltProject.Repositorios.RepositorioUsuario;
 import com.BsltProject.Seguridad.JwtUtil;
 import com.BsltProject.Servicios.UsuarioServicio;
 import io.jsonwebtoken.Claims;
@@ -22,15 +23,18 @@ public class ControladorUsuario {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private RepositorioUsuario repositorioUsuario;
 
     public ControladorUsuario(UsuarioServicio usuarioServicio,
                               AuthenticationManager authenticationManager,
                               JwtUtil jwtUtil,
-                              PasswordEncoder passwordEncoder) {
+                              PasswordEncoder passwordEncoder,
+                              RepositorioUsuario repositorioUsuario) {
         this.usuarioServicio = usuarioServicio;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
+        this.repositorioUsuario = repositorioUsuario;
     }
 
     @PostMapping("/autenticacion/registro")
@@ -155,23 +159,23 @@ public class ControladorUsuario {
 
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable String id) {
-        try {
-            Optional<Usuario> usuario = usuarioServicio.obtenerUsuarioPorId(id);
-            if (!usuario.isPresent()) {
-                return ResponseEntity.notFound().build();
-            }
-            usuarioServicio.eliminarUsuario(id);
-            return ResponseEntity.ok(Map.of("mensaje", "Usuario eliminado correctamente"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error al eliminar el usuario", "detalle", e.getMessage()));
+        if (usuarioServicio.eliminar(id)) {
+            return ResponseEntity.ok().body(Map.of("mensaje", "Usuario eliminado correctamente"));
         }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Usuario no encontrado"));
     }
 
     @PutMapping("/usuarios/{id}")
     public ResponseEntity<Usuario> actualizarUsuario(@PathVariable String id, @RequestBody Usuario usuarioDetalles) {
         Usuario usuarioActualizado = usuarioServicio.actualizarUsuario(id, usuarioDetalles);
         return ResponseEntity.ok(usuarioActualizado);
+    }
+
+    @GetMapping("/usuarios/email/{email}")
+    public ResponseEntity<Usuario> obtenerUsuarioPorEmail(@PathVariable String email) {
+        Optional<Usuario> usuario = usuarioServicio.obtenerUsuarioPorEmail(email);
+        return usuario.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/usuarios/{userId}/roles/{roleId}")
@@ -192,6 +196,21 @@ public class ControladorUsuario {
         Usuario usuarioActualizado = usuarioServicio.asignarEstado(userId, stateId);
         return ResponseEntity.ok(usuarioActualizado);
     }
+
+    @PutMapping("/usuarios/{userId}/cuentas/desasociar/{cuentaId}")
+    public ResponseEntity<?> desasociarCuentaDeUsuario(
+            @PathVariable String userId,
+            @PathVariable String cuentaId
+    ) {
+        try {
+            usuarioServicio.desasociarCuenta(userId, cuentaId);
+            return ResponseEntity.ok().body(Map.of("mensaje", "Cuenta desasociada del usuario"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al desasociar cuenta del usuario", "detalle", e.getMessage()));
+        }
+    }
+
 
     @PutMapping("/usuarios/{userId}/cuentas/{accountId}")
     public ResponseEntity<Usuario> asignarCuenta(@PathVariable String userId, @PathVariable String accountId) {

@@ -1,0 +1,72 @@
+.roles-page-container {
+    padding: 24px;
+  
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+  
+      h1 {
+        margin: 0;
+        font-weight: bold;
+      }
+    }
+  
+    .cargando {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+  
+    .sin-roles {
+      text-align: center;
+      margin-top: 40px;
+      font-style: italic;
+      color: #888;
+    }
+  
+    .roles-table {
+      width: 100%;
+      overflow-x: auto;
+  
+      table {
+        width: 100%;
+      }
+  
+      .rol-nombre {
+        font-weight: bold;
+        color: #5a5a5a;
+      }
+  
+      .permisos-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+  
+        .chip {
+          background: #f1f1f1;
+          padding: 2px 8px;
+          border-radius: 16px;
+          font-size: 12px;
+        }
+  
+        .chip-extra {
+          background: #d1c4e9;
+          color: #4a148c;
+        }
+      }
+  
+      .sin-permisos {
+        color: #999;
+        font-style: italic;
+      }
+  
+      .acciones {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+  }
+  

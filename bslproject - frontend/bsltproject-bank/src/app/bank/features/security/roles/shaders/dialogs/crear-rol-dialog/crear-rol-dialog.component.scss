@@ -1,0 +1,17 @@
+.formulario-rol {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+  
+    .campo {
+      width: 100%;
+      margin-bottom: 24px;
+    }
+  
+    .acciones {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+  }
+  

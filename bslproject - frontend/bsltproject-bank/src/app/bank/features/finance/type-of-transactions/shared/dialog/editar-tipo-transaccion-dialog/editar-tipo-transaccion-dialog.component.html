@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Editar tipo de transacción</h2>
+
+<form [formGroup]="form" (ngSubmit)="guardar()" class="form-container">
+  <mat-form-field class="full-width">
+    <mat-label>Descripción</mat-label>
+    <input matInput formControlName="descripcion" />
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+      Guardar
+    </button>
+  </div>
+</form>
