@@ -1,46 +1,98 @@
-<h2 mat-dialog-title>Nuevo usuario</h2>
-
-<form [formGroup]="form" (ngSubmit)="guardar()" class="formulario">
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Nombre</mat-label>
-    <input matInput formControlName="nombre" />
-  </mat-form-field>
-
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Apellido</mat-label>
-    <input matInput formControlName="apellido" />
-  </mat-form-field>
-
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Email</mat-label>
-    <input matInput formControlName="email" />
-  </mat-form-field>
-
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Contraseña</mat-label>
-    <input matInput type="password" formControlName="password" />
-  </mat-form-field>
-
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Rol</mat-label>
-    <mat-select formControlName="rol_id">
-      <mat-option *ngFor="let rol of roles" [value]="rol.id">
-        {{ rol.nombre }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>Estado</mat-label>
-    <mat-select formControlName="estado_id">
-      <mat-option *ngFor="let estado of estados" [value]="estado.id">
-        {{ estado.nombre }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <div class="acciones">
-    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
-    <button mat-raised-button color="primary" type="submit">Guardar</button>
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">person_add</mat-icon>
+    <h2 mat-dialog-title>Nuevo usuario</h2>
   </div>
-</form>
+  
+  <!-- Mensaje de error general - Mejor visibilidad -->
+  <div *ngIf="errorMessage" class="error-general error-highlight">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario">
+    <div class="form-field">
+      <label for="nombre">Nombre<span class="required">*</span></label>
+      <input id="nombre" type="text" formControlName="nombre" placeholder="Ingrese el nombre">
+      <div class="error-message" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')">
+        El nombre es requerido
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="apellido">Apellido<span class="required">*</span></label>
+      <input id="apellido" type="text" formControlName="apellido" placeholder="Ingrese el apellido">
+      <div class="error-message" *ngIf="form.get('apellido')?.touched && form.get('apellido')?.hasError('required')">
+        El apellido es requerido
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="email">Email<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="email" type="email" formControlName="email" placeholder="ejemplo@correo.com">
+        <mat-icon>email</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')">
+        El email es requerido
+      </div>
+      <div class="error-message" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')">
+        Formato de email inválido
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="password">Contraseña<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="password" [type]="hidePassword ? 'password' : 'text'" formControlName="password"
+          placeholder="Ingrese la contraseña">
+        <mat-icon (click)="hidePassword = !hidePassword" class="clickable">
+          {{ hidePassword ? 'visibility_off' : 'visibility' }}
+        </mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
+        La contraseña es requerida
+      </div>
+    </div>
+
+    <div class="row-container">
+      <div class="form-field half-width">
+        <label for="rol">Rol<span class="required">*</span></label>
+        <div class="select-container">
+          <select id="rol" formControlName="rol_id">
+            <option *ngFor="let rol of roles" [value]="rol.id">{{ rol.nombre }}</option>
+          </select>
+          <mat-icon>arrow_drop_down</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('rol_id')?.touched && form.get('rol_id')?.hasError('required')">
+          El rol es requerido
+        </div>
+      </div>
+
+      <div class="form-field half-width">
+        <label for="estado">Estado<span class="required">*</span></label>
+        <div class="select-container">
+          <select id="estado" formControlName="estado_id">
+            <option *ngFor="let estado of estados" [value]="estado.id">{{ estado.nombre }}</option>
+          </select>
+          <mat-icon>arrow_drop_down</mat-icon>
+        </div>
+        <div class="error-message"
+          *ngIf="form.get('estado_id')?.touched && form.get('estado_id')?.hasError('required')">
+          El estado es requerido
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid || isLoading">
+        <mat-icon>save</mat-icon>
+        {{ isLoading ? 'Guardando...' : 'Guardar' }}
+      </button>      
+    </div>
+  </form>
+</div>

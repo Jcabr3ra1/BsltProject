@@ -1,7 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
-import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Permiso } from '../../../../../../../core/models/permiso.model';
 
 @Component({
@@ -12,14 +13,18 @@ import { Permiso } from '../../../../../../../core/models/permiso.model';
   imports: [
     CommonModule,
     MatDialogModule,
-    MatListModule
+    MatButtonModule,
+    MatIconModule
   ]
 })
 export class VerPermisosRolDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<VerPermisosRolDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { permisos: Permiso[] }
-  ) {}
+  ) {
+    // Aplicar clases para el estilo oscuro
+    this.dialogRef.addPanelClass(['custom-dialog', 'custom-dark-dialog']);
+  }
 
   cerrar(): void {
     this.dialogRef.close();

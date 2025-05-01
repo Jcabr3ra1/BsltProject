@@ -1,58 +1,101 @@
 <div class="permissions-page-container">
-    <div class="header">
-      <h1>Gestión de Permisos</h1>
-      <button mat-raised-button color="primary" (click)="abrirCrearPermiso()">
-        <mat-icon>add</mat-icon> Nuevo Permiso
-      </button>
-    </div>
-  
-    <mat-divider></mat-divider>
-  
-    <div *ngIf="cargando" class="cargando">
-      <mat-spinner></mat-spinner>
-    </div>
-  
-    <div *ngIf="!cargando && permisos.length === 0" class="sin-permisos">
-      No hay permisos registrados.
-    </div>
-  
-    <div *ngIf="!cargando && permisos.length > 0" class="permissions-table">
-      <table mat-table [dataSource]="permisos" class="mat-elevation-z2">
-  
-        <!-- Nombre Permiso -->
-        <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef> Nombre </th>
-          <td mat-cell *matCellDef="let permiso">
-            <span class="permiso-nombre">{{ permiso.nombre }}</span>
-          </td>
-        </ng-container>
-  
-        <!-- Descripción Permiso -->
-        <ng-container matColumnDef="descripcion">
-          <th mat-header-cell *matHeaderCellDef> Descripción </th>
-          <td mat-cell *matCellDef="let permiso">
-            <span class="permiso-descripcion">{{ permiso.descripcion }}</span>
-          </td>
-        </ng-container>
-  
-        <!-- Acciones -->
-        <ng-container matColumnDef="acciones">
-          <th mat-header-cell *matHeaderCellDef> Acciones </th>
-          <td mat-cell *matCellDef="let permiso">
-            <div class="acciones">
-              <button mat-icon-button color="accent" (click)="abrirEditarPermiso(permiso)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="eliminarPermiso(permiso.id!)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-          </td>
-        </ng-container>
-  
-        <tr mat-header-row *matHeaderRowDef="['nombre', 'descripcion', 'acciones']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['nombre', 'descripcion', 'acciones'];"></tr>
-      </table>
+  <div class="header">
+    <h1>Gestión de Permisos</h1>
+    <button mat-raised-button color="primary" (click)="abrirCrearPermiso()">
+      <mat-icon>add_circle</mat-icon> Nuevo Permiso
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div *ngIf="cargando" class="cargando">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="!cargando && permisos.length === 0" class="sin-permisos">
+    <mat-icon>info</mat-icon>
+    <p>No hay permisos registrados.</p>
+  </div>
+
+  <div *ngIf="!cargando && permisos.length > 0" class="permissions-table">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+
+      <!-- Nombre Permiso -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef> Nombre </th>
+        <td mat-cell *matCellDef="let permiso">
+          <span class="permiso-nombre">{{ permiso.nombre }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Descripción Permiso -->
+      <ng-container matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef> Descripción </th>
+        <td mat-cell *matCellDef="let permiso">
+          <span class="permiso-descripcion">{{ permiso.descripcion }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef> Acciones </th>
+        <td mat-cell *matCellDef="let permiso">
+          <div class="acciones">
+            <button mat-icon-button color="accent" matTooltip="Editar permiso" (click)="abrirEditarPermiso(permiso)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" matTooltip="Eliminar permiso" (click)="eliminarPermiso(permiso.id!)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['nombre', 'descripcion', 'acciones']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['nombre', 'descripcion', 'acciones'];"></tr>
+    </table>
+
+    <!-- Paginación -->
+    <div class="paginacion-container">
+      <div class="paginacion-items-por-pagina">
+        <span>Items por página:</span>
+        <mat-form-field appearance="outline">
+          <mat-select [value]="pageSizeOptions[0]" (selectionChange)="cambiarTamanoPagina($event)">
+            <mat-option *ngFor="let size of pageSizeOptions" [value]="size">
+              {{ size }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      
+      <div class="paginacion-info">
+        {{ getInfoPaginacion() }}
+      </div>
+      
+      <mat-paginator 
+        #paginador 
+        [pageSize]="pageSizeOptions[0]" 
+        [pageSizeOptions]="pageSizeOptions"
+        [hidePageSize]="true"
+        showFirstLastButtons
+        aria-label="Seleccionar página de permisos"
+        class="paginator-invisible">
+      </mat-paginator>
+      
+      <div class="paginacion-controles">
+        <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPrimeraPagina()">
+          <mat-icon>first_page</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPaginaAnterior()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAPaginaSiguiente()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAUltimaPagina()">
+          <mat-icon>last_page</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
-  
+</div>

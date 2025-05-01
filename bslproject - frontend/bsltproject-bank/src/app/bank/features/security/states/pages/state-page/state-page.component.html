@@ -1,50 +1,93 @@
 <div class="estados-page-container">
-    <div class="header">
-      <h1>Gestión de Estados</h1>
-      <button mat-raised-button color="primary" (click)="abrirCrearEstado()">
-        <mat-icon>add</mat-icon> Nuevo Estado
-      </button>
-    </div>
-  
-    <mat-divider></mat-divider>
-  
-    <div *ngIf="cargando" class="cargando">
-      <mat-spinner></mat-spinner>
-    </div>
-  
-    <div *ngIf="!cargando && estados.length === 0" class="sin-estados">
-      No hay estados registrados.
-    </div>
-  
-    <div *ngIf="!cargando && estados.length > 0" class="estados-table">
-      <table mat-table [dataSource]="estados" class="mat-elevation-z2">
-  
-        <!-- Nombre Estado -->
-        <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef> Nombre </th>
-          <td mat-cell *matCellDef="let estado">
-            <span class="estado-nombre">{{ estado.nombre }}</span>
-          </td>
-        </ng-container>
-  
-        <!-- Acciones -->
-        <ng-container matColumnDef="acciones">
-          <th mat-header-cell *matHeaderCellDef> Acciones </th>
-          <td mat-cell *matCellDef="let estado">
-            <div class="acciones">
-              <button mat-icon-button color="accent" (click)="abrirEditarEstado(estado)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="eliminarEstado(estado.id!)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-          </td>
-        </ng-container>
-  
-        <tr mat-header-row *matHeaderRowDef="['nombre', 'acciones']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['nombre', 'acciones'];"></tr>
-      </table>
+  <div class="header">
+    <h1>Gestión de Estados</h1>
+    <button mat-raised-button color="primary" (click)="abrirCrearEstado()">
+      <mat-icon>add_circle</mat-icon> Nuevo Estado
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div *ngIf="cargando" class="cargando">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="!cargando && estados.length === 0" class="sin-estados">
+    <mat-icon>info</mat-icon>
+    <p>No hay estados registrados.</p>
+  </div>
+
+  <div *ngIf="!cargando && estados.length > 0" class="estados-table">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 dark-mode-table">
+
+      <!-- Nombre Estado -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef> Nombre </th>
+        <td mat-cell *matCellDef="let estado">
+          <span class="estado-nombre">{{ estado.nombre }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef> Acciones </th>
+        <td mat-cell *matCellDef="let estado">
+          <div class="acciones">
+            <button mat-icon-button color="accent" matTooltip="Editar estado" (click)="abrirEditarEstado(estado)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" matTooltip="Eliminar estado" (click)="eliminarEstado(estado.id!)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['nombre', 'acciones']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['nombre', 'acciones'];"></tr>
+    </table>
+
+    <!-- Paginación -->
+    <div class="paginacion-container">
+      <div class="paginacion-items-por-pagina">
+        <span>Items por página:</span>
+        <mat-form-field appearance="outline">
+          <mat-select [value]="pageSizeOptions[0]" (selectionChange)="cambiarTamanoPagina($event)">
+            <mat-option *ngFor="let size of pageSizeOptions" [value]="size">
+              {{ size }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      
+      <div class="paginacion-info">
+        {{ getInfoPaginacion() }}
+      </div>
+      
+      <mat-paginator 
+        #paginador 
+        [pageSize]="pageSizeOptions[0]" 
+        [pageSizeOptions]="pageSizeOptions"
+        [hidePageSize]="true"
+        showFirstLastButtons
+        aria-label="Seleccionar página de estados"
+        class="paginator-invisible">
+      </mat-paginator>
+      
+      <div class="paginacion-controles">
+        <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPrimeraPagina()">
+          <mat-icon>first_page</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPaginaAnterior()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAPaginaSiguiente()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAUltimaPagina()">
+          <mat-icon>last_page</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
-  
+</div>

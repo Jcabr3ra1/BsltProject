@@ -1,495 +1,363 @@
+@use 'sass:color';
+
 // Variables de colores
-$color-primary: #6200ee; // Morado principal
-$color-primary-dark: #3700b3; // Morado oscuro
-$color-accent: #bb86fc; // Morado claro/acento
-$color-white: #ffffff;
-$color-black: #121212;
-$color-gray-light: #f5f5f5;
-$color-gray: #e0e0e0;
-$color-error: #b00020;
-$color-success: #4caf50; // Verde para éxito/confirmación
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$very-light-purple: #f8f5ff;
+$medium-purple: #8a5cf7;
+$dark-purple: #2c1658;
+
+// Estilo general del diálogo
+::ng-deep .mat-dialog-container {
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #ffffff;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  
+  .back-button {
+    margin-right: 12px;
+    color: #333;
+    display: flex;
+    
+    mat-icon {
+      font-size: 20px;
+    }
+  }
+  
+  h2 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+  }
+}
 
 .form-container {
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  padding: 1rem 1.5rem;
-  background-color: $color-white;
-  border-radius: 12px;
-  min-height: 100%;
-  max-height: 90vh;
   overflow-y: auto;
-  
-  .full-width {
-    width: 100%;
-  }
-  
-  mat-form-field {
-    background: $color-white;
-    border-radius: 8px;
-    margin-bottom: 12px;
-    
-    &.mat-form-field-appearance-outline {
-      .mat-form-field-outline {
-        color: rgba($color-black, 0.12);
-      }
-      
-      &.mat-focused .mat-form-field-outline-thick {
-        color: $color-primary;
-      }
-    }
-  }
-  
-  // Estilo para el prefijo de moneda
-  .currency-prefix {
-    color: $color-error;
-    font-weight: bold;
-    font-size: 16px;
-    margin-right: 8px;
-  }
-
-  // Estilos para campos numéricos
-  input[type="number"] {
-    &::-webkit-inner-spin-button, 
-    &::-webkit-outer-spin-button { 
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    -moz-appearance: textfield;
-  }
-  
-  .monto-field {
-    position: relative;
-    
-    .currency-symbol {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: $color-primary;
-      font-weight: bold;
-    }
-    
-    input {
-      padding-left: 24px;
-    }
-  }
-  
-  // Animaciones y efectos de hover
-  .animated-field {
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-2px);
-    }
-  }
-}
-  
-// Estilos para los campos tipo select
-::ng-deep .mat-select-panel {
-  background-color: $color-white;
-  border: 1px solid rgba($color-primary, 0.2);
-  border-radius: 8px !important;
-  
-  .mat-option {
-    color: $color-black;
-    
-    &:hover:not(.mat-option-disabled) {
-      background-color: rgba($color-accent, 0.1);
-    }
-    
-    &.mat-selected:not(.mat-option-disabled) {
-      background-color: rgba($color-accent, 0.2);
-      color: $color-primary;
-      
-      &:hover {
-        background-color: rgba($color-accent, 0.3);
-      }
-    }
-  }
-}
-  
-// Estilos para los selectores con iconos
-.input-label {
-  font-size: 16px;
-  font-weight: 600;
-  color: $color-primary;
-  margin-bottom: 16px;
-  display: block;
-  position: relative;
-  padding-left: 12px;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 4px;
-    background-color: $color-primary;
-    border-radius: 4px;
-  }
 }
 
-// Nuevo: Texto de indicación
-.selection-hint {
-  font-size: 14px;
-  color: rgba($color-black, 0.6);
-  margin-top: -12px;
-  margin-bottom: 16px;
-  padding-left: 12px;
-}
-
-// Nuevo: Título de paso
-.step-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: $color-primary;
-  margin: 16px 0;
-  padding-left: 12px;
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 4px;
-    background-color: $color-primary;
-    border-radius: 4px;
-  }
-}
-
-// Nuevo: Estilos para agrupación de movimientos
-.movement-type-tabs {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.movement-group {
-  background-color: rgba($color-primary, 0.02);
-  border-radius: 8px;
+// Sección de tipos de transacción
+.transaction-type-section {
   padding: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  border: 1px solid rgba($color-primary, 0.1);
+  margin-bottom: 10px;
 }
 
-.movement-group-title {
-  font-size: 15px;
-  color: $color-primary;
-  margin: 0 0 16px 0;
-  font-weight: 500;
-}
-
-.icon-buttons-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
-  justify-content: center;
+.transaction-grid {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
   
   button {
-    height: auto;
-    min-height: 120px;
-    width: 100%;
-    padding: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    background-color: $color-white;
-    border: 1px solid rgba($color-black, 0.06);
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
-    
-    &:hover {
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      transform: translateY(-2px);
-      background-color: rgba($color-primary, 0.04);
-    }
+    background: $very-light-purple;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    min-width: 100px;
+    transition: all 0.2s ease;
+    cursor: pointer;
     
     &.selected {
-      background-color: rgba($color-primary, 0.08);
-      box-shadow: 0 5px 15px rgba($color-primary, 0.15);
-      border-left: 3px solid $color-primary;
+      background-color: rgba($primary-purple, 0.1);
       
-      .transaction-icon,
-      .movement-icon {
-        background-color: rgba($color-primary, 0.12);
-        border: 1px solid $color-primary;
+      .transaction-icon-container {
+        background-color: $primary-purple;
+      
+        mat-icon {
+          color: white;
+        }
       }
       
-      .icon-label {
-        color: $color-primary;
+      span {
+        color: $primary-purple;
         font-weight: 500;
       }
     }
-  }
-}
-
-.transaction-icon,
-.movement-icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background-color: rgba($color-primary, 0.08);
-  margin-bottom: 8px;
-  transition: transform 0.2s ease;
-  
-  &:hover {
-    transform: scale(1.1);
-  }
-  
-  mat-icon {
-    color: $color-primary;
-    font-size: 20px;
-    height: 20px;
-    width: 20px;
-  }
-}
-
-.movement-icon-text {
-  color: $color-primary;
-  font-size: 20px;
-  font-weight: normal;
-}
-
-.icon-label {
-  font-size: 14px;
-  text-align: center;
-  color: rgba($color-black, 0.87);
-  max-width: 120px;
-  margin-top: 8px;
-  font-weight: 500;
-  display: block;
-}
-
-// Nuevo: Descripción adicional para las operaciones
-.operation-hint {
-  display: block;
-  font-size: 12px;
-  color: rgba($color-black, 0.6);
-  text-align: center;
-  margin-top: 6px;
-  line-height: 1.4;
-  max-width: 120px;
-}
-
-.operation-detail {
-  display: block;
-  font-size: 11px;
-  color: rgba($color-black, 0.6);
-  text-align: center;
-  margin-top: 6px;
-  line-height: 1.3;
-  max-width: 140px;
-}
-
-.transaction-type-container,
-.movement-type-container {
-  background-color: rgba($color-primary, 0.02);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 24px;
-  box-shadow: inset 0 0 0 1px rgba($color-primary, 0.1);
-}
-
-// Nuevo: Resumen de transacción
-.transaction-summary {
-  background-color: rgba($color-success, 0.05);
-  border: 1px solid rgba($color-success, 0.2);
-  border-radius: 8px;
-  padding: 16px;
-  margin: 16px 0;
-  
-  .summary-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: $color-success;
-    margin: 0 0 12px 0;
-  }
-  
-  .summary-content {
-    p {
-      margin: 8px 0;
-      font-size: 14px;
+    
+    &:hover:not(.selected) {
+      background-color: rgba($primary-purple, 0.05);
+    }
+    
+    .transaction-icon-container {
+      width: 40px;
+      height: 40px;
+      background-color: rgba($primary-purple, 0.15);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
       
-      strong {
-        font-weight: 600;
-        color: rgba($color-black, 0.8);
+      mat-icon {
+        color: $primary-purple;
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
       }
+    }
+    
+    span {
+      font-size: 14px;
+      color: #333;
+      text-align: center;
     }
   }
 }
 
-// Estilo para el sufijo de moneda
-.currency-suffix {
-  color: $color-primary;
-  font-weight: normal;
-  font-size: 14px;
-  opacity: 0.7;
+// Etiqueta de sección
+.section-label {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  margin: 12px 0;
+  
+  .label-bar {
+    width: 4px;
+    height: 16px;
+    background-color: $primary-purple;
+    border-radius: 2px;
+    margin-right: 8px;
+  }
+  
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    color: $primary-purple;
+  }
 }
 
-// Campos del formulario en diseño de dos columnas
-.form-fields-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-  
-// Acciones
-.actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 24px;
+// Sección de tipos de movimiento
+.movement-type-section {
   padding: 16px;
-  position: sticky;
-  bottom: 0;
-  background-color: $color-white;
-  border-top: 1px solid rgba($color-black, 0.1);
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 16px;
+}
+
+.movement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
   
   button {
-    flex: 1;
-    border-radius: 20px;
-    padding: 0 24px;
-    font-weight: 500;
-    min-height: 44px;
-    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: $very-light-purple;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
     
-    &[type='button'] {
-      color: $color-primary;
-      border: 1px solid rgba($color-primary, 0.5);
-      background-color: transparent;
+    &.selected {
+      background-color: rgba($primary-purple, 0.1);
       
-      &:hover {
-        background-color: rgba($color-primary, 0.05);
+      .movement-icon-container {
+        background-color: $primary-purple;
+      
+        .movement-icon {
+          color: white;
+        }
+      }
+      
+      span {
+        color: $primary-purple;
+        font-weight: 500;
       }
     }
     
-    &[type='submit'],
-    &[color='primary'] {
-      background-color: $color-primary;
-      color: $color-white;
+    &:hover:not(.selected) {
+      background-color: rgba($primary-purple, 0.05);
+    }
+    
+    .movement-icon-container {
+      width: 40px;
+      height: 40px;
+      background-color: rgba($primary-purple, 0.15);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
+      
+      .movement-icon {
+        color: $primary-purple;
+        font-size: 20px;
+        line-height: 1;
+      }
+    }
+    
+    span {
+      font-size: 14px;
+      color: #333;
+      text-align: center;
+    }
+  }
+}
+
+// Campos dinámicos
+.dynamic-fields {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+// Campos de valor y descripción
+.transaction-inputs {
+  padding: 0 16px;
+  margin-bottom: 16px;
+  
+  .field-container {
+    position: relative;
+    margin-bottom: 16px;
+    
+    .field-icon {
+      position: absolute;
+      top: 0;
+      left: -24px;
+      color: $primary-purple;
+      font-size: 20px;
+    }
+  }
+}
+
+// Campo de formulario
+.field-container {
+  margin-bottom: 16px;
+  
+  mat-form-field {
+    width: 100%;
+    
+    &.mat-form-field-appearance-outline {
+      .mat-form-field-outline {
+        color: rgba(0, 0, 0, 0.12);
+      }
+      
+      .mat-form-field-outline-thick {
+        color: $primary-purple;
+      }
+    }
+  }
+}
+
+// Acciones del diálogo
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px;
+  background-color: #ffffff;
+  border-top: 1px solid #f0f0f0;
+  position: sticky;
+  bottom: 0;
+  
+  button {
+    &[mat-button] {
+      color: #666;
+    }
+    
+    &[mat-flat-button] {
+      background-color: $primary-purple;
+      color: white;
       
       &:hover:not([disabled]) {
-        background-color: $color-primary-dark;
+        background-color: color.adjust($primary-purple, $lightness: -5%);
       }
       
       &[disabled] {
-        opacity: 0.7;
-        background-color: rgba($color-primary, 0.5);
+        background-color: color.adjust($primary-purple, $saturation: -40%);
+        color: rgba(255, 255, 255, 0.8);
       }
     }
     
     mat-icon {
       margin-right: 8px;
-      font-size: 18px;
-      height: 18px;
-      width: 18px;
     }
   }
 }
 
-// Título del diálogo y encabezado
-::ng-deep .mat-dialog-title {
-  display: flex;
-  align-items: center;
-  color: rgba($color-black, 0.87);
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin: 0;
-  padding: 16px;
-  border-bottom: 1px solid rgba($color-black, 0.1);
-  background-color: $color-white;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+// Estilos específicos para inputs
+mat-form-field {
+  width: 100%;
   
-  .title-icon {
-    margin-right: 10px;
-    color: rgba($color-black, 0.6);
+  &.mat-focused .mat-form-field-label {
+    color: $primary-purple;
+  }
+  
+  .mat-form-field-hint-wrapper {
+    font-size: 12px;
+    color: #777;
   }
 }
 
-// Contenedor de la forma y acciones
-.form-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  max-height: calc(100vh - 100px);
-}
-
-// Efectos de tooltip personalizados
-::ng-deep .mat-tooltip {
-  background-color: $color-primary;
-  font-size: 14px;
-  padding: 8px 12px;
-  border-radius: 4px;
-}
-
-// Efectos de transición para los campos del formulario
-.form-field-transition {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  opacity: 1;
-  transform: translateY(0);
-  
-  &.ng-enter {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  
-  &.ng-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
-  &.ng-leave {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
-  &.ng-leave-active {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-}
-
-/* Responsive para pantallas pequeñas */
-@media (max-width: 768px) {
-  .icon-buttons-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+// Responsive
 @media (max-width: 600px) {
-  .form-container {
-    gap: 0.75rem;
-    padding: 1rem;
+  .transaction-grid, 
+  .movement-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
   
-  .icon-buttons-container {
-    grid-template-columns: repeat(1, 1fr);
-  }
-  
-  .actions {
-    flex-direction: column-reverse; // Poner el botón primario arriba
-    align-items: stretch;
+  .dialog-actions {
+    flex-direction: column-reverse;
     
     button {
       width: 100%;
     }
   }
+}
+
+// Adaptaciones para Angular Material
+::ng-deep {
+  .mat-form-field-appearance-outline .mat-form-field-infix {
+    padding: 0.75em 0;
+  }
   
-  ::ng-deep .mat-dialog-title {
-    font-size: 1.3rem;
+  .mat-form-field-hint-wrapper {
+    margin-top: -0.25em;
+  }
+  
+  .mat-form-field-label {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .mat-focused .mat-form-field-label {
+    color: $primary-purple !important;
+  }
+  
+  .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+    color: $primary-purple !important;
+  }
+  
+  .mat-select-value {
+    color: rgba(0, 0, 0, 0.87);
+  }
+  
+  .mat-select-arrow {
+    color: rgba(0, 0, 0, 0.4);
+  }
+  
+  .mat-option.mat-selected:not(.mat-option-disabled) {
+    color: $primary-purple;
+  }
+  
+  .mat-button, .mat-flat-button {
+    border-radius: 8px;
   }
 }

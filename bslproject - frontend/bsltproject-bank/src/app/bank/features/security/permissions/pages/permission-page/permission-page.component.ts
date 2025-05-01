@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,6 +6,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { PermisosService } from '../../services/permisos.service';
 import { Permiso } from '../../../../../../core/models/permiso.model';
@@ -25,11 +30,21 @@ import { EditarPermisoDialogComponent } from '../../shared/dialogs/editar-permis
     MatTableModule,
     MatProgressSpinnerModule,
     MatDividerModule,
+    MatTooltipModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatSelectModule
   ],
 })
 export class PermissionPageComponent implements OnInit {
   permisos: Permiso[] = [];
+  dataSource = new MatTableDataSource<Permiso>([]);
   cargando: boolean = true;
+  pageSizeOptions: number[] = [5, 10, 25, 50];
+  paginaActual: number = 0;
+  tamanoActual: number = 5;
+
+  @ViewChild(MatPaginator) paginador!: MatPaginator;
 
   constructor(
     private permisosService: PermisosService,
@@ -40,12 +55,26 @@ export class PermissionPageComponent implements OnInit {
     this.obtenerPermisos();
   }
 
+  ngAfterViewInit() {
+    if (this.paginador) {
+      this.dataSource.paginator = this.paginador;
+    }
+  }
+
   obtenerPermisos(): void {
     this.cargando = true;
     this.permisosService.getPermisos().subscribe({
       next: (data) => {
         this.permisos = data;
+        this.dataSource.data = this.permisos;
         this.cargando = false;
+        
+        // Actualizamos el paginador después de cargar los datos
+        setTimeout(() => {
+          if (this.paginador) {
+            this.dataSource.paginator = this.paginador;
+          }
+        });
       },
       error: (error) => {
         console.error('❌ Error al obtener permisos', error);
@@ -54,10 +83,73 @@ export class PermissionPageComponent implements OnInit {
     });
   }
 
+  cambiarTamanoPagina(event: any): void {
+    this.tamanoActual = event.value;
+    this.paginaActual = 0;
+    
+    if (this.paginador) {
+      this.paginador.pageSize = this.tamanoActual;
+      this.paginador.pageIndex = 0;
+    }
+  }
+  
+  irAPrimeraPagina(): void {
+    this.paginaActual = 0;
+    if (this.paginador) {
+      this.paginador.firstPage();
+    }
+  }
+  
+  irAPaginaAnterior(): void {
+    if (this.paginaActual > 0) {
+      this.paginaActual--;
+      if (this.paginador) {
+        this.paginador.previousPage();
+      }
+    }
+  }
+  
+  irAPaginaSiguiente(): void {
+    if (this.paginaActual < this.getTotalPaginas() - 1) {
+      this.paginaActual++;
+      if (this.paginador) {
+        this.paginador.nextPage();
+      }
+    }
+  }
+  
+  irAUltimaPagina(): void {
+    this.paginaActual = this.getTotalPaginas() - 1;
+    if (this.paginador) {
+      this.paginador.lastPage();
+    }
+  }
+  
+  puedeRetroceder(): boolean {
+    return this.paginaActual > 0;
+  }
+  
+  puedeAvanzar(): boolean {
+    return this.paginaActual < this.getTotalPaginas() - 1;
+  }
+  
+  getTotalPaginas(): number {
+    return Math.ceil(this.permisos.length / this.tamanoActual);
+  }
+  
+  getInfoPaginacion(): string {
+    if (this.permisos.length === 0) return '0 - 0 de 0';
+    
+    const inicio = this.paginaActual * this.tamanoActual + 1;
+    const fin = Math.min((this.paginaActual + 1) * this.tamanoActual, this.permisos.length);
+    return `${inicio} - ${fin} de ${this.permisos.length}`;
+  }
+
   abrirCrearPermiso(): void {
     const dialogRef = this.dialog.open(CrearPermisoDialogComponent, {
-      width: '400px',
+      width: '450px',
       data: {},
+      panelClass: ['custom-dialog', 'custom-dark-dialog']
     });
 
     dialogRef.afterClosed().subscribe((nuevoPermiso: Permiso) => {
@@ -71,8 +163,9 @@ export class PermissionPageComponent implements OnInit {
 
   abrirEditarPermiso(permiso: Permiso): void {
     const dialogRef = this.dialog.open(EditarPermisoDialogComponent, {
-      width: '400px',
-      data: { permiso }
+      width: '450px',
+      data: { permiso },
+      panelClass: ['custom-dialog', 'custom-dark-dialog']
     });
   
     dialogRef.afterClosed().subscribe((permisoActualizado: Permiso) => {

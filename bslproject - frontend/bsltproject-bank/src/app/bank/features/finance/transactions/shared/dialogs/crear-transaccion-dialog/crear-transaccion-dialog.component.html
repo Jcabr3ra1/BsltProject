@@ -1,119 +1,127 @@
-<h2 mat-dialog-title>
-    <mat-icon class="title-icon">swap_horiz</mat-icon>
-    Registrar transacción
-</h2>
-
-<form [formGroup]="form" (ngSubmit)="guardar()" class="form-container">
-
+<div class="dialog-header">
+    <div class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </div>
+    <h2>Registrar nueva transacción</h2>
+  </div>
+  
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form-container">
     <!-- Tipo de transacción -->
-    <div class="transaction-type-container">
-        <label class="input-label">Tipo de transacción*</label>
-        <div class="icon-buttons-container">
-            <button type="button" mat-icon-button *ngFor="let tipo of data.tiposTransaccion"
-                [class.selected]="form.get('id_tipo_transaccion')?.value === (tipo.id || tipo._id)"
-                (click)="seleccionarTipoTransaccion(tipo.id || tipo._id)">
-                <div class="transaction-icon" [attr.data-type]="tipo.descripcion">
-                    <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('consignación')">arrow_downward</mat-icon>
-                    <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('retiro')">arrow_upward</mat-icon>
-                    <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('transferencia')">sync_alt</mat-icon>
-                </div>
-                <span class="icon-label">{{tipo.descripcion}}</span>
-            </button>
-        </div>
+    <div class="transaction-type-section">
+      <div class="transaction-grid">
+        <button type="button" *ngFor="let tipo of data.tiposTransaccion"
+            [class.selected]="form.get('id_tipo_transaccion')?.value === (tipo.id || tipo._id)"
+            (click)="seleccionarTipoTransaccion(tipo.id || tipo._id)">
+          <div class="transaction-icon-container">
+            <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('consignación')">arrow_downward</mat-icon>
+            <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('retiro')">arrow_upward</mat-icon>
+            <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('transferencia')">sync_alt</mat-icon>
+          </div>
+          <span>{{tipo.descripcion}}</span>
+        </button>
+      </div>
     </div>
-
+  
     <!-- Tipo de movimiento -->
-    <div class="movement-type-container">
-        <label class="input-label">Tipo de movimiento*</label>
-        <div class="icon-buttons-container">
-            <button type="button" mat-icon-button *ngFor="let tipo of data.tiposMovimiento"
-                [class.selected]="form.get('id_tipo_movimiento')?.value === (tipo.id || tipo._id)"
-                (click)="seleccionarTipoMovimiento(tipo.id || tipo._id)">
-                <div class="movement-icon" [attr.data-type]="tipo.codigo_origen + '-' + tipo.codigo_destino">
-                    <span class="movement-icon-text" [innerHTML]="obtenerIconoMovimiento(tipo)"></span>
-                </div>
-                <span class="icon-label">{{obtenerDescripcionCorta(tipo)}}</span>
-            </button>
-        </div>
+    <div class="section-label">
+      <div class="label-bar"></div>
+      <span>Selecciona el origen y destino de tu dinero</span>
     </div>
-
-    <!-- Campos de formulario en grid -->
-    <div class="form-fields-container">
-        <!-- Cuenta origen -->
-        <mat-form-field *ngIf="mostrarCampo('cuenta_origen')" class="form-field-transition" appearance="outline">
-            <mat-label>Cuenta origen</mat-label>
-            <mat-icon matPrefix class="field-icon">account_balance</mat-icon>
-            <mat-select formControlName="id_cuenta_origen" required>
-                <mat-option *ngFor="let cuenta of data.cuentas" [value]="cuenta.id || cuenta._id">
-                    {{ cuenta.numero_cuenta }}
-                </mat-option>
-            </mat-select>
-            <mat-hint>Selecciona la cuenta de origen</mat-hint>
-        </mat-form-field>
-
-        <!-- Cuenta destino -->
-        <mat-form-field *ngIf="mostrarCampo('cuenta_destino')" class="form-field-transition" appearance="outline">
-            <mat-label>Cuenta destino</mat-label>
-            <mat-icon matPrefix class="field-icon">arrow_forward</mat-icon>
-            <mat-select formControlName="id_cuenta_destino" required>
-                <mat-option *ngFor="let cuenta of data.cuentas" [value]="cuenta.id || cuenta._id">
-                    {{ cuenta.numero_cuenta }}
-                </mat-option>
-            </mat-select>
-            <mat-hint>Selecciona la cuenta destino</mat-hint>
-        </mat-form-field>
-
-        <!-- Bolsillo origen -->
-        <mat-form-field *ngIf="mostrarCampo('bolsillo_origen')" class="form-field-transition" appearance="outline">
-            <mat-label>Bolsillo origen</mat-label>
-            <mat-icon matPrefix class="field-icon">folder</mat-icon>
-            <mat-select formControlName="id_bolsillo_origen" required>
-                <mat-option *ngFor="let b of data.bolsillos" [value]="b.id || b._id">
-                    {{ b.nombre }}
-                </mat-option>
-            </mat-select>
-            <mat-hint>Selecciona el bolsillo de origen</mat-hint>
-        </mat-form-field>
-
-        <!-- Bolsillo destino -->
-        <mat-form-field *ngIf="mostrarCampo('bolsillo_destino')" class="form-field-transition" appearance="outline">
-            <mat-label>Bolsillo destino</mat-label>
-            <mat-icon matPrefix class="field-icon">folder_shared</mat-icon>
-            <mat-select formControlName="id_bolsillo_destino" required>
-                <mat-option *ngFor="let b of data.bolsillos" [value]="b.id || b._id">
-                    {{ b.nombre }}
-                </mat-option>
-            </mat-select>
-            <mat-hint>Selecciona el bolsillo destino</mat-hint>
-        </mat-form-field>
+  
+    <div class="movement-type-section">
+      <div class="movement-grid">
+        <button type="button" *ngFor="let tipo of data.tiposMovimiento"
+            [class.selected]="form.get('id_tipo_movimiento')?.value === (tipo.id || tipo._id)"
+            (click)="seleccionarTipoMovimiento(tipo.id || tipo._id)">
+          <div class="movement-icon-container">
+            <span class="movement-icon" [innerHTML]="obtenerIconoMovimiento(tipo)"></span>
+          </div>
+          <span>{{obtenerDescripcionCorta(tipo)}}</span>
+        </button>
+      </div>
     </div>
-
-    <!-- Monto y descripción -->
-    <!-- Monto y descripción en la misma fila -->
-    <div class="form-fields-container">
-        <mat-form-field class="animated-field" appearance="outline">
-            <mat-label>Monto</mat-label>
-            <span matPrefix class="currency-prefix">$</span>
-            <input matInput type="number" formControlName="monto" placeholder="Ej: 50000" required />
-            <mat-hint>Ingresa el monto</mat-hint>
+  
+    <!-- Campos de formulario dinámicos -->
+    <div class="dynamic-fields">
+      <!-- Cuenta origen -->
+      <div class="field-container" *ngIf="mostrarCampo('cuenta_origen')">
+        <mat-form-field appearance="outline">
+          <mat-label>Cuenta origen</mat-label>
+          <mat-select formControlName="id_cuenta_origen" required>
+            <mat-option *ngFor="let cuenta of data.cuentas" [value]="cuenta.id || cuenta._id">
+              {{ cuenta.numero_cuenta }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
-
-        <mat-form-field class="animated-field" appearance="outline">
-            <mat-label>Descripción</mat-label>
-            <mat-icon matPrefix class="field-icon">description</mat-icon>
-            <input matInput formControlName="descripcion" placeholder="Ej: Pago mensual" required />
-            <mat-hint>Breve descripción</mat-hint>
+      </div>
+  
+      <!-- Cuenta destino -->
+      <div class="field-container" *ngIf="mostrarCampo('cuenta_destino')">
+        <mat-form-field appearance="outline">
+          <mat-label>Cuenta destino</mat-label>
+          <mat-select formControlName="id_cuenta_destino" required>
+            <mat-option *ngFor="let cuenta of data.cuentas" [value]="cuenta.id || cuenta._id">
+              {{ cuenta.numero_cuenta }}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
+      </div>
+  
+      <!-- Bolsillo origen -->
+      <div class="field-container" *ngIf="mostrarCampo('bolsillo_origen')">
+        <mat-form-field appearance="outline">
+          <mat-label>Bolsillo origen</mat-label>
+          <mat-select formControlName="id_bolsillo_origen" required>
+            <mat-option *ngFor="let b of data.bolsillos" [value]="b.id || b._id">
+              {{ b.nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+  
+      <!-- Bolsillo destino -->
+      <div class="field-container" *ngIf="mostrarCampo('bolsillo_destino')">
+        <mat-form-field appearance="outline">
+          <mat-label>Bolsillo destino</mat-label>
+          <mat-select formControlName="id_bolsillo_destino" required>
+            <mat-option *ngFor="let b of data.bolsillos" [value]="b.id || b._id">
+              {{ b.nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
     </div>
-
+  
+    <!-- Valor y descripción -->
+    <div class="transaction-inputs">
+      <div class="field-container">
+        <mat-icon class="field-icon">attach_money</mat-icon>
+        <mat-form-field appearance="outline">
+          <mat-label>Valor a transferir*</mat-label>
+          <input matInput type="number" formControlName="monto" required>
+          <mat-hint>Ingresa el monto de la transacción</mat-hint>
+        </mat-form-field>
+      </div>
+  
+      <div class="field-container">
+        <mat-icon class="field-icon">description</mat-icon>
+        <mat-form-field appearance="outline">
+          <mat-label>Descripción*</mat-label>
+          <input matInput formControlName="descripcion" required>
+          <mat-hint>Añade una breve descripción para identificar esta transacción</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+  
     <!-- Acciones -->
-    <div class="actions">
-        <button mat-button type="button" (click)="cancelar()" matTooltip="Cancelar y volver">
-            <mat-icon>close</mat-icon> Cancelar
-        </button>
-        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || !form.dirty"
-            matTooltip="Guardar transacción">
-            <mat-icon>save</mat-icon> Guardar
-        </button>
+    <div class="dialog-actions">
+      <button mat-button type="button" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || !form.dirty">
+        <mat-icon>save</mat-icon>
+        Guardar transacción
+      </button>
     </div>
-</form>
+  </form>

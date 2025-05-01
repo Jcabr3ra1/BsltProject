@@ -1,57 +1,29 @@
-/* user-page.component.scss - Rediseñado */
-/* Basado en la paleta de colores del sidebar:
-   - Morado principal: #a46cf5
-   - Negro/Oscuro: Degradado de #2c1658 a #1f1f1f
-   - Blanco/Claro: #ffffff, #e0e0e0
-*/
+/* user-page.component.scss - Corregido */
+@use 'sass:color';
 
-// Variables de color para mantener consistencia
+// Variables de color
 $primary-purple: #a46cf5;
-$light-purple: rgba(164, 108, 245, 0.2);
 $dark-purple: #2c1658;
+$darker-purple: #1e1339;
 $dark-bg: #1f1f1f;
 $light-text: #ffffff;
 $medium-text: #e0e0e0;
-$divider-color: rgba(164, 108, 245, 0.3);
 
-// Rediseño del card contenedor
-mat-card {
+// Variables para notificaciones
+$success-color: #4cd964;
+$error-color: #ff3b30;
+$warning-color: #ffcc00;
+
+// Contenedor principal
+.user-module-container {
   background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
   color: $light-text;
   padding: 1.5rem;
-  margin: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(164, 108, 245, 0.2);
-  
-  h2 {
-    margin-bottom: 1.5rem;
-    font-size: 1.75rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    color: $light-text;
-    position: relative;
-    padding-left: 0.5rem;
-    display: flex;
-    align-items: center;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 70%;
-      width: 3px;
-      background-color: $primary-purple;
-      border-radius: 3px;
-    }
-    
-    mat-icon {
-      margin-right: 0.75rem;
-      color: $primary-purple;
-    }
-  }
+  min-height: calc(100vh - 110px);
+  border-radius: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 // Header con acciones
@@ -59,23 +31,34 @@ mat-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $light-text;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    
+    mat-icon {
+      margin-right: 0.75rem;
+      color: $primary-purple;
+    }
+  }
   
   button[mat-raised-button] {
-    background: linear-gradient(45deg, $primary-purple, #8e57d6);
+    background: $primary-purple;
     color: $light-text;
     border: none;
     padding: 0.5rem 1.25rem;
-    border-radius: 8px;
+    border-radius: 6px;
     font-weight: 500;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(164, 108, 245, 0.3);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(164, 108, 245, 0.4);
-      background: linear-gradient(45deg, #8e57d6, $primary-purple);
+      background: color.adjust($primary-purple, $lightness: -10%);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     
     mat-icon {
@@ -84,207 +67,115 @@ mat-card {
   }
 }
 
-// Contenedor de estadísticas y filtros
-.stats-container {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
+// Barra de búsqueda
+.search-container {
+  margin-bottom: 1rem;
   
-  .stat-card {
-    background: linear-gradient(135deg, rgba(164, 108, 245, 0.2), rgba(44, 22, 88, 0.3));
-    border-radius: 10px;
-    padding: 1rem;
-    min-width: 140px;
-    text-align: center;
-    border: 1px solid rgba(164, 108, 245, 0.3);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    
-    .stat-value {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: $primary-purple;
-      margin-bottom: 0.25rem;
-    }
-    
-    .stat-label {
-      font-size: 0.9rem;
-      color: $medium-text;
-      letter-spacing: 0.5px;
-    }
-  }
-  
-  .filter-actions {
+  .search-box {
     display: flex;
-    gap: 1rem;
-    margin-left: auto;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    max-width: 350px;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    
+    &:focus-within {
+      background-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.3);
+    }
+    
+    mat-icon {
+      color: $primary-purple;
+    }
+    
+    input {
+      background: transparent;
+      border: none;
+      color: $light-text;
+      outline: none;
+      width: 100%;
+      font-size: 0.95rem;
+      
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
   }
 }
 
-// Tabla principal
+// Tabla principal - corregida para mostrar datos
 .table-container {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  position: relative;
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px; // Altura mínima para asegurar que la tabla siempre ocupe espacio
 }
 
 .full-width-table {
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-  overflow: hidden;
+  table-layout: fixed;
+  
+  // Ajustar el ancho de las columnas
+  .mat-column-nombre {
+    width: 25%;
+  }
+  
+  .mat-column-email {
+    width: 25%;
+  }
+  
+  .mat-column-estado {
+    width: 20%;
+  }
+  
+  .mat-column-rol {
+    width: 15%;
+  }
+  
+  .mat-column-acciones {
+    width: 15%;
+  }
   
   // Encabezados de tabla
   th.mat-header-cell {
-    background-color: rgba(44, 22, 88, 0.8);
+    background-color: $darker-purple;
     color: $light-text;
     font-weight: 600;
-    padding: 1rem 0.75rem;
-    font-size: 0.95rem;
+    padding: 0.75rem;
+    font-size: 0.9rem;
     letter-spacing: 0.5px;
     border-bottom: none;
+    text-align: left;
   }
   
   // Celdas de la tabla
   td.mat-cell {
-    padding: 0.8rem 0.75rem;
+    padding: 0.75rem;
     color: $medium-text;
     border-bottom: 1px solid rgba(164, 108, 245, 0.1);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
   // Filas de la tabla
   tr.mat-row {
-    background-color: rgba(255, 255, 255, 0.03);
-    transition: all 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.02);
+    transition: background-color 0.2s ease;
     
     &:nth-child(odd) {
-      background-color: rgba(255, 255, 255, 0.01);
+      background-color: rgba(0, 0, 0, 0.15);
     }
     
     &:hover {
       background-color: rgba(164, 108, 245, 0.08);
-      cursor: pointer;
-    }
-  }
-}
-
-// Selectores de estado y rol
-.selector-container {
-  display: flex;
-  align-items: center;
-  
-  span {
-    font-size: 0.95rem;
-  }
-  
-  .selector-button {
-    width: 24px;
-    height: 24px;
-    line-height: 24px;
-    margin-left: 4px;
-    
-    mat-icon {
-      color: $primary-purple;
-      font-size: 18px;
-      height: 18px;
-      width: 18px;
-      line-height: 18px;
-    }
-  }
-}
-
-// Elemento actualmente seleccionado
-.current-item {
-  font-weight: 600;
-  color: $primary-purple;
-}
-
-// Resaltado de íconos
-mat-icon[color="primary"] {
-  color: $primary-purple !important;
-}
-
-mat-icon[color="warn"] {
-  color: #ff5252 !important;
-}
-
-// Botones de acción en la tabla
-button[mat-icon-button] {
-  color: $medium-text;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    color: $primary-purple;
-    transform: scale(1.1);
-  }
-  
-  &[color="primary"]:hover {
-    color: $primary-purple;
-  }
-  
-  &[color="warn"]:hover {
-    color: #ff5252;
-  }
-}
-
-// Estilo de menús desplegables
-::ng-deep {
-  .mat-menu-panel {
-    background-color: #2d2d2d;
-    border: 1px solid rgba(164, 108, 245, 0.2);
-    border-radius: 8px;
-    
-    .mat-menu-item {
-      color: $medium-text;
-      
-      &:hover {
-        background-color: rgba(164, 108, 245, 0.1);
-      }
-      
-      .current-item {
-        color: $primary-purple;
-      }
-    }
-  }
-  
-  // Estilos para los diálogos
-  .mat-dialog-container {
-    background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
-    color: $light-text;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(164, 108, 245, 0.2);
-  }
-  
-  // Estilos para los inputs de formularios
-  .mat-form-field {
-    width: 100%;
-    
-    .mat-input-element {
-      color: $light-text;
-    }
-    
-    .mat-form-field-label {
-      color: rgba(255, 255, 255, 0.6);
-    }
-    
-    .mat-form-field-underline {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-    
-    &.mat-focused {
-      .mat-form-field-ripple {
-        background-color: $primary-purple;
-      }
-      
-      .mat-form-field-label {
-        color: $primary-purple;
-      }
     }
   }
 }
@@ -292,10 +183,10 @@ button[mat-icon-button] {
 // Badges de estados
 .estado-badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
   
   &.activo {
@@ -320,12 +211,11 @@ button[mat-icon-button] {
 // Badges de rol
 .rol-badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
-  text-transform: uppercase;
   
   &.admin {
     background-color: rgba(164, 108, 245, 0.15);
@@ -346,7 +236,49 @@ button[mat-icon-button] {
   }
 }
 
-// Estilo para mensajes de error o cuando no hay datos
+// Selectores
+.selector-container {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  
+  .selector-button {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    margin-left: 4px;
+    
+    mat-icon {
+      color: $primary-purple;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      line-height: 18px;
+    }
+  }
+}
+
+// Botones de acción
+.action-buttons {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+  
+  button {
+    transition: all 0.2s ease;
+    
+    &.edit-button:hover {
+      color: $primary-purple;
+    }
+    
+    &.delete-button:hover {
+      color: #ff3b30;
+    }
+  }
+}
+
+// Mensaje cuando no hay datos
 .no-data-message {
   display: flex;
   flex-direction: column;
@@ -354,311 +286,43 @@ button[mat-icon-button] {
   justify-content: center;
   padding: 2rem;
   color: $medium-text;
+  flex: 1;
   
   mat-icon {
-    font-size: 3rem;
-    height: 3rem;
-    width: 3rem;
+    font-size: 2.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
     margin-bottom: 1rem;
     color: rgba(164, 108, 245, 0.5);
   }
   
   p {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 }
 
-// Diseño de los avatares de usuario en la tabla
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  
-  .user-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    color: #ffffff;
-    font-size: 0.9rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-    text-transform: uppercase;
-  }
-  
-  .user-details {
-    font-weight: 500;
-  }
-}
-
-// Estilo para el status de la cuenta
-.account-status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  
-  mat-icon {
-    font-size: 1.1rem;
-    height: 1.1rem;
-    width: 1.1rem;
-    
-    &.account-active {
-      color: #4cd964;
-    }
-    
-    &.account-inactive {
-      color: #ff3b30;
-    }
-  }
-  
-  span {
-    font-size: 0.9rem;
-  }
-}
-
-// Estilos para los botones de acción
-.action-buttons {
-  display: flex;
-  gap: 0.25rem;
-  
-  button.edit-button:hover {
-    color: #a46cf5;
-    background-color: rgba(164, 108, 245, 0.1);
-  }
-  
-  button.delete-button:hover {
-    color: #ff3b30;
-    background-color: rgba(255, 59, 48, 0.1);
-  }
-}
-
-// Estilos para filas seleccionadas
-tr.selected-row {
-  background-color: rgba(164, 108, 245, 0.15) !important;
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 3px;
-    background-color: #a46cf5;
-  }
-  
-  td {
-    font-weight: 500;
-  }
-}
-
-// Panel de detalles de usuario
-.user-detail-panel {
-  background: linear-gradient(135deg, rgba(44, 22, 88, 0.95), rgba(31, 31, 31, 0.95));
-  border-radius: 12px;
-  margin-top: 1.5rem;
-  padding: 1.5rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(164, 108, 245, 0.3);
-  
-  .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    
-    h3 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: #ffffff;
-      margin: 0;
-    }
-    
-    .close-button {
-      color: rgba(255, 255, 255, 0.7);
-      
-      &:hover {
-        color: #ffffff;
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-    }
-  }
-  
-  // Cabecera del perfil con avatar grande
-  .profile-header {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    
-    .large-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      color: #ffffff;
-      font-size: 1.75rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      text-transform: uppercase;
-    }
-    
-    .user-main-info {
-      h4 {
-        font-size: 1.4rem;
-        font-weight: 600;
-        color: #ffffff;
-        margin: 0 0 0.3rem 0;
-      }
-      
-      p {
-        font-size: 1rem;
-        color: rgba(255, 255, 255, 0.7);
-        margin: 0 0 0.75rem 0;
-      }
-      
-      // Badge de rol grande
-      .rol-badge.large {
-        padding: 0.35rem 1rem;
-        font-size: 0.9rem;
-      }
-    }
-  }
-  
-  // Sección de detalles
-  .detail-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    
-    .detail-item {
-      .detail-label {
-        font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.6);
-        margin-bottom: 0.3rem;
-      }
-      
-      .detail-value {
-        font-size: 1rem;
-        color: #ffffff;
-        font-weight: 500;
-      }
-      
-      // Badge de estado grande
-      .estado-badge.large {
-        padding: 0.35rem 1rem;
-        font-size: 0.9rem;
-      }
-    }
-  }
-  
-  // Sección de acciones
-  .action-section {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
-    flex-wrap: wrap;
-    
-    .detail-button {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      padding: 0.6rem 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.15);
-      }
-      
-      &.edit {
-        background-color: rgba(164, 108, 245, 0.2);
-        color: #a46cf5;
-        
-        &:hover {
-          background-color: rgba(164, 108, 245, 0.3);
-        }
-      }
-      
-      &.delete {
-        background-color: rgba(255, 59, 48, 0.2);
-        color: #ff3b30;
-        
-        &:hover {
-          background-color: rgba(255, 59, 48, 0.3);
-        }
-      }
-      
-      &.enable {
-        background-color: rgba(76, 217, 100, 0.2);
-        color: #4cd964;
-        
-        &:hover {
-          background-color: rgba(76, 217, 100, 0.3);
-        }
-      }
-      
-      &.disable {
-        background-color: rgba(255, 59, 48, 0.2);
-        color: #ff3b30;
-        
-        &:hover {
-          background-color: rgba(255, 59, 48, 0.3);
-        }
-      }
-    }
-  }
-}
-
-// Estilos para la caja de búsqueda
-.search-box {
-  display: flex;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  min-width: 250px;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  
-  &:focus-within {
-    background-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.5);
-  }
-  
-  mat-icon {
-    color: #a46cf5;
-  }
-  
-  input {
-    background: transparent;
-    border: none;
-    color: #ffffff;
-    outline: none;
-    width: 100%;
-    font-size: 0.95rem;
-    
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-  }
-}
-
-// Estilos para el paginador
+// Paginador con fondo transparente
 ::ng-deep {
+  // Menus desplegables
+  .mat-menu-panel {
+    background-color: #2d2d2d;
+    border: 1px solid rgba(164, 108, 245, 0.2);
+    border-radius: 6px;
+    
+    .mat-menu-item {
+      color: $medium-text;
+      
+      &:hover {
+        background-color: rgba(164, 108, 245, 0.1);
+      }
+    }
+  }
+  
+  // Paginador
   .mat-paginator {
     background-color: transparent;
-    color: #e0e0e0;
+    color: $medium-text;
+    border-top: 1px solid rgba(164, 108, 245, 0.1);
     
     .mat-paginator-container {
       min-height: 48px;
@@ -673,78 +337,46 @@ tr.selected-row {
     .mat-paginator-navigation-next,
     .mat-paginator-navigation-first,
     .mat-paginator-navigation-last {
-      color: #a46cf5;
-    }
-    
-    .mat-paginator-page-size-select {
-      .mat-select-value {
-        color: #e0e0e0;
-      }
-      
-      .mat-select-arrow {
-        color: #a46cf5;
-      }
+      color: $primary-purple;
     }
   }
   
-  // Estilos adicionales para los diálogos personalizados
-  .custom-dialog {
-    .mat-dialog-container {
-      background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
-      color: #ffffff;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(164, 108, 245, 0.2);
-    }
+  // Diálogos
+  .custom-dialog .mat-dialog-container {
+    background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+    color: $light-text;
+    border-radius: 8px;
+    border: 1px solid rgba(164, 108, 245, 0.2);
+  }
+  
+  // Notificaciones/SnackBars
+  .error-snackbar {
+    background-color: rgba(255, 59, 48, 0.9);
+    color: white;
+    border-left: 4px solid $error-color;
     
-    .mat-dialog-title {
-      color: #ffffff;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      position: relative;
-      padding-left: 0.5rem;
-      
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 70%;
-        width: 3px;
-        background-color: #a46cf5;
-        border-radius: 3px;
-      }
-    }
-    
-    .mat-dialog-actions {
-      padding: 1rem 0 0;
-      gap: 1rem;
-      
-      button {
-        border-radius: 8px;
-        font-weight: 500;
-        padding: 0.5rem 1.25rem;
-        
-        &.mat-primary {
-          background: linear-gradient(45deg, #a46cf5, #8e57d6);
-          color: #ffffff;
-        }
-      }
+    .mat-simple-snackbar-action {
+      color: white;
     }
   }
   
-  // Animaciones
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  .success-snackbar {
+    background-color: rgba(76, 217, 100, 0.9);
+    color: white;
+    border-left: 4px solid $success-color;
+    
+    .mat-simple-snackbar-action {
+      color: white;
+    }
   }
   
-  // Asegurar que el paginador tenga colores correctos
-  .mat-paginator-range-actions {
-    button.mat-icon-button[disabled] {
-      color: rgba(255, 255, 255, 0.3) !important;
+  .warning-snackbar {
+    background-color: rgba(255, 204, 0, 0.9);
+    color: white;
+    border-left: 4px solid $warning-color;
+    
+    .mat-simple-snackbar-action {
+      color: white;
     }
   }
 }

@@ -18,6 +18,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Observable, Subscription, forkJoin } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { finalize, catchError } from 'rxjs/operators';
@@ -55,6 +57,8 @@ import { Bolsillo } from '../../../../../../core/models/bolsillo.model';
     MatSelectModule,
     MatPaginatorModule,
     MatSnackBarModule,
+    MatDividerModule,
+    MatProgressSpinnerModule
   ],
 })
 export class TransactionPageComponent
@@ -79,8 +83,11 @@ export class TransactionPageComponent
   ];
   isLoading: boolean = false;
   private subscriptions = new Subscription();
-  // Para cambiar entre tema claro y oscuro (opcional)
-  darkThemeEnabled = false;
+  
+  // Para la paginación personalizada
+  pageSizeOptions: number[] = [5, 10, 25, 50];
+  paginaActual: number = 0;
+  tamanoActual: number = 10;
 
   usuarioResumen: {
     nombre: string;
@@ -107,36 +114,74 @@ export class TransactionPageComponent
   ngAfterViewInit(): void {
     // Conectar el dataSource con el paginador después de que la vista esté inicializada
     this.dataSource.paginator = this.paginator;
-
-    // Personalizar los textos del paginador para español
-    if (this.paginator) {
-      this.paginator._intl.itemsPerPageLabel = 'Elementos por página:';
-      this.paginator._intl.nextPageLabel = 'Página siguiente';
-      this.paginator._intl.previousPageLabel = 'Página anterior';
-      this.paginator._intl.firstPageLabel = 'Primera página';
-      this.paginator._intl.lastPageLabel = 'Última página';
-      this.paginator._intl.getRangeLabel = (
-        page: number,
-        pageSize: number,
-        length: number
-      ) => {
-        if (length === 0 || pageSize === 0) {
-          return `0 de ${length}`;
-        }
-        length = Math.max(length, 0);
-        const startIndex = page * pageSize;
-        const endIndex =
-          startIndex < length
-            ? Math.min(startIndex + pageSize, length)
-            : startIndex + pageSize;
-        return `${startIndex + 1} - ${endIndex} de ${length}`;
-      };
-    }
   }
 
   ngOnDestroy(): void {
     // Asegurar que todas las suscripciones se cancelen al destruir el componente
     this.subscriptions.unsubscribe();
+  }
+
+  // Métodos para la paginación personalizada
+  cambiarTamanoPagina(event: any): void {
+    this.tamanoActual = event.value;
+    this.paginaActual = 0;
+    
+    if (this.paginator) {
+      this.paginator.pageSize = this.tamanoActual;
+      this.paginator.pageIndex = 0;
+    }
+  }
+  
+  irAPrimeraPagina(): void {
+    this.paginaActual = 0;
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+  }
+  
+  irAPaginaAnterior(): void {
+    if (this.paginaActual > 0) {
+      this.paginaActual--;
+      if (this.paginator) {
+        this.paginator.previousPage();
+      }
+    }
+  }
+  
+  irAPaginaSiguiente(): void {
+    if (this.paginaActual < this.getTotalPaginas() - 1) {
+      this.paginaActual++;
+      if (this.paginator) {
+        this.paginator.nextPage();
+      }
+    }
+  }
+  
+  irAUltimaPagina(): void {
+    this.paginaActual = this.getTotalPaginas() - 1;
+    if (this.paginator) {
+      this.paginator.lastPage();
+    }
+  }
+  
+  puedeRetroceder(): boolean {
+    return this.paginaActual > 0;
+  }
+  
+  puedeAvanzar(): boolean {
+    return this.paginaActual < this.getTotalPaginas() - 1;
+  }
+  
+  getTotalPaginas(): number {
+    return Math.ceil(this.transacciones.length / this.tamanoActual);
+  }
+  
+  getInfoPaginacion(): string {
+    if (this.transacciones.length === 0) return '0 - 0 de 0';
+    
+    const inicio = this.paginaActual * this.tamanoActual + 1;
+    const fin = Math.min((this.paginaActual + 1) * this.tamanoActual, this.transacciones.length);
+    return `${inicio} - ${fin} de ${this.transacciones.length}`;
   }
 
   /**
@@ -156,7 +201,7 @@ export class TransactionPageComponent
       duration: duracion,
       horizontalPosition: 'end',
       verticalPosition: 'top',
-      panelClass: this.darkThemeEnabled ? ['dark-snackbar'] : [],
+      panelClass: ['snackbar-success']
     });
   }
 
@@ -169,6 +214,7 @@ export class TransactionPageComponent
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
+      this.paginaActual = 0;
     }
   }
 
@@ -196,9 +242,9 @@ export class TransactionPageComponent
             cuentas,
             bolsillos,
           },
-          width: '800px', // Cambiar de 500px a 800px
-          maxWidth: '90vw', // Para garantizar que se adapte a pantallas pequeñas
-          panelClass: this.darkThemeEnabled ? 'dark-theme-dialog' : '',
+          width: '800px',
+          maxWidth: '90vw',
+          panelClass: ['custom-dialog', 'custom-dark-dialog'],
           disableClose: true,
         });
 
@@ -451,7 +497,7 @@ export class TransactionPageComponent
     const dialogRef = this.dialog.open(EditarTransaccionDialogComponent, {
       data: transaccion,
       width: '500px',
-      panelClass: this.darkThemeEnabled ? 'dark-theme-dialog' : '',
+      panelClass: ['custom-dialog', 'custom-dark-dialog'],
     });
 
     const subscription = dialogRef.afterClosed().subscribe((data) => {
@@ -509,17 +555,5 @@ export class TransactionPageComponent
     if (trans.bolsillo_destino)
       return `Bolsillo: ${trans.bolsillo_destino.nombre}`;
     return 'Banco';
-  }
-
-  /**
-   * Cambia entre tema claro y oscuro
-   */
-  toggleDarkTheme(): void {
-    this.darkThemeEnabled = !this.darkThemeEnabled;
-    if (this.darkThemeEnabled) {
-      document.body.classList.add('dark-theme');
-    } else {
-      document.body.classList.remove('dark-theme');
-    }
   }
 }

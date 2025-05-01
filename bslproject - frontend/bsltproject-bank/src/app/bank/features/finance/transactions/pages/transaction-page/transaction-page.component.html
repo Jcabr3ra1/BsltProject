@@ -1,170 +1,200 @@
-<div class="transacciones-container">
-    <!-- Spinner de carga -->
-    <div class="loading-overlay" *ngIf="isLoading">
-        <div class="spinner"></div>
+<div class="transacciones-page-container">
+    <!-- Indicador de carga centralizado -->
+    <div *ngIf="isLoading" class="cargando">
+      <mat-spinner diameter="50"></mat-spinner>
     </div>
-
-    <!-- Encabezado mejorado -->
-    <div class="page-header">
-        <div class="header-content">
-            <h1 class="page-title">Transacciones</h1>
-            <p class="page-subtitle">Gestiona tus movimientos de cuentas y bolsillos</p>
-        </div>
-        <div class="actions">
-            <button mat-raised-button color="primary" (click)="abrirCrear()">
-                <mat-icon>add</mat-icon>
-                Nueva Transacción
-            </button>
-        </div>
+  
+    <!-- Encabezado -->
+    <div class="header">
+      <h1>Gestión de Transacciones</h1>
+      <button mat-raised-button color="primary" (click)="abrirCrear()">
+        <mat-icon>add_circle</mat-icon> Nueva Transacción
+      </button>
     </div>
-
-    <!-- Tarjetas de resumen financiero mejoradas -->
+  
+    <mat-divider></mat-divider>
+  
+    <!-- Tarjetas de resumen financiero -->
     <div class="dashboard-cards">
-        <mat-card class="stat-card cuentas">
-            <div class="card-header"></div>
-            <mat-card-content>
-                <div class="card-body">
-                    <div class="card-icon">
-                        <mat-icon>account_balance</mat-icon>
-                    </div>
-                    <div class="card-info">
-                        <div class="stat-value">{{ usuarioResumen?.totalCuentas | currency:'COP' }}</div>
-                        <div class="stat-label">Saldo en cuentas</div>
-                    </div>
-                </div>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card class="stat-card bolsillos">
-            <div class="card-header"></div>
-            <mat-card-content>
-                <div class="card-body">
-                    <div class="card-icon">
-                        <mat-icon>account_balance_wallet</mat-icon>
-                    </div>
-                    <div class="card-info">
-                        <div class="stat-value">{{ usuarioResumen?.totalBolsillos | currency:'COP' }}</div>
-                        <div class="stat-label">Saldo en bolsillos</div>
-                    </div>
-                </div>
-            </mat-card-content>
-        </mat-card>
-
-        <mat-card class="stat-card total">
-            <div class="card-header"></div>
-            <mat-card-content>
-                <div class="card-body">
-                    <div class="card-icon">
-                        <mat-icon>savings</mat-icon>
-                    </div>
-                    <div class="card-info">
-                        <div class="stat-value">
-                            {{
-                            (usuarioResumen?.totalCuentas || 0) +
-                            (usuarioResumen?.totalBolsillos || 0) | currency:'COP'
-                            }}
-                        </div>
-                        <div class="stat-label">Total disponible</div>
-                    </div>
-                </div>
-            </mat-card-content>
-        </mat-card>
+      <mat-card class="stat-card cuentas">
+        <div class="card-header"></div>
+        <mat-card-content>
+          <div class="card-body">
+            <div class="card-icon">
+              <mat-icon>account_balance</mat-icon>
+            </div>
+            <div class="card-info">
+              <div class="stat-value">{{ usuarioResumen?.totalCuentas | currency:'COP' }}</div>
+              <div class="stat-label">Saldo en cuentas</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="stat-card bolsillos">
+        <div class="card-header"></div>
+        <mat-card-content>
+          <div class="card-body">
+            <div class="card-icon">
+              <mat-icon>account_balance_wallet</mat-icon>
+            </div>
+            <div class="card-info">
+              <div class="stat-value">{{ usuarioResumen?.totalBolsillos | currency:'COP' }}</div>
+              <div class="stat-label">Saldo en bolsillos</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="stat-card total">
+        <div class="card-header"></div>
+        <mat-card-content>
+          <div class="card-body">
+            <div class="card-icon">
+              <mat-icon>savings</mat-icon>
+            </div>
+            <div class="card-info">
+              <div class="stat-value">
+                {{ (usuarioResumen?.totalCuentas || 0) + (usuarioResumen?.totalBolsillos || 0) | currency:'COP' }}
+              </div>
+              <div class="stat-label">Total disponible</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
-
+  
     <!-- Buscador -->
     <div class="search-filter">
-        <mat-form-field appearance="outline">
-            <mat-label>Buscar transacción</mat-label>
-            <input matInput (keyup)="aplicarFiltro($event)" placeholder="Ej: Transferencia, cuenta, etc.">
-            <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Buscar transacción</mat-label>
+        <input matInput (keyup)="aplicarFiltro($event)" placeholder="Ej: Transferencia, cuenta, etc.">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
     </div>
-
-    <!-- Tabla mejorada con paginación -->
-    <div class="tabla-transacciones">
-        <table mat-table [dataSource]="dataSource" class="mat-elevation-z0">
-            <!-- Fecha -->
-            <ng-container matColumnDef="fecha_transaccion">
-                <th mat-header-cell *matHeaderCellDef>Fecha</th>
-                <td mat-cell *matCellDef="let t">{{ t.fecha_transaccion | date:'dd/MM/yyyy HH:mm' }}</td>
-            </ng-container>
-
-            <!-- Tipo -->
-            <ng-container matColumnDef="tipo_transaccion">
-                <th mat-header-cell *matHeaderCellDef>Tipo</th>
-                <td mat-cell *matCellDef="let t">
-                    {{ t.tipo_transaccion?.descripcion || 'N/A' }}
-                </td>
-            </ng-container>
-
-            <!-- Descripción -->
-            <ng-container matColumnDef="descripcion">
-                <th mat-header-cell *matHeaderCellDef>Descripción</th>
-                <td mat-cell *matCellDef="let t">{{ t.descripcion }}</td>
-            </ng-container>
-
-            <!-- Monto -->
-            <ng-container matColumnDef="monto">
-                <th mat-header-cell *matHeaderCellDef>Monto</th>
-                <td mat-cell *matCellDef="let t">{{ t.monto | currency:'COP' }}</td>
-            </ng-container>
-
-            <!-- Estado -->
-            <ng-container matColumnDef="estado">
-                <th mat-header-cell *matHeaderCellDef>Estado</th>
-                <td mat-cell *matCellDef="let t">
-                    <span class="estado-anulada" *ngIf="t.estado === 'ANULADA'">
-                        ANULADA
-                    </span>
-                    <span class="estado-activa" *ngIf="!t.estado || t.estado === 'ACTIVA'">
-                        ACTIVA
-                    </span>
-                </td>
-            </ng-container>
-
-            <!-- Origen -->
-            <ng-container matColumnDef="origen">
-                <th mat-header-cell *matHeaderCellDef>Origen</th>
-                <td mat-cell *matCellDef="let t">{{ obtenerNombreOrigen(t) }}</td>
-            </ng-container>
-
-            <!-- Destino -->
-            <ng-container matColumnDef="destino">
-                <th mat-header-cell *matHeaderCellDef>Destino</th>
-                <td mat-cell *matCellDef="let t">{{ obtenerNombreDestino(t) }}</td>
-            </ng-container>
-
-            <!-- Acciones -->
-            <ng-container matColumnDef="acciones">
-                <th mat-header-cell *matHeaderCellDef>Acciones</th>
-                <td mat-cell *matCellDef="let t">
-                    <button mat-icon-button color="warn" *ngIf="t.estado !== 'ANULADA'" (click)="anularTransaccion(t)" matTooltip="Anular transacción">
-                        <mat-icon>cancel</mat-icon>
-                    </button>
-                    <button mat-icon-button color="primary" (click)="abrirEditar(t)" matTooltip="Editar transacción">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                </td>
-            </ng-container>
-
-            <!-- Definición de filas -->
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-            <!-- Fila para cuando no hay datos -->
-            <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell" colspan="8" style="text-align: center; padding: 30px;">
-                    No hay transacciones disponibles.
-                </td>
-            </tr>
-        </table>
-
-        <!-- Paginador: especificando el tamaño de página inicial como 10 -->
+  
+    <!-- Mensaje cuando no hay transacciones -->
+    <div *ngIf="!isLoading && transacciones.length === 0" class="sin-transacciones">
+      <mat-icon>sync_alt</mat-icon>
+      <p>No hay transacciones registradas.</p>
+    </div>
+  
+    <!-- Tabla con paginación personalizada -->
+    <div *ngIf="!isLoading && transacciones.length > 0" class="transacciones-table">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+        <!-- Fecha -->
+        <ng-container matColumnDef="fecha_transaccion">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let t">
+            <span class="fecha-transaccion">{{ t.fecha_transaccion | date:'dd/MM/yyyy HH:mm' }}</span>
+          </td>
+        </ng-container>
+  
+        <!-- Tipo -->
+        <ng-container matColumnDef="tipo_transaccion">
+          <th mat-header-cell *matHeaderCellDef>Tipo</th>
+          <td mat-cell *matCellDef="let t">
+            <span class="tipo-transaccion">{{ t.tipo_transaccion?.descripcion || 'N/A' }}</span>
+          </td>
+        </ng-container>
+  
+        <!-- Descripción -->
+        <ng-container matColumnDef="descripcion">
+          <th mat-header-cell *matHeaderCellDef>Descripción</th>
+          <td mat-cell *matCellDef="let t">{{ t.descripcion }}</td>
+        </ng-container>
+  
+        <!-- Monto -->
+        <ng-container matColumnDef="monto">
+          <th mat-header-cell *matHeaderCellDef>Monto</th>
+          <td mat-cell *matCellDef="let t" class="monto-cell">{{ t.monto | currency:'COP' }}</td>
+        </ng-container>
+  
+        <!-- Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let t">
+            <span class="estado-anulada" *ngIf="t.estado === 'ANULADA'">
+              ANULADA
+            </span>
+            <span class="estado-activa" *ngIf="!t.estado || t.estado === 'ACTIVA'">
+              ACTIVA
+            </span>
+          </td>
+        </ng-container>
+  
+        <!-- Origen -->
+        <ng-container matColumnDef="origen">
+          <th mat-header-cell *matHeaderCellDef>Origen</th>
+          <td mat-cell *matCellDef="let t">{{ obtenerNombreOrigen(t) }}</td>
+        </ng-container>
+  
+        <!-- Destino -->
+        <ng-container matColumnDef="destino">
+          <th mat-header-cell *matHeaderCellDef>Destino</th>
+          <td mat-cell *matCellDef="let t">{{ obtenerNombreDestino(t) }}</td>
+        </ng-container>
+  
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let t">
+            <div class="acciones">
+              <button mat-icon-button color="warn" *ngIf="t.estado !== 'ANULADA'" matTooltip="Anular transacción" (click)="anularTransaccion(t)">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" matTooltip="Editar transacción" (click)="abrirEditar(t)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+  
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+  
+      <!-- Paginación personalizada -->
+      <div class="paginacion-container">
+        <div class="paginacion-items-por-pagina">
+          <span>Items por página:</span>
+          <mat-form-field appearance="outline">
+            <mat-select [value]="pageSizeOptions[1]" (selectionChange)="cambiarTamanoPagina($event)">
+              <mat-option *ngFor="let size of pageSizeOptions" [value]="size">
+                {{ size }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        
+        <div class="paginacion-info">
+          {{ getInfoPaginacion() }}
+        </div>
+        
         <mat-paginator 
-            [pageSizeOptions]="[5, 10, 20, 50]"
-            [pageSize]="10" 
-            showFirstLastButtons 
-            aria-label="Seleccionar página de transacciones">
+          #paginator 
+          [pageSize]="10" 
+          [pageSizeOptions]="pageSizeOptions"
+          [hidePageSize]="true"
+          showFirstLastButtons
+          aria-label="Seleccionar página de transacciones"
+          class="paginator-invisible">
         </mat-paginator>
+        
+        <div class="paginacion-controles">
+          <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPrimeraPagina()">
+            <mat-icon>first_page</mat-icon>
+          </button>
+          <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPaginaAnterior()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAPaginaSiguiente()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+          <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAUltimaPagina()">
+            <mat-icon>last_page</mat-icon>
+          </button>
+        </div>
+      </div>
     </div>
-</div>
+  </div>

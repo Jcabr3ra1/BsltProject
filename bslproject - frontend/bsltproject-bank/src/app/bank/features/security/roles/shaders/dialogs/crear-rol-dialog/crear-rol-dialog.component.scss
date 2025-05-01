@@ -1,17 +1,210 @@
-.formulario-rol {
+@use 'sass:color';
+
+// Variables de color
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$darker-bg: #161036;
+$light-text: #ffffff;
+$medium-text: #e0e0e0;
+
+// Estilos para el diálogo
+:host {
+  display: block;
+}
+
+.dialog-content {
+  background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+  color: $light-text;
+  border-radius: 12px;
+  overflow: hidden;
+  
+  // Título del diálogo
+  h2 {
+    color: $light-text;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid rgba(164, 108, 245, 0.3);
+    background-color: rgba(0, 0, 0, 0.2);
     display: flex;
-    flex-direction: column;
-    padding: 24px;
-  
-    .campo {
-      width: 100%;
-      margin-bottom: 24px;
-    }
-  
-    .acciones {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
+    align-items: center;
+    
+    mat-icon {
+      color: $primary-purple;
+      margin-right: 0.8rem;
     }
   }
   
+  // Formulario de rol
+  .formulario-rol {
+    display: flex;
+    flex-direction: column;
+    padding: 1.2rem;
+    
+    // Campo de nombre personalizado
+    .nombre-field {
+      width: 100%;
+      margin-bottom: 1.2rem;
+      
+      .input-container {
+        display: flex;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        padding: 0 0.75rem;
+        border: 1px solid rgba(164, 108, 245, 0.3);
+        
+        &:focus-within {
+          border-color: $primary-purple;
+          box-shadow: 0 0 0 1px rgba(164, 108, 245, 0.5);
+        }
+        
+        mat-icon {
+          color: $primary-purple;
+          margin-right: 0.5rem;
+        }
+        
+        input {
+          background: transparent;
+          border: none;
+          color: $light-text;
+          outline: none;
+          width: 100%;
+          font-size: 0.95rem;
+          padding: 0.75rem 0;
+          
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+          }
+        }
+      }
+      
+      .error-message {
+        color: #ff3b30;
+        font-size: 0.8rem;
+        margin-top: 0.4rem;
+      }
+    }
+    
+    // Mensaje de información
+    .descripcion-info {
+      display: flex;
+      margin-bottom: 1.2rem;
+      
+      .info-text {
+        display: flex;
+        align-items: center;
+        color: $medium-text;
+        font-size: 0.85rem;
+        
+        mat-icon {
+          color: $primary-purple;
+          margin-right: 0.5rem;
+          font-size: 1.1rem;
+          height: 1.1rem;
+          width: 1.1rem;
+        }
+      }
+    }
+    
+    // Botones de acción
+    .acciones {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      
+      .btn-cancelar {
+        background: transparent;
+        border: none;
+        color: $medium-text;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        border-radius: 4px;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+      
+      .btn-crear {
+        background-color: $primary-purple;
+        border: none;
+        color: white;
+        padding: 0.5rem 1.2rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        
+        &:hover:not([disabled]) {
+          background-color: color.adjust($primary-purple, $lightness: -10%);
+        }
+        
+        &[disabled] {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+// Items de permisos (basado en la imagen de referencia)
+.permiso-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.6rem;
+  
+  .permiso-info {
+    display: flex;
+    flex-direction: column;
+    
+    .permiso-nombre {
+      color: $light-text;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+    
+    .permiso-descripcion {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+    }
+  }
+  
+  .btn-toggle {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    
+    &:hover {
+      background-color: rgba(76, 175, 80, 0.3);
+    }
+    
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+  }
+  
+  &.asignado {
+    background-color: rgba(164, 108, 245, 0.1);
+    border: 1px solid rgba(164, 108, 245, 0.3);
+  }
+}

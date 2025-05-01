@@ -64,8 +64,8 @@ export class CrearTransaccionDialogComponent {
       id_cuenta_destino: [null],
       id_bolsillo_origen: [null],
       id_bolsillo_destino: [null],
-      monto: [null, Validators.required],
-      descripcion: ['', Validators.required],
+      monto: [null, [Validators.required, Validators.min(1)]],
+      descripcion: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
     });
   }
 
@@ -77,7 +77,7 @@ export class CrearTransaccionDialogComponent {
     );
   }
 
-  // Nuevo método para seleccionar tipo de transacción por icono
+  // Método para seleccionar tipo de transacción
   seleccionarTipoTransaccion(id: string | undefined): void {
     if (id) {
       this.form.get('id_tipo_transaccion')?.setValue(id);
@@ -85,11 +85,17 @@ export class CrearTransaccionDialogComponent {
     }
   }
 
-  // Nuevo método para seleccionar tipo de movimiento por icono
+  // Método para seleccionar tipo de movimiento
   seleccionarTipoMovimiento(id: string | undefined): void {
     if (id) {
       this.form.get('id_tipo_movimiento')?.setValue(id);
       this.form.get('id_tipo_movimiento')?.markAsDirty();
+      
+      // Restablecer campos relacionados cuando cambia el tipo de movimiento
+      this.form.get('id_cuenta_origen')?.setValue(null);
+      this.form.get('id_cuenta_destino')?.setValue(null);
+      this.form.get('id_bolsillo_origen')?.setValue(null);
+      this.form.get('id_bolsillo_destino')?.setValue(null);
     }
   }
 
@@ -109,6 +115,7 @@ export class CrearTransaccionDialogComponent {
     return '→';
   }
 
+  // Obtener descripción corta del tipo de movimiento
   obtenerDescripcionCorta(tipo: TipoMovimiento): string {
     const origen = tipo.codigo_origen.toUpperCase();
     const destino = tipo.codigo_destino.toUpperCase();
@@ -132,6 +139,7 @@ export class CrearTransaccionDialogComponent {
     return `${origen} → ${destino}`;
   }
 
+  // Determina si mostrar un campo específico basado en el tipo de movimiento
   mostrarCampo(campo: string): boolean {
     const tipo = this.tipoMovimientoSeleccionado;
     if (!tipo) return false;
@@ -147,76 +155,44 @@ export class CrearTransaccionDialogComponent {
     return false;
   }
 
-  obtenerNombreCorto(desc: string): string {
-    const lower = desc.toLowerCase();
-
-    if (lower.includes('cuenta') && lower.includes('bolsillo'))
-      return 'Cuenta → Bolsillo';
-    if (lower.includes('bolsillo') && lower.includes('cuenta'))
-      return 'Bolsillo → Cuenta';
-    if (lower.includes('banco') && lower.includes('cuenta'))
-      return 'Banco → Cuenta';
-    if (lower.includes('cuenta') && lower.includes('banco'))
-      return 'Cuenta → Banco';
-    if (lower.includes('banco') && lower.includes('bolsillo'))
-      return 'Banco → Bolsillo';
-    if (lower.includes('bolsillo') && lower.includes('banco'))
-      return 'Bolsillo → Banco';
-    if (lower.includes('cuentas')) return 'Cuenta ↔ Cuenta';
-
-    return desc;
-  }
-
-  obtenerDescripcionExtendida(tipo: TipoMovimiento): string {
-    const origen = tipo.codigo_origen.toUpperCase();
-    const destino = tipo.codigo_destino.toUpperCase();
-
-    if (origen === 'ACCOUNT' && destino === 'ACCOUNT')
-      return '↔ Transferencia entre cuentas (ACCOUNT → ACCOUNT)';
-    if (origen === 'ACCOUNT' && destino === 'WALLET')
-      return '→ Transferencia de cuenta a bolsillo (ACCOUNT → WALLET)';
-    if (origen === 'BANK' && destino === 'WALLET')
-      return '↓ Consignación desde el banco a bolsillo (BANK → WALLET)';
-    if (origen === 'BANK' && destino === 'ACCOUNT')
-      return '↓ Consignación desde el banco a cuenta (BANK → ACCOUNT)';
-    if (origen === 'WALLET' && destino === 'ACCOUNT')
-      return '← Retiro de bolsillo a cuenta (WALLET → ACCOUNT)';
-    if (origen === 'ACCOUNT' && destino === 'BANK')
-      return '↑ Retiro de cuenta a banco (ACCOUNT → BANK)';
-    if (origen === 'WALLET' && destino === 'BANK')
-      return '↑ Retiro de bolsillo a banco (WALLET → BANK)';
-    if (origen === 'WALLET' && destino === 'WALLET')
-      return '↔ Transferencia entre bolsillos (WALLET → WALLET)'; 
-    return `${tipo.descripcion} (${origen} → ${destino})`;
-  }
-
+  // Guardar la transacción
   guardar(): void {
     if (this.form.invalid) {
-      alert('⚠️ Por favor completa todos los campos obligatorios.');
+      // Marcar todos los campos como tocados para mostrar errores
+      Object.keys(this.form.controls).forEach(key => {
+        this.form.get(key)?.markAsTouched();
+      });
       return;
     }
 
     const tipo = this.tipoMovimientoSeleccionado;
-    const origen = tipo?.codigo_origen.toUpperCase();
-    const destino = tipo?.codigo_destino.toUpperCase();
+    if (!tipo) return;
+    
+    const origen = tipo.codigo_origen.toUpperCase();
+    const destino = tipo.codigo_destino.toUpperCase();
 
+    // Validar campos específicos según el tipo de movimiento
     if (origen === 'ACCOUNT' && !this.form.value.id_cuenta_origen) {
-      alert('⚠️ Debes seleccionar una cuenta de origen.');
+      this.form.get('id_cuenta_origen')?.setErrors({ required: true });
+      this.form.get('id_cuenta_origen')?.markAsTouched();
       return;
     }
 
     if (destino === 'ACCOUNT' && !this.form.value.id_cuenta_destino) {
-      alert('⚠️ Debes seleccionar una cuenta de destino.');
+      this.form.get('id_cuenta_destino')?.setErrors({ required: true });
+      this.form.get('id_cuenta_destino')?.markAsTouched();
       return;
     }
 
     if (origen === 'WALLET' && !this.form.value.id_bolsillo_origen) {
-      alert('⚠️ Debes seleccionar un bolsillo de origen.');
+      this.form.get('id_bolsillo_origen')?.setErrors({ required: true });
+      this.form.get('id_bolsillo_origen')?.markAsTouched();
       return;
     }
 
     if (destino === 'WALLET' && !this.form.value.id_bolsillo_destino) {
-      alert('⚠️ Debes seleccionar un bolsillo de destino.');
+      this.form.get('id_bolsillo_destino')?.setErrors({ required: true });
+      this.form.get('id_bolsillo_destino')?.markAsTouched();
       return;
     }
 
@@ -228,6 +204,7 @@ export class CrearTransaccionDialogComponent {
     this.dialogRef.close(data);
   }
 
+  // Cancelar y cerrar el diálogo
   cancelar(): void {
     this.dialogRef.close();
   }

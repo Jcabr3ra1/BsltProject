@@ -1,24 +1,37 @@
-<h2 mat-dialog-title>
+<div class="dialog-content">
+  <h2>
+    <mat-icon>assignment_ind</mat-icon>
     {{ modoEdicion ? 'Editar Rol' : 'Crear Nuevo Rol' }}
   </h2>
   
   <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-rol">
-    <mat-form-field appearance="outline" class="campo">
-      <mat-label>Nombre del Rol</mat-label>
-      <input matInput formControlName="nombre" placeholder="Ej: ADMIN, USER" />
-      <mat-error *ngIf="form.controls['nombre'].hasError('required')">
+    <div class="nombre-field">
+      <div class="input-container">
+        <mat-icon>badge</mat-icon>
+        <input type="text" formControlName="nombre" placeholder="Nombre del Rol*" />
+      </div>
+      <div class="error-message" *ngIf="form.controls['nombre'].touched && form.controls['nombre'].hasError('required')">
         El nombre es obligatorio
-      </mat-error>
-      <mat-error *ngIf="form.controls['nombre'].hasError('minlength')">
+      </div>
+      <div class="error-message" *ngIf="form.controls['nombre'].touched && form.controls['nombre'].hasError('minlength')">
         Debe tener al menos 3 caracteres
-      </mat-error>
-    </mat-form-field>
+      </div>
+    </div>
+    
+    <div class="descripcion-info">
+      <span class="info-text">
+        <mat-icon>info</mat-icon>
+        Los roles definen grupos de permisos que se pueden asignar a los usuarios.
+      </span>
+    </div>
   
     <div class="acciones">
-      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+      <button class="btn-cancelar" type="button" (click)="cancelar()">
+        Cancelar
+      </button>
+      <button class="btn-crear" type="submit" [disabled]="form.invalid">
         {{ modoEdicion ? 'Actualizar' : 'Crear' }}
       </button>
-      <button mat-button type="button" (click)="cancelar()">Cancelar</button>
     </div>
   </form>
-  
+</div>

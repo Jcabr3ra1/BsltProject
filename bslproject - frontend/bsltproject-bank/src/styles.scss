@@ -343,3 +343,134 @@ app-sidebar,
 .mat-sidenav-container .mat-sidenav {
   background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%) !important;
 }
+
+/* Estilos para diálogos de Material */
+.custom-dialog {
+  .mat-dialog-container {
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+  }
+}
+
+.cdk-overlay-dark-backdrop {
+  background: rgba(18, 10, 30, 0.8) !important; /* Fondo más oscuro para el overlay */
+}
+
+.cdk-overlay-pane {
+  max-height: 90vh !important;
+}
+
+/* Estilos globales para Angular Material */
+.mat-icon {
+  font-family: 'Material Icons' !important;
+}
+
+.mat-button-focus-overlay {
+  background-color: transparent !important;
+}
+
+/* Para asegurar que los popups tengan el tema correcto */
+.mat-menu-panel {
+  background-color: #2d2d2d !important;
+  
+  .mat-menu-item {
+    color: #e0e0e0 !important;
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.1) !important;
+    }
+  }
+}
+
+.dark-mode-table.mat-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  
+  .mat-header-row {
+    background-color: rgba(30, 19, 57, 0.9) !important;
+  }
+  
+  .mat-header-cell {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border-bottom: 1px solid rgba(164, 108, 245, 0.3) !important;
+  }
+  
+  .mat-row {
+    background-color: rgba(30, 19, 57, 0.8) !important;
+    
+    &:nth-child(odd) {
+      background-color: rgba(25, 14, 50, 0.9) !important;
+    }
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.15) !important;
+    }
+  }
+  
+  .mat-cell {
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid rgba(164, 108, 245, 0.1) !important;
+  }
+}
+
+/* Sobrescribir explícitamente cualquier otro estilo que afecte a la tabla de roles */
+.roles-view-container {
+  background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%) !important;
+  
+  .mat-table {
+    background-color: transparent !important;
+    box-shadow: none !important; 
+  }
+  
+  .mat-header-row,
+  .mat-footer-row {
+    background-color: rgba(30, 19, 57, 0.9) !important;
+  }
+  
+  .mat-row {
+    background-color: rgba(30, 19, 57, 0.8) !important;
+    
+    &:nth-child(odd) {
+      background-color: rgba(25, 14, 50, 0.9) !important;
+    }
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.15) !important;
+    }
+  }
+  
+  .mat-paginator {
+    background-color: transparent !important;
+  }
+}
+
+// Estilos para diálogos personalizados
+.mat-dialog-container {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+// Diálogo con tema oscuro
+.custom-dark-dialog {
+  .mat-dialog-container {
+    background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%) !important;
+    color: #ffffff !important;
+  }
+}
+
+// Diálogo con tema claro personalizado
+.custom-light-dialog {
+  .mat-dialog-container {
+    background: #ffffff !important;
+  }
+}

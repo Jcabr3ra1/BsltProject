@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
@@ -9,8 +9,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
-import { trigger, transition, style, animate } from '@angular/animations';
 import { UsuariosService } from '../../services/usuarios.service';
 import { forkJoin } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -31,68 +31,42 @@ import { EditarUsuarioDialogComponent } from '../../shared/dialogs/editar-usuari
     MatPaginatorModule,
     MatSortModule,
     MatTooltipModule,
+    MatSnackBarModule,
     FormsModule
   ],
   templateUrl: './user-page.component.html',
-  styleUrls: ['./user-page.component.scss'],
-  animations: [
-    trigger('fadeInOut', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(10px)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ]),
-      transition(':leave', [
-        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(10px)' }))
-      ])
-    ])
-  ]
+  styleUrls: ['./user-page.component.scss']
 })
-export class UserPageComponent implements OnInit {
+export class UserPageComponent implements OnInit, AfterViewInit {
   // Datos principales
   usuarios: any[] = [];
   roles: any[] = [];
   estados: any[] = [];
   filteredUsuarios: any[] = [];
-  selectedUser: any = null;
   searchTerm: string = '';
   
-  // Estadísticas
-  get totalUsers(): number {
-    return this.usuarios.length;
-  }
-  
-  get activeUsers(): number {
-    return this.usuarios.filter(u => u.estado && u.estado.nombre === 'Activo').length;
-  }
-  
-  get adminUsers(): number {
-    return this.usuarios.filter(u => u.roles && u.roles[0] && u.roles[0].nombre === 'ADMIN').length;
-  }
-  
-  // Colores para avatares
-  avatarColors: string[] = [
-    '#a46cf5', // Morado principal
-    '#8e57d6', // Morado secundario
-    '#7145b8', // Morado oscuro
-    '#b884ff', // Morado claro
-    '#5e3694'  // Morado muy oscuro
-  ];
-
-  displayedColumns: string[] = ['nombre', 'email', 'tieneCuenta', 'estado', 'rol', 'acciones'];
+  // Columnas de la tabla
+  displayedColumns: string[] = ['nombre', 'email', 'estado', 'rol', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private usuariosService: UsuariosService, private dialog: MatDialog) {}
+  constructor(
+    private usuariosService: UsuariosService, 
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.cargarDatos();
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    if (this.paginator && this.sort) {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    }
   }
 
   cargarDatos() {
@@ -101,15 +75,51 @@ export class UserPageComponent implements OnInit {
       cuentas: this.usuariosService.getCuentas(),
       roles: this.usuariosService.getRoles(),
       estados: this.usuariosService.getEstados()
-    }).subscribe(({ usuarios, cuentas, roles, estados }) => {
-      this.roles = roles;
-      this.estados = estados;
-      this.usuarios = usuarios.map((usuario) => {
-        const tieneCuenta = cuentas.some((c) => c.usuario_id === usuario.id);
-        return { ...usuario, tieneCuenta };
-      });
-      this.filteredUsuarios = [...this.usuarios];
-      this.dataSource.data = this.filteredUsuarios;
+    }).subscribe({
+      next: ({ usuarios, cuentas, roles, estados }) => {
+        this.roles = roles;
+        this.estados = estados;
+        
+        // Preparar datos de usuarios
+        this.usuarios = usuarios.map((usuario) => {
+          const tieneCuenta = cuentas.some((c) => c.usuario_id === usuario.id);
+          return { ...usuario, tieneCuenta };
+        });
+        
+        // Actualizar la tabla
+        this.filteredUsuarios = [...this.usuarios];
+        this.dataSource.data = this.filteredUsuarios;
+        
+        // Volver a aplicar paginador y ordenamiento
+        if (this.paginator && this.sort) {
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar datos:', err);
+        this.mostrarError('Error al cargar los datos. Por favor, intente nuevamente.');
+      }
+    });
+  }
+
+  // Método para mostrar mensajes de error
+  mostrarError(mensaje: string, duracion: number = 5000) {
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: duracion,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      panelClass: ['error-snackbar']
+    });
+  }
+
+  // Método para mostrar mensajes de éxito
+  mostrarExito(mensaje: string, duracion: number = 3000) {
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: duracion,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      panelClass: ['success-snackbar']
     });
   }
 
@@ -120,35 +130,18 @@ export class UserPageComponent implements OnInit {
     } else {
       const term = this.searchTerm.toLowerCase();
       this.filteredUsuarios = this.usuarios.filter(user => 
-        user.nombre.toLowerCase().includes(term) || 
-        user.apellido.toLowerCase().includes(term) || 
-        user.email.toLowerCase().includes(term) ||
-        (user.roles && user.roles[0] && user.roles[0].nombre.toLowerCase().includes(term))
+        (user.nombre?.toLowerCase() || '').includes(term) || 
+        (user.apellido?.toLowerCase() || '').includes(term) || 
+        (user.email?.toLowerCase() || '').includes(term) ||
+        (user.roles && user.roles[0] && (user.roles[0].nombre?.toLowerCase() || '')).includes(term)
       );
     }
     this.dataSource.data = this.filteredUsuarios;
-  }
-
-  // Método para seleccionar un usuario y mostrar detalles
-  selectUser(user: any) {
-    this.selectedUser = this.selectedUser && this.selectedUser.id === user.id ? null : user;
-  }
-
-  // Obtener iniciales para el avatar
-  getInitials(nombre: string, apellido: string): string {
-    const firstInitial = nombre ? nombre.charAt(0).toUpperCase() : '';
-    const secondInitial = apellido ? apellido.charAt(0).toUpperCase() : '';
-    return `${firstInitial}${secondInitial}`;
-  }
-
-  // Generar color para avatar basado en el nombre
-  getAvatarColor(nombre: string): string {
-    if (!nombre) return this.avatarColors[0];
     
-    // Generar un índice basado en la suma de los códigos ASCII de los caracteres del nombre
-    const charSum = nombre.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
-    const colorIndex = charSum % this.avatarColors.length;
-    return this.avatarColors[colorIndex];
+    // Reset paginación al filtrar
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
   }
 
   // Obtener ID de estado por nombre
@@ -171,15 +164,12 @@ export class UserPageComponent implements OnInit {
     this.usuariosService.actualizarUsuario(usuario.id, payload).subscribe({
       next: () => {
         this.cargarDatos(); // Recargar datos después del cambio
-        if (this.selectedUser && this.selectedUser.id === usuario.id) {
-          // Actualizar usuario seleccionado si es el mismo que se está editando
-          this.selectedUser = null; // Cerrar el panel de detalles para refrescar
-          setTimeout(() => {
-            this.selectedUser = this.usuarios.find(u => u.id === usuario.id);
-          }, 300);
-        }
+        this.mostrarExito(`Rol actualizado correctamente`);
       },
-      error: (error) => console.error('Error al cambiar rol:', error)
+      error: (error) => {
+        console.error('Error al cambiar rol:', error);
+        this.mostrarError('Error al cambiar el rol. Inténtelo nuevamente.');
+      }
     });
   }
 
@@ -197,44 +187,49 @@ export class UserPageComponent implements OnInit {
     this.usuariosService.actualizarUsuario(usuario.id, payload).subscribe({
       next: () => {
         this.cargarDatos(); // Recargar datos después del cambio
-        if (this.selectedUser && this.selectedUser.id === usuario.id) {
-          // Actualizar usuario seleccionado si es el mismo que se está editando
-          this.selectedUser = null; // Cerrar el panel de detalles para refrescar
-          setTimeout(() => {
-            this.selectedUser = this.usuarios.find(u => u.id === usuario.id);
-          }, 300);
-        }
+        this.mostrarExito(`Estado actualizado correctamente`);
       },
-      error: (error) => console.error('Error al cambiar estado:', error)
+      error: (error) => {
+        console.error('Error al cambiar estado:', error);
+        this.mostrarError('Error al cambiar el estado. Inténtelo nuevamente.');
+      }
     });
   }
 
   editarUsuario(usuario: any) {
-    // Detener la propagación del evento para evitar seleccionar el usuario al mismo tiempo
+    // Detener la propagación del evento
     event?.stopPropagation();
     
     const dialogRef = this.dialog.open(EditarUsuarioDialogComponent, {
       width: '450px',
-      data: usuario,
-      panelClass: 'custom-dialog'
+      data: { 
+        usuario: usuario,
+        roles: this.roles,
+        estados: this.estados 
+      },
+      panelClass: ['custom-dialog', 'custom-dark-dialog']
     });
   
-    dialogRef.afterClosed().subscribe((actualizado) => {
-      if (actualizado) {
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado === true) {
         this.cargarDatos();
-        // Si estaba seleccionado, actualizar la vista de detalles
-        if (this.selectedUser && this.selectedUser.id === usuario.id) {
-          this.selectedUser = null; // Cerrar el panel de detalles para refrescar
-          setTimeout(() => {
-            this.selectedUser = this.usuarios.find(u => u.id === usuario.id);
-          }, 300);
+        this.mostrarExito('Usuario actualizado correctamente');
+      } else if (resultado && resultado.error) {
+        // Manejar errores específicos
+        if (resultado.error.includes('correo electrónico ya está en uso') || 
+            resultado.error.includes('email already exists') ||
+            resultado.error.includes('duplicate key') ||
+            resultado.error.includes('already exists')) {
+          this.mostrarError('El correo electrónico ya está registrado en el sistema');
+        } else {
+          this.mostrarError(resultado.error || 'Error al actualizar el usuario');
         }
       }
     });
   }
 
   eliminarUsuario(usuario: any) {
-    // Detener la propagación del evento para evitar seleccionar el usuario al mismo tiempo
+    // Detener la propagación del evento
     event?.stopPropagation();
     
     const confirmado = confirm(`¿Estás seguro de que deseas eliminar a ${usuario.nombre} ${usuario.apellido}?`);
@@ -243,12 +238,12 @@ export class UserPageComponent implements OnInit {
       this.usuariosService.eliminarUsuario(usuario.id).subscribe({
         next: () => {
           this.cargarDatos();
-          // Si estaba seleccionado, cerrar el panel de detalles
-          if (this.selectedUser && this.selectedUser.id === usuario.id) {
-            this.selectedUser = null;
-          }
+          this.mostrarExito('Usuario eliminado correctamente');
         },
-        error: (error) => console.error('Error al eliminar usuario:', error)
+        error: (error) => {
+          console.error('Error al eliminar usuario:', error);
+          this.mostrarError('Error al eliminar el usuario. Inténtelo nuevamente.');
+        }
       });
     }
   }
@@ -256,12 +251,27 @@ export class UserPageComponent implements OnInit {
   abrirFormularioUsuario() {
     const dialogRef = this.dialog.open(CrearUsuarioDialogComponent, {
       width: '450px',
-      panelClass: 'custom-dialog'
+      data: {
+        roles: this.roles,
+        estados: this.estados
+      },
+      panelClass: ['custom-dialog', 'custom-dark-dialog']
     });
   
     dialogRef.afterClosed().subscribe((resultado) => {
-      if (resultado) {
+      if (resultado === true) {
         this.cargarDatos();
+        this.mostrarExito('Usuario creado correctamente');
+      } else if (resultado && resultado.error) {
+        // Manejar errores específicos
+        if (resultado.error.includes('correo electrónico ya está en uso') || 
+            resultado.error.includes('email already exists') ||
+            resultado.error.includes('duplicate key') ||
+            resultado.error.includes('already exists')) {
+          this.mostrarError('El correo electrónico ya está registrado en el sistema');
+        } else {
+          this.mostrarError(resultado.error || 'Error al crear el usuario');
+        }
       }
     });
   }

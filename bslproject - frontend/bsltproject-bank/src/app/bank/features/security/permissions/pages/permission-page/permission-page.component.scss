@@ -1,49 +1,398 @@
+@use 'sass:color';
+
+// Variables de color
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+$medium-text: #e0e0e0;
+
+// Colores para botones de acción
+$view-color: #64b5f6;
+$edit-color: #a46cf5;
+$delete-color: #ff5252;
+$key-color: #ffb300;
+
+// Contenedor principal
 .permissions-page-container {
-    padding: 24px;
+  background: linear-gradient(145deg, #2c1658 0%, #1f1f1f 100%);
+  color: $light-text;
+  padding: 2rem;
+  min-height: calc(100vh - 110px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
   
-    .header {
+  // Encabezado y acciones
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: $light-text;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-  
-      h1 {
-        margin: 0;
-        font-weight: bold;
+      
+      &::before {
+        content: "vpn_key";
+        font-family: 'Material Icons';
+        color: $primary-purple;
+        margin-right: 0.75rem;
+        font-size: 1.6rem;
       }
     }
-  
-    .cargando {
-      display: flex;
-      justify-content: center;
-      margin-top: 40px;
-    }
-  
-    .sin-permisos {
-      text-align: center;
-      margin-top: 40px;
-      font-style: italic;
-      color: #888;
-    }
-  
-    .permissions-table {
-      margin-top: 20px;
-      overflow-x: auto;
-  
-      .permiso-nombre {
-        font-weight: 600;
-        color: #333;
+    
+    button[mat-raised-button] {
+      background: $primary-purple;
+      color: $light-text;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba($primary-purple, 0.3);
+      
+      &:hover {
+        background: color.adjust($primary-purple, $lightness: 5%);
+        box-shadow: 0 6px 16px rgba($primary-purple, 0.4);
+        transform: translateY(-2px);
       }
-  
-      .permiso-descripcion {
-        color: #555;
-      }
-  
-      .acciones {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+      
+      mat-icon {
+        margin-right: 0.5rem;
       }
     }
   }
   
+  // Divisor
+  mat-divider {
+    margin-bottom: 1.5rem;
+    border-top-color: rgba(164, 108, 245, 0.3);
+    position: relative;
+    
+    &::after {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        rgba($primary-purple, 0) 0%, 
+        rgba($primary-purple, 0.6) 50%, 
+        rgba($primary-purple, 0) 100%);
+    }
+  }
+  
+  // Spinner de carga
+  .cargando {
+    display: flex;
+    justify-content: center;
+    margin: 3rem 0;
+    
+    mat-spinner ::ng-deep circle {
+      stroke: $primary-purple !important;
+    }
+  }
+  
+  // Mensaje cuando no hay permisos
+  .sin-permisos {
+    text-align: center;
+    margin: 3rem auto;
+    max-width: 450px;
+    font-style: italic;
+    color: $medium-text;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 2rem;
+    border: 1px dashed rgba(164, 108, 245, 0.3);
+    
+    mat-icon {
+      font-size: 2rem;
+      height: 2rem;
+      width: 2rem;
+      margin-bottom: 0.5rem;
+      color: $primary-purple;
+      opacity: 0.8;
+    }
+    
+    p {
+      margin-bottom: 0;
+    }
+  }
+  
+  // Tabla de permisos
+  .permissions-table {
+    flex: 1;
+    overflow: hidden;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    
+    table {
+      width: 100%;
+      background-color: #ffffff !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+      
+      tr.mat-header-row {
+        background-color: $primary-purple !important;
+        height: 56px;
+      }
+      
+      th.mat-header-cell {
+        color: $light-text !important;
+        font-weight: 600 !important;
+        padding: 1rem 1.25rem !important;
+        font-size: 1rem !important;
+        border-bottom: 1px solid rgba(164, 108, 245, 0.3) !important;
+        
+        &:first-child {
+          padding-left: 1.5rem !important;
+        }
+      }
+      
+      tr.mat-row {
+        background-color: #ffffff !important;
+        transition: all 0.2s ease !important;
+        height: 52px;
+        
+        &:nth-child(odd) {
+          background-color: #f5f0ff !important;
+        }
+        
+        &:hover {
+          background-color: rgba(164, 108, 245, 0.1) !important;
+          transform: translateY(-1px);
+        }
+      }
+      
+      td.mat-cell {
+        padding: 0.8rem 1.25rem !important;
+        color: #333333 !important;
+        border-bottom: 1px solid rgba(164, 108, 245, 0.15) !important;
+        
+        &:first-child {
+          padding-left: 1.5rem !important;
+        }
+      }
+      
+      .permiso-nombre {
+        font-weight: 600 !important;
+        color: #333333 !important;
+        letter-spacing: 0.5px !important;
+        position: relative;
+        padding-left: 12px;
+        
+        &::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: $primary-purple;
+          box-shadow: 0 0 8px rgba($primary-purple, 0.7);
+        }
+      }
+      
+      .permiso-descripcion {
+        color: #555555 !important;
+        font-size: 0.95rem;
+      }
+      
+      .acciones {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: flex-end;
+        
+        button {
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+          background-color: rgba(164, 108, 245, 0.05);
+          
+          mat-icon {
+            font-size: 1.1rem;
+            width: 1.1rem;
+            height: 1.1rem;
+          }
+          
+          &[color="accent"] {
+            color: $edit-color;
+            
+            &:hover {
+              background-color: rgba(164, 108, 245, 0.15);
+              transform: translateY(-2px);
+              box-shadow: 0 3px 6px rgba($edit-color, 0.25);
+            }
+          }
+          
+          &[color="warn"] {
+            color: $delete-color;
+            
+            &:hover {
+              background-color: rgba(255, 82, 82, 0.15);
+              transform: translateY(-2px);
+              box-shadow: 0 3px 6px rgba($delete-color, 0.25);
+            }
+          }
+        }
+      }
+    }
+    
+    // Ocultar el paginador estándar pero mantener su funcionalidad
+    .paginator-invisible {
+      height: 0;
+      visibility: hidden;
+      position: absolute;
+    }
+    
+    // Estilos para la paginación
+    .paginacion-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      background-color: #ffffff;
+      border-top: 1px solid rgba(164, 108, 245, 0.1);
+      
+      .paginacion-items-por-pagina {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        span {
+          color: #555555;
+          font-size: 0.9rem;
+        }
+        
+        mat-form-field {
+          width: 80px;
+          margin-bottom: -1.25em;
+          
+          ::ng-deep {
+            .mat-form-field-wrapper {
+              padding-bottom: 0;
+            }
+            
+            .mat-form-field-infix {
+              padding: 0.5em 0;
+              border-top: 0;
+            }
+            
+            .mat-form-field-outline {
+              color: rgba(164, 108, 245, 0.3);
+            }
+            
+            .mat-select-value {
+              color: #333333;
+              font-size: 0.9rem;
+            }
+            
+            .mat-select-arrow {
+              color: $primary-purple;
+            }
+          }
+        }
+      }
+      
+      .paginacion-info {
+        color: #555555;
+        font-size: 0.9rem;
+      }
+      
+      .paginacion-controles {
+        display: flex;
+        align-items: center;
+        
+        button {
+          color: $primary-purple;
+          
+          &[disabled] {
+            color: rgba(0, 0, 0, 0.26);
+          }
+          
+          &:not([disabled]):hover {
+            background-color: rgba(164, 108, 245, 0.05);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Estilos para Material components con ::ng-deep para asegurar que sean aplicados
+::ng-deep {
+  // Forzar estilos en la tabla dentro del contenedor específico
+  .permissions-page-container {
+    .mat-table {
+      background-color: #ffffff !important;
+    }
+    
+    .mat-header-row {
+      background-color: $primary-purple !important;
+    }
+    
+    .mat-row {
+      background-color: #ffffff !important;
+      
+      &:nth-child(odd) {
+        background-color: #f5f0ff !important;
+      }
+      
+      &:hover {
+        background-color: rgba(164, 108, 245, 0.1) !important;
+      }
+    }
+    
+    .mat-cell, .mat-footer-cell {
+      color: #333333 !important;
+      border-bottom-color: rgba(164, 108, 245, 0.1) !important;
+    }
+    
+    .mat-header-cell {
+      color: $light-text !important;
+      border-bottom-color: rgba(164, 108, 245, 0.3) !important;
+    }
+    
+    // Estilos para el select en la paginación
+    .mat-form-field-appearance-outline .mat-form-field-outline {
+      color: rgba(164, 108, 245, 0.3);
+    }
+    
+    .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+      color: $primary-purple;
+    }
+    
+    .mat-select-panel {
+      background: #ffffff;
+    }
+    
+    .mat-option {
+      color: #333333;
+      
+      &:hover:not(.mat-option-disabled) {
+        background: rgba(164, 108, 245, 0.1);
+      }
+      
+      &.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
+        background: rgba(164, 108, 245, 0.2);
+        color: $primary-purple;
+      }
+    }
+  }
+}

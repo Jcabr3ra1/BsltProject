@@ -47,34 +47,32 @@ public class UsuarioServicio {
     }
 
     public Usuario crearUsuario(Usuario usuario) {
-        // Añadir logs para depuración
         System.out.println("DEBUG - Datos de usuario recibidos para registro:");
         System.out.println("Email: " + usuario.getEmail());
         System.out.println("Nombre: " + usuario.getNombre());
         System.out.println("Apellido: " + usuario.getApellido());
-        
-        // Encripta la contraseña antes de guardarla
+
+        // Verificar si el email ya existe
+        Optional<Usuario> usuarioExistente = repositorioUsuario.findByEmail(usuario.getEmail());
+        if (usuarioExistente.isPresent()) {
+            throw new RuntimeException("Ya existe un usuario registrado con ese correo electrónico.");
+        }
+
+        // Encriptar la contraseña
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        
-        // Asignar rol USER por defecto si no tiene roles asignados
+
+        // Asignar rol por defecto
         if (usuario.getRoles() == null || usuario.getRoles().isEmpty()) {
             Optional<Rol> rolUser = repositorioRol.findByNombre("USER");
-            if (rolUser.isPresent()) {
-                if (usuario.getRoles() == null) {
-                    usuario.setRoles(new HashSet<>());
-                }
-                usuario.getRoles().add(rolUser.get());
-            }
+            rolUser.ifPresent(rol -> usuario.getRoles().add(rol));
         }
-        
-        // Asignar estado ACTIVO por defecto
+
+        // Asignar estado por defecto
         if (usuario.getEstado() == null) {
             Optional<Estado> estadoActivo = repositorioEstado.findByNombre("ACTIVO");
-            if (estadoActivo.isPresent()) {
-                usuario.setEstado(estadoActivo.get());
-            }
+            estadoActivo.ifPresent(usuario::setEstado);
         }
-        
+
         return repositorioUsuario.save(usuario);
     }
 
