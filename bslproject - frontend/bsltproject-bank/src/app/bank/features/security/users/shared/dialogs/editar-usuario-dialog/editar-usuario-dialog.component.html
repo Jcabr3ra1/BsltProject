@@ -38,15 +38,15 @@
     <div class="user-info-display">
       <div class="info-item">
         <span class="info-label">Rol actual:</span>
-        <span class="info-value">{{ data.roles?.[0]?.nombre || 'No definido' }}</span>
+        <span class="info-value">{{ data.usuario.roles?.[0]?.nombre || 'No definido' }}</span>
       </div>
       <div class="info-item">
         <span class="info-label">Estado actual:</span>
         <span class="info-value" [ngClass]="{
-          'estado-activo': data.estado?.nombre === 'Activo',
-          'estado-inactivo': data.estado?.nombre === 'Inactivo',
-          'estado-pendiente': data.estado?.nombre === 'Pendiente'
-        }">{{ data.estado?.nombre || 'No definido' }}</span>
+          'estado-activo': data.usuario.estado?.nombre === 'Activo',
+          'estado-inactivo': data.usuario.estado?.nombre === 'Inactivo',
+          'estado-pendiente': data.usuario.estado?.nombre === 'Pendiente'
+        }">{{ data.usuario.estado?.nombre || 'No definido' }}</span>
       </div>
     </div>
 

@@ -1,47 +1,298 @@
-.contenedor {
-    padding: 24px;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
+// Variables de color
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+$medium-text: #e0e0e0;
+
+// Variables para transacciones
+$ingreso-color: #4cd964;
+$gasto-color: #ff3b30;
+$transfer-color: #5ac8fa;
+
+// Contenedor principal
+.movement-types-container {
+  background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+  color: $light-text;
+  padding: 1.5rem;
+  min-height: calc(100vh - 110px);
+  border-radius: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+// Header con acciones
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
   
-  .header {
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $light-text;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
-  
-    h2 {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 24px;
-      font-weight: 600;
-      color: #444;
-    }
-  
-    button {
-      font-weight: bold;
+    margin: 0;
+    
+    mat-icon {
+      margin-right: 0.75rem;
+      color: $primary-purple;
     }
   }
   
-  table {
-    width: 100%;
+  button[mat-raised-button] {
+    background: $primary-purple;
+    color: $light-text;
+    border: none;
+    padding: 0.5rem 1.25rem;
     border-radius: 6px;
-    overflow: hidden;
-    background-color: white;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: #b685f7; // Color más claro que $primary-purple
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+// Barra de búsqueda
+.search-container {
+  margin-bottom: 1rem;
+  
+  .search-box {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    max-width: 350px;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    
+    &:focus-within {
+      background-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.3);
+    }
+    
+    mat-icon {
+      color: $primary-purple;
+    }
+    
+    input {
+      background: transparent;
+      border: none;
+      color: $light-text;
+      outline: none;
+      width: 100%;
+      font-size: 0.95rem;
+      
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+}
+
+// Tabla principal
+.table-container {
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+}
+
+.full-width-table {
+  width: 100%;
+  table-layout: fixed;
+  
+  // Ajustar el ancho de las columnas
+  .mat-column-codigo_origen {
+    width: 15%;
   }
   
+  .mat-column-codigo_destino {
+    width: 15%;
+  }
+  
+  .mat-column-descripcion {
+    width: 40%;
+  }
+  
+  .mat-column-tipo_transaccion {
+    width: 15%;
+  }
+  
+  .mat-column-acciones {
+    width: 15%;
+  }
+  
+  // Encabezados de tabla
   th.mat-header-cell {
-    font-weight: bold;
-    color: #444;
-    background-color: #f5f5f5;
+    background-color: $darker-purple;
+    color: $light-text;
+    font-weight: 600;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    border-bottom: none;
+    text-align: left;
   }
   
+  // Celdas de la tabla
   td.mat-cell {
-    color: #333;
+    padding: 0.75rem;
+    color: $medium-text;
+    border-bottom: 1px solid rgba(164, 108, 245, 0.1);
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
-  .mat-icon-button {
-    margin: 0 4px;
+  // Filas de la tabla
+  tr.mat-row {
+    background-color: rgba(255, 255, 255, 0.02);
+    transition: background-color 0.2s ease;
+    
+    &:nth-child(odd) {
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.08);
+    }
+  }
+}
+
+// Badge para códigos
+.codigo-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background-color: rgba(164, 108, 245, 0.1);
+  border: 1px solid rgba(164, 108, 245, 0.3);
+  color: $primary-purple;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+// Badge para tipo de transacción
+.transaccion-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  
+  &.ingreso {
+    background-color: rgba(76, 217, 100, 0.15);
+    color: $ingreso-color;
+    border: 1px solid rgba(76, 217, 100, 0.3);
   }
   
+  &.gasto {
+    background-color: rgba(255, 59, 48, 0.15);
+    color: $gasto-color;
+    border: 1px solid rgba(255, 59, 48, 0.3);
+  }
+  
+  &.transferencia {
+    background-color: rgba(90, 200, 250, 0.15);
+    color: $transfer-color;
+    border: 1px solid rgba(90, 200, 250, 0.3);
+  }
+}
+
+// Botones de acción
+.action-buttons {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+  
+  button {
+    transition: all 0.2s ease;
+    
+    &.edit-button:hover {
+      color: $primary-purple;
+      transform: translateY(-2px);
+    }
+    
+    &.delete-button:hover {
+      color: #ff3b30;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Mensaje cuando no hay datos
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: $medium-text;
+  flex: 1;
+  
+  mat-icon {
+    font-size: 2.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    margin-bottom: 1rem;
+    color: rgba(164, 108, 245, 0.5);
+  }
+  
+  p {
+    font-size: 1rem;
+  }
+}
+
+// Paginador con fondo transparente
+::ng-deep {
+  // Paginador
+  .mat-paginator {
+    background-color: transparent;
+    color: $medium-text;
+    border-top: 1px solid rgba(164, 108, 245, 0.1);
+    
+    .mat-paginator-container {
+      min-height: 48px;
+    }
+    
+    .mat-paginator-page-size-label,
+    .mat-paginator-range-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .mat-paginator-navigation-previous,
+    .mat-paginator-navigation-next,
+    .mat-paginator-navigation-first,
+    .mat-paginator-navigation-last {
+      color: $primary-purple;
+    }
+  }
+  
+  // Tooltips
+  .mat-tooltip {
+    background-color: rgba(44, 22, 88, 0.9);
+    border: 1px solid $primary-purple;
+    font-size: 0.85rem;
+  }
+}

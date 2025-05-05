@@ -1,4 +1,11 @@
-/* ===== VARIABLES DEL TEMA ===== */
+/**
+ * BANCO PÚRPURA - ESTILOS GLOBALES
+ * Archivo principal de estilos de la aplicación
+ */
+
+/* =======================================================================
+   VARIABLES Y CONFIGURACIÓN
+======================================================================= */
 :root {
   /* Colores principales */
   --primary-color: #a46cf5;
@@ -32,7 +39,9 @@
   --sidebar-width: 260px;
 }
 
-/* ===== ESTILOS BASE ===== */
+/* =======================================================================
+   ESTILOS BASE
+======================================================================= */
 html, body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
@@ -43,7 +52,9 @@ html, body {
   color: #333;
 }
 
-/* ===== LAYOUT PRINCIPAL ===== */
+/* =======================================================================
+   ESTRUCTURA PRINCIPAL DE LA APLICACIÓN
+======================================================================= */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -59,10 +70,6 @@ html, body {
   background: linear-gradient(180deg, var(--sidebar-gradient-top), var(--sidebar-gradient-bottom)) !important;
 }
 
-.mat-sidenav, .mat-sidenav-content {
-  transition: all 0.3s ease;
-}
-
 .layout-content {
   flex: 1;
   overflow-y: auto;
@@ -73,13 +80,15 @@ html, body {
   z-index: 1;
 }
 
-/* ===== COMPONENTES PRINCIPALES ===== */
+/* Componentes principales - Establecer reglas de visualización */
 app-navbar, app-sidebar, app-footer {
   display: block;
   width: 100%;
 }
 
-/* ===== SIDEBAR ===== */
+/* =======================================================================
+   SIDEBAR / SIDENAV
+======================================================================= */
 .mat-drawer-container {
   background: transparent !important;
 }
@@ -140,7 +149,20 @@ app-sidebar {
   height: 100% !important;
 }
 
-/* ===== NAVBAR ===== */
+/* Aplicación consistente de gradiente */
+.mat-drawer,
+.mat-drawer-inner-container,
+app-sidebar,
+.sidebar-container,
+.sidenav,
+.mat-drawer-container .mat-drawer-side,
+.mat-sidenav-container .mat-sidenav {
+  background: linear-gradient(180deg, var(--sidebar-gradient-top), var(--sidebar-gradient-bottom)) !important;
+}
+
+/* =======================================================================
+   NAVBAR
+======================================================================= */
 .mat-toolbar.navbar {
   background: linear-gradient(90deg, var(--sidebar-gradient-top), var(--sidebar-gradient-bottom)) !important;
   border-bottom: none !important;
@@ -149,7 +171,9 @@ app-sidebar {
   position: relative;
 }
 
-/* ===== FOOTER ===== */
+/* =======================================================================
+   FOOTER
+======================================================================= */
 app-footer .footer {
   background: linear-gradient(180deg, var(--sidebar-gradient-bottom), var(--footer-gradient-bottom)) !important;
   border-top: none !important;
@@ -181,7 +205,9 @@ app-footer .footer {
   }
 }
 
-/* ===== CONTENIDO PRINCIPAL ===== */
+/* =======================================================================
+   CONTENIDO Y TRANSICIONES
+======================================================================= */
 .mat-drawer-content {
   display: flex;
   flex-direction: column;
@@ -194,15 +220,20 @@ app-footer .footer {
   overflow: hidden;
 }
 
-/* ===== TRANSICIONES ===== */
 .mat-drawer-transition .mat-drawer-content {
   transition-duration: 0.4s;
   transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* ===== COMPONENTES DE MATERIAL ===== */
+.mat-sidenav, .mat-sidenav-content {
+  transition: all 0.3s ease;
+}
 
-/* Tablas */
+/* =======================================================================
+   COMPONENTES DE MATERIAL DESIGN
+======================================================================= */
+
+/* --- Tablas --- */
 table.mat-table {
   width: 100%;
   border-radius: 8px;
@@ -227,7 +258,7 @@ table.mat-table {
   }
 }
 
-/* Tarjetas */
+/* --- Tarjetas --- */
 .mat-card, .mat-mdc-card {
   border-radius: 12px !important;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1) !important;
@@ -246,7 +277,7 @@ table.mat-table {
   color: rgba(0, 0, 0, 0.6) !important;
 }
 
-/* Botones */
+/* --- Botones --- */
 .mat-button.mat-primary,
 .mat-raised-button.mat-primary,
 .mat-flat-button.mat-primary,
@@ -263,7 +294,64 @@ table.mat-table {
   color: white !important;
 }
 
-/* ===== ELEMENTOS DE UI ===== */
+.mat-button-focus-overlay {
+  background-color: transparent !important;
+}
+
+/* --- Diálogos --- */
+.mat-dialog-container {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.custom-dialog .mat-dialog-container {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden !important;
+  border-radius: 8px !important;
+  color: #ffffff !important;
+}
+
+.custom-dark-dialog .mat-dialog-container {
+  background: linear-gradient(135deg, var(--sidebar-gradient-top), var(--sidebar-gradient-bottom)) !important;
+  color: #ffffff !important;
+}
+
+.custom-light-dialog .mat-dialog-container {
+  background: #ffffff !important;
+}
+
+.cdk-overlay-dark-backdrop {
+  background: rgba(18, 10, 30, 0.8) !important;
+}
+
+.cdk-overlay-pane {
+  max-height: 90vh !important;
+}
+
+/* --- Menús --- */
+.mat-menu-panel {
+  background-color: #2d2d2d !important;
+  
+  .mat-menu-item {
+    color: #e0e0e0 !important;
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.1) !important;
+    }
+  }
+}
+
+/* --- Iconos --- */
+.mat-icon {
+  font-family: 'Material Icons' !important;
+}
+
+/* =======================================================================
+   ELEMENTOS UI PERSONALIZADOS
+======================================================================= */
 .section-header {
   font-size: 1.5rem;
   font-weight: 600;
@@ -279,7 +367,81 @@ table.mat-table {
   margin-bottom: 1rem;
 }
 
-/* ===== MODO OSCURO ===== */
+/* =======================================================================
+   TABLAS PERSONALIZADAS
+======================================================================= */
+.dark-mode-table.mat-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  
+  .mat-header-row {
+    background-color: rgba(30, 19, 57, 0.9) !important;
+  }
+  
+  .mat-header-cell {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border-bottom: 1px solid rgba(164, 108, 245, 0.3) !important;
+  }
+  
+  .mat-row {
+    background-color: rgba(30, 19, 57, 0.8) !important;
+    
+    &:nth-child(odd) {
+      background-color: rgba(25, 14, 50, 0.9) !important;
+    }
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.15) !important;
+    }
+  }
+  
+  .mat-cell {
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid rgba(164, 108, 245, 0.1) !important;
+  }
+}
+
+/* =======================================================================
+   VISTAS ESPECÍFICAS
+======================================================================= */
+.roles-view-container {
+  background: linear-gradient(135deg, var(--sidebar-gradient-top), var(--sidebar-gradient-bottom)) !important;
+  
+  .mat-table {
+    background-color: transparent !important;
+    box-shadow: none !important; 
+  }
+  
+  .mat-header-row,
+  .mat-footer-row {
+    background-color: rgba(30, 19, 57, 0.9) !important;
+  }
+  
+  .mat-row {
+    background-color: rgba(30, 19, 57, 0.8) !important;
+    
+    &:nth-child(odd) {
+      background-color: rgba(25, 14, 50, 0.9) !important;
+    }
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.15) !important;
+    }
+  }
+  
+  .mat-paginator {
+    background-color: transparent !important;
+  }
+}
+
+/* =======================================================================
+   TEMA OSCURO
+======================================================================= */
 .dark-theme {
   background-color: var(--background-dark);
   color: var(--text-primary);
@@ -322,155 +484,5 @@ table.mat-table {
   .mat-drawer-container, 
   .sidenav-container {
     background-color: var(--background-dark);
-  }
-}
-
-/* Asegurar que el sidebar mantenga su gradiente morado-negro */
-.mat-drawer,
-.mat-drawer-inner-container,
-app-sidebar,
-.sidebar-container {
-  background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%) !important;
-}
-
-/* Corregir caso en que se aplica 'transparent' y se pierde el color */
-.sidenav {
-  background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%) !important;
-}
-
-/* Asegurar que todos los contenedores del sidebar muestren el gradiente */
-.mat-drawer-container .mat-drawer-side,
-.mat-sidenav-container .mat-sidenav {
-  background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%) !important;
-}
-
-/* Estilos para diálogos de Material */
-.custom-dialog {
-  .mat-dialog-container {
-    padding: 0 !important;
-    background: transparent !important;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
-    overflow: hidden !important;
-    border-radius: 8px !important;
-    color: #ffffff !important;
-  }
-}
-
-.cdk-overlay-dark-backdrop {
-  background: rgba(18, 10, 30, 0.8) !important; /* Fondo más oscuro para el overlay */
-}
-
-.cdk-overlay-pane {
-  max-height: 90vh !important;
-}
-
-/* Estilos globales para Angular Material */
-.mat-icon {
-  font-family: 'Material Icons' !important;
-}
-
-.mat-button-focus-overlay {
-  background-color: transparent !important;
-}
-
-/* Para asegurar que los popups tengan el tema correcto */
-.mat-menu-panel {
-  background-color: #2d2d2d !important;
-  
-  .mat-menu-item {
-    color: #e0e0e0 !important;
-    
-    &:hover {
-      background-color: rgba(164, 108, 245, 0.1) !important;
-    }
-  }
-}
-
-.dark-mode-table.mat-table {
-  width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: transparent !important;
-  box-shadow: none !important;
-  
-  .mat-header-row {
-    background-color: rgba(30, 19, 57, 0.9) !important;
-  }
-  
-  .mat-header-cell {
-    background-color: transparent !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    border-bottom: 1px solid rgba(164, 108, 245, 0.3) !important;
-  }
-  
-  .mat-row {
-    background-color: rgba(30, 19, 57, 0.8) !important;
-    
-    &:nth-child(odd) {
-      background-color: rgba(25, 14, 50, 0.9) !important;
-    }
-    
-    &:hover {
-      background-color: rgba(164, 108, 245, 0.15) !important;
-    }
-  }
-  
-  .mat-cell {
-    color: #e0e0e0 !important;
-    border-bottom: 1px solid rgba(164, 108, 245, 0.1) !important;
-  }
-}
-
-/* Sobrescribir explícitamente cualquier otro estilo que afecte a la tabla de roles */
-.roles-view-container {
-  background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%) !important;
-  
-  .mat-table {
-    background-color: transparent !important;
-    box-shadow: none !important; 
-  }
-  
-  .mat-header-row,
-  .mat-footer-row {
-    background-color: rgba(30, 19, 57, 0.9) !important;
-  }
-  
-  .mat-row {
-    background-color: rgba(30, 19, 57, 0.8) !important;
-    
-    &:nth-child(odd) {
-      background-color: rgba(25, 14, 50, 0.9) !important;
-    }
-    
-    &:hover {
-      background-color: rgba(164, 108, 245, 0.15) !important;
-    }
-  }
-  
-  .mat-paginator {
-    background-color: transparent !important;
-  }
-}
-
-// Estilos para diálogos personalizados
-.mat-dialog-container {
-  padding: 0 !important;
-  border-radius: 8px !important;
-  overflow: hidden !important;
-}
-
-// Diálogo con tema oscuro
-.custom-dark-dialog {
-  .mat-dialog-container {
-    background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%) !important;
-    color: #ffffff !important;
-  }
-}
-
-// Diálogo con tema claro personalizado
-.custom-light-dialog {
-  .mat-dialog-container {
-    background: #ffffff !important;
   }
 }

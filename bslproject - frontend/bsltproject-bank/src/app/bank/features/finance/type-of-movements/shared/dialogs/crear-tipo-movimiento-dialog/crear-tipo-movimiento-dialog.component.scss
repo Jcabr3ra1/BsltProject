@@ -1,19 +1,317 @@
-.form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 24px;
-    min-width: 320px;
-    max-width: 420px;
+// Variables de color
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+$medium-text: #e0e0e0;
+$error-color: #ff4d4f;
+
+// Variables para los tipos de movimiento
+$ingreso-color: #4cd964; // Verde
+$gasto-color: #ff3b30;   // Rojo
+$transfer-color: #5ac8fa; // Azul
+
+// Estilos del diálogo
+.dialog-content {
+  background: linear-gradient(135deg, $dark-purple 0%, $dark-bg 100%);
+  color: $light-text;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+// Cabecera del diálogo
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(164, 108, 245, 0.3);
+  background-color: rgba(0, 0, 0, 0.2);
+  
+  .header-icon {
+    color: $primary-purple;
+    font-size: 1.8rem;
+    height: 1.8rem;
+    width: 1.8rem;
   }
   
-  .full-width {
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $light-text;
+  }
+}
+
+// Formulario
+.formulario-movimiento {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+// Tipo de movimiento info
+.tipo-movimiento-info {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(164, 108, 245, 0.2);
+  
+  .tipo-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    width: fit-content;
+    margin-bottom: 0.5rem;
+    
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+    
+    &.ingreso {
+      background-color: rgba($ingreso-color, 0.15);
+      color: $ingreso-color;
+      border: 1px solid rgba($ingreso-color, 0.3);
+      
+      mat-icon {
+        color: $ingreso-color;
+      }
+    }
+    
+    &.gasto {
+      background-color: rgba($gasto-color, 0.15);
+      color: $gasto-color;
+      border: 1px solid rgba($gasto-color, 0.3);
+      
+      mat-icon {
+        color: $gasto-color;
+      }
+    }
+    
+    &.transferencia {
+      background-color: rgba($transfer-color, 0.15);
+      color: $transfer-color;
+      border: 1px solid rgba($transfer-color, 0.3);
+      
+      mat-icon {
+        color: $transfer-color;
+      }
+    }
+    
+    &.desconocido {
+      background-color: rgba($primary-purple, 0.15);
+      color: $primary-purple;
+      border: 1px solid rgba($primary-purple, 0.3);
+      
+      mat-icon {
+        color: $primary-purple;
+      }
+    }
+  }
+  
+  .tipo-description {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.4;
+  }
+}
+
+// Campos de formulario
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  
+  label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: $light-text;
+    
+    .required {
+      color: $error-color;
+      margin-left: 2px;
+    }
+  }
+  
+  input {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(164, 108, 245, 0.3);
+    border-radius: 4px;
+    color: $light-text;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+    
+    &:focus {
+      border-color: $primary-purple;
+      box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.3);
+    }
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    &.ng-invalid.ng-touched {
+      border-color: $error-color;
+    }
+  }
+  
+  .helper-text {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 0.2rem;
+  }
+  
+  .error-message {
+    color: $error-color;
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+    animation: fadeIn 0.2s ease;
+  }
+}
+
+// Campo de entrada con icono
+.input-with-icon {
+  position: relative;
+  
+  input {
+    padding-right: 2.5rem;
     width: 100%;
+    box-sizing: border-box;
   }
   
-  .actions {
+  mat-icon {
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $primary-purple;
+  }
+}
+
+// Botones de acción
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  
+  button {
     display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    
+    mat-icon {
+      font-size: 1.1rem;
+      height: 1.1rem;
+      width: 1.1rem;
+    }
   }
   
+  .btn-cancel {
+    background-color: transparent;
+    color: $medium-text;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+  }
+  
+  .btn-save {
+    background-color: $primary-purple;
+    color: $light-text;
+    
+    &:hover:not(:disabled) {
+      background-color: $light-purple;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background-color: rgba($primary-purple, 0.6);
+      box-shadow: none;
+    }
+  }
+}
+
+// Spinner para estado de carga
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Media queries
+@media (max-width: 480px) {
+  .dialog-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// Fix para el diálogo de Material
+::ng-deep {
+  .mat-dialog-container {
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: transparent !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  .mat-dialog-title {
+    margin: 0 !important;
+  }
+  
+  .mat-dialog-actions {
+    margin-bottom: 0 !important;
+    min-height: auto !important;
+  }
+}

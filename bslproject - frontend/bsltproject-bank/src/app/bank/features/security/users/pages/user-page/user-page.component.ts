@@ -21,10 +21,10 @@ import { EditarUsuarioDialogComponent } from '../../shared/dialogs/editar-usuari
   selector: 'app-user-page',
   standalone: true,
   imports: [
-    CommonModule, 
-    MatTableModule, 
-    MatCardModule, 
-    MatIconModule, 
+    CommonModule,
+    MatTableModule,
+    MatCardModule,
+    MatIconModule,
     MatButtonModule,
     MatMenuModule,
     MatInputModule,
@@ -32,10 +32,10 @@ import { EditarUsuarioDialogComponent } from '../../shared/dialogs/editar-usuari
     MatSortModule,
     MatTooltipModule,
     MatSnackBarModule,
-    FormsModule
+    FormsModule,
   ],
   templateUrl: './user-page.component.html',
-  styleUrls: ['./user-page.component.scss']
+  styleUrls: ['./user-page.component.scss'],
 })
 export class UserPageComponent implements OnInit, AfterViewInit {
   // Datos principales
@@ -44,16 +44,16 @@ export class UserPageComponent implements OnInit, AfterViewInit {
   estados: any[] = [];
   filteredUsuarios: any[] = [];
   searchTerm: string = '';
-  
+
   // Columnas de la tabla
-  displayedColumns: string[] = ['nombre', 'email', 'estado', 'rol', 'acciones'];
+  displayedColumns: string[] = ['nombre', 'email', 'tieneCuenta', 'estado', 'rol', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
-    private usuariosService: UsuariosService, 
+    private usuariosService: UsuariosService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
@@ -74,22 +74,22 @@ export class UserPageComponent implements OnInit, AfterViewInit {
       usuarios: this.usuariosService.getUsuarios(),
       cuentas: this.usuariosService.getCuentas(),
       roles: this.usuariosService.getRoles(),
-      estados: this.usuariosService.getEstados()
+      estados: this.usuariosService.getEstados(),
     }).subscribe({
       next: ({ usuarios, cuentas, roles, estados }) => {
         this.roles = roles;
         this.estados = estados;
-        
+
         // Preparar datos de usuarios
         this.usuarios = usuarios.map((usuario) => {
           const tieneCuenta = cuentas.some((c) => c.usuario_id === usuario.id);
           return { ...usuario, tieneCuenta };
         });
-        
+
         // Actualizar la tabla
         this.filteredUsuarios = [...this.usuarios];
         this.dataSource.data = this.filteredUsuarios;
-        
+
         // Volver a aplicar paginador y ordenamiento
         if (this.paginator && this.sort) {
           this.dataSource.paginator = this.paginator;
@@ -98,18 +98,21 @@ export class UserPageComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         console.error('Error al cargar datos:', err);
-        this.mostrarError('Error al cargar los datos. Por favor, intente nuevamente.');
-      }
+        this.mostrarError(
+          'Error al cargar los datos. Por favor, intente nuevamente.'
+        );
+      },
     });
   }
 
   // Método para mostrar mensajes de error
   mostrarError(mensaje: string, duracion: number = 5000) {
+    console.log('Mostrando mensaje de error:', mensaje);
     this.snackBar.open(mensaje, 'Cerrar', {
       duration: duracion,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
-      panelClass: ['error-snackbar']
+      panelClass: ['error-snackbar'],
     });
   }
 
@@ -119,7 +122,7 @@ export class UserPageComponent implements OnInit, AfterViewInit {
       duration: duracion,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
-      panelClass: ['success-snackbar']
+      panelClass: ['success-snackbar'],
     });
   }
 
@@ -129,15 +132,20 @@ export class UserPageComponent implements OnInit, AfterViewInit {
       this.filteredUsuarios = [...this.usuarios];
     } else {
       const term = this.searchTerm.toLowerCase();
-      this.filteredUsuarios = this.usuarios.filter(user => 
-        (user.nombre?.toLowerCase() || '').includes(term) || 
-        (user.apellido?.toLowerCase() || '').includes(term) || 
-        (user.email?.toLowerCase() || '').includes(term) ||
-        (user.roles && user.roles[0] && (user.roles[0].nombre?.toLowerCase() || '')).includes(term)
+      this.filteredUsuarios = this.usuarios.filter(
+        (user) =>
+          (user.nombre?.toLowerCase() || '').includes(term) ||
+          (user.apellido?.toLowerCase() || '').includes(term) ||
+          (user.email?.toLowerCase() || '').includes(term) ||
+          (
+            user.roles &&
+            user.roles[0] &&
+            (user.roles[0].nombre?.toLowerCase() || '')
+          ).includes(term)
       );
     }
     this.dataSource.data = this.filteredUsuarios;
-    
+
     // Reset paginación al filtrar
     if (this.paginator) {
       this.paginator.firstPage();
@@ -146,7 +154,7 @@ export class UserPageComponent implements OnInit, AfterViewInit {
 
   // Obtener ID de estado por nombre
   getEstadoIdByName(nombreEstado: string): string {
-    const estado = this.estados.find(e => e.nombre === nombreEstado);
+    const estado = this.estados.find((e) => e.nombre === nombreEstado);
     return estado ? estado.id : '';
   }
 
@@ -158,7 +166,7 @@ export class UserPageComponent implements OnInit, AfterViewInit {
       apellido: usuario.apellido,
       email: usuario.email,
       roles: [{ id: rolId }],
-      estado: usuario.estado 
+      estado: usuario.estado,
     };
 
     this.usuariosService.actualizarUsuario(usuario.id, payload).subscribe({
@@ -169,7 +177,7 @@ export class UserPageComponent implements OnInit, AfterViewInit {
       error: (error) => {
         console.error('Error al cambiar rol:', error);
         this.mostrarError('Error al cambiar el rol. Inténtelo nuevamente.');
-      }
+      },
     });
   }
 
@@ -181,7 +189,7 @@ export class UserPageComponent implements OnInit, AfterViewInit {
       apellido: usuario.apellido,
       email: usuario.email,
       roles: usuario.roles,
-      estado: { id: estadoId }
+      estado: { id: estadoId },
     };
 
     this.usuariosService.actualizarUsuario(usuario.id, payload).subscribe({
@@ -192,37 +200,43 @@ export class UserPageComponent implements OnInit, AfterViewInit {
       error: (error) => {
         console.error('Error al cambiar estado:', error);
         this.mostrarError('Error al cambiar el estado. Inténtelo nuevamente.');
-      }
+      },
     });
   }
 
   editarUsuario(usuario: any) {
     // Detener la propagación del evento
     event?.stopPropagation();
-    
+
     const dialogRef = this.dialog.open(EditarUsuarioDialogComponent, {
       width: '450px',
-      data: { 
+      data: {
         usuario: usuario,
         roles: this.roles,
-        estados: this.estados 
+        estados: this.estados,
       },
-      panelClass: ['custom-dialog', 'custom-dark-dialog']
+      panelClass: ['custom-dialog', 'custom-dark-dialog'],
     });
-  
+
     dialogRef.afterClosed().subscribe((resultado) => {
       if (resultado === true) {
         this.cargarDatos();
         this.mostrarExito('Usuario actualizado correctamente');
       } else if (resultado && resultado.error) {
         // Manejar errores específicos
-        if (resultado.error.includes('correo electrónico ya está en uso') || 
-            resultado.error.includes('email already exists') ||
-            resultado.error.includes('duplicate key') ||
-            resultado.error.includes('already exists')) {
-          this.mostrarError('El correo electrónico ya está registrado en el sistema');
+        if (
+          resultado.error.includes('correo electrónico ya está en uso') ||
+          resultado.error.includes('email already exists') ||
+          resultado.error.includes('duplicate key') ||
+          resultado.error.includes('already exists')
+        ) {
+          this.mostrarError(
+            'El correo electrónico ya está registrado en el sistema'
+          );
         } else {
-          this.mostrarError(resultado.error || 'Error al actualizar el usuario');
+          this.mostrarError(
+            resultado.error || 'Error al actualizar el usuario'
+          );
         }
       }
     });
@@ -231,9 +245,11 @@ export class UserPageComponent implements OnInit, AfterViewInit {
   eliminarUsuario(usuario: any) {
     // Detener la propagación del evento
     event?.stopPropagation();
-    
-    const confirmado = confirm(`¿Estás seguro de que deseas eliminar a ${usuario.nombre} ${usuario.apellido}?`);
-  
+
+    const confirmado = confirm(
+      `¿Estás seguro de que deseas eliminar a ${usuario.nombre} ${usuario.apellido}?`
+    );
+
     if (confirmado) {
       this.usuariosService.eliminarUsuario(usuario.id).subscribe({
         next: () => {
@@ -242,35 +258,55 @@ export class UserPageComponent implements OnInit, AfterViewInit {
         },
         error: (error) => {
           console.error('Error al eliminar usuario:', error);
-          this.mostrarError('Error al eliminar el usuario. Inténtelo nuevamente.');
-        }
+          this.mostrarError(
+            'Error al eliminar el usuario. Inténtelo nuevamente.'
+          );
+        },
       });
     }
   }
-  
+
   abrirFormularioUsuario() {
     const dialogRef = this.dialog.open(CrearUsuarioDialogComponent, {
       width: '450px',
       data: {
         roles: this.roles,
-        estados: this.estados
+        estados: this.estados,
       },
-      panelClass: ['custom-dialog', 'custom-dark-dialog']
+      panelClass: ['custom-dialog', 'custom-dark-dialog'],
     });
-  
+
     dialogRef.afterClosed().subscribe((resultado) => {
+      // Depurar el resultado que recibimos al cerrar el diálogo
+      console.log('Resultado del diálogo:', resultado);
+
       if (resultado === true) {
+        // Solo si el resultado es exactamente true (éxito), recargamos y mostramos éxito
         this.cargarDatos();
         this.mostrarExito('Usuario creado correctamente');
       } else if (resultado && resultado.error) {
-        // Manejar errores específicos
-        if (resultado.error.includes('correo electrónico ya está en uso') || 
+        // Si hay un objeto con una propiedad 'error', es un error
+        console.log('Error detectado:', resultado.error);
+
+        // Verificar si es un error de correo duplicado
+        if (
+          typeof resultado.error === 'string' &&
+          (resultado.error.includes('correo electrónico ya está registrado') ||
             resultado.error.includes('email already exists') ||
             resultado.error.includes('duplicate key') ||
-            resultado.error.includes('already exists')) {
-          this.mostrarError('El correo electrónico ya está registrado en el sistema');
+            resultado.error.includes('already exists') ||
+            resultado.error.includes('ya está registrado'))
+        ) {
+          this.mostrarError(
+            'El correo electrónico ya está registrado en el sistema'
+          );
         } else {
-          this.mostrarError(resultado.error || 'Error al crear el usuario');
+          // Para otros tipos de errores
+          this.mostrarError(
+            typeof resultado.error === 'string'
+              ? resultado.error
+              : 'Error al crear el usuario'
+          );
         }
       }
     });

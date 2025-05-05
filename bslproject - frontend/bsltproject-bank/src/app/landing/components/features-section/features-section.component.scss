@@ -1,33 +1,94 @@
-.features-section {
-    display: flex;
-    flex-direction: column;
-    gap: 4rem;
-    padding: 5rem 2rem;
-    align-items: center;
-  
+// Este componente usa los estilos definidos en landing-styles.scss
+// Por eso mantiene los estilos específicos del componente al mínimo
+
+.features {
+    padding: 100px 20px;
+    background-color: #f9f9f9;
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .section-heading {
+      text-align: center;
+      margin-bottom: 60px;
+      
+      h2 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        position: relative;
+        display: inline-block;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -10px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 80px;
+          height: 4px;
+          border-radius: 2px;
+        }
+      }
+      
+      p {
+        font-size: 18px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      
+      @media (max-width: 992px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      @media (max-width: 576px) {
+        grid-template-columns: 1fr;
+      }
+    }
+    
     .feature-card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      
+      &:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+    }
+    
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: rgba(164, 108, 245, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 3rem;
-      flex-wrap: wrap;
-      max-width: 1000px;
-  
-      &.reversed {
-        flex-direction: row-reverse;
-      }
-  
-      .feature-content {
-        flex: 1 1 400px;
-      }
-  
-      .feature-media {
-        flex: 0 0 auto;
-        .feature-icon {
-          font-size: 64px;
-          color: #1976d2;
-        }
-      }
+      font-size: 28px;
+      margin-bottom: 25px;
+      transition: all 0.3s ease;
+    }
+    
+    .feature-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    
+    .feature-card p {
+      line-height: 1.6;
+      font-size: 16px;
     }
   }
-  

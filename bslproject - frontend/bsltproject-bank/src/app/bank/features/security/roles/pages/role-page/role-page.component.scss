@@ -31,6 +31,150 @@ $key-color: #ffb300;
   flex-direction: column;
 }
 
+// Paginador personalizado
+.paginator-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid rgba(164, 108, 245, 0.2);
+  background-color: rgba(0, 0, 0, 0.15);
+  color: $medium-text;
+  
+  .items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    span {
+      font-size: 0.9rem;
+    }
+    
+    ::ng-deep .mat-select {
+      width: 50px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+      
+      .mat-select-trigger {
+        height: 24px;
+      }
+      
+      .mat-select-value {
+        color: $light-text;
+      }
+      
+      .mat-select-arrow {
+        color: $primary-purple;
+      }
+    }
+  }
+  
+  .pagination-info {
+    margin: 0 1.5rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .pagination-controls {
+    display: flex;
+    gap: 0.3rem;
+    
+    button {
+      color: $primary-purple;
+      
+      &:disabled {
+        color: rgba(255, 255, 255, 0.3);
+      }
+      
+      &:hover:not(:disabled) {
+        background-color: rgba(164, 108, 245, 0.1);
+      }
+    }
+  }
+}
+
+// Animación de aparición 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Estilos para Material components con ::ng-deep para asegurar que sean aplicados
+::ng-deep {
+  // Forzar estilos en la tabla dentro del contenedor específico
+  .roles-view-container {
+    .mat-table {
+      background-color: transparent !important;
+      box-shadow: none !important;
+    }
+    
+    .mat-header-row {
+      background-color: rgba(30, 19, 57, 0.9) !important;
+    }
+    
+    .mat-row {
+      background-color: rgba(30, 19, 57, 0.8) !important;
+      
+      &:nth-child(odd) {
+        background-color: rgba(25, 14, 50, 0.9) !important;
+      }
+      
+      &:hover {
+        background-color: rgba(164, 108, 245, 0.1) !important;
+      }
+    }
+    
+    .mat-cell, .mat-footer-cell {
+      color: $medium-text !important;
+      border-bottom-color: rgba(164, 108, 245, 0.1) !important;
+    }
+    
+    .mat-header-cell {
+      color: $light-text !important;
+      border-bottom-color: rgba(164, 108, 245, 0.3) !important;
+    }
+    
+    // Paginador
+    .mat-paginator {
+      background-color: transparent !important;
+      color: $medium-text !important;
+    }
+  }
+  
+  // Select desplegable
+  .mat-select-panel {
+    background-color: #2d2d2d !important;
+    border: 1px solid rgba(164, 108, 245, 0.2) !important;
+    
+    .mat-option {
+      color: $medium-text !important;
+      
+      &:hover:not(.mat-option-disabled) {
+        background-color: rgba(164, 108, 245, 0.1) !important;
+      }
+      
+      &.mat-selected:not(.mat-option-disabled) {
+        color: $primary-purple !important;
+      }
+    }
+  }
+  
+  // Tooltips
+  .mat-tooltip {
+    background-color: rgba(40, 40, 40, 0.9) !important;
+    border: 1px solid $primary-purple !important;
+    color: $light-text !important;
+    font-size: 0.8rem !important;
+    padding: 0.5rem 0.8rem !important;
+  }
+  
+  // Spinner
+  .mat-progress-spinner circle {
+    stroke: $primary-purple !important;
+  }
+}
+
 // Header y acciones
 .header-actions {
   display: flex;
@@ -193,21 +337,25 @@ $key-color: #ffb300;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+// Estilos para etiquetas de permisos
+.permission-tag {
+  background-color: $permission-bg;
+  border: 1px solid $permission-border;
+  color: $permission-text;
+  padding: 0.4rem 0.8rem; // Un poco más de padding
+  border-radius: 16px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%; // Asegurar que no desborde su contenedor
   
-  .permission-tag {
-    background-color: $permission-bg;
-    border: 1px solid $permission-border;
-    color: $permission-text;
-    padding: 0.3rem 0.7rem;
-    border-radius: 16px;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-    
-    &:hover {
-      background-color: color.adjust($permission-bg, $lightness: 5%);
-      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
-    }
+  &:hover {
+    background-color: color.adjust($permission-bg, $lightness: 5%);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -218,7 +366,7 @@ $key-color: #ffb300;
   background-color: rgba(164, 108, 245, 0.25);
   color: $primary-purple;
   border: 1px solid rgba(164, 108, 245, 0.4);
-  padding: 0.3rem 0.7rem;
+  padding: 0.4rem 0.8rem; // Más padding
   border-radius: 16px;
   font-size: 0.85rem;
   cursor: pointer;
@@ -238,43 +386,55 @@ $key-color: #ffb300;
   border-radius: 8px;
   padding: 0.75rem;
   animation: fadeIn 0.3s ease;
+  max-height: 300px; // Altura máxima para evitar que ocupe todo el espacio
+  overflow-y: auto; // Permitir scroll vertical
+  position: relative; // Para posicionar mejor el botón de colapsar
+  z-index: 10; // Asegurar que esté por encima de otros elementos
   
-  // Grid para organizar los permisos
+  // Grid mejorado para organizar los permisos
   .permissions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); // Aumentar tamaño mínimo
+    gap: 0.75rem; // Más espacio entre elementos
     margin-bottom: 0.75rem;
     
     .permission-tag {
       margin-bottom: 0;
       text-align: center;
+      white-space: normal; // Permitir saltos de línea en tags largos
+      height: auto; // Altura automática
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px; // Altura mínima para consistencia
     }
   }
   
-  // Botón para colapsar permisos
+  // Botón para colapsar permisos mejorado
   .collapse-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    background-color: rgba(164, 108, 245, 0.1);
+    background-color: rgba(164, 108, 245, 0.15); // Un poco más visible
     color: $light-purple;
     border: none;
     border-radius: 4px;
-    padding: 0.3rem;
-    font-size: 0.8rem;
+    padding: 0.5rem; // Más padding para facilitar la pulsación
+    font-size: 0.9rem; // Texto más grande
+    font-weight: 500; // Un poco más de peso
     cursor: pointer;
     transition: all 0.2s ease;
+    margin-top: 0.5rem; // Espacio arriba
     
     &:hover {
-      background-color: rgba(164, 108, 245, 0.2);
+      background-color: rgba(164, 108, 245, 0.25);
     }
     
     mat-icon {
-      font-size: 1rem;
-      height: 1rem;
-      width: 1rem;
+      font-size: 1.1rem;
+      height: 1.1rem;
+      width: 1.1rem;
       margin-right: 0.25rem;
     }
   }
@@ -387,149 +547,5 @@ $key-color: #ffb300;
   span {
     margin-top: 1rem;
     color: $medium-text;
-  }
-}
-
-// Paginador personalizado
-.paginator-container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0.75rem 1.25rem;
-  border-top: 1px solid rgba(164, 108, 245, 0.2);
-  background-color: rgba(0, 0, 0, 0.15);
-  color: $medium-text;
-  
-  .items-per-page {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    
-    span {
-      font-size: 0.9rem;
-    }
-    
-    ::ng-deep .mat-select {
-      width: 50px;
-      background-color: rgba(255, 255, 255, 0.05);
-      border-radius: 4px;
-      padding: 0.2rem 0.5rem;
-      
-      .mat-select-trigger {
-        height: 24px;
-      }
-      
-      .mat-select-value {
-        color: $light-text;
-      }
-      
-      .mat-select-arrow {
-        color: $primary-purple;
-      }
-    }
-  }
-  
-  .pagination-info {
-    margin: 0 1.5rem;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.7);
-  }
-  
-  .pagination-controls {
-    display: flex;
-    gap: 0.3rem;
-    
-    button {
-      color: $primary-purple;
-      
-      &:disabled {
-        color: rgba(255, 255, 255, 0.3);
-      }
-      
-      &:hover:not(:disabled) {
-        background-color: rgba(164, 108, 245, 0.1);
-      }
-    }
-  }
-}
-
-// Animación de aparición 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-// Estilos para Material components con ::ng-deep para asegurar que sean aplicados
-::ng-deep {
-  // Forzar estilos en la tabla dentro del contenedor específico
-  .roles-view-container {
-    .mat-table {
-      background-color: transparent !important;
-      box-shadow: none !important;
-    }
-    
-    .mat-header-row {
-      background-color: rgba(30, 19, 57, 0.9) !important;
-    }
-    
-    .mat-row {
-      background-color: rgba(30, 19, 57, 0.8) !important;
-      
-      &:nth-child(odd) {
-        background-color: rgba(25, 14, 50, 0.9) !important;
-      }
-      
-      &:hover {
-        background-color: rgba(164, 108, 245, 0.1) !important;
-      }
-    }
-    
-    .mat-cell, .mat-footer-cell {
-      color: $medium-text !important;
-      border-bottom-color: rgba(164, 108, 245, 0.1) !important;
-    }
-    
-    .mat-header-cell {
-      color: $light-text !important;
-      border-bottom-color: rgba(164, 108, 245, 0.3) !important;
-    }
-    
-    // Paginador
-    .mat-paginator {
-      background-color: transparent !important;
-      color: $medium-text !important;
-    }
-  }
-  
-  // Select desplegable
-  .mat-select-panel {
-    background-color: #2d2d2d !important;
-    border: 1px solid rgba(164, 108, 245, 0.2) !important;
-    
-    .mat-option {
-      color: $medium-text !important;
-      
-      &:hover:not(.mat-option-disabled) {
-        background-color: rgba(164, 108, 245, 0.1) !important;
-      }
-      
-      &.mat-selected:not(.mat-option-disabled) {
-        color: $primary-purple !important;
-      }
-    }
-  }
-  
-  // Tooltips
-  .mat-tooltip {
-    background-color: rgba(40, 40, 40, 0.9) !important;
-    border: 1px solid $primary-purple !important;
-    color: $light-text !important;
-    font-size: 0.8rem !important;
-    padding: 0.5rem 0.8rem !important;
-  }
-  
-  // Spinner
-  .mat-progress-spinner circle {
-    stroke: $primary-purple !important;
   }
 }

@@ -123,15 +123,19 @@ $warning-color: #ffcc00;
   
   // Ajustar el ancho de las columnas
   .mat-column-nombre {
-    width: 25%;
+    width: 20%;
   }
   
   .mat-column-email {
-    width: 25%;
+    width: 20%;
+  }
+
+  .mat-column-tieneCuenta {
+    width: 15%;
   }
   
   .mat-column-estado {
-    width: 20%;
+    width: 15%;
   }
   
   .mat-column-rol {
@@ -176,6 +180,44 @@ $warning-color: #ffcc00;
     
     &:hover {
       background-color: rgba(164, 108, 245, 0.08);
+    }
+  }
+}
+
+// Badge para cuenta asignada
+.cuenta-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  width: fit-content;
+  
+  &.tiene-cuenta {
+    background-color: rgba(76, 217, 100, 0.15);
+    color: #4cd964;
+    border: 1px solid rgba(76, 217, 100, 0.3);
+    
+    mat-icon {
+      color: #4cd964;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+  }
+  
+  &.sin-cuenta {
+    background-color: rgba(255, 59, 48, 0.15);
+    color: #ff3b30;
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    
+    mat-icon {
+      color: #ff3b30;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 }

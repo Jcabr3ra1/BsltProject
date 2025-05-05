@@ -45,10 +45,11 @@ export class EditarUsuarioDialogComponent implements OnInit {
   }
 
   private initForm(): void {
+    // Corregido: Acceder a los datos del usuario desde data.usuario
     this.form = this.fb.group({
-      nombre: [this.data.nombre, [Validators.required, Validators.maxLength(50)]],
-      apellido: [this.data.apellido, [Validators.required, Validators.maxLength(50)]],
-      email: [this.data.email, [Validators.required, Validators.email, Validators.maxLength(100)]]
+      nombre: [this.data.usuario.nombre, [Validators.required, Validators.maxLength(50)]],
+      apellido: [this.data.usuario.apellido, [Validators.required, Validators.maxLength(50)]],
+      email: [this.data.usuario.email, [Validators.required, Validators.email, Validators.maxLength(100)]]
     });
   }
 
@@ -67,16 +68,19 @@ export class EditarUsuarioDialogComponent implements OnInit {
       nombre: this.form.value.nombre,
       apellido: this.form.value.apellido,
       email: this.form.value.email,
-      // Mantener los roles y estado actuales
-      roles: this.data.roles,
-      estado: this.data.estado 
+      // Corregido: Mantener los roles y estado actuales del usuario
+      roles: this.data.usuario.roles,
+      estado: this.data.usuario.estado 
     };
   
-    this.usuariosService.actualizarUsuario(this.data.id, usuarioPayload)
+    this.usuariosService.actualizarUsuario(this.data.usuario.id, usuarioPayload)
       .pipe(
         catchError(error => {
           console.error('Error al actualizar usuario:', error);
           this.errorMessage = 'No se pudo actualizar el usuario';
+          
+          // Devolver el objeto de error para manejarlo en el componente principal
+          this.dialogRef.close({ error: error.error?.message || 'Error al actualizar usuario' });
           return of(null);
         }),
         finalize(() => {

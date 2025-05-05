@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,7 +27,10 @@ export class NavbarComponent implements OnInit {
   @Input() isSidebarOpen = true;
   @Output() menuToggle = new EventEmitter<boolean>();
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router // Inyectar Router
+  ) {}
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
@@ -46,6 +49,9 @@ export class NavbarComponent implements OnInit {
     if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
       console.log('Cerrando sesión...');
       this.authService.logout();
+      
+      // Añadir redirección al landing page
+      this.router.navigate(['/']); // O la ruta específica de tu landing, por ejemplo '/landing'
     }
   }
 }

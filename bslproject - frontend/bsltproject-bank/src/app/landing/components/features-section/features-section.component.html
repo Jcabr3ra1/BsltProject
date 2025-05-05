@@ -1,16 +1,18 @@
-<section class="features-section">
-    <div
-      *ngFor="let feature of features; let i = index"
-      class="feature-card"
-      [class.reversed]="i % 2 !== 0"
-    >
-      <div class="feature-content">
-        <h2>{{ feature.title }}</h2>
-        <p>{{ feature.description }}</p>
+<section class="features">
+    <div class="container">
+      <div class="section-heading">
+        <h2>Por qué elegirnos</h2>
+        <p>Descubre las ventajas de formar parte de la comunidad Banco Púrpura</p>
       </div>
-      <div class="feature-media">
-        <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+      
+      <div class="features-grid">
+        <div class="feature-card" *ngFor="let feature of features">
+          <div class="feature-icon">
+            <i>{{ feature.icon }}</i>
+          </div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.description }}</p>
+        </div>
       </div>
     </div>
   </section>
-  

@@ -1,45 +1,91 @@
-<h2 mat-dialog-title>Nuevo bolsillo</h2>
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">account_balance_wallet</mat-icon>
+    <h2 mat-dialog-title>Nuevo bolsillo</h2>
+  </div>
 
-<form [formGroup]="form" (ngSubmit)="guardar()" class="form-container">
-  <mat-form-field class="full-width">
-    <mat-label>Tipo de bolsillo</mat-label>
-    <mat-select formControlName="tipo">
-      <mat-option *ngFor="let tipo of tiposBolsillo" [value]="tipo">
-        {{ tipo }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <!-- Personalizado -->
-  <div *ngIf="form.value.tipo === 'Personalizado'" class="personalizado-section">
-    <mat-form-field class="full-width">
-      <mat-label>Nombre personalizado</mat-label>
-      <input matInput formControlName="nombrePersonalizado" />
-    </mat-form-field>
-
-    <div class="color-picker-group">
-      <label>Color personalizado</label>
-      <input type="color" formControlName="colorPersonalizado" class="color-picker" />
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-bolsillo">
+    <div class="form-field">
+      <label for="tipo">Tipo de bolsillo<span class="required">*</span></label>
+      <div class="select-with-icon">
+        <select id="tipo" formControlName="tipo">
+          <option [value]="''" disabled selected>Selecciona un tipo</option>
+          <option *ngFor="let tipo of tiposBolsillo" [value]="tipo">{{ tipo }}</option>
+        </select>
+        <mat-icon>category</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('tipo')?.touched && form.get('tipo')?.hasError('required')">
+        El tipo de bolsillo es obligatorio
+      </div>
     </div>
-  </div>
 
-  <!-- Vista previa color (solo si no es personalizado) -->
-  <div *ngIf="form.value.tipo !== 'Personalizado'" class="color-preview">
-    <label>Color</label>
-    <div class="color-box" [style.background]="getColorPorTipo(form.value.tipo)">
-      {{ getColorPorTipo(form.value.tipo) }}
+    <!-- Personalizado -->
+    <div *ngIf="form.value.tipo === 'Personalizado'" class="personalizado-section">
+      <div class="form-field">
+        <label for="nombrePersonalizado">Nombre personalizado<span class="required">*</span></label>
+        <div class="input-with-icon">
+          <input id="nombrePersonalizado" type="text" formControlName="nombrePersonalizado" placeholder="Ej. Vacaciones, Compras">
+          <mat-icon>edit</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('nombrePersonalizado')?.touched && form.get('nombrePersonalizado')?.hasError('required')">
+          El nombre personalizado es obligatorio
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="colorPersonalizado">Color personalizado<span class="required">*</span></label>
+        <div class="color-field-container">
+          <div class="input-with-icon color-input">
+            <input id="color-display" type="text" [value]="form.get('colorPersonalizado')?.value" readonly>
+            <mat-icon>palette</mat-icon>
+          </div>
+          
+          <div class="color-preview" [style.background-color]="form.get('colorPersonalizado')?.value">
+            <input type="color" id="colorPersonalizado" formControlName="colorPersonalizado" />
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <mat-form-field class="full-width">
-    <mat-label>Saldo inicial</mat-label>
-    <input matInput type="number" formControlName="saldo" />
-  </mat-form-field>
+    <!-- Vista previa color (solo si no es personalizado) -->
+    <div *ngIf="form.value.tipo !== 'Personalizado' && form.value.tipo" class="color-preview-section">
+      <label>Color del bolsillo</label>
+      <div class="color-preview-container">
+        <div class="color-box" [style.background]="getColorPorTipo(form.value.tipo)">
+          <span>{{ getColorPorTipo(form.value.tipo) }}</span>
+        </div>
+      </div>
+    </div>
 
-  <div class="actions">
-    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
-    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
-      Crear
-    </button>
-  </div>
-</form>
+    <div class="form-field">
+      <label for="saldo">Saldo inicial<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="saldo" type="number" formControlName="saldo" placeholder="0.00">
+        <mat-icon>attach_money</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('saldo')?.touched && form.get('saldo')?.hasError('required')">
+        El saldo inicial es obligatorio
+      </div>
+      <div class="error-message" *ngIf="form.get('saldo')?.touched && form.get('saldo')?.hasError('min')">
+        El saldo no puede ser negativo
+      </div>
+    </div>
+
+    <div class="info-container">
+      <mat-icon>info</mat-icon>
+      <p>Los bolsillos te permiten organizar y separar tu dinero según diferentes objetivos o categorías. Puedes crear bolsillos para ahorrar para metas específicas.</p>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid">
+        <div class="spinner" *ngIf="isLoading"></div>
+        <mat-icon *ngIf="!isLoading">save</mat-icon>
+        Crear
+      </button>      
+    </div>
+  </form>
+</div>

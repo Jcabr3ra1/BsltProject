@@ -39,7 +39,7 @@
                 </span>
                 <button *ngIf="rol.permisos.length > 3" 
                         class="view-more-btn" 
-                        (click)="togglePermisosList(rol.id)">
+                        (click)="togglePermisosList(rol.id, $event)">
                   +{{ rol.permisos.length - 3 }} más
                 </button>
               </div>
@@ -52,7 +52,7 @@
                   {{ permiso.nombre }}
                 </span>
               </div>
-              <button class="collapse-btn" (click)="togglePermisosList(rol.id)">
+              <button class="collapse-btn" (click)="togglePermisosList(rol.id, $event)">
                 <mat-icon>expand_less</mat-icon> Colapsar
               </button>
             </div>
@@ -69,16 +69,16 @@
         <th mat-header-cell *matHeaderCellDef> Acciones </th>
         <td mat-cell *matCellDef="let rol">
           <div class="action-buttons">
-            <button mat-icon-button class="view-btn" matTooltip="Ver detalles" (click)="verDetalles(rol)">
+            <button mat-icon-button class="view-btn" matTooltip="Ver detalles" (click)="verDetalles(rol, $event)">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button mat-icon-button class="edit-btn" matTooltip="Editar rol" (click)="editarRol(rol)">
+            <button mat-icon-button class="edit-btn" matTooltip="Editar rol" (click)="editarRol(rol, $event)">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button class="delete-btn" matTooltip="Eliminar rol" (click)="eliminarRol(rol.id)">
+            <button mat-icon-button class="delete-btn" matTooltip="Eliminar rol" (click)="eliminarRol(rol.id, $event)">
               <mat-icon>delete</mat-icon>
             </button>
-            <button mat-icon-button class="perm-btn" matTooltip="Gestionar permisos" (click)="gestionarPermisos(rol)">
+            <button mat-icon-button class="perm-btn" matTooltip="Gestionar permisos" (click)="gestionarPermisos(rol, $event)">
               <mat-icon>vpn_key</mat-icon>
             </button>
           </div>

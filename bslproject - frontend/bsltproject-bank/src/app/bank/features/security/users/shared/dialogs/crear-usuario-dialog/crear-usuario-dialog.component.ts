@@ -34,6 +34,7 @@ export class CrearUsuarioDialogComponent implements OnInit {
   hidePassword: boolean = true;
   isLoading: boolean = false;
   errorMessage: string | null = null;
+  passwordStrength: number = 0; // 0: vacío, 1: débil, 2: medio, 3: fuerte
 
   constructor(
     private fb: FormBuilder,
@@ -71,6 +72,11 @@ export class CrearUsuarioDialogComponent implements OnInit {
       rol_id: ['', Validators.required],
       estado_id: ['', Validators.required]
     });
+
+    // Actualizar fortaleza de contraseña cuando cambia el valor
+    this.form.get('password')?.valueChanges.subscribe(value => {
+      this.updatePasswordStrength(value);
+    });
   }
   
   private setDefaultValues(): void {
@@ -92,6 +98,52 @@ export class CrearUsuarioDialogComponent implements OnInit {
       } else {
         this.form.get('estado_id')?.setValue(this.estados[0].id);
       }
+    }
+  }
+
+  /**
+   * Actualiza el indicador de fortaleza de contraseña
+   * @param password La contraseña actual
+   */
+  updatePasswordStrength(password: string): void {
+    if (!password) {
+      this.passwordStrength = 0;
+      return;
+    }
+    
+    // Criterios de fortaleza
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const isLongEnough = password.length >= 8;
+    
+    // Calcular puntuación
+    let score = 0;
+    if (hasLowerCase && hasUpperCase) score++;
+    if (hasNumber) score++;
+    if (hasSpecialChar) score++;
+    if (isLongEnough) score++;
+    
+    // Asignar nivel de fortaleza
+    if (score >= 3) {
+      this.passwordStrength = 3; // Fuerte
+    } else if (score >= 2) {
+      this.passwordStrength = 2; // Medio
+    } else {
+      this.passwordStrength = 1; // Débil
+    }
+  }
+  
+  /**
+   * Obtiene el texto descriptivo de la fortaleza de la contraseña
+   */
+  getPasswordStrengthText(): string {
+    switch (this.passwordStrength) {
+      case 1: return 'Débil';
+      case 2: return 'Media';
+      case 3: return 'Fuerte';
+      default: return '';
     }
   }
 
@@ -164,14 +216,17 @@ export class CrearUsuarioDialogComponent implements OnInit {
           
           // Obtener mensaje de error para diferentes estructuras
           let mensajeError = this.extractErrorMessage(error);
+          console.log('Mensaje de error extraído:', mensajeError);
           
           // Detectar si es un error de correo duplicado
           if (this.isEmailDuplicateError(error, mensajeError)) {
+            console.log('Detectado error de correo duplicado');
             const errorMsg = 'El correo electrónico ya está registrado en el sistema';
             // Cerrar el diálogo con información de error
             this.dialogRef.close({ error: errorMsg });
           } else {
             const errorMsg = mensajeError || 'No se pudo crear el usuario. Inténtalo nuevamente.';
+            console.log('Cerrando diálogo con error:', errorMsg);
             this.dialogRef.close({ error: errorMsg });
           }
           
@@ -184,6 +239,7 @@ export class CrearUsuarioDialogComponent implements OnInit {
       .subscribe(result => {
         if (result !== null) {
           // Éxito - cerrar con true
+          console.log('Usuario creado con éxito, cerrando diálogo con true');
           this.dialogRef.close(true);
         }
         // Si hay error, ya se manejó en el catchError
@@ -208,8 +264,11 @@ export class CrearUsuarioDialogComponent implements OnInit {
   
   // Verificar si el error es por correo duplicado
   private isEmailDuplicateError(error: HttpErrorResponse, mensaje: string): boolean {
+    console.log('Verificando si es error de email duplicado. Status:', error.status);
+    console.log('Mensaje de error completo:', mensaje);
+    
     // Verificar por código de estado
-    if (error.status === 409) {
+    if (error.status === 409 || error.status === 400) {
       return true;
     }
     
@@ -220,19 +279,22 @@ export class CrearUsuarioDialogComponent implements OnInit {
     // Convertir a minúsculas para comparación
     const mensajeLower = mensaje.toLowerCase();
     
-    // Verificar si alguna palabra clave está en el mensaje
-    return [...keywordsEspanol, ...keywordsIngles].some(keyword => 
+    // Buscar palabras clave en el mensaje
+    const found = [...keywordsEspanol, ...keywordsIngles].some(keyword => 
       mensajeLower.includes(keyword.toLowerCase())
     );
+    
+    console.log('¿Se encontraron palabras clave de duplicado?', found);
+    return found;
   }
   
   // Preparar datos del usuario para enviar al servicio
   private prepareUserData(): any {
     const formValue = this.form.value;
     return {
-      nombre: formValue.nombre,
-      apellido: formValue.apellido,
-      email: formValue.email,
+      nombre: formValue.nombre.trim(),
+      apellido: formValue.apellido.trim(),
+      email: formValue.email.trim().toLowerCase(),
       password: formValue.password,
       roles: [{ id: formValue.rol_id }],
       estado: { id: formValue.estado_id }

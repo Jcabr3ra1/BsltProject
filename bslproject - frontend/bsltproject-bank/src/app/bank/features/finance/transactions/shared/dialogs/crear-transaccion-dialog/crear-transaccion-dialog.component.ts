@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Cuenta } from '../../../../../../../core/models/cuenta.model';
 import { Bolsillo } from '../../../../../../../core/models/bolsillo.model';
 import { TipoMovimiento } from '../../../../../../../core/models/movement-type.model';
@@ -23,6 +24,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TransaccionService } from '../../../services/transaccion.service';
 
 @Component({
   standalone: true,
@@ -41,14 +43,19 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatIconModule,
     MatCardModule,
     MatTooltipModule,
+    MatSnackBarModule,
   ],
 })
 export class CrearTransaccionDialogComponent {
   form: FormGroup;
+  isLoading = false;
+  mensajeError: string | null = null;
 
   constructor(
     private dialogRef: MatDialogRef<CrearTransaccionDialogComponent>,
     private fb: FormBuilder,
+    private transaccionService: TransaccionService,
+    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA)
     public data: {
       cuentas: Cuenta[];
@@ -67,6 +74,9 @@ export class CrearTransaccionDialogComponent {
       monto: [null, [Validators.required, Validators.min(1)]],
       descripcion: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
     });
+    
+    // Configurar clases para el diálogo
+    this.dialogRef.addPanelClass(['custom-dialog', 'custom-dark-dialog']);
   }
 
   get tipoMovimientoSeleccionado(): TipoMovimiento | undefined {
@@ -82,6 +92,8 @@ export class CrearTransaccionDialogComponent {
     if (id) {
       this.form.get('id_tipo_transaccion')?.setValue(id);
       this.form.get('id_tipo_transaccion')?.markAsDirty();
+      // Limpiar errores previos
+      this.mensajeError = null;
     }
   }
 
@@ -96,6 +108,9 @@ export class CrearTransaccionDialogComponent {
       this.form.get('id_cuenta_destino')?.setValue(null);
       this.form.get('id_bolsillo_origen')?.setValue(null);
       this.form.get('id_bolsillo_destino')?.setValue(null);
+      
+      // Limpiar errores previos
+      this.mensajeError = null;
     }
   }
 
@@ -155,6 +170,112 @@ export class CrearTransaccionDialogComponent {
     return false;
   }
 
+  // Ejecutar la transacción según el tipo de movimiento
+  ejecutarTransaccion(data: any): void {
+    this.isLoading = true;
+    this.mensajeError = null;
+    
+    const tipo = this.tipoMovimientoSeleccionado;
+    if (!tipo) {
+      this.isLoading = false;
+      this.mensajeError = "Tipo de movimiento no seleccionado";
+      return;
+    }
+    
+    const origen = tipo.codigo_origen.toUpperCase();
+    const destino = tipo.codigo_destino.toUpperCase();
+    
+    // Preparar los datos en el formato esperado por la API
+    const datosTransaccion = this.prepararDatosTransaccion(data, origen, destino);
+    
+    // Ejecutar la transacción correspondiente según el tipo de movimiento
+    let transaccion$;
+    
+    if (origen === 'ACCOUNT' && destino === 'ACCOUNT') {
+      transaccion$ = this.transaccionService.transferenciaCuentaCuenta(datosTransaccion);
+    } else if (origen === 'ACCOUNT' && destino === 'WALLET') {
+      transaccion$ = this.transaccionService.transferenciaCuentaBolsillo(datosTransaccion);
+    } else if (origen === 'WALLET' && destino === 'ACCOUNT') {
+      transaccion$ = this.transaccionService.transferenciaBolsilloCuenta(datosTransaccion);
+    } else if (origen === 'BANK' && destino === 'ACCOUNT') {
+      transaccion$ = this.transaccionService.consignacionBancoCuenta(datosTransaccion);
+    } else if (origen === 'BANK' && destino === 'WALLET') {
+      transaccion$ = this.transaccionService.consignacionBancoBolsillo(datosTransaccion);
+    } else if (origen === 'ACCOUNT' && destino === 'BANK') {
+      transaccion$ = this.transaccionService.retiroCuentaBanco(datosTransaccion);
+    } else if (origen === 'WALLET' && destino === 'BANK') {
+      transaccion$ = this.transaccionService.retiroBolsilloBanco(datosTransaccion);
+    } else if (origen === 'WALLET' && destino === 'WALLET') {
+      transaccion$ = this.transaccionService.transferenciaBolsilloBolsillo(datosTransaccion);
+    } else {
+      this.isLoading = false;
+      this.mensajeError = "Tipo de movimiento no soportado";
+      return;
+    }
+    
+    // Suscribirse a la respuesta
+    transaccion$.subscribe({
+      next: (resultado) => {
+        this.isLoading = false;
+        this.mostrarNotificacion('Transacción realizada con éxito', 'success');
+        this.dialogRef.close(resultado);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        
+        // Verificar si es un error de saldo insuficiente u otro error del servidor
+        if (error.error && error.error.detail) {
+          this.mensajeError = error.error.detail;
+        } else if (error.message) {
+          this.mensajeError = error.message;
+        } else {
+          this.mensajeError = 'Ha ocurrido un error al procesar la transacción';
+        }
+        
+        console.error('Error en transacción:', error);
+      }
+    });
+  }
+  
+  // Preparar los datos según el formato esperado por la API
+  prepararDatosTransaccion(formData: any, origen: string, destino: string): any {
+    const resultado: any = {
+      tipoMovimientoId: formData.id_tipo_movimiento,
+      tipoTransaccionId: formData.id_tipo_transaccion,
+      monto: formData.monto,
+      descripcion: formData.descripcion
+    };
+    
+    // Añadir IDs de cuentas y bolsillos según corresponda
+    if (origen === 'ACCOUNT') {
+      resultado.cuentaOrigenId = formData.id_cuenta_origen;
+    }
+    
+    if (destino === 'ACCOUNT') {
+      resultado.cuentaDestinoId = formData.id_cuenta_destino;
+    }
+    
+    if (origen === 'WALLET') {
+      resultado.bolsilloOrigenId = formData.id_bolsillo_origen;
+    }
+    
+    if (destino === 'WALLET') {
+      resultado.bolsilloDestinoId = formData.id_bolsillo_destino;
+    }
+    
+    return resultado;
+  }
+
+  // Mostrar notificación con SnackBar
+  mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' = 'success'): void {
+    this.snackBar.open(mensaje, 'Cerrar', {
+      duration: 5000,
+      panelClass: tipo === 'success' ? ['snackbar-success'] : ['snackbar-error'],
+      horizontalPosition: 'end',
+      verticalPosition: 'top'
+    });
+  }
+
   // Guardar la transacción
   guardar(): void {
     if (this.form.invalid) {
@@ -196,12 +317,8 @@ export class CrearTransaccionDialogComponent {
       return;
     }
 
-    const data = {
-      ...this.form.value,
-      id_tipo_transaccion: this.form.value.id_tipo_transaccion,
-    };
-
-    this.dialogRef.close(data);
+    // Ejecutar la transacción con los datos del formulario
+    this.ejecutarTransaccion(this.form.value);
   }
 
   // Cancelar y cerrar el diálogo

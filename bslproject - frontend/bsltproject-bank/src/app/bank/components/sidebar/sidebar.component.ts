@@ -63,7 +63,7 @@ export class SidebarComponent implements OnInit {
     if (['usuarios', 'roles', 'estados', 'permisos'].includes(this.activePage)) {
       this.expandedMenus['seguridad'] = true;
     } else if (['cuentas', 'transacciones', 'bolsillos', 'tipo-transaccion', 
-                'tipo-movimiento', 'tarjetas', 'prestamos'].includes(this.activePage)) {
+                'tipo-movimiento'].includes(this.activePage)) {
       this.expandedMenus['finanzas'] = true;
     }
   }

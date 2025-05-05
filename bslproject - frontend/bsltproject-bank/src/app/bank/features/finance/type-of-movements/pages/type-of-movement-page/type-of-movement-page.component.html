@@ -1,42 +1,89 @@
-<section class="contenedor">
-    <div class="header">
-        <h2><mat-icon color="warn">shuffle</mat-icon> Tipos de Movimiento</h2>
-        <button mat-flat-button color="primary" (click)="abrirCrear()">
-            <mat-icon>add</mat-icon> Nuevo tipo
-        </button>
+<div class="movement-types-container">
+  <!-- Encabezado con título y botón de acción -->
+  <div class="header-actions">
+    <h2>
+      <mat-icon>sync_alt</mat-icon>
+      Tipos de Movimiento
+    </h2>
+    <button mat-raised-button (click)="abrirCrear()">
+      <mat-icon>add</mat-icon> Nuevo tipo
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <div class="search-box">
+      <mat-icon>search</mat-icon>
+      <input type="text" placeholder="Buscar tipo de movimiento..." [(ngModel)]="searchTerm" (keyup)="filtrarTipos()">
     </div>
+  </div>
 
-    <table mat-table [dataSource]="tiposMovimiento" class="mat-elevation-z8">
+  <!-- Contenedor de la tabla -->
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" class="full-width-table" matSort>
+      
+      <!-- Columna Código Origen -->
+      <ng-container matColumnDef="codigo_origen">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Código Origen</th>
+        <td mat-cell *matCellDef="let tipo">
+          <div class="codigo-badge">{{ tipo.codigo_origen }}</div>
+        </td>
+      </ng-container>
 
-        <ng-container matColumnDef="codigo_origen">
-            <th mat-header-cell *matHeaderCellDef> Código Origen </th>
-            <td mat-cell *matCellDef="let tipo"> {{ tipo.codigo_origen }} </td>
-        </ng-container>
+      <!-- Columna Código Destino -->
+      <ng-container matColumnDef="codigo_destino">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Código Destino</th>
+        <td mat-cell *matCellDef="let tipo">
+          <div class="codigo-badge">{{ tipo.codigo_destino }}</div>
+        </td>
+      </ng-container>
 
-        <ng-container matColumnDef="codigo_destino">
-            <th mat-header-cell *matHeaderCellDef> Código Destino </th>
-            <td mat-cell *matCellDef="let tipo"> {{ tipo.codigo_destino }} </td>
-        </ng-container>
+      <!-- Columna Descripción -->
+      <ng-container matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Descripción</th>
+        <td mat-cell *matCellDef="let tipo">{{ tipo.descripcion }}</td>
+      </ng-container>
 
-        <ng-container matColumnDef="descripcion">
-            <th mat-header-cell *matHeaderCellDef> Descripción </th>
-            <td mat-cell *matCellDef="let tipo"> {{ tipo.descripcion }} </td>
-        </ng-container>
+      <!-- Columna Tipo de transacción -->
+      <ng-container matColumnDef="tipo_transaccion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+        <td mat-cell *matCellDef="let tipo">
+          <div class="transaccion-badge" 
+               [ngClass]="{'ingreso': esIngreso(tipo), 
+                         'gasto': esGasto(tipo),
+                         'transferencia': esTransferencia(tipo)}">
+            {{ getTipoTransaccion(tipo) }}
+          </div>
+        </td>
+      </ng-container>
 
-        <ng-container matColumnDef="acciones">
-            <th mat-header-cell *matHeaderCellDef> Acciones </th>
-            <td mat-cell *matCellDef="let tipo">
-                <button mat-icon-button color="primary" (click)="abrirEditar(tipo)">
-                    <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button color="warn" (click)="eliminarTipo(tipo.id || tipo._id)">
+      <!-- Columna Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let tipo">
+          <div class="action-buttons">
+            <button mat-icon-button matTooltip="Editar" (click)="abrirEditar(tipo)" class="edit-button">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Eliminar" (click)="eliminarTipo(tipo.id || tipo._id)" class="delete-button">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
 
-                    <mat-icon>delete</mat-icon>
-                </button>
-            </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <!-- Filas de la tabla -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-</section>
+    
+    <!-- Mensaje cuando no hay datos -->
+    <div class="no-data-message" *ngIf="dataSource.data.length === 0">
+      <mat-icon>sentiment_dissatisfied</mat-icon>
+      <p>No se encontraron tipos de movimiento</p>
+    </div>
+    
+    <!-- Paginador -->
+    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

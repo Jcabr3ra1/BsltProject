@@ -1,21 +1,52 @@
-<h2 mat-dialog-title>Editar Estado</h2>
-
-<form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-estado">
-  <mat-form-field appearance="outline" class="campo">
-    <mat-label>Nombre del Estado</mat-label>
-    <input matInput formControlName="nombre" />
-    <mat-error *ngIf="form.controls['nombre'].hasError('required')">
-      El nombre es obligatorio
-    </mat-error>
-    <mat-error *ngIf="form.controls['nombre'].hasError('minlength')">
-      Debe tener al menos 3 caracteres
-    </mat-error>
-  </mat-form-field>
-
-  <div class="acciones">
-    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-      Actualizar
-    </button>
-    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">edit</mat-icon>
+    <h2 mat-dialog-title>Editar Estado</h2>
   </div>
-</form>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-estado">
+    <div class="form-field">
+      <label for="nombre">Nombre del Estado<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Ej: Activo, Inactivo">
+        <mat-icon>label</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')">
+        El nombre es obligatorio
+      </div>
+      <div class="error-message" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('minlength')">
+        Debe tener al menos 3 caracteres
+      </div>
+    </div>
+
+    <!-- Información adicional sobre el estado que se está editando -->
+    <div class="estado-info-container" *ngIf="estadoOriginal">
+      <div class="estado-info-header">
+        <mat-icon>info</mat-icon>
+        <h3>Información del estado</h3>
+      </div>
+      <div class="estado-info-content">
+        <p><strong>ID:</strong> {{ getFormattedId() }}</p>
+        <p><strong>Nombre actual:</strong> {{ estadoOriginal }}</p>
+      </div>
+    </div>
+
+    <!-- Advertencia sobre los cambios -->
+    <div class="info-container warning">
+      <mat-icon>warning_amber</mat-icon>
+      <p>Los cambios afectarán a todos los usuarios que tengan asignado este estado.</p>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid || isLoading">
+        <div class="spinner" *ngIf="isLoading"></div>
+        <mat-icon *ngIf="!isLoading">save</mat-icon>
+        Actualizar
+      </button>      
+    </div>
+  </form>
+</div>

@@ -1,43 +1,110 @@
-<h2 mat-dialog-title>Crear nueva cuenta</h2>
-
-<mat-dialog-content>
-    <form [formGroup]="form" class="dialog-form">
-        <mat-form-field class="full-width">
-            <mat-label>Tipo de cuenta</mat-label>
-            <mat-select formControlName="tipo">
-                <mat-option value="CUENTA_AHORRO">Cuenta de ahorro</mat-option>
-                <mat-option value="CUENTA_CORRIENTE">Cuenta corriente</mat-option>
-                <mat-option value="CUENTA_NOMINA">Cuenta nómina</mat-option>
-                <mat-option value="OTRO">Otro</mat-option>
-            </mat-select>
-        </mat-form-field>
-
-
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Número de cuenta</mat-label>
-            <input matInput formControlName="numero_cuenta" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Saldo inicial</mat-label>
-            <input matInput type="number" formControlName="saldo" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Meta de ahorro</mat-label>
-            <input matInput type="number" formControlName="meta_ahorro" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Color</mat-label>
-            <input matInput type="color" formControlName="color" />
-        </mat-form-field>
+<div class="dialog-content">
+    <div class="dialog-header">
+      <mat-icon class="header-icon">account_balance</mat-icon>
+      <h2 mat-dialog-title>Crear nueva cuenta</h2>
+    </div>
+  
+    <form [formGroup]="form" class="formulario-cuenta">
+      <div class="form-field">
+        <label for="tipo">Tipo de cuenta<span class="required">*</span></label>
+        <div class="select-with-icon">
+          <select id="tipo" formControlName="tipo">
+            <option value="CUENTA_AHORRO">Cuenta de ahorro</option>
+            <option value="CUENTA_CORRIENTE">Cuenta corriente</option>
+            <option value="CUENTA_NOMINA">Cuenta nómina</option>
+            <option value="OTRO">Otro</option>
+          </select>
+          <mat-icon>credit_card</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('tipo')?.touched && form.get('tipo')?.hasError('required')">
+          El tipo de cuenta es obligatorio
+        </div>
+      </div>
+  
+      <div class="form-field">
+        <label for="numero_cuenta">Número de cuenta<span class="required">*</span></label>
+        <div class="input-with-icon">
+          <input id="numero_cuenta" type="text" formControlName="numero_cuenta" placeholder="Ej. 1234-5678-9012-3456">
+          <mat-icon>numbers</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('numero_cuenta')?.touched && form.get('numero_cuenta')?.hasError('required')">
+          El número de cuenta es obligatorio
+        </div>
+        <div class="error-message" *ngIf="form.get('numero_cuenta')?.touched && form.get('numero_cuenta')?.hasError('pattern')">
+          El número de cuenta solo debe contener números y guiones
+        </div>
+      </div>
+  
+      <div class="form-field">
+        <label for="saldo">Saldo inicial<span class="required">*</span></label>
+        <div class="input-with-icon">
+          <input id="saldo" type="number" formControlName="saldo" placeholder="0.00">
+          <mat-icon>attach_money</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('saldo')?.touched && form.get('saldo')?.hasError('required')">
+          El saldo inicial es obligatorio
+        </div>
+        <div class="error-message" *ngIf="form.get('saldo')?.touched && form.get('saldo')?.hasError('min')">
+          El saldo no puede ser negativo
+        </div>
+      </div>
+  
+      <div class="form-field">
+        <label for="meta_ahorro">Meta de ahorro<span class="required">*</span></label>
+        <div class="input-with-icon">
+          <input id="meta_ahorro" type="number" formControlName="meta_ahorro" placeholder="0.00">
+          <mat-icon>flag</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('meta_ahorro')?.touched && form.get('meta_ahorro')?.hasError('required')">
+          La meta de ahorro es obligatoria
+        </div>
+        <div class="error-message" *ngIf="form.get('meta_ahorro')?.touched && form.get('meta_ahorro')?.hasError('min')">
+          La meta no puede ser negativa
+        </div>
+      </div>
+  
+      <!-- Color con vista previa -->
+      <div class="form-field">
+        <label for="color">Color<span class="required">*</span></label>
+        <div class="color-field-container">
+          <div class="input-with-icon color-input">
+            <input id="color-display" type="text" [value]="form.get('color')?.value" readonly>
+            <mat-icon>palette</mat-icon>
+          </div>
+          
+          <div class="color-preview" [style.background-color]="form.get('color')?.value">
+            <input type="color" id="color" formControlName="color" />
+          </div>
+        </div>
+      </div>
+  
+      <!-- Colores predefinidos -->
+      <div class="predefined-colors">
+        <div class="colors-label">Colores sugeridos:</div>
+        <div class="colors-grid">
+          <div *ngFor="let color of coloresPredefinidos" 
+               class="color-chip" 
+               [style.background-color]="color"
+               (click)="seleccionarColorPredefinido(color)">
+          </div>
+        </div>
+      </div>
+  
+      <div class="info-container">
+        <mat-icon>info</mat-icon>
+        <p>Las cuentas te permiten gestionar tu dinero y establecer metas de ahorro. Puedes crear diferentes tipos de cuentas según tus necesidades.</p>
+      </div>
+  
+      <div class="dialog-actions">
+        <button type="button" class="btn-cancel" (click)="cancelar()">
+          <mat-icon>close</mat-icon>
+          Cancelar
+        </button>
+        <button type="submit" class="btn-save" [disabled]="form.invalid" (click)="guardar()">
+          <div class="spinner" *ngIf="isLoading"></div>
+          <mat-icon *ngIf="!isLoading">save</mat-icon>
+          Guardar
+        </button>      
+      </div>
     </form>
-</mat-dialog-content>
-
-<mat-dialog-actions align="end">
-    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
-    <button mat-raised-button color="primary" type="button" (click)="guardar()" [disabled]="form.invalid">
-        Guardar
-    </button>
-</mat-dialog-actions>
+  </div>

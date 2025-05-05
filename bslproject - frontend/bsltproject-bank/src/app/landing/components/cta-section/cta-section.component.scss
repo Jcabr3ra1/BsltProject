@@ -1,32 +1,122 @@
+// Variables de color según tu especificación
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+$accent-color: #ff8a8a;
+$button-color: #a6ff5c;
+
+@use "sass:color";
+
 .cta-section {
-    background: linear-gradient(to right, #1e88e5, #42a5f5);
-    color: #fff;
-    text-align: center;
-    padding: 4rem 2rem;
+  padding: 80px 0;
+  text-align: center;
+  background: linear-gradient(135deg, $primary-purple, $dark-purple);
+  color: $light-text;
+  position: relative;
+  z-index: 2;
   
-    .cta-content {
-      max-width: 700px;
-      margin: 0 auto;
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.05;
+    z-index: 1;
+    pointer-events: none;
+  }
   
-      h2 {
-        font-size: 2.25rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-      }
+  &::before {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    top: -200px;
+    right: 10%;
+  }
   
-      p {
-        font-size: 1.125rem;
-        margin-bottom: 2rem;
-      }
+  &::after {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    bottom: -250px;
+    left: 5%;
+  }
   
-      .cta-button {
-        font-size: 1rem;
-        padding: 0.75rem 2rem;
-        background-color: #fff;
-        color: #1976d2;
-        font-weight: 600;
-        border-radius: 8px;
-      }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 3;
+  }
+  
+  h2 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    
+    @media (max-width: 768px) {
+      font-size: 28px;
     }
   }
   
+  p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    opacity: 0.9;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    
+    @media (max-width: 768px) {
+      font-size: 16px;
+    }
+  }
+  
+  .cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    
+    @media (max-width: 576px) {
+      flex-direction: column;
+      align-items: center;
+      max-width: 250px;
+      margin: 0 auto;
+    }
+  }
+  
+  .cta-btn {
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    
+    &.primary {
+      background-color: $button-color;
+      color: $darker-purple;
+      
+      &:hover {
+        background-color: color.adjust($button-color, $lightness: -5%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+    }
+    
+    &.secondary {
+      background-color: transparent;
+      color: $light-text;
+      border: 2px solid $light-text;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-3px);
+      }
+    }
+  }
+}

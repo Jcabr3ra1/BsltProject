@@ -93,10 +93,13 @@ export class RolePageComponent implements OnInit {
   /**
    * Alterna la visibilidad de la lista de permisos para un rol
    * @param roleId El ID del rol
+   * @param event El evento del clic
    */
-  togglePermisosList(roleId: string): void {
+  togglePermisosList(roleId: string, event?: Event): void {
     // Detener la propagación del evento para evitar acciones no deseadas
-    event?.stopPropagation();
+    if (event) {
+      event.stopPropagation();
+    }
     
     // Comprobar si el rol ya está expandido
     const index = this.expandedRoles.indexOf(roleId);
@@ -184,13 +187,15 @@ export class RolePageComponent implements OnInit {
     });
   }
   
-  verDetalles(rol: Rol): void {
-    this.abrirVerPermisos(rol);
+  verDetalles(rol: Rol, event?: Event): void {
+    this.abrirVerPermisos(rol, event);
   }
   
-  editarRol(rol: Rol): void {
+  editarRol(rol: Rol, event?: Event): void {
     // Detener propagación del evento
-    event?.stopPropagation();
+    if (event) {
+      event.stopPropagation();
+    }
     
     const dialogRef = this.dialog.open(CrearRolDialogComponent, {
       width: '450px',
@@ -205,9 +210,11 @@ export class RolePageComponent implements OnInit {
     });
   }
   
-  eliminarRol(id: string): void {
+  eliminarRol(id: string, event?: Event): void {
     // Detener propagación del evento
-    event?.stopPropagation();
+    if (event) {
+      event.stopPropagation();
+    }
     
     if (confirm('¿Estás seguro de que deseas eliminar este rol?')) {
       this.cargando = true;
@@ -226,9 +233,11 @@ export class RolePageComponent implements OnInit {
     }
   }
   
-  abrirVerPermisos(rol: Rol): void {
+  abrirVerPermisos(rol: Rol, event?: Event): void {
     // Detener propagación del evento
-    event?.stopPropagation();
+    if (event) {
+      event.stopPropagation();
+    }
     
     this.dialog.open(VerPermisosRolDialogComponent, {
       width: '500px',
@@ -237,9 +246,11 @@ export class RolePageComponent implements OnInit {
     });
   }
   
-  gestionarPermisos(rol: Rol): void {
+  gestionarPermisos(rol: Rol, event?: Event): void {
     // Detener propagación del evento
-    event?.stopPropagation();
+    if (event) {
+      event.stopPropagation();
+    }
     
     const dialogRef = this.dialog.open(AsignarPermisoRolDialogComponent, {
       width: '600px',

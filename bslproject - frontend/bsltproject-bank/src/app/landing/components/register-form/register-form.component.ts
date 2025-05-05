@@ -6,11 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
-
 
 @Component({
   selector: 'app-register-form',
@@ -23,7 +21,6 @@ import { Router } from '@angular/router';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatCardModule,
     MatProgressSpinnerModule
   ],
   templateUrl: './register-form.component.html',
@@ -35,6 +32,13 @@ export class RegisterFormComponent {
   hideConfirmPassword = true;
   isLoading = false;
   errorMessage: string | null = null;
+  
+  // Beneficios mostrados en el formulario
+  benefits = [
+    'Sin comisiones ocultas',
+    'Atención 24/7',
+    'Transferencias gratuitas'
+  ];
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.registerForm = this.fb.group(
@@ -42,7 +46,11 @@ export class RegisterFormComponent {
         firstName: ['', Validators.required],
         lastName: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(8)]],
+        password: ['', [
+          Validators.required, 
+          Validators.minLength(8),
+          Validators.pattern(/^(?=.*[a-zA-Z])(?=.*[0-9])/)
+        ]],
         confirmPassword: ['', Validators.required]
       },
       {
@@ -62,6 +70,7 @@ export class RegisterFormComponent {
     if (control?.hasError('required')) return 'Este campo es obligatorio';
     if (control?.hasError('email')) return 'Correo inválido';
     if (control?.hasError('minlength')) return 'Mínimo 8 caracteres';
+    if (control?.hasError('pattern')) return 'Debe incluir letras y números';
     return '';
   }
 
@@ -91,7 +100,7 @@ export class RegisterFormComponent {
           this.isLoading = false;
           this.registerForm.reset();
   
-          // ✅ Redirige automáticamente al login después del registro
+          // Redirige automáticamente al login después del registro
           this.router.navigate(['/auth/login']);
         },
         error: (err) => {
@@ -102,5 +111,5 @@ export class RegisterFormComponent {
     } else {
       this.registerForm.markAllAsTouched();
     }
-  }  
+  }
 }

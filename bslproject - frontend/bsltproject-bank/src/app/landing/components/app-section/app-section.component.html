@@ -1,0 +1,101 @@
+<section class="app-section">
+    <div class="container">
+      <div class="app-content">
+        <div class="app-text">
+          <h2>Banca en tu bolsillo</h2>
+          <p>Descarga nuestra aplicación y gestiona tus finanzas desde cualquier lugar. Disfruta de todas las funcionalidades de Banco Púrpura en la palma de tu mano.</p>
+          
+          <ul class="app-features-list">
+            <li *ngFor="let feature of appFeatures">
+              <div class="check-icon">✓</div>
+              <span>{{ feature }}</span>
+            </li>
+          </ul>
+          
+          <div class="app-buttons">
+            <a href="#" class="app-button">
+              <div class="app-button-icon">
+                <i>📱</i>
+              </div>
+              <div class="app-button-text">
+                <span>Descarga en</span>
+                <span>App Store</span>
+              </div>
+            </a>
+            <a href="#" class="app-button">
+              <div class="app-button-icon">
+                <i>🤖</i>
+              </div>
+              <div class="app-button-text">
+                <span>Disponible en</span>
+                <span>Google Play</span>
+              </div>
+            </a>
+          </div>
+        </div>
+        
+        <div class="app-image">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="phone-notch"></div>
+              <div class="app-screen-content">
+                <div class="app-screen-header">
+                  <div>Hola, Usuario</div>
+                  <div class="profile-icon">👤</div>
+                </div>
+                
+                <div class="app-screen-balance">
+                  <div class="balance-label">Saldo disponible</div>
+                  <div class="balance-amount">$12,345.67</div>
+                </div>
+                
+                <div class="app-screen-actions">
+                  <div class="app-action">
+                    <div class="app-action-icon"></div>
+                    <div class="app-action-label">Enviar</div>
+                  </div>
+                  <div class="app-action">
+                    <div class="app-action-icon"></div>
+                    <div class="app-action-label">Recibir</div>
+                  </div>
+                  <div class="app-action">
+                    <div class="app-action-icon"></div>
+                    <div class="app-action-label">Pagar</div>
+                  </div>
+                </div>
+                
+                <div class="app-screen-transactions">
+                  <div class="transactions-header">
+                    <div>Transacciones recientes</div>
+                    <div>Ver todo</div>
+                  </div>
+                  <div class="transaction-item">
+                    <div>Supermercado</div>
+                    <div>-$45.00</div>
+                  </div>
+                  <div class="transaction-item">
+                    <div>Transferencia</div>
+                    <div>+$250.00</div>
+                  </div>
+                  <div class="transaction-item">
+                    <div>Restaurante</div>
+                    <div>-$28.50</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="floating-element floating-1">
+            <div class="floating-icon">🛡️</div>
+            <div>Seguridad garantizada</div>
+          </div>
+          
+          <div class="floating-element floating-2">
+            <div class="floating-icon">⚡</div>
+            <div>Rápido y sencillo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

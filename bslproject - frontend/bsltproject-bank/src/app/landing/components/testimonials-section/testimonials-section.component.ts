@@ -1,35 +1,39 @@
 import { Component } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
+
+interface Testimonial {
+  content: string;
+  name: string;
+  role: string;
+  avatarColor: string;
+}
 
 @Component({
   selector: 'app-testimonials-section',
   standalone: true,
-  imports: [NgFor, NgIf, MatIconModule],
+  imports: [CommonModule],
   templateUrl: './testimonials-section.component.html',
   styleUrls: ['./testimonials-section.component.scss']
 })
 export class TestimonialsSectionComponent {
-  Math = Math; // ✅ para que el template lo pueda usar
-
-  testimonials = [
+  testimonials: Testimonial[] = [
     {
-      name: 'María González',
-      role: 'Emprendedora',
-      rating: 5,
-      message: 'BSLBank ha transformado completamente la manera en que manejo mis finanzas...'
+      content: "Cambiarme a Banco Púrpura fue la mejor decisión financiera que he tomado. Sus tarifas transparentes y la atención personalizada han transformado mi experiencia bancaria.",
+      name: "Carlos Ramírez",
+      role: "Emprendedor",
+      avatarColor: "#f5a46c"
     },
     {
-      name: 'Carlos Rodríguez',
-      role: 'Empresario',
-      rating: 5,
-      message: 'Como dueño de un pequeño negocio, BSLBank me ha permitido gestionar...'
+      content: "La aplicación móvil es increíblemente intuitiva y me permite gestionar mis finanzas desde cualquier lugar. ¡Nunca había sido tan fácil controlar mis gastos!",
+      name: "Sofía Martínez",
+      role: "Diseñadora Gráfica",
+      avatarColor: "#6cf5a4"
     },
     {
-      name: 'Ana Martínez',
-      role: 'Profesional',
-      rating: 4.5,
-      message: 'La seguridad y rapidez de las transacciones es impresionante...'
+      content: "He probado varios bancos, pero ninguno ofrece el nivel de servicio al cliente que Banco Púrpura. Son rápidos en resolver cualquier problema y siempre están disponibles.",
+      name: "Alejandro Torres",
+      role: "Ingeniero de Software",
+      avatarColor: "#a46cf5"
     }
   ];
 }

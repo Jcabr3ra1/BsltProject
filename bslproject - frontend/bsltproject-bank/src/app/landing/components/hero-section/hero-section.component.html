@@ -1,29 +1,47 @@
-<section class="hero-section">
-    <header class="landing-header">
-      <div class="logo">BSL<span>Bank</span></div>
-      <a routerLink="/auth/login" class="login-button">Iniciar sesión</a>
-    </header>
-  
-    <div class="hero-background" [ngStyle]="{ 'background-image': 'url(' + currentImage + ')' }">
-      <div class="overlay"></div>
-    </div>
-  
+<section class="hero">
+  <div class="container">
     <div class="hero-content">
-      <h1 class="hero-title">Banca digital para el futuro</h1>
+      <h1 class="hero-title">Banca digital que simplifica tu vida financiera</h1>
       <p class="hero-subtitle">
-        Gestiona tus finanzas con tecnología de vanguardia, seguridad absoluta y experiencia personalizada
+        Con Banco Púrpura, disfruta de una experiencia bancaria moderna, segura y sin complicaciones. Gestiona tu dinero desde cualquier lugar.
       </p>
-      <div class="hero-form">
-        <p class="form-title">¿Listo para revolucionar tus finanzas?</p>
-        <div class="form-container">
-          <button mat-flat-button class="start-button" routerLink="/auth/register">
-            CREAR CUENTA
-          </button>
-          <button mat-stroked-button class="login-alt" routerLink="/auth/login">
-            YA TENGO UNA CUENTA
-          </button>
+      
+      <div class="hero-buttons">
+        <button class="hero-button primary-btn" routerLink="/auth/register">Abrir Cuenta</button>
+        <button class="hero-button secondary-btn">Conocer Más</button>
+      </div>
+      
+      <div class="social-proof">
+        <div class="users">
+          <div class="user-avatar"></div>
+          <div class="user-avatar"></div>
+          <div class="user-avatar"></div>
+          <div class="user-avatar"></div>
+        </div>
+        <div class="stars">★★★★★</div>
+        <div class="rating-text">+2,500 clientes satisfechos</div>
+      </div>
+    </div>
+    
+    <div class="hero-image">
+      <div class="card-mockup">
+        <div class="card-chip"></div>
+        <div class="card-logo">Banco Púrpura</div>
+        <div class="card-number">**** **** **** 5678</div>
+        <div class="card-name">NOMBRE APELLIDO</div>
+        <div class="card-date">05/30</div>
+      </div>
+      <div class="hero-badge">
+        <div class="badge-icon">✨</div>
+        <div class="badge-text">
+          <div class="badge-title">¡Sin comisiones!</div>
+          <div>Transferencias gratis</div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
   
+  <!-- Decorative elements -->
+  <div class="decoration decoration-1"></div>
+  <div class="decoration decoration-2"></div>
+</section>

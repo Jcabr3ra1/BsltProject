@@ -30,6 +30,12 @@ export class LoginFormComponent {
   loading = false;
   hidePassword = true;
   errorMessage: string | null = null;
+  
+  // App badges information
+  appBadges = [
+    { icon: 'android', title: 'Android App' },
+    { icon: 'apple', title: 'iOS App' }
+  ];
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.loginForm = this.fb.group({
@@ -62,5 +68,17 @@ export class LoginFormComponent {
     } else {
       this.loginForm.markAllAsTouched();
     }
+  }
+  
+  // Método para manejar la navegación a recuperación de contraseña
+  navigateToPasswordReset(): void {
+    // Implementación para manejar la navegación a la página de recuperación
+    console.log('Navigate to password reset');
+  }
+  
+  // Método para manejar la descarga de la app
+  downloadApp(platform: string): void {
+    // Implementación para manejar la descarga de la app
+    console.log(`Download ${platform} app`);
   }
 }

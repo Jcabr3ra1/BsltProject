@@ -1,32 +1,70 @@
-<h2 mat-dialog-title>Editar Permiso</h2>
-
-<form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-permiso">
-  <mat-form-field appearance="outline" class="campo">
-    <mat-label>Nombre del Permiso</mat-label>
-    <input matInput formControlName="nombre" />
-    <mat-error *ngIf="form.controls['nombre'].hasError('required')">
-      El nombre es obligatorio
-    </mat-error>
-    <mat-error *ngIf="form.controls['nombre'].hasError('minlength')">
-      Mínimo 3 caracteres
-    </mat-error>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline" class="campo">
-    <mat-label>Descripción</mat-label>
-    <textarea matInput formControlName="descripcion"></textarea>
-    <mat-error *ngIf="form.controls['descripcion'].hasError('required')">
-      La descripción es obligatoria
-    </mat-error>
-    <mat-error *ngIf="form.controls['descripcion'].hasError('minlength')">
-      Mínimo 5 caracteres
-    </mat-error>
-  </mat-form-field>
-
-  <div class="acciones">
-    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-      Actualizar
-    </button>
-    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">edit</mat-icon>
+    <h2 mat-dialog-title>Editar Permiso</h2>
   </div>
-</form>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-permiso">
+    <!-- Campo de nombre -->
+    <div class="form-field">
+      <label for="nombre">Nombre del Permiso<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Ej: USER_CREATE, USER_READ">
+        <mat-icon>vpn_key</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')">
+        El nombre es obligatorio
+      </div>
+      <div class="error-message" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('minlength')">
+        Mínimo 3 caracteres
+      </div>
+    </div>
+
+    <!-- Campo de descripción -->
+    <div class="form-field">
+      <label for="descripcion">Descripción<span class="required">*</span></label>
+      <div class="textarea-container">
+        <textarea id="descripcion" formControlName="descripcion" placeholder="Descripción detallada del permiso" rows="3"></textarea>
+        <mat-icon>description</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.hasError('required')">
+        La descripción es obligatoria
+      </div>
+      <div class="error-message" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.hasError('minlength')">
+        Mínimo 5 caracteres
+      </div>
+    </div>
+
+    <!-- Información adicional sobre el permiso -->
+    <div class="info-container">
+      <div class="info-header">
+        <mat-icon>info</mat-icon>
+        <h3>Información del permiso</h3>
+      </div>
+      <div class="info-content">
+        <p><strong>ID:</strong> {{ getFormattedId() }}</p>
+        <p><strong>Fecha de creación:</strong> {{ getFechaCreacion() }}</p>
+        <p><strong>Última modificación:</strong> {{ getUltimaModificacion() }}</p>
+      </div>
+    </div>
+
+    <!-- Advertencia sobre los cambios -->
+    <div class="info-container warning">
+      <mat-icon>warning_amber</mat-icon>
+      <p>Los cambios afectarán a todos los roles que tengan este permiso asignado.</p>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid || isLoading">
+        <div class="spinner" *ngIf="isLoading"></div>
+        <mat-icon *ngIf="!isLoading">save</mat-icon>
+        Actualizar
+      </button>      
+    </div>
+  </form>
+</div>

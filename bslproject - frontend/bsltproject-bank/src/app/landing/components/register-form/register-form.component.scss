@@ -1,73 +1,262 @@
+// Variables de color según tu especificación
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+$accent-color: #ff8a8a;
+$button-color: #a6ff5c;
+
 .register-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 2rem;
-    background: linear-gradient(to right, #1e88e5, #42a5f5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, $dark-purple, $darker-purple);
   
-    .register-card {
+  .register-card {
+    width: 100%;
+    max-width: 550px;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    background-color: #fff;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 150px;
+      height: 150px;
+      background: linear-gradient(135deg, rgba($primary-purple, 0.1), rgba($light-purple, 0.05));
+      border-radius: 0 0 0 100%;
+      z-index: 0;
+    }
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, rgba($light-purple, 0.05), rgba($primary-purple, 0.1));
+      border-radius: 0 100% 0 0;
+      z-index: 0;
+    }
+  }
+  
+  .register-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background-color: $primary-purple;
+        border-radius: 8px;
+        margin-right: 10px;
+      }
+      
+      .logo-text {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: $dark-purple;
+      }
+    }
+    
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: $dark-purple;
+      margin-bottom: 0.5rem;
+    }
+    
+    p {
+      font-size: 1rem;
+      color: #666;
+    }
+  }
+  
+  form {
+    position: relative;
+    z-index: 1;
+    
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+      
+      @media (max-width: 576px) {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+    
+    .form-field {
+      flex: 1;
+    }
+    
+    .full-width {
       width: 100%;
-      max-width: 500px;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-      background-color: #fff;
+      margin-bottom: 1.25rem;
+    }
+    
+    ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+      color: rgba($primary-purple, 0.3);
+    }
+    
+    ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline {
+      color: $primary-purple;
+    }
+    
+    ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+      color: $primary-purple;
+    }
+    
+    ::ng-deep .mat-form-field-label {
+      color: rgba($dark-purple, 0.6);
+    }
+    
+    ::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+      color: $primary-purple;
+    }
+    
+    ::ng-deep .mat-form-field-appearance-outline .mat-form-field-label {
+      top: 1.7em;
+    }
+    
+    ::ng-deep .mat-icon {
+      color: $primary-purple;
+    }
+  }
   
-      mat-card-header {
-        text-align: center;
-        margin-bottom: 1rem;
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #d32f2f;
+    margin-bottom: 1.5rem;
+    padding: 0.8rem;
+    background-color: rgba(#d32f2f, 0.05);
+    border-radius: 8px;
+    
+    mat-icon {
+      font-size: 20px;
+      color: #d32f2f;
+    }
+  }
   
-        mat-card-title {
-          font-size: 1.75rem;
-          font-weight: 600;
-          color: #1976d2;
-        }
+  .submit-button {
+    width: 100%;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border-radius: 30px;
+    background-color: $button-color;
+    color: $darker-purple;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover:not([disabled]) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba($button-color, 0.4);
+    }
+    
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    
+    mat-icon {
+      color: $darker-purple;
+    }
+  }
   
-        mat-card-subtitle {
-          font-size: 0.95rem;
-          color: #666;
-        }
-      }
-  
-      mat-form-field.full-width {
-        width: 100%;
-        margin-bottom: 1.25rem;
-      }
-  
-      .error-message {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #d32f2f;
-        margin-bottom: 1rem;
-  
-        mat-icon {
-          font-size: 20px;
-        }
-      }
-  
-      .submit-button {
-        width: 100%;
-        font-weight: bold;
-        margin-top: 1rem;
-      }
-  
-      .toggle-text {
-        margin-top: 1.5rem;
-        font-size: 0.9rem;
-        text-align: center;
-  
-        a {
-          font-weight: 500;
-          color: #1976d2;
-          text-decoration: none;
-  
-          &:hover {
-            text-decoration: underline;
-          }
-        }
+  .toggle-text {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    text-align: center;
+    
+    a {
+      font-weight: 600;
+      color: $primary-purple;
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
       }
     }
   }
   
+  .security-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: #666;
+    
+    mat-icon {
+      font-size: 1rem;
+      color: $primary-purple;
+    }
+  }
+  
+  .benefits {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+    
+    .benefit-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      .check-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: $primary-purple;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+      }
+      
+      span {
+        font-size: 0.9rem;
+        color: $dark-purple;
+        font-weight: 500;
+      }
+    }
+  }
+}

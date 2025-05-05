@@ -60,7 +60,7 @@
       <div class="paginacion-items-por-pagina">
         <span>Items por página:</span>
         <mat-form-field appearance="outline">
-          <mat-select [value]="pageSizeOptions[0]" (selectionChange)="cambiarTamanoPagina($event)">
+          <mat-select [value]="tamanoActual" (selectionChange)="cambiarTamanoPagina($event)">
             <mat-option *ngFor="let size of pageSizeOptions" [value]="size">
               {{ size }}
             </mat-option>

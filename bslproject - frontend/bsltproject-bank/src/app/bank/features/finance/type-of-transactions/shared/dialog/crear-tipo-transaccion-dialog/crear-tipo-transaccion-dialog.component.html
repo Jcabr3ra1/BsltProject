@@ -1,15 +1,40 @@
-<h2 mat-dialog-title>Nuevo tipo de transacción</h2>
-
-<form [formGroup]="form" (ngSubmit)="guardar()" class="form-container">
-  <mat-form-field class="full-width">
-    <mat-label>Descripción</mat-label>
-    <input matInput formControlName="descripcion" />
-  </mat-form-field>
-
-  <div class="actions">
-    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
-    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
-      Crear
-    </button>
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">category</mat-icon>
+    <h2 mat-dialog-title>Nuevo tipo de transacción</h2>
   </div>
-</form>
+
+  <form [formGroup]="form" class="formulario-transaccion">
+    <div class="form-field">
+      <label for="descripcion">Descripción<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="descripcion" type="text" formControlName="descripcion" placeholder="Ej. Pago de servicios">
+        <mat-icon>description</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.hasError('required')">
+        La descripción es obligatoria
+      </div>
+      <div class="error-message" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.hasError('minlength')">
+        Debe tener al menos 3 caracteres
+      </div>
+    </div>
+    
+    <!-- Sección informativa -->
+    <div class="info-container">
+      <mat-icon>info</mat-icon>
+      <p>Los tipos de transacción te permiten categorizar los movimientos financieros para un mejor análisis de gastos e ingresos.</p>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid" (click)="guardar()">
+        <div class="spinner" *ngIf="isLoading"></div>
+        <mat-icon *ngIf="!isLoading">save</mat-icon>
+        Crear
+      </button>      
+    </div>
+  </form>
+</div>

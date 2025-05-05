@@ -3,13 +3,13 @@
     <mat-icon>{{ isSidebarOpen ? 'menu_open' : 'menu' }}</mat-icon>
   </button>
   
-  <span class="logo">BSLBank</span>
+  <div class="logo">Banco Púrpura</div>
   <span class="spacer"></span>
 
   <div class="user-info">
     <mat-icon>account_circle</mat-icon>
     <span>{{ user?.nombre || 'Usuario' }}</span>
-    <button mat-icon-button (click)="logout()" title="Cerrar sesión">
+    <button mat-icon-button (click)="logout()" title="Cerrar sesión" matTooltip="Cerrar sesión">
       <mat-icon>logout</mat-icon>
     </button>
   </div>
@@ -17,7 +17,7 @@
 
 <!-- Botón flotante para mostrar sidebar cuando está oculto -->
 <div class="sidebar-toggle-button" *ngIf="!isSidebarOpen">
-  <button mat-mini-fab (click)="toggleSidebar()" class="toggle-fab" color="primary" aria-label="Mostrar menú">
+  <button mat-mini-fab (click)="toggleSidebar()" class="toggle-fab" aria-label="Mostrar menú">
     <div class="toggle-icon-container">
       <mat-icon>chevron_right</mat-icon>
     </div>

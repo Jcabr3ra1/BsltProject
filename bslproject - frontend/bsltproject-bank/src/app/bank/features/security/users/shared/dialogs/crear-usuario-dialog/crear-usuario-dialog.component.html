@@ -13,7 +13,10 @@
   <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario">
     <div class="form-field">
       <label for="nombre">Nombre<span class="required">*</span></label>
-      <input id="nombre" type="text" formControlName="nombre" placeholder="Ingrese el nombre">
+      <div class="input-with-icon">
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Ingrese el nombre">
+        <mat-icon>person</mat-icon>
+      </div>
       <div class="error-message" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')">
         El nombre es requerido
       </div>
@@ -21,7 +24,10 @@
 
     <div class="form-field">
       <label for="apellido">Apellido<span class="required">*</span></label>
-      <input id="apellido" type="text" formControlName="apellido" placeholder="Ingrese el apellido">
+      <div class="input-with-icon">
+        <input id="apellido" type="text" formControlName="apellido" placeholder="Ingrese el apellido">
+        <mat-icon>badge</mat-icon>
+      </div>
       <div class="error-message" *ngIf="form.get('apellido')?.touched && form.get('apellido')?.hasError('required')">
         El apellido es requerido
       </div>
@@ -53,13 +59,30 @@
       <div class="error-message" *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
         La contraseña es requerida
       </div>
+      
+      <!-- Indicador de fortaleza de contraseña -->
+      <div class="password-strength" *ngIf="form.get('password')?.value">
+        <div class="strength-bar" [class.active-weak]="passwordStrength >= 1" 
+             [class.active-medium]="passwordStrength >= 2"
+             [class.active-strong]="passwordStrength >= 3"></div>
+        <div class="strength-bar" [class.active-medium]="passwordStrength >= 2" 
+             [class.active-strong]="passwordStrength >= 3"></div>
+        <div class="strength-bar" [class.active-strong]="passwordStrength >= 3"></div>
+        <div class="strength-text" 
+             [class.weak]="passwordStrength === 1"
+             [class.medium]="passwordStrength === 2"
+             [class.strong]="passwordStrength === 3">
+          {{ getPasswordStrengthText() }}
+        </div>
+      </div>
     </div>
 
     <div class="row-container">
       <div class="form-field half-width">
         <label for="rol">Rol<span class="required">*</span></label>
         <div class="select-container">
-          <select id="rol" formControlName="rol_id">
+          <select id="rol" formControlName="rol_id" class="custom-select">
+            <option value="" disabled selected hidden>Seleccione un rol</option>
             <option *ngFor="let rol of roles" [value]="rol.id">{{ rol.nombre }}</option>
           </select>
           <mat-icon>arrow_drop_down</mat-icon>
@@ -72,7 +95,8 @@
       <div class="form-field half-width">
         <label for="estado">Estado<span class="required">*</span></label>
         <div class="select-container">
-          <select id="estado" formControlName="estado_id">
+          <select id="estado" formControlName="estado_id" class="custom-select">
+            <option value="" disabled selected hidden>Seleccione un estado</option>
             <option *ngFor="let estado of estados" [value]="estado.id">{{ estado.nombre }}</option>
           </select>
           <mat-icon>arrow_drop_down</mat-icon>
@@ -90,7 +114,8 @@
         Cancelar
       </button>
       <button type="submit" class="btn-save" [disabled]="form.invalid || isLoading">
-        <mat-icon>save</mat-icon>
+        <div class="spinner" *ngIf="isLoading"></div>
+        <mat-icon *ngIf="!isLoading">save</mat-icon>
         {{ isLoading ? 'Guardando...' : 'Guardar' }}
       </button>      
     </div>

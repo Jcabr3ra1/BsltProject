@@ -14,6 +14,7 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   standalone: true,
@@ -27,10 +28,12 @@ import { MatSelectModule } from '@angular/material/select';
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
+    MatIconModule
   ],
 })
 export class CrearBolsilloDialogComponent {
   form: FormGroup;
+  isLoading = false;
 
   tiposBolsillo: string[] = [
     'Ahorro',
@@ -47,8 +50,25 @@ export class CrearBolsilloDialogComponent {
     this.form = this.fb.group({
       tipo: ['', Validators.required],
       saldo: [0, [Validators.required, Validators.min(0)]],
-      nombrePersonalizado: [''],
+      nombrePersonalizado: ['', Validators.required],
       colorPersonalizado: ['#607d8b'],
+    });
+    
+    // Configurar clases para el diálogo
+    this.dialogRef.addPanelClass(['custom-dialog', 'custom-dark-dialog']);
+    
+    // Configurar validación condicional para nombrePersonalizado
+    this.form.get('tipo')?.valueChanges.subscribe(tipo => {
+      const nombreControl = this.form.get('nombrePersonalizado');
+      
+      if (tipo === 'Personalizado') {
+        nombreControl?.setValidators([Validators.required]);
+      } else {
+        nombreControl?.clearValidators();
+        nombreControl?.setValue('');
+      }
+      
+      nombreControl?.updateValueAndValidity();
     });
   }
 
@@ -57,7 +77,7 @@ export class CrearBolsilloDialogComponent {
       Ahorro: '#4caf50',
       Emergencias: '#f44336',
       Viajes: '#2196f3',
-      Educación: '#ff9800',
+      'Educación': '#ff9800',
       Personalizado: '#9c27b0',
     };
     return colores[tipo] || '#607d8b';
@@ -65,6 +85,8 @@ export class CrearBolsilloDialogComponent {
 
   guardar(): void {
     if (this.form.valid) {
+      this.isLoading = true;
+      
       const tipo = this.form.value.tipo;
 
       const nombreFinal =
@@ -74,11 +96,20 @@ export class CrearBolsilloDialogComponent {
         tipo === 'Personalizado'
           ? this.form.value.colorPersonalizado
           : this.getColorPorTipo(tipo);
-
-      this.dialogRef.close({
-        nombre: nombreFinal,
-        color: colorFinal,
-        saldo: this.form.value.saldo,
+      
+      // Simulación de carga para demostración
+      setTimeout(() => {
+        this.isLoading = false;
+        this.dialogRef.close({
+          nombre: nombreFinal,
+          color: colorFinal,
+          saldo: this.form.value.saldo,
+        });
+      }, 500);
+    } else {
+      // Marcar todos los campos como tocados para mostrar errores
+      Object.keys(this.form.controls).forEach(key => {
+        this.form.get(key)?.markAsTouched();
       });
     }
   }

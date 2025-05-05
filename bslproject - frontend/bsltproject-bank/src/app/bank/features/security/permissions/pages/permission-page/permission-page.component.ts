@@ -58,6 +58,13 @@ export class PermissionPageComponent implements OnInit {
   ngAfterViewInit() {
     if (this.paginador) {
       this.dataSource.paginator = this.paginador;
+      
+      // Suscribirse a los cambios de página
+      this.paginador.page.subscribe(() => {
+        this.paginaActual = this.paginador.pageIndex;
+        this.tamanoActual = this.paginador.pageSize;
+        this.getInfoPaginacion(); // Actualizar la información de paginación
+      });
     }
   }
 
@@ -90,6 +97,7 @@ export class PermissionPageComponent implements OnInit {
     if (this.paginador) {
       this.paginador.pageSize = this.tamanoActual;
       this.paginador.pageIndex = 0;
+      this.dataSource._updateChangeSubscription();
     }
   }
   

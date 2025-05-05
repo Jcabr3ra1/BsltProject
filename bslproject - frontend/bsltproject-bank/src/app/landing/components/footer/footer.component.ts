@@ -1,34 +1,18 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { NgFor } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon'; // ✅ Agrega esto
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [RouterModule, NgFor, MatIconModule], // ✅ Agrega MatIconModule aquí
+  imports: [CommonModule],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss']
 })
-export class FooterComponent {
-  currentYear = new Date().getFullYear();
-
-  links = [
-    {
-      title: 'Producto',
-      items: ['Características', 'Planes', 'Seguridad', 'Empresas']
-    },
-    {
-      title: 'Compañía',
-      items: ['Sobre nosotros', 'Carreras', 'Blog', 'Prensa']
-    },
-    {
-      title: 'Soporte',
-      items: ['Centro de ayuda', 'Contacto', 'Comunidad', 'Estado del sistema']
-    },
-    {
-      title: 'Legal',
-      items: ['Privacidad', 'Términos', 'Cookies', 'Licencias']
-    }
-  ];
+export class FooterComponent implements OnInit {
+  currentYear: number = new Date().getFullYear();
+  
+  constructor() { }
+  
+  ngOnInit(): void {
+  }
 }
