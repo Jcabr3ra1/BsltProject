@@ -1,0 +1,175 @@
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">receipt_long</mat-icon>
+    <h2 mat-dialog-title>Registrar nueva transacción</h2>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-transaccion">
+    <!-- Mensajes de error generales (como saldo insuficiente) -->
+    <div class="error-mensaje-global" *ngIf="mensajeError">
+      <div class="error-icon-container">
+        <mat-icon>error_outline</mat-icon>
+      </div>
+      <div class="error-mensaje-texto">
+        {{ mensajeError }}
+      </div>
+    </div>
+    
+    <!-- Tipo de transacción -->
+    <div class="section-label">
+      <div class="label-bar"></div>
+      <span>Tipo de transacción</span>
+    </div>
+    
+    <div class="transaction-type-section">
+      <div class="transaction-grid">
+        <button type="button" *ngFor="let tipo of data.tiposTransaccion"
+            [class.selected]="form.get('id_tipo_transaccion')?.value === (tipo.id || tipo._id)"
+            (click)="seleccionarTipoTransaccion(tipo.id || tipo._id)">
+          <div class="transaction-icon-container">
+            <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('consignación')">arrow_downward</mat-icon>
+            <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('retiro')">arrow_upward</mat-icon>
+            <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('transferencia')">sync_alt</mat-icon>
+          </div>
+          <span>{{tipo.descripcion}}</span>
+        </button>
+      </div>
+    </div>
+  
+    <!-- Tipo de movimiento -->
+    <div class="section-label">
+      <div class="label-bar"></div>
+      <span>Origen y destino del dinero</span>
+    </div>
+  
+    <div class="movement-type-section">
+      <div class="movement-grid">
+        <button type="button" *ngFor="let tipo of data.tiposMovimiento"
+            [class.selected]="form.get('id_tipo_movimiento')?.value === (tipo.id || tipo._id)"
+            (click)="seleccionarTipoMovimiento(tipo.id || tipo._id)">
+          <div class="movement-icon-container">
+            <span class="movement-icon" [innerHTML]="obtenerIconoMovimiento(tipo)"></span>
+          </div>
+          <span>{{obtenerDescripcionCorta(tipo)}}</span>
+        </button>
+      </div>
+    </div>
+  
+    <!-- Campos de formulario dinámicos -->
+    <div class="section-label" *ngIf="tipoMovimientoSeleccionado">
+      <div class="label-bar"></div>
+      <span>Detalles de la transacción</span>
+    </div>
+    
+    <div class="dynamic-fields" *ngIf="tipoMovimientoSeleccionado">
+      <!-- Cuenta origen -->
+      <div class="form-field" *ngIf="mostrarCampo('cuenta_origen')">
+        <label for="id_cuenta_origen">Cuenta origen<span class="required">*</span></label>
+        <div class="select-with-icon">
+          <select id="id_cuenta_origen" formControlName="id_cuenta_origen">
+            <option [value]="null" disabled>Selecciona una cuenta</option>
+            <option *ngFor="let cuenta of data.cuentas" [value]="cuenta.id || cuenta._id">
+              {{ cuenta.numero_cuenta }} - Saldo: ${{ cuenta.saldo | number:'1.0-2' }}
+            </option>
+          </select>
+          <mat-icon>account_balance</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('id_cuenta_origen')?.touched && form.get('id_cuenta_origen')?.hasError('required')">
+          Debes seleccionar una cuenta de origen
+        </div>
+      </div>
+  
+      <!-- Cuenta destino -->
+      <div class="form-field" *ngIf="mostrarCampo('cuenta_destino')">
+        <label for="id_cuenta_destino">Cuenta destino<span class="required">*</span></label>
+        <div class="select-with-icon">
+          <select id="id_cuenta_destino" formControlName="id_cuenta_destino">
+            <option [value]="null" disabled>Selecciona una cuenta</option>
+            <option *ngFor="let cuenta of data.cuentas" [value]="cuenta.id || cuenta._id">
+              {{ cuenta.numero_cuenta }} - Saldo: ${{ cuenta.saldo | number:'1.0-2' }}
+            </option>
+          </select>
+          <mat-icon>account_balance</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('id_cuenta_destino')?.touched && form.get('id_cuenta_destino')?.hasError('required')">
+          Debes seleccionar una cuenta de destino
+        </div>
+      </div>
+  
+      <!-- Bolsillo origen -->
+      <div class="form-field" *ngIf="mostrarCampo('bolsillo_origen')">
+        <label for="id_bolsillo_origen">Bolsillo origen<span class="required">*</span></label>
+        <div class="select-with-icon">
+          <select id="id_bolsillo_origen" formControlName="id_bolsillo_origen">
+            <option [value]="null" disabled>Selecciona un bolsillo</option>
+            <option *ngFor="let b of data.bolsillos" [value]="b.id || b._id">
+              {{ b.nombre }} - Saldo: ${{ b.saldo | number:'1.0-2' }}
+            </option>
+          </select>
+          <mat-icon>wallet</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('id_bolsillo_origen')?.touched && form.get('id_bolsillo_origen')?.hasError('required')">
+          Debes seleccionar un bolsillo de origen
+        </div>
+      </div>
+  
+      <!-- Bolsillo destino -->
+      <div class="form-field" *ngIf="mostrarCampo('bolsillo_destino')">
+        <label for="id_bolsillo_destino">Bolsillo destino<span class="required">*</span></label>
+        <div class="select-with-icon">
+          <select id="id_bolsillo_destino" formControlName="id_bolsillo_destino">
+            <option [value]="null" disabled>Selecciona un bolsillo</option>
+            <option *ngFor="let b of data.bolsillos" [value]="b.id || b._id">
+              {{ b.nombre }} - Saldo: ${{ b.saldo | number:'1.0-2' }}
+            </option>
+          </select>
+          <mat-icon>wallet</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('id_bolsillo_destino')?.touched && form.get('id_bolsillo_destino')?.hasError('required')">
+          Debes seleccionar un bolsillo de destino
+        </div>
+      </div>
+    
+      <!-- Valor y descripción -->
+      <div class="form-field">
+        <label for="monto">Valor a transferir<span class="required">*</span></label>
+        <div class="input-with-icon">
+          <input id="monto" type="number" formControlName="monto" placeholder="Ingresa el monto de la transacción">
+          <mat-icon>attach_money</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('monto')?.touched && form.get('monto')?.hasError('required')">
+          El monto es obligatorio
+        </div>
+        <div class="error-message" *ngIf="form.get('monto')?.touched && form.get('monto')?.hasError('min')">
+          El monto debe ser mayor a 0
+        </div>
+      </div>
+  
+      <div class="form-field">
+        <label for="descripcion">Descripción<span class="required">*</span></label>
+        <div class="input-with-icon">
+          <input id="descripcion" type="text" formControlName="descripcion" placeholder="Añade una breve descripción">
+          <mat-icon>description</mat-icon>
+        </div>
+        <div class="error-message" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.hasError('required')">
+          La descripción es obligatoria
+        </div>
+        <div class="error-message" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.hasError('minlength')">
+          Debe tener al menos 3 caracteres
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid || !form.dirty || isLoading">
+        <div class="spinner" *ngIf="isLoading"></div>
+        <mat-icon *ngIf="!isLoading">save</mat-icon>
+        Guardar transacción
+      </button>      
+    </div>
+  </form>
+</div>

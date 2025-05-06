@@ -1,0 +1,39 @@
+<section class="testimonials">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Nuestros clientes opinan</h2>
+      <p>Descubre lo que dicen quienes ya confían en Banco Púrpura</p>
+    </div>
+    
+    <div class="testimonials-grid">
+      <div class="testimonial-card" *ngFor="let testimonial of testimonials">
+        <div class="testimonial-rating">
+          <span *ngFor="let star of [1, 2, 3, 4, 5]">★</span>
+        </div>
+        <p class="testimonial-content">{{ testimonial.content }}</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" [style.backgroundColor]="testimonial.avatarColor"></div>
+          <div class="author-info">
+            <h4>{{ testimonial.name }}</h4>
+            <p>{{ testimonial.role }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="testimonial-stats">
+      <div class="stat-item">
+        <div class="stat-number">2,500+</div>
+        <div class="stat-label">Clientes activos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">4.9/5</div>
+        <div class="stat-label">Calificación promedio</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">98%</div>
+        <div class="stat-label">Satisfacción</div>
+      </div>
+    </div>
+  </div>
+</section>

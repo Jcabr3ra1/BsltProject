@@ -1,0 +1,307 @@
+// Variables de color según tu especificación
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+$accent-color: #ff8a8a;
+$button-color: #a6ff5c;
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, $dark-purple, $darker-purple);
+  
+  .login-card {
+    background: #fff;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 150px;
+      height: 150px;
+      background: linear-gradient(135deg, rgba($primary-purple, 0.1), rgba($light-purple, 0.05));
+      border-radius: 0 0 0 100%;
+      z-index: 0;
+    }
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, rgba($light-purple, 0.05), rgba($primary-purple, 0.1));
+      border-radius: 0 100% 0 0;
+      z-index: 0;
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 1;
+      
+      .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        
+        .logo-icon {
+          width: 40px;
+          height: 40px;
+          background-color: $primary-purple;
+          border-radius: 8px;
+          margin-right: 10px;
+        }
+        
+        .logo-text {
+          font-size: 1.4rem;
+          font-weight: 700;
+          color: $dark-purple;
+        }
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: $dark-purple;
+        margin-bottom: 0.5rem;
+      }
+      
+      p {
+        color: #666;
+        font-size: 1rem;
+      }
+    }
+    
+    .loading-container {
+      text-align: center;
+      margin: 2rem 0;
+      position: relative;
+      z-index: 1;
+      
+      ::ng-deep .mat-spinner circle {
+        stroke: $primary-purple;
+      }
+      
+      mat-spinner {
+        margin: 0 auto 1rem;
+      }
+      
+      p {
+        font-size: 1rem;
+        color: $dark-purple;
+      }
+    }
+    
+    form {
+      position: relative;
+      z-index: 1;
+      
+      .error-message {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #d32f2f;
+        margin-bottom: 1.5rem;
+        padding: 0.8rem;
+        background-color: rgba(#d32f2f, 0.05);
+        border-radius: 8px;
+        
+        mat-icon {
+          font-size: 20px;
+          color: #d32f2f;
+        }
+      }
+      
+      .form-field {
+        width: 100%;
+        margin-bottom: 1.5rem;
+        
+        ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+          color: rgba($primary-purple, 0.3);
+        }
+        
+        ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline {
+          color: $primary-purple;
+        }
+        
+        ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+          color: $primary-purple;
+        }
+        
+        ::ng-deep .mat-form-field-label {
+          color: rgba($dark-purple, 0.6);
+        }
+        
+        ::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+          color: $primary-purple;
+        }
+        
+        ::ng-deep .mat-icon {
+          color: $primary-purple;
+        }
+      }
+      
+      .forgot-password {
+        text-align: right;
+        margin-bottom: 1.5rem;
+        
+        a {
+          font-size: 0.9rem;
+          color: $primary-purple;
+          text-decoration: none;
+          transition: all 0.2s ease;
+          
+          &:hover {
+            text-decoration: underline;
+            color: $dark-purple;
+          }
+        }
+      }
+      
+      .login-button {
+        width: 100%;
+        padding: 0.8rem;
+        border-radius: 30px;
+        background-color: $button-color;
+        color: $darker-purple;
+        border: none;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        
+        &:hover:not([disabled]) {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba($button-color, 0.4);
+        }
+        
+        &:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+        
+        mat-icon {
+          color: $darker-purple;
+        }
+      }
+      
+      .register-link {
+        text-align: center;
+        margin: 1.5rem 0;
+        
+        p {
+          font-size: 0.95rem;
+          color: #666;
+          line-height: 1.5;
+          
+          a {
+            font-weight: 600;
+            color: $primary-purple;
+            text-decoration: none;
+            
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+      
+      .secure-login {
+        text-align: center;
+        margin-top: 2rem;
+        
+        .secure-item {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.5rem 1rem;
+          background-color: rgba($primary-purple, 0.05);
+          border-radius: 20px;
+          
+          mat-icon {
+            font-size: 1rem;
+            color: $primary-purple;
+          }
+          
+          span {
+            font-size: 0.85rem;
+            color: $dark-purple;
+          }
+        }
+      }
+    }
+    
+    .login-footer {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      
+      .app-badges {
+        p {
+          font-size: 0.9rem;
+          color: #666;
+          margin-bottom: 0.8rem;
+        }
+        
+        .badge-icons {
+          display: flex;
+          justify-content: center;
+          gap: 1rem;
+          
+          .app-badge {
+            width: 45px;
+            height: 45px;
+            background-color: rgba($primary-purple, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            
+            &:hover {
+              background-color: $primary-purple;
+              transform: translateY(-3px);
+              
+              mat-icon {
+                color: white;
+              }
+            }
+            
+            mat-icon {
+              color: $primary-purple;
+              font-size: 1.5rem;
+              transition: all 0.3s ease;
+            }
+          }
+        }
+      }
+    }
+  }
+}

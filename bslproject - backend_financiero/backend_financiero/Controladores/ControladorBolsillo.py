@@ -30,6 +30,14 @@ def actualizar_bolsillo(id: str, info_bolsillo: dict):
 def eliminar_bolsillo(id: str):
     return servicio.eliminar(id)
 
+@router.delete("/{id}/desasociar")
+def eliminar_bolsillo_y_quitar_referencia(id: str):
+    resultado = servicio.eliminar_y_quitar_referencia(id)
+    if isinstance(resultado, tuple):
+        raise HTTPException(status_code=resultado[1], detail=resultado[0])
+    return resultado
+
+
 @router.put("/{id_bolsillo}/cuentas/{id_cuenta}")
 def asignar_cuenta_a_bolsillo(id_bolsillo: str, id_cuenta: str):
     resultado = servicio.asignar_cuenta(id_bolsillo, id_cuenta)

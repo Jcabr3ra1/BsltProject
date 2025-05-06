@@ -1,0 +1,29 @@
+<header class="header">
+    <div class="container">
+      <nav class="navbar">
+        <div class="logo">
+          <div class="logo-icon"></div>
+          <span class="logo-text">Banco Púrpura</span>
+        </div>
+        
+        <div class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        
+        <ul class="nav-links" [class.nav-active]="isMobileMenuOpen">
+          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Inicio</a></li>
+          <li><a routerLink="/" routerLinkActive="active">Cuentas</a></li>
+          <li><a routerLink="/" routerLinkActive="active">Préstamos</a></li>
+          <li><a routerLink="/" routerLinkActive="active">Inversiones</a></li>
+          <li><a routerLink="/" routerLinkActive="active">Nosotros</a></li>
+        </ul>
+        
+        <div class="auth-buttons">
+          <button class="login-btn" routerLink="/auth/login">Iniciar Sesión</button>
+          <button class="register-btn" routerLink="/auth/register">Abrir Cuenta</button>
+        </div>
+      </nav>
+    </div>
+  </header>

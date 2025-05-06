@@ -6,7 +6,6 @@ class Cuenta(AbstractModelo):
         super().__init__(data)
         
         # Campos obligatorios con valores por defecto
-        self.numero = data.get("numero", "")
         self.tipo = data.get("tipo", "CUENTA_CORRIENTE")
         self.saldo = data.get("saldo", 0.0)
         

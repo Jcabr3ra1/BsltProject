@@ -30,10 +30,9 @@ class CuentaServicio:
         print(f"Iniciando creación de cuenta con datos: {json.dumps(info_cuenta, indent=2)}")
         
         # Generar número de cuenta si no se proporciona
-        if "numero" not in info_cuenta or not info_cuenta["numero"]:
-            info_cuenta["numero"] = self._generar_numero_cuenta()
-            print(f"Número de cuenta generado: {info_cuenta['numero']}")
-        
+        if "numero_cuenta" not in info_cuenta or not info_cuenta["numero_cuenta"]:
+            info_cuenta["numero_cuenta"] = self._generar_numero_cuenta()
+
         # Asegurar que los campos obligatorios estén presentes
         if "tipo" not in info_cuenta:
             info_cuenta["tipo"] = "CUENTA_CORRIENTE"
@@ -76,6 +75,10 @@ class CuentaServicio:
             nueva_cuenta.usuario_id = usuario_id
             print(f"Confirmando que usuario_id está establecido: {nueva_cuenta.usuario_id}")
 
+        numero_existente = self.repositorioCuenta.query({"numero_cuenta": nueva_cuenta.numero_cuenta})
+        if numero_existente:
+            return {"error": "Ya existe una cuenta con ese número de cuenta"}, 400
+
         # Guardar la cuenta en la base de datos
         print(f"Guardando cuenta en la base de datos: {nueva_cuenta.__dict__}")
         cuenta_guardada = self.repositorioCuenta.save(nueva_cuenta)
@@ -94,6 +97,7 @@ class CuentaServicio:
             print(f"Notificando al servicio de seguridad sobre la asociación de usuario {usuario_id} con cuenta {cuenta_guardada['_id']}")
             self._notificar_seguridad_asociacion(cuenta_guardada["_id"], usuario_id)
 
+        cuenta_guardada["_id"] = str(cuenta_guardada["_id"])
         return cuenta_guardada
 
     def _generar_numero_cuenta(self):
@@ -164,8 +168,8 @@ class CuentaServicio:
         cuenta_objeto = Cuenta(cuenta_actual)
         
         # Actualizar campos si están presentes en info_cuenta
-        if "numero" in info_cuenta:
-            cuenta_objeto.numero = info_cuenta["numero"]
+        if "numero_cuenta" in info_cuenta:
+            cuenta_objeto.numero_cuenta = info_cuenta["numero_cuenta"]
         
         if "tipo" in info_cuenta:
             cuenta_objeto.tipo = info_cuenta["tipo"]
@@ -178,7 +182,10 @@ class CuentaServicio:
             
         if "color" in info_cuenta:
             cuenta_objeto.color = info_cuenta["color"]
-            
+
+        if "meta_ahorro" in info_cuenta:
+            cuenta_objeto.meta_ahorro = info_cuenta["meta_ahorro"]
+
         # Manejar la actualización del ID de usuario
         if "usuario_id" in info_cuenta and info_cuenta["usuario_id"]:
             cuenta_objeto.usuario_id = info_cuenta["usuario_id"]
@@ -195,56 +202,59 @@ class CuentaServicio:
         
         return cuenta_actualizada
 
+    # Método eliminar cuenta actualizado
     def eliminar(self, id):
+        cuenta = self.repositorioCuenta.findById(id)
+        if not cuenta:
+            return {"mensaje": "Cuenta no encontrada"}, 404
+
+        usuario_id = cuenta.get("usuario_id")
+        if usuario_id:
+            try:
+                # NOTIFICAR AL SERVICIO DE SEGURIDAD PARA DESASOCIAR LA CUENTA
+                seguridad_url = "http://localhost:8080"  # Asegúrate que es la URL correcta del backend de seguridad
+                requests.put(f"{seguridad_url}/usuarios/{usuario_id}/cuentas/desasociar/{id}")
+            except Exception as e:
+                print(f"Error al notificar al servicio de seguridad: {e}")
+                # Puedes seguir con la eliminación, o retornar error si es crítico
+
+        id_bolsillo = cuenta.get("id_bolsillo")
+        if id_bolsillo:
+            try:
+                print(f"🧹 Eliminando bolsillo asociado: {id_bolsillo}")
+                self.repositorioBolsillo.delete(id_bolsillo)
+            except Exception as e:
+                print(f"⚠️ No se pudo eliminar el bolsillo asociado: {e}")
+
         return self.repositorioCuenta.delete(id)
 
     def asignar_usuario_a_cuenta(self, id_cuenta, id_usuario, auth_token=None):
-        """
-        Asigna un usuario a una cuenta existente.
-
-        Args:
-            id_cuenta (str): ID de la cuenta a modificar
-            id_usuario (str): ID del usuario a asignar
-            auth_token (str, optional): Token de autorización para el servicio de seguridad
-
-        Returns:
-            dict: Cuenta actualizada
-        """
         print(f"Asignando usuario {id_usuario} a cuenta {id_cuenta}")
 
-        # Verificar que la cuenta existe
+        cuenta_actual = self.repositorioCuenta.findById(id_cuenta)
+        if cuenta_actual.get("usuario_id"):
+            raise Exception("La cuenta ya está asignada a un usuario.")
+
         cuenta_actual = self.repositorioCuenta.findById(id_cuenta)
         if not cuenta_actual:
             return {"error": "Cuenta no encontrada"}, 404
 
-        # Crear objeto Cuenta
-        cuenta_objeto = Cuenta(cuenta_actual)
+        if cuenta_actual.get("usuario_id") and cuenta_actual["usuario_id"] != id_usuario:
+            return {"error": "La cuenta ya está asignada a otro usuario."}, 400
 
-        # Asignar el usuario a todos los campos para garantizar compatibilidad
+        if cuenta_actual.get("usuario_id") == id_usuario:
+            return cuenta_actual  # Ya está asignada, no hacer nada
+
+        cuenta_objeto = Cuenta(cuenta_actual)
         cuenta_objeto.usuario_id = id_usuario
         cuenta_objeto.id_usuario = id_usuario
         cuenta_objeto.userId = id_usuario
-
-        # Actualizar fecha de modificación
         cuenta_objeto.updatedAt = datetime.now().isoformat()
 
-        # Guardar los cambios
-        print(f"Guardando cuenta con usuario asignado: {cuenta_objeto.__dict__}")
         cuenta_guardada = self.repositorioCuenta.save(cuenta_objeto)
 
-        # Intentar notificar al servicio de seguridad varias veces si es necesario
-        notificacion_exitosa = False
-        for intento in range(3):  # Intentar hasta 3 veces
-            notificacion_exitosa = self._notificar_seguridad_asociacion(id_cuenta, id_usuario, auth_token)
-            if notificacion_exitosa:
-                break
-            print(f"Reintentando notificación a seguridad (intento {intento + 1}/3)")
+        self._notificar_seguridad_asociacion(id_cuenta, id_usuario, auth_token)
 
-        if not notificacion_exitosa:
-            print("ADVERTENCIA: No se pudo notificar al servicio de seguridad, pero la cuenta fue actualizada")
-            print("Se recomienda actualizar manualmente el usuario en el servicio de seguridad")
-
-        # Siempre devolvemos la cuenta guardada, incluso si falló la notificación
         return cuenta_guardada
 
     def obtener_por_usuario(self, id_usuario):

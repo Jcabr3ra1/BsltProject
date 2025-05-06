@@ -1,0 +1,75 @@
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">link</mat-icon>
+    <h2 mat-dialog-title>Asignar bolsillo a cuenta</h2>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-asignacion">
+    <div class="form-field">
+      <label for="id_cuenta">Selecciona una cuenta<span class="required">*</span></label>
+      <div class="select-with-icon">
+        <select id="id_cuenta" formControlName="id_cuenta">
+          <option [value]="''" disabled selected>Selecciona una cuenta</option>
+          <option *ngFor="let cuenta of cuentasDisponibles" [value]="cuenta.id || cuenta._id">
+            {{ getTipoCuentaLabel(cuenta.tipo) }} - {{ cuenta.numero_cuenta }}
+          </option>
+        </select>
+        <mat-icon>account_balance</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('id_cuenta')?.touched && form.get('id_cuenta')?.hasError('required')">
+        Debes seleccionar una cuenta
+      </div>
+      <div class="empty-accounts" *ngIf="cuentasDisponibles.length === 0">
+        <mat-icon>info</mat-icon>
+        <span>No hay cuentas disponibles para asignación</span>
+      </div>
+    </div>
+    
+    <!-- Información del bolsillo seleccionado -->
+    <div class="bolsillo-info-container" *ngIf="bolsilloInfo">
+      <div class="section-label">
+        <div class="label-bar"></div>
+        <span>Información del bolsillo</span>
+      </div>
+      
+      <div class="bolsillo-details">
+        <div class="bolsillo-detail">
+          <div class="detail-icon" [style.background-color]="bolsilloInfo.color">
+            <mat-icon>account_balance_wallet</mat-icon>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">Nombre:</span>
+            <span class="detail-value">{{ bolsilloInfo.nombre }}</span>
+          </div>
+        </div>
+        
+        <div class="bolsillo-detail" *ngIf="bolsilloInfo.saldo !== undefined">
+          <div class="detail-icon" [style.background-color]="bolsilloInfo.color">
+            <mat-icon>attach_money</mat-icon>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">Saldo:</span>
+            <span class="detail-value">${{ bolsilloInfo.saldo | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-container">
+      <mat-icon>info</mat-icon>
+      <p>Al asignar un bolsillo a una cuenta, le permite usar fondos de esta cuenta para el propósito específico del bolsillo. Un bolsillo solo puede estar asignado a una cuenta a la vez.</p>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid || isLoading">
+        <div class="spinner" *ngIf="isLoading"></div>
+        <mat-icon *ngIf="!isLoading">link</mat-icon>
+        Asignar
+      </button>      
+    </div>
+  </form>
+</div>

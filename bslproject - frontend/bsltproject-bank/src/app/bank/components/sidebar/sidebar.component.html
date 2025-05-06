@@ -1,1 +1,92 @@
-<p>sidebar works!</p>
+<nav class="sidebar-container">
+  <h3 class="sidebar-title">Banco Púrpura</h3>
+
+  <div class="sidebar-content">
+    <!-- Siempre visible -->
+    <a mat-button routerLink="/dashboard" class="sidebar-link" [class.active]="activePage === 'dashboard'">
+      <mat-icon>dashboard</mat-icon>
+      Dashboard
+    </a>
+
+    <div class="divider"></div>
+
+    <!-- ✅ SEGURIDAD: Solo ADMIN -->
+    <div *ngIf="isAdmin()" class="sidebar-section">
+      <div class="section-header" [class.expanded]="expandedMenus['seguridad']" (click)="toggleMenu('seguridad')">
+        <div>
+          <mat-icon>admin_panel_settings</mat-icon>
+          Seguridad
+        </div>
+        <mat-icon>{{ expandedMenus['seguridad'] ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>
+      </div>
+      <div class="section-content" *ngIf="expandedMenus['seguridad']">
+        <a mat-button routerLink="/usuarios" class="sidebar-link" [class.active]="activePage === 'usuarios'">
+          <mat-icon>group</mat-icon>
+          Usuarios
+        </a>
+        <a mat-button routerLink="/roles" class="sidebar-link" [class.active]="activePage === 'roles'">
+          <mat-icon>shield</mat-icon>
+          Roles
+        </a>
+        <a mat-button routerLink="/estados" class="sidebar-link" [class.active]="activePage === 'estados'">
+          <mat-icon>track_changes</mat-icon>
+          Estados
+        </a>
+        <a mat-button routerLink="/permisos" class="sidebar-link" [class.active]="activePage === 'permisos'">
+          <mat-icon>key</mat-icon>
+          Permisos
+        </a>
+      </div>
+    </div>
+
+    <!-- ✅ FINANZAS: visible para todos, pero con opciones limitadas para USER -->
+    <div *ngIf="isAdmin() || isModerador() || isUsuario()" class="sidebar-section">
+      <div class="section-header" [class.expanded]="expandedMenus['finanzas']" (click)="toggleMenu('finanzas')">
+        <div>
+          <mat-icon>savings</mat-icon>
+          Finanzas
+        </div>
+        <mat-icon>{{ expandedMenus['finanzas'] ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>
+      </div>
+      <div class="section-content" *ngIf="expandedMenus['finanzas']">
+        <a mat-button routerLink="/cuentas" class="sidebar-link" [class.active]="activePage === 'cuentas'">
+          <mat-icon>account_balance</mat-icon>
+          Cuentas
+        </a>
+        <a mat-button routerLink="/transacciones" class="sidebar-link" [class.active]="activePage === 'transacciones'">
+          <mat-icon>sync_alt</mat-icon>
+          Transacciones
+        </a>
+        <a mat-button routerLink="/bolsillos" class="sidebar-link" [class.active]="activePage === 'bolsillos'">
+          <mat-icon>account_balance_wallet</mat-icon>
+          Bolsillos
+        </a>
+
+        <!-- Estos 2 solo para ADMIN o MODERADOR -->
+        <a *ngIf="!isUsuario()" mat-button routerLink="/tipo-transaccion" class="sidebar-link" [class.active]="activePage === 'tipo-transaccion'">
+          <mat-icon>description</mat-icon>
+          Tipos de Transacción
+        </a>
+        <a *ngIf="!isUsuario()" mat-button routerLink="/tipo-movimiento" class="sidebar-link" [class.active]="activePage === 'tipo-movimiento'">
+          <mat-icon>shuffle</mat-icon>
+          Tipos de Movimiento
+        </a>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Siempre visibles -->
+    <a mat-button routerLink="/configuracion" class="sidebar-link" [class.active]="activePage === 'configuracion'">
+      <mat-icon>settings</mat-icon>
+      Configuración
+    </a>
+
+    <a mat-button routerLink="/ayuda" class="sidebar-link" [class.active]="activePage === 'ayuda'">
+      <mat-icon>help</mat-icon>
+      Ayuda
+    </a>
+  </div>
+
+  <div class="app-version">Banco Púrpura © 2025</div>
+</nav>

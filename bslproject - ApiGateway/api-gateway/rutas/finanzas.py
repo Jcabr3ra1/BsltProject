@@ -33,7 +33,7 @@ async def obtener_bolsillos(request: Request):
 
     raise HTTPException(status_code=response.status_code, detail=f"Error al obtener bolsillos: {response.text}")
 
-@router.post("/bolsillos", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
+@router.post("/bolsillos", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def crear_bolsillo(request: Request):
     """Crea un nuevo bolsillo en el sistema de finanzas."""
     data = await request.json()
@@ -115,6 +115,18 @@ async def asignar_cuenta_a_bolsillo(id_bolsillo: str, id_cuenta: str, request: R
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=f"Error al asignar cuenta a bolsillo: {response.text}")
 
+@router.delete("/bolsillos/{id}/desasociar", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))])
+async def eliminar_bolsillo_y_quitar_referencia(id: str, request: Request):
+    """Elimina un bolsillo y desasocia la cuenta si estaba asociada."""
+    response = requests.delete(
+        f"{URL_FINANZAS}/finanzas/bolsillos/{id}/desasociar",
+        headers={"Authorization": request.headers.get("Authorization")}
+    )
+    if response.status_code == 200:
+        return {"mensaje": "Bolsillo eliminado y cuenta desasociada"}
+    raise HTTPException(status_code=response.status_code, detail=f"Error al eliminar bolsillo: {response.text}")
+
+
 ####################################### CUENTAS #######################################
 @router.post("/cuentas", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
 async def crear_cuenta(request: Request):
@@ -176,7 +188,7 @@ async def obtener_cuenta(id: str, request: Request):
 
     raise HTTPException(status_code=response.status_code, detail=f"Error al obtener cuenta: {response.text}")
 
-@router.put("/cuentas/{id}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
+@router.put("/cuentas/{id}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def actualizar_cuenta(id: str, request: Request):
     """Actualiza una cuenta en el sistema financiero."""
     auth_header = request.headers.get("Authorization")
@@ -253,312 +265,246 @@ async def asignar_usuario_a_cuenta(id: str, id_usuario: str, request: Request):
 
     raise HTTPException(status_code=response.status_code, detail=f"Error al asignar usuario a cuenta: {response.text}")
 
-####################################### TRANSACCIONES #######################################
+
+@router.put("/usuarios/{userId}/cuentas/desasociar/{cuentaId}")
+async def desasociar_cuenta_de_usuario(userId: str, cuentaId: str, request: Request):
+    """Desasocia la cuenta del usuario"""
+    auth_header = request.headers.get("Authorization")
+
+    response = requests.put(
+        f"{URL_SEGURIDAD}/seguridad/usuarios/{userId}/cuentas/desasociar/{cuentaId}",
+        headers={"Authorization": auth_header}
+    )
+
+    if response.status_code in [200, 204]:
+        return response.json() if response.text else {"mensaje": "Cuenta desasociada del usuario"}
+
+    raise HTTPException(
+        status_code=response.status_code,
+        detail=f"Error al desasociar cuenta del usuario: {response.text}"
+    )
+
+####################################### TRANSACCIONES - CRUD GENERAL #######################################
+
 @router.get("/transacciones", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
-async def obtener_transacciones(token: str = Depends(verificar_token)):
+async def obtener_transacciones(token_info: Dict[str, Any] = Depends(verificar_token)):
     """Obtiene todas las transacciones."""
     response = requests.get(
         f"{URL_FINANZAS}/finanzas/transacciones",
-        headers={"Authorization": f"Bearer {token}"}
+        headers={"Authorization": f"Bearer {token_info['token']}"}
     )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al obtener transacciones"))
+    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al obtener transacciones")
 
 @router.get("/transacciones/{id}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
-async def obtener_transaccion(id: str, token: str = Depends(verificar_token)):
+async def obtener_transaccion(id: str, token_info: Dict[str, Any] = Depends(verificar_token)):
     """Obtiene una transacción por su ID."""
     response = requests.get(
         f"{URL_FINANZAS}/finanzas/transacciones/{id}",
-        headers={"Authorization": f"Bearer {token}"}
+        headers={"Authorization": f"Bearer {token_info['token']}"}
     )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Transacción no encontrada"))
+    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Transacción no encontrada")
 
 @router.post("/transacciones", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
-async def crear_transaccion(request: Request, token: str = Depends(verificar_token)):
+async def crear_transaccion(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
     """Crea una nueva transacción."""
     response = requests.post(
         f"{URL_FINANZAS}/finanzas/transacciones",
         json=await request.json(),
-        headers={"Authorization": f"Bearer {token}"}
+        headers={"Authorization": f"Bearer {token_info['token']}"}
     )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al crear transacción"))
+    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al crear transacción")
 
 @router.put("/transacciones/{id}/anular", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
-async def anular_transaccion(id: str, token: str = Depends(verificar_token)):
+async def anular_transaccion(id: str, token_info: Dict[str, Any] = Depends(verificar_token)):
     """Anula una transacción."""
     response = requests.put(
         f"{URL_FINANZAS}/finanzas/transacciones/{id}/anular",
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al anular transacción"))
-
-@router.get("/transacciones/usuario/{id_usuario}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))])
-async def obtener_transacciones_por_usuario(id_usuario: str, request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Obtiene todas las transacciones asociadas a un usuario específico."""
-    auth_header = request.headers.get("Authorization")
-    token = token_info["token"]  # Obtener el token directamente de la dependencia verificar_token
-
-    if not auth_header:
-        print("API Gateway: No se encontró header de autorización, usando token de la dependencia")
-        auth_header = f"Bearer {token}"
-
-    print(f"API Gateway: Solicitando transacciones para el usuario: {id_usuario}")
-    print(f"API Gateway: Headers de autorización: {auth_header}")
-    
-    # Extraer el token para debug
-    token_str = auth_header.replace("Bearer ", "") if auth_header and auth_header.startswith("Bearer ") else token
-    print(f"API Gateway: Token extraído: {token_str[:20]}...")
-    
-    # Asegurarse de que la URL incluya el prefijo /finanzas
-    url = f"{URL_FINANZAS}/finanzas/transacciones/usuario/{id_usuario}"
-    print(f"API Gateway: URL de solicitud: {url}")
-    
-    try:
-        # Asegurarse de que el token se envía correctamente
-        headers = {
-            "Authorization": f"Bearer {token_str}",
-            "Content-Type": "application/json"
-        }
-        print(f"API Gateway: Headers enviados al servicio de finanzas: {headers}")
-        
-        response = requests.get(
-            url,
-            headers=headers
-        )
-        
-        print(f"API Gateway: Respuesta del servicio de finanzas: Status {response.status_code}")
-        if response.status_code != 200:
-            print(f"API Gateway: Error del servicio de finanzas: {response.text}")
-        
-        if response.status_code == 200:
-            return response.json()
-        
-        raise HTTPException(
-            status_code=response.status_code, 
-            detail=f"Error al obtener transacciones del usuario: {response.text}"
-        )
-    except Exception as e:
-        print(f"API Gateway: Excepción al comunicarse con el servicio de finanzas: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
-
-@router.get("/transacciones/usuario/{id_usuario}/proximos-pagos", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))])
-async def obtener_proximos_pagos(id_usuario: str, request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Obtiene los próximos pagos programados para un usuario específico."""
-    auth_header = request.headers.get("Authorization")
-    token = token_info["token"]  # Obtener el token directamente de la dependencia verificar_token
-
-    if not auth_header:
-        print("API Gateway: No se encontró header de autorización, usando token de la dependencia")
-        auth_header = f"Bearer {token}"
-
-    print(f"API Gateway: Solicitando próximos pagos para el usuario: {id_usuario}")
-    print(f"API Gateway: Headers de autorización: {auth_header}")
-    
-    # Extraer el token para debug
-    token_str = auth_header.replace("Bearer ", "") if auth_header and auth_header.startswith("Bearer ") else token
-    print(f"API Gateway: Token extraído: {token_str[:20]}...")
-    
-    # Asegurarse de que la URL incluya el prefijo /finanzas
-    url = f"{URL_FINANZAS}/finanzas/transacciones/usuario/{id_usuario}/proximos-pagos"
-    print(f"API Gateway: URL de solicitud: {url}")
-    
-    try:
-        # Asegurarse de que el token se envía correctamente
-        headers = {
-            "Authorization": f"Bearer {token_str}",
-            "Content-Type": "application/json"
-        }
-        print(f"API Gateway: Headers enviados al servicio de finanzas: {headers}")
-        
-        response = requests.get(
-            url,
-            headers=headers
-        )
-        
-        print(f"API Gateway: Respuesta del servicio de finanzas: Status {response.status_code}")
-        if response.status_code != 200:
-            print(f"API Gateway: Error del servicio de finanzas: {response.text}")
-        
-        if response.status_code == 200:
-            return response.json()
-        
-        raise HTTPException(
-            status_code=response.status_code, 
-            detail=f"Error al obtener próximos pagos del usuario: {response.text}"
-        )
-    except Exception as e:
-        print(f"API Gateway: Excepción al comunicarse con el servicio de finanzas: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error al obtener próximos pagos: {str(e)}")
-
-####################################### TRANSACCIONES ESPECÍFICAS #######################################
-@router.post("/transferencias/cuenta-cuenta",
-             dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
-async def transferencia_cuenta_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Realiza una transferencia de cuenta a cuenta."""
-    data = await request.json()
-
-    # Extraer el ID o email del usuario del token
-    if "contenido" in token_info and "sub" in token_info["contenido"]:
-        data["id_usuario"] = token_info["contenido"]["sub"]
-
-    response = requests.post(
-        f"{URL_FINANZAS}/finanzas/transacciones/cuenta-cuenta",
-        json=data,
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error en la transferencia"))
-
-
-@router.post("/transferencias/cuenta-bolsillo",
-             dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
-async def transferencia_cuenta_bolsillo(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Realiza una transferencia de cuenta a bolsillo."""
-    data = await request.json()
-
-    # Extraer el ID o email del usuario del token
-    if "contenido" in token_info and "sub" in token_info["contenido"]:
-        data["id_usuario"] = token_info["contenido"]["sub"]
-
-    response = requests.post(
-        f"{URL_FINANZAS}/finanzas/transacciones/cuenta-bolsillo",
-        json=data,
-        headers={"Authorization": f"Bearer {token_info['token']}"}
-    )
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        error_detail = "Error en la transferencia"
-        try:
-            error_json = response.json()
-            if "error" in error_json:
-                error_detail = error_json["error"]
-        except:
-            error_detail = response.text
-
-        raise HTTPException(status_code=response.status_code, detail=error_detail)
-
-
-@router.post("/transferencias/bolsillo-cuenta",
-             dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
-async def transferencia_bolsillo_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Realiza una transferencia de bolsillo a cuenta."""
-    data = await request.json()
-
-    # Extraer el ID o email del usuario del token
-    if "contenido" in token_info and "sub" in token_info["contenido"]:
-        data["id_usuario"] = token_info["contenido"]["sub"]
-
-    response = requests.post(
-        f"{URL_FINANZAS}/finanzas/transacciones/bolsillo-cuenta",
-        json=data,
-        headers={"Authorization": f"Bearer {token_info['token']}"}
-    )
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        error_detail = "Error en la transferencia"
-        try:
-            error_json = response.json()
-            if "error" in error_json:
-                error_detail = error_json["error"]
-        except:
-            error_detail = response.text
-
-        raise HTTPException(status_code=response.status_code, detail=error_detail)
-
-
-@router.post("/consignaciones/banco-cuenta", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
-async def consignacion_banco_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Realiza una consignación de banco a cuenta."""
-    data = await request.json()
-
-    # Extraer el ID o email del usuario del token
-    if "contenido" in token_info and "sub" in token_info["contenido"]:
-        data["id_usuario"] = token_info["contenido"]["sub"]
-
-    response = requests.post(
-        f"{URL_FINANZAS}/finanzas/transacciones/banco-cuenta",
-        json=data,
-        headers={"Authorization": f"Bearer {token_info['token']}"}
-    )
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        error_detail = "Error en la consignación"
-        try:
-            error_json = response.json()
-            if "error" in error_json:
-                error_detail = error_json["error"]
-        except:
-            error_detail = response.text
-
-        raise HTTPException(status_code=response.status_code, detail=error_detail)
-
-
-@router.post("/consignaciones/banco-bolsillo",
-             dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
-async def consignacion_banco_bolsillo(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Realiza una consignación de banco a bolsillo."""
-    data = await request.json()
-
-    # Extraer el ID o email del usuario del token
-    if "contenido" in token_info and "sub" in token_info["contenido"]:
-        data["id_usuario"] = token_info["contenido"]["sub"]
-
-    response = requests.post(
-        f"{URL_FINANZAS}/finanzas/transacciones/banco-bolsillo",
-        json=data,
-        headers={"Authorization": f"Bearer {token_info['token']}"}
-    )
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        error_detail = "Error en la consignación"
-        try:
-            error_json = response.json()
-            if "error" in error_json:
-                error_detail = error_json["error"]
-        except:
-            error_detail = response.text
-
-        raise HTTPException(status_code=response.status_code, detail=error_detail)
-
-@router.post("/retiros/cuenta-banco", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
-async def retiro_cuenta_banco(request: Request, token: str = Depends(verificar_token)):
-    """Realiza un retiro de cuenta a banco."""
-    response = requests.post(
-        f"{URL_FINANZAS}/finanzas/retiros/cuenta-banco",
-        json=await request.json(),
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error en el retiro"))
+    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al anular transacción")
 
 @router.get("/transacciones/historial", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def historial_transacciones(
-    request: Request,
-    token: str = Depends(verificar_token),
+    token_info: Dict[str, Any] = Depends(verificar_token),
     fechaInicio: str = None,
     fechaFin: str = None,
     tipo: str = None
 ):
     """Obtiene el historial de transacciones con filtros opcionales."""
     params = {}
-    if fechaInicio:
-        params["fechaInicio"] = fechaInicio
-    if fechaFin:
-        params["fechaFin"] = fechaFin
-    if tipo:
-        params["tipo"] = tipo
+    if fechaInicio: params["fechaInicio"] = fechaInicio
+    if fechaFin: params["fechaFin"] = fechaFin
+    if tipo: params["tipo"] = tipo
 
     response = requests.get(
         f"{URL_FINANZAS}/finanzas/transacciones/historial",
         params=params,
-        headers={"Authorization": f"Bearer {token}"}
+        headers={"Authorization": f"Bearer {token_info['token']}"}
     )
-    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=response.json().get("error", "Error al obtener historial"))
+    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al obtener historial")
+
+####################################### TRANSACCIONES - CONSULTAS POR USUARIO #######################################
+
+@router.get("/transacciones/usuario/{id_usuario}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))])
+async def obtener_transacciones_por_usuario(id_usuario: str, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Obtiene todas las transacciones asociadas a un usuario."""
+    response = requests.get(
+        f"{URL_FINANZAS}/finanzas/transacciones/usuario/{id_usuario}",
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al obtener transacciones del usuario")
+
+@router.get("/transacciones/usuario/{id_usuario}/proximos-pagos", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))])
+async def obtener_proximos_pagos(id_usuario: str, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Obtiene los próximos pagos programados para un usuario."""
+    response = requests.get(
+        f"{URL_FINANZAS}/finanzas/transacciones/usuario/{id_usuario}/proximos-pagos",
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al obtener próximos pagos del usuario")
+
+####################################### TRANSACCIONES - OPERACIONES ESPECÍFICAS #######################################
+
+# ---------------------------- TRANSFERENCIAS ----------------------------
+
+@router.post("/transferencias/cuenta-cuenta", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
+async def transferencia_cuenta_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Transferencia de cuenta a cuenta."""
+    data = await request.json()
+    data["id_usuario"] = token_info["contenido"]["sub"]
+    response = requests.post(
+        f"{URL_FINANZAS}/finanzas/transacciones/cuenta-cuenta",
+        json=data,
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    if response.status_code == 200:
+        return response.json()
+    raise HTTPException(status_code=response.status_code, detail="Error en la transferencia cuenta-cuenta")
+
+
+@router.post("/transferencias/cuenta-bolsillo", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
+async def transferencia_cuenta_bolsillo(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Transferencia de cuenta a bolsillo."""
+    data = await request.json()
+    data["id_usuario"] = token_info["contenido"]["sub"]
+    response = requests.post(
+        f"{URL_FINANZAS}/finanzas/transacciones/cuenta-bolsillo",
+        json=data,
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    if response.status_code == 200:
+        return response.json()
+    raise HTTPException(status_code=response.status_code, detail="Error en la transferencia cuenta-bolsillo")
+
+
+@router.post("/transferencias/bolsillo-cuenta", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
+async def transferencia_bolsillo_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Transferencia de bolsillo a cuenta."""
+    data = await request.json()
+    data["id_usuario"] = token_info["contenido"]["sub"]
+    response = requests.post(
+        f"{URL_FINANZAS}/finanzas/transacciones/bolsillo-cuenta",
+        json=data,
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    if response.status_code == 200:
+        return response.json()
+    raise HTTPException(status_code=response.status_code, detail="Error en la transferencia bolsillo-cuenta")
+
+@router.post("/transferencias/bolsillo-bolsillo", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
+async def transferencia_bolsillo_bolsillo(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Transferencia de bolsillo a bolsillo."""
+    data = await request.json()
+    data["id_usuario"] = token_info["contenido"]["sub"]
+    response = requests.post(
+        f"{URL_FINANZAS}/finanzas/transacciones/bolsillo-bolsillo",
+        json=data,
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    if response.status_code == 200:
+        return response.json()
+    raise HTTPException(status_code=response.status_code, detail="Error en la transferencia bolsillo-bolsillo")
+
+
+
+# ---------------------------- CONSIGNACIONES ----------------------------
+
+@router.post("/consignaciones/banco-cuenta", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
+async def consignacion_banco_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Consignación desde banco a cuenta."""
+    data = await request.json()
+    data["id_usuario"] = token_info["contenido"]["sub"]
+    response = requests.post(
+        f"{URL_FINANZAS}/finanzas/transacciones/banco-cuenta",
+        json=data,
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    if response.status_code == 200:
+        return response.json()
+    raise HTTPException(status_code=response.status_code, detail="Error en la consignación banco-cuenta")
+
+
+@router.post("/consignaciones/banco-bolsillo", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
+async def consignacion_banco_bolsillo(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Consignación desde banco a bolsillo."""
+    data = await request.json()
+    data["id_usuario"] = token_info["contenido"]["sub"]
+    response = requests.post(
+        f"{URL_FINANZAS}/finanzas/transacciones/banco-bolsillo",
+        json=data,
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    if response.status_code == 200:
+        return response.json()
+    raise HTTPException(status_code=response.status_code, detail="Error en la consignación banco-bolsillo")
+
+
+# ---------------------------- RETIROS ----------------------------
+
+@router.post("/retiros/cuenta-banco", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
+async def retiro_cuenta_banco(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Retiro de cuenta a banco."""
+    data = await request.json()
+    data["id_usuario"] = token_info["contenido"]["sub"]
+    response = requests.post(
+        f"{URL_FINANZAS}/finanzas/transacciones/cuenta-banco",
+        json=data,
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    if response.status_code == 200:
+        return response.json()
+    raise HTTPException(status_code=response.status_code, detail="Error en el retiro cuenta-banco")
+
+
+@router.post("/retiros/bolsillo-cuenta", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
+async def retiro_bolsillo_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Retiro de bolsillo a cuenta."""
+    data = await request.json()
+    data["id_usuario"] = token_info["contenido"]["sub"]
+    response = requests.post(
+        f"{URL_FINANZAS}/finanzas/transacciones/bolsillo-cuenta",
+        json=data,
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    if response.status_code == 200:
+        return response.json()
+    raise HTTPException(status_code=response.status_code, detail="Error en el retiro bolsillo-cuenta")
+
+
+@router.post("/retiros/bolsillo-banco", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
+async def retiro_bolsillo_banco(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Retiro de bolsillo a banco."""
+    data = await request.json()
+    data["id_usuario"] = token_info["contenido"]["sub"]
+    response = requests.post(
+        f"{URL_FINANZAS}/finanzas/transacciones/bolsillo-banco",
+        json=data,
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    if response.status_code == 200:
+        return response.json()
+    raise HTTPException(status_code=response.status_code, detail="Error en el retiro bolsillo-banco")
+
 
 ####################################### TIPO MOVIMIENTO #######################################
 @router.get("/tipos-movimiento")

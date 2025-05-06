@@ -1,0 +1,201 @@
+// Variables de color según tu especificación
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+
+.header {
+  background: linear-gradient(135deg, $dark-purple, $darker-purple);
+  color: $light-text;
+  padding: 15px 0;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 700;
+    text-decoration: none;
+    color: $light-text;
+    
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background-color: $primary-purple;
+      border-radius: 8px;
+      margin-right: 10px;
+    }
+    
+    .logo-text {
+      font-size: 20px;
+    }
+  }
+  
+  .nav-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    
+    li {
+      margin-left: 30px;
+      
+      &:first-child {
+        margin-left: 0;
+      }
+      
+      a {
+        color: $light-text;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 16px;
+        transition: color 0.3s;
+        padding: 8px 0;
+        position: relative;
+        
+        &:hover, &.active {
+          color: $light-purple;
+        }
+        
+        &::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: 0;
+          left: 0;
+          background-color: $light-purple;
+          transition: width 0.3s;
+        }
+        
+        &:hover::after, &.active::after {
+          width: 100%;
+        }
+      }
+    }
+  }
+  
+  .auth-buttons {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .login-btn {
+    background-color: transparent;
+    border: 1px solid $light-purple;
+    color: $light-text;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    
+    &:hover {
+      background-color: rgba(195, 154, 247, 0.1);
+      transform: translateY(-2px);
+    }
+  }
+  
+  .register-btn {
+    background-color: $primary-purple;
+    border: none;
+    color: $light-text;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    
+    &:hover {
+      background-color: $light-purple;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(164, 108, 245, 0.3);
+    }
+  }
+  
+  .mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    cursor: pointer;
+    
+    span {
+      display: block;
+      height: 3px;
+      width: 100%;
+      background-color: $light-text;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .nav-links {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      background: $darker-purple;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      clip-path: circle(0px at 100% 0);
+      transition: all 0.4s ease-out;
+      pointer-events: none;
+      opacity: 0;
+      
+      &.nav-active {
+        clip-path: circle(1000px at 90% 10%);
+        opacity: 1;
+        pointer-events: all;
+        z-index: 200;
+      }
+      
+      li {
+        margin: 15px 0;
+      }
+    }
+    
+    .mobile-menu-toggle {
+      display: flex;
+      z-index: 201;
+    }
+    
+    .auth-buttons {
+      margin-left: auto;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .auth-buttons {
+      .login-btn {
+        display: none;
+      }
+    }
+    
+    .logo-text {
+      display: none;
+    }
+  }
+}

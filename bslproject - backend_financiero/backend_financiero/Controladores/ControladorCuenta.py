@@ -51,7 +51,6 @@ def eliminar_cuenta(id: str):
     resultado = servicio.eliminar(id)
     return resultado
 
-
 @router.get("/usuario/{id_usuario}")
 def obtener_cuentas_por_usuario(id_usuario: str):
     """Obtiene todas las cuentas asociadas a un usuario específico"""

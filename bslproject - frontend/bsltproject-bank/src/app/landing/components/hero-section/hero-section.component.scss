@@ -1,0 +1,322 @@
+// Variables de color según tu especificación
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+$accent-color: #ff8a8a;
+$button-color: #a6ff5c;
+
+@use "sass:color";
+
+.hero {
+  display: block;
+  width: 100%;
+  background: linear-gradient(135deg, $darker-purple, $dark-purple);
+  color: $light-text;
+  padding: 70px 0;
+  overflow: visible;
+  position: relative;
+  height: auto;
+  min-height: auto; // Eliminar altura mínima fija
+  
+  // Elementos decorativos más sutiles
+  .decoration {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+    pointer-events: none;
+    
+    &.decoration-1 {
+      width: 300px;
+      height: 300px;
+      top: -150px;
+      right: 10%;
+      opacity: 0.3;
+    }
+    
+    &.decoration-2 {
+      width: 400px;
+      height: 400px;
+      bottom: -200px;
+      left: 5%;
+      opacity: 0.15;
+    }
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+    padding: 0 40px; // Más padding horizontal
+    
+    @media (max-width: 992px) {
+      flex-direction: column;
+      text-align: center;
+      padding: 0 20px;
+    }
+  }
+
+  .hero-content {
+    width: 45%; // Reducido de 50% a 45%
+    padding-right: 40px;
+    
+    @media (max-width: 992px) {
+      width: 100%;
+      padding-right: 0;
+      margin-bottom: 50px; // Reducido de 60px a 50px
+    }
+  }
+
+  .hero-title {
+    font-size: 42px; // Reducido de 48px a 42px
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px; // Reducido de 24px a 20px
+    color: $light-text;
+    
+    @media (max-width: 768px) {
+      font-size: 32px; // Reducido de 36px a 32px
+    }
+  }
+
+  .hero-subtitle {
+    font-size: 17px; // Reducido de 18px a 17px
+    margin-bottom: 30px; // Reducido de 40px a 30px
+    opacity: 0.9;
+    max-width: 500px; // Reducido de 540px a 500px
+    line-height: 1.6;
+    
+    @media (max-width: 992px) {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px; // Reducido de 30px a 25px
+    
+    @media (max-width: 992px) {
+      justify-content: center;
+    }
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+      width: 100%;
+      max-width: 250px; // Reducido de 280px a 250px
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  .hero-button {
+    border: none;
+    padding: 12px 28px; // Reducido de 14px 32px a 12px 28px
+    border-radius: 25px; // Reducido de 30px a 25px
+    font-weight: 600;
+    font-size: 15px; // Reducido de 16px a 15px
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &.primary-btn {
+      background-color: $button-color;
+      color: $darker-purple;
+      
+      &:hover {
+        background-color: color.adjust($button-color, $lightness: -5%);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(166, 255, 92, 0.4);
+      }
+    }
+    
+    &.secondary-btn {
+      background-color: transparent;
+      border: 2px solid $light-purple;
+      color: $light-text;
+      
+      &:hover {
+        background-color: rgba(195, 154, 247, 0.2);
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  .social-proof {
+    display: flex;
+    align-items: center;
+    gap: 14px; // Reducido de 16px a 14px
+    
+    @media (max-width: 992px) {
+      justify-content: center;
+    }
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+    }
+  }
+
+  .stars {
+    color: #FFD700;
+    font-size: 18px; // Reducido de 20px a 18px
+  }
+  
+  .rating-text {
+    font-size: 13px; // Reducido de 14px a 13px
+    opacity: 0.9;
+  }
+
+  .users {
+    display: flex;
+  }
+
+  .user-avatar {
+    width: 32px; // Reducido de 36px a 32px
+    height: 32px; // Reducido de 36px a 32px
+    border-radius: 50%;
+    border: 2px solid $darker-purple;
+    margin-left: -8px; // Reducido de -10px a -8px
+
+    &:first-child {
+      margin-left: 0;
+    }
+    
+    &:nth-child(1) { background-color: #f5a46c; }
+    &:nth-child(2) { background-color: #6cf5a4; }
+    &:nth-child(3) { background-color: #f56ca4; }
+    &:nth-child(4) { background-color: #a46cf5; }
+  }
+
+  .hero-image {
+    width: 40%; // Reducido de 45% a 40%
+    position: relative;
+    
+    @media (max-width: 992px) {
+      width: 100%;
+      max-width: 350px; // Reducido de 400px a 350px
+    }
+  }
+
+  .card-mockup {
+    width: 100%;
+    aspect-ratio: 16/10;
+    background: linear-gradient(135deg, $primary-purple, $accent-color);
+    border-radius: 18px; // Reducido de 20px a 18px
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); // Reducido de 0 20px 40px a 0 15px 30px
+    transform: perspective(1000px) rotateY(-12deg) rotateX(4deg); // Menos rotación
+    transition: transform 0.5s ease;
+    
+    &:hover {
+      transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+    }
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 50px; // Reducido de 60px a 50px
+      height: 40px; // Reducido de 45px a 40px
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+    }
+    
+    .card-chip {
+      position: absolute;
+      top: 80px;
+      left: 30px;
+      width: 45px; // Reducido de 50px a 45px
+      height: 35px; // Reducido de 40px a 35px
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.4);
+      }
+    }
+    
+    .card-logo {
+      position: absolute;
+      top: 25px; // Reducido de 30px a 25px
+      right: 25px; // Reducido de 30px a 25px
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 16px; // Reducido de 18px a 16px
+      font-weight: bold;
+    }
+    
+    .card-number {
+      position: absolute;
+      bottom: 75px; // Reducido de 80px a 75px
+      left: 30px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 20px; // Reducido de 22px a 20px
+      letter-spacing: 3px;
+    }
+    
+    .card-name {
+      position: absolute;
+      bottom: 35px; // Reducido de 40px a 35px
+      left: 30px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 15px; // Reducido de 16px a 15px
+      text-transform: uppercase;
+    }
+    
+    .card-date {
+      position: absolute;
+      bottom: 35px; // Reducido de 40px a 35px
+      right: 30px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 15px; // Reducido de 16px a 15px
+    }
+  }
+
+  .hero-badge {
+    position: absolute;
+    bottom: -15px; // Movido de -20px a -15px
+    left: -15px; // Movido de -20px a -15px
+    background: $darker-purple;
+    padding: 12px 20px; // Reducido de 15px 25px a 12px 20px
+    border-radius: 10px; // Reducido de 12px a 10px
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); // Reducido de 0 10px 20px a 0 8px 16px
+    display: flex;
+    align-items: center;
+    gap: 10px; // Reducido de 12px a 10px
+    color: white;
+    z-index: 10;
+    
+    @media (max-width: 992px) {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  .badge-icon {
+    font-size: 20px; // Reducido de 24px a 20px
+    color: $light-purple;
+  }
+
+  .badge-text {
+    font-size: 13px; // Reducido de 14px a 13px
+  }
+
+  .badge-title {
+    font-weight: 700;
+    margin-bottom: 3px; // Reducido de 4px a 3px
+    color: $light-purple;
+  }
+}

@@ -1,0 +1,341 @@
+// Variables de color según tu especificación
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+
+.app-section {
+  padding: 100px 20px;
+  background: linear-gradient(135deg, $primary-purple, $dark-purple);
+  color: $light-text;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 50%;
+    top: -150px;
+    right: -150px;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 50%;
+    bottom: -300px;
+    left: -200px;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .app-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    @media (max-width: 992px) {
+      flex-direction: column;
+    }
+  }
+  
+  .app-text {
+    width: 45%;
+    padding-right: 40px;
+    
+    @media (max-width: 992px) {
+      width: 100%;
+      padding-right: 0;
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    
+    h2 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+  }
+  
+  .app-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 40px;
+    
+    li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      
+      @media (max-width: 992px) {
+        justify-content: center;
+      }
+    }
+    
+    .check-icon {
+      width: 24px;
+      height: 24px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      font-size: 14px;
+    }
+  }
+  
+  .app-buttons {
+    display: flex;
+    gap: 20px;
+    
+    @media (max-width: 992px) {
+      justify-content: center;
+    }
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  
+  .app-button {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: $light-text;
+    transition: all 0.3s;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .app-button-icon {
+      font-size: 24px;
+      margin-right: 10px;
+      
+      i {
+        font-size: 28px;
+      }
+    }
+    
+    .app-button-text {
+      display: flex;
+      flex-direction: column;
+      
+      span:first-child {
+        font-size: 12px;
+        opacity: 0.8;
+      }
+      
+      span:last-child {
+        font-size: 16px;
+        font-weight: 600;
+      }
+    }
+  }
+  
+  .app-image {
+    width: 45%;
+    position: relative;
+    
+    @media (max-width: 992px) {
+      width: 80%;
+      max-width: 350px;
+    }
+  }
+  
+  .phone-mockup {
+    width: 300px;
+    height: 600px;
+    background-color: $darker-purple;
+    border-radius: 40px;
+    border: 12px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, $dark-purple, $darker-purple);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .phone-notch {
+    width: 120px;
+    height: 25px;
+    background: $darker-purple;
+    border-radius: 0 0 15px 15px;
+    margin: 0 auto 20px;
+  }
+  
+  .app-screen-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .app-screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: $light-text;
+    font-size: 16px;
+    
+    .profile-icon {
+      width: 30px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  
+  .app-screen-balance {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    
+    .balance-label {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-bottom: 10px;
+    }
+    
+    .balance-amount {
+      font-size: 28px;
+      font-weight: bold;
+      color: $light-text;
+    }
+  }
+  
+  .app-screen-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+    
+    .app-action {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 15px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      
+      .app-action-icon {
+        width: 30px;
+        height: 30px;
+        background: $primary-purple;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+      
+      .app-action-label {
+        font-size: 12px;
+        opacity: 0.8;
+      }
+    }
+  }
+  
+  .app-screen-transactions {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+    flex: 1;
+    
+    .transactions-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: 15px;
+      
+      div:last-child {
+        opacity: 0.7;
+      }
+    }
+    
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+  
+  .floating-element {
+    position: absolute;
+    background: $primary-purple;
+    border-radius: 12px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    
+    .floating-icon {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+    
+    &.floating-1 {
+      top: 50px;
+      right: 0;
+      
+      @media (max-width: 992px) {
+        top: 20px;
+        right: 50px;
+      }
+    }
+    
+    &.floating-2 {
+      bottom: 80px;
+      left: 0;
+      
+      @media (max-width: 992px) {
+        bottom: 40px;
+        left: 50px;
+      }
+    }
+  }
+}

@@ -1,1 +1,157 @@
-<p>account-page works!</p>
+<div class="cuentas-page-container">
+  <div class="header">
+    <h1>Gestión de Cuentas</h1>
+    <button *ngIf="isAdmin" mat-raised-button color="primary" (click)="abrirFormularioCuenta()">
+      <mat-icon>add</mat-icon>
+      Nueva cuenta
+    </button>    
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div *ngIf="cargando" class="cargando">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="!cargando && cuentas.length === 0" class="sin-cuentas">
+    <mat-icon>account_balance</mat-icon>
+    <p>No hay cuentas registradas.</p>
+  </div>
+
+  <div *ngIf="!cargando && cuentas.length > 0" class="cuentas-table">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+      <!-- Tipo de cuenta -->
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef>Tipo de cuenta</th>
+        <td mat-cell *matCellDef="let cuenta">
+          <span class="cuenta-tipo">{{ obtenerNombreTipo(cuenta.tipo) }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Número de cuenta -->
+      <ng-container matColumnDef="numero">
+        <th mat-header-cell *matHeaderCellDef>Número</th>
+        <td mat-cell *matCellDef="let cuenta">{{ cuenta.numero_cuenta }}</td>
+      </ng-container>
+
+      <!-- Usuario -->
+      <ng-container matColumnDef="usuario">
+        <th mat-header-cell *matHeaderCellDef>Usuario</th>
+        <td mat-cell *matCellDef="let cuenta">
+          <span class="usuario-nombre">{{ cuenta.usuarioNombre || 'Sin asignar' }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Saldo -->
+      <ng-container matColumnDef="saldo">
+        <th mat-header-cell *matHeaderCellDef>Saldo</th>
+        <td mat-cell *matCellDef="let cuenta" class="saldo-cell">
+          ${{ cuenta.saldo | number: '1.2-2' }}
+        </td>
+      </ng-container>
+
+      <!-- Meta de ahorro -->
+      <ng-container matColumnDef="meta_ahorro">
+        <th mat-header-cell *matHeaderCellDef>Meta de ahorro</th>
+        <td mat-cell *matCellDef="let cuenta" class="meta-cell">
+          ${{ cuenta.meta_ahorro | number: '1.2-2' }}
+        </td>
+      </ng-container>
+
+      <!-- Color -->
+      <ng-container matColumnDef="color">
+        <th mat-header-cell *matHeaderCellDef>Color</th>
+        <td mat-cell *matCellDef="let bolsillo">
+          <div class="color-container">
+            <span class="color-box" [style.background]="bolsillo.color" matTooltip="{{ bolsillo.color }}"></span>
+            <span class="color-text">{{ bolsillo.color }}</span>
+          </div>
+        </td>
+      </ng-container>
+      
+      <!-- Fecha de creación -->
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef>Creación</th>
+        <td mat-cell *matCellDef="let cuenta">
+          {{ cuenta.fecha_creacion | date: 'dd/MM/yyyy' }}
+        </td>
+      </ng-container>
+
+      <!-- ¿Tiene bolsillo? -->
+      <ng-container matColumnDef="tieneBolsillo">
+        <th mat-header-cell *matHeaderCellDef>Bolsillo</th>
+        <td mat-cell *matCellDef="let cuenta" class="bolsillo-cell">
+          <mat-icon color="primary" *ngIf="cuenta.tieneBolsillo" matTooltip="Tiene bolsillo">check_circle</mat-icon>
+          <mat-icon color="warn" *ngIf="!cuenta.tieneBolsillo" matTooltip="No tiene bolsillo">cancel</mat-icon>
+        </td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let cuenta">
+          <div class="acciones">
+            <button mat-icon-button color="accent" matTooltip="Editar cuenta" (click)="editarCuenta(cuenta)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" matTooltip="Eliminar cuenta" (click)="eliminarCuenta(cuenta)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <ng-container *ngIf="cuenta.usuario_id; else habilitado">
+              <button mat-icon-button color="primary" [disabled]="true" matTooltip="Cuenta ya asignada">
+                <mat-icon>link_off</mat-icon>
+              </button>
+            </ng-container>
+            <ng-template #habilitado>
+              <button mat-icon-button color="primary" matTooltip="Asignar cuenta a usuario"
+                (click)="asignarCuenta(cuenta)">
+                <mat-icon>link</mat-icon>
+              </button>
+            </ng-template>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <!-- Paginación -->
+    <div class="paginacion-container">
+      <div class="paginacion-items-por-pagina">
+        <span>Items por página:</span>
+        <mat-form-field appearance="outline">
+          <mat-select [value]="pageSizeOptions[0]" (selectionChange)="cambiarTamanoPagina($event)">
+            <mat-option *ngFor="let size of pageSizeOptions" [value]="size">
+              {{ size }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="paginacion-info">
+        {{ getInfoPaginacion() }}
+      </div>
+
+      <mat-paginator #paginador [pageSize]="pageSizeOptions[0]" [pageSizeOptions]="pageSizeOptions"
+        [hidePageSize]="true" showFirstLastButtons aria-label="Seleccionar página de cuentas"
+        class="paginator-invisible">
+      </mat-paginator>
+
+      <div class="paginacion-controles">
+        <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPrimeraPagina()">
+          <mat-icon>first_page</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPaginaAnterior()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAPaginaSiguiente()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAUltimaPagina()">
+          <mat-icon>last_page</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

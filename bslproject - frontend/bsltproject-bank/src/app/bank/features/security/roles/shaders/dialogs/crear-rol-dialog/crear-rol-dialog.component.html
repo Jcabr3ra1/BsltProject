@@ -1,0 +1,37 @@
+<div class="dialog-content">
+  <h2>
+    <mat-icon>assignment_ind</mat-icon>
+    {{ modoEdicion ? 'Editar Rol' : 'Crear Nuevo Rol' }}
+  </h2>
+  
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-rol">
+    <div class="nombre-field">
+      <div class="input-container">
+        <mat-icon>badge</mat-icon>
+        <input type="text" formControlName="nombre" placeholder="Nombre del Rol*" />
+      </div>
+      <div class="error-message" *ngIf="form.controls['nombre'].touched && form.controls['nombre'].hasError('required')">
+        El nombre es obligatorio
+      </div>
+      <div class="error-message" *ngIf="form.controls['nombre'].touched && form.controls['nombre'].hasError('minlength')">
+        Debe tener al menos 3 caracteres
+      </div>
+    </div>
+    
+    <div class="descripcion-info">
+      <span class="info-text">
+        <mat-icon>info</mat-icon>
+        Los roles definen grupos de permisos que se pueden asignar a los usuarios.
+      </span>
+    </div>
+  
+    <div class="acciones">
+      <button class="btn-cancelar" type="button" (click)="cancelar()">
+        Cancelar
+      </button>
+      <button class="btn-crear" type="submit" [disabled]="form.invalid">
+        {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+      </button>
+    </div>
+  </form>
+</div>
