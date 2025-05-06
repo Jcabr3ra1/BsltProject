@@ -1,120 +1,161 @@
-import { Component, Inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import {
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-  MatDialogModule,
-} from '@angular/material/dialog';
-import {
-  ReactiveFormsModule,
   FormBuilder,
   FormGroup,
   Validators,
+  ReactiveFormsModule,
 } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { BolsillosService } from '../../../services/bolsillos.service';
+import { CuentasService } from '../../../../accounts/services/cuentas.service';
+import { Cuenta } from '../../../../../../../core/models/cuenta.model';
 
 @Component({
-  standalone: true,
   selector: 'app-crear-bolsillo-dialog',
-  templateUrl: './crear-bolsillo-dialog.component.html',
-  styleUrls: ['./crear-bolsillo-dialog.component.scss'],
+  standalone: true,
   imports: [
     CommonModule,
-    MatDialogModule,
     ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
     MatInputModule,
-    MatButtonModule,
     MatSelectModule,
-    MatIconModule
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
   ],
+  templateUrl: './crear-bolsillo-dialog.component.html',
+  styleUrls: ['./crear-bolsillo-dialog.component.scss'],
 })
-export class CrearBolsilloDialogComponent {
-  form: FormGroup;
+export class CrearBolsilloDialogComponent implements OnInit {
+  form!: FormGroup;
   isLoading = false;
-
-  tiposBolsillo: string[] = [
-    'Ahorro',
-    'Emergencias',
-    'Viajes',
-    'Educación',
-    'Personalizado',
-  ];
+  tiposBolsillo = ['Vacaciones', 'Salud', 'Compras', 'Ahorro', 'Personalizado'];
+  coloresPredefinidos: Record<string, string> = {
+    Vacaciones: '#ffb300',
+    Salud: '#4caf50',
+    Compras: '#f44336',
+    Ahorro: '#2196f3',
+  };
 
   constructor(
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<CrearBolsilloDialogComponent>
-  ) {
+    private dialogRef: MatDialogRef<CrearBolsilloDialogComponent>,
+    private bolsilloService: BolsillosService,
+    private cuentaService: CuentasService
+  ) {}
+
+  ngOnInit(): void {
     this.form = this.fb.group({
       tipo: ['', Validators.required],
-      saldo: [0, [Validators.required, Validators.min(0)]],
-      nombrePersonalizado: ['', Validators.required],
-      colorPersonalizado: ['#607d8b'],
+      nombrePersonalizado: [''],
+      colorPersonalizado: ['#a46cf5'],
+      saldo: [0, [Validators.required, Validators.min(0.01)]], // ✅ aquí debe llamarse saldo
     });
-    
-    // Configurar clases para el diálogo
-    this.dialogRef.addPanelClass(['custom-dialog', 'custom-dark-dialog']);
-    
-    // Configurar validación condicional para nombrePersonalizado
-    this.form.get('tipo')?.valueChanges.subscribe(tipo => {
-      const nombreControl = this.form.get('nombrePersonalizado');
-      
-      if (tipo === 'Personalizado') {
-        nombreControl?.setValidators([Validators.required]);
+
+    this.form.get('tipo')?.valueChanges.subscribe((tipo) => {
+      if (tipo !== 'Personalizado') {
+        this.form.get('nombrePersonalizado')?.clearValidators();
+        this.form.get('colorPersonalizado')?.clearValidators();
       } else {
-        nombreControl?.clearValidators();
-        nombreControl?.setValue('');
+        this.form
+          .get('nombrePersonalizado')
+          ?.setValidators([Validators.required]);
+        this.form
+          .get('colorPersonalizado')
+          ?.setValidators([Validators.required]);
       }
-      
-      nombreControl?.updateValueAndValidity();
+      this.form.get('nombrePersonalizado')?.updateValueAndValidity();
+      this.form.get('colorPersonalizado')?.updateValueAndValidity();
     });
   }
 
   getColorPorTipo(tipo: string): string {
-    const colores: Record<string, string> = {
-      Ahorro: '#4caf50',
-      Emergencias: '#f44336',
-      Viajes: '#2196f3',
-      'Educación': '#ff9800',
-      Personalizado: '#9c27b0',
-    };
-    return colores[tipo] || '#607d8b';
-  }
-
-  guardar(): void {
-    if (this.form.valid) {
-      this.isLoading = true;
-      
-      const tipo = this.form.value.tipo;
-
-      const nombreFinal =
-        tipo === 'Personalizado' ? this.form.value.nombrePersonalizado : tipo;
-
-      const colorFinal =
-        tipo === 'Personalizado'
-          ? this.form.value.colorPersonalizado
-          : this.getColorPorTipo(tipo);
-      
-      // Simulación de carga para demostración
-      setTimeout(() => {
-        this.isLoading = false;
-        this.dialogRef.close({
-          nombre: nombreFinal,
-          color: colorFinal,
-          saldo: this.form.value.saldo,
-        });
-      }, 500);
-    } else {
-      // Marcar todos los campos como tocados para mostrar errores
-      Object.keys(this.form.controls).forEach(key => {
-        this.form.get(key)?.markAsTouched();
-      });
-    }
+    return this.coloresPredefinidos[tipo] || '#a46cf5';
   }
 
   cancelar(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
+
+  guardar(): void {
+    if (this.form.invalid) {
+      Object.values(this.form.controls).forEach(control => control.markAsTouched());
+      return;
+    }
+  
+    this.isLoading = true;
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  
+    if (!user.id) {
+      this.isLoading = false;
+      alert('⚠️ Usuario no encontrado en sesión');
+      return;
+    }
+  
+    this.cuentaService.getCuentasPorUsuario(user.id).subscribe({
+      next: (cuentas: Cuenta[]) => {
+        if (!cuentas || cuentas.length === 0) {
+          this.isLoading = false;
+          alert('⚠️ No tienes cuentas asociadas');
+          return;
+        }
+  
+        const cuenta = cuentas[0];
+        const cuentaId = cuenta.id || cuenta._id;
+  
+        if (!cuentaId) {
+          this.isLoading = false;
+          alert('⚠️ ID de cuenta no disponible');
+          return;
+        }
+  
+        const tipo = this.form.value.tipo;
+        const nombre = tipo === 'Personalizado' ? this.form.value.nombrePersonalizado : tipo;
+        const color = tipo === 'Personalizado' ? this.form.value.colorPersonalizado : this.getColorPorTipo(tipo);
+        const saldo = parseFloat(this.form.value.saldo);
+  
+        if (isNaN(saldo) || saldo <= 0) {
+          this.isLoading = false;
+          alert('⚠️ El saldo debe ser mayor que 0');
+          return;
+        }
+  
+        const bolsillo = {
+          nombre,
+          color,
+          saldo,
+          id_cuenta: cuentaId
+        };
+  
+        console.log('🟠 Enviando bolsillo:', bolsillo);
+  
+        this.bolsilloService.crearBolsillo(bolsillo).subscribe({
+          next: (res) => {
+            console.log('✅ Bolsillo creado:', res);
+            this.isLoading = false;
+            this.dialogRef.close(true);
+          },
+          error: (err) => {
+            this.isLoading = false;
+            console.error('❌ Error completo:', err);
+            const msg = err?.error?.mensaje || 'Error al crear bolsillo (422)';
+            alert(`❌ ${msg}`);
+          }
+        });
+      },
+      error: (err) => {
+        console.error('❌ Error al obtener cuentas:', err);
+        this.isLoading = false;
+        alert('❌ Error al obtener la cuenta del usuario');
+      }
+    });
+  }  
 }

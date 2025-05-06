@@ -19,15 +19,15 @@ import { EditarTipoMovimientoDialogComponent } from '../../shared/dialogs/editar
   selector: 'app-type-of-movement-page',
   standalone: true,
   imports: [
-    CommonModule, 
-    MatTableModule, 
-    MatIconModule, 
+    CommonModule,
+    MatTableModule,
+    MatIconModule,
     MatButtonModule,
     MatPaginatorModule,
     MatSortModule,
     MatTooltipModule,
     MatSnackBarModule,
-    FormsModule
+    FormsModule,
   ],
   templateUrl: './type-of-movement-page.component.html',
   styleUrls: ['./type-of-movement-page.component.scss'],
@@ -36,17 +36,16 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
   tiposMovimiento: TipoMovimiento[] = [];
   filteredTipos: TipoMovimiento[] = [];
   searchTerm: string = '';
-  
+
   displayedColumns: string[] = [
     'codigo_origen',
     'codigo_destino',
     'descripcion',
-    'tipo_transaccion',
     'acciones',
   ];
-  
+
   dataSource = new MatTableDataSource<TipoMovimiento>([]);
-  
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -59,7 +58,7 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.cargarTiposMovimiento();
   }
-  
+
   ngAfterViewInit() {
     if (this.paginator && this.sort) {
       this.dataSource.paginator = this.paginator;
@@ -73,7 +72,7 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
         this.tiposMovimiento = data;
         this.filteredTipos = [...this.tiposMovimiento];
         this.dataSource.data = this.filteredTipos;
-        
+
         // Volver a aplicar paginador y ordenamiento
         if (this.paginator && this.sort) {
           this.dataSource.paginator = this.paginator;
@@ -90,7 +89,7 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
   abrirCrear(): void {
     const dialogRef = this.dialog.open(CrearTipoMovimientoDialogComponent, {
       width: '450px',
-      panelClass: ['custom-dialog', 'custom-dark-dialog']
+      panelClass: ['custom-dialog', 'custom-dark-dialog'],
     });
 
     dialogRef.afterClosed().subscribe((nuevo) => {
@@ -103,7 +102,7 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
           error: (error) => {
             console.error('Error al crear tipo de movimiento', error);
             this.mostrarError('Error al crear el tipo de movimiento');
-          }
+          },
         });
       }
     });
@@ -113,24 +112,23 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(EditarTipoMovimientoDialogComponent, {
       width: '450px',
       data: tipo,
-      panelClass: ['custom-dialog', 'custom-dark-dialog']
+      panelClass: ['custom-dialog', 'custom-dark-dialog'],
     });
 
     dialogRef.afterClosed().subscribe((actualizado) => {
       if (actualizado) {
-        this.movementTypeService.actualizarTipoMovimiento(
-          actualizado.id!, 
-          actualizado
-        ).subscribe({
-          next: () => {
-            this.cargarTiposMovimiento();
-            this.mostrarExito('Tipo de movimiento actualizado correctamente');
-          },
-          error: (error) => {
-            console.error('Error al actualizar tipo de movimiento', error);
-            this.mostrarError('Error al actualizar el tipo de movimiento');
-          }
-        });
+        this.movementTypeService
+          .actualizarTipoMovimiento(actualizado.id!, actualizado)
+          .subscribe({
+            next: () => {
+              this.cargarTiposMovimiento();
+              this.mostrarExito('Tipo de movimiento actualizado correctamente');
+            },
+            error: (error) => {
+              console.error('Error al actualizar tipo de movimiento', error);
+              this.mostrarError('Error al actualizar el tipo de movimiento');
+            },
+          });
       }
     });
   }
@@ -149,7 +147,7 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
         error: (error) => {
           console.error('Error al eliminar tipo de movimiento', error);
           this.mostrarError('Error al eliminar el tipo de movimiento');
-        }
+        },
       });
     } else if (!id) {
       this.mostrarError('No se pudo eliminar. ID inválido.');

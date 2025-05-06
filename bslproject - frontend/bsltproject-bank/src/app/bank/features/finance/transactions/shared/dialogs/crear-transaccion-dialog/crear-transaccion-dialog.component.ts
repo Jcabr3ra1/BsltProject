@@ -245,26 +245,30 @@ export class CrearTransaccionDialogComponent {
       monto: formData.monto,
       descripcion: formData.descripcion
     };
-    
+  
     // Añadir IDs de cuentas y bolsillos según corresponda
     if (origen === 'ACCOUNT') {
       resultado.cuentaOrigenId = formData.id_cuenta_origen;
     }
-    
+  
     if (destino === 'ACCOUNT') {
       resultado.cuentaDestinoId = formData.id_cuenta_destino;
     }
-    
+  
     if (origen === 'WALLET') {
       resultado.bolsilloOrigenId = formData.id_bolsillo_origen;
     }
-    
+  
     if (destino === 'WALLET') {
       resultado.bolsilloDestinoId = formData.id_bolsillo_destino;
     }
-    
+  
+    // Log final antes de enviar al backend
+    console.log('📤 Payload final enviado al backend:', resultado);
+  
     return resultado;
   }
+  
 
   // Mostrar notificación con SnackBar
   mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' = 'success'): void {
@@ -285,41 +289,46 @@ export class CrearTransaccionDialogComponent {
       });
       return;
     }
-
+  
     const tipo = this.tipoMovimientoSeleccionado;
     if (!tipo) return;
-    
+  
     const origen = tipo.codigo_origen.toUpperCase();
     const destino = tipo.codigo_destino.toUpperCase();
-
+  
     // Validar campos específicos según el tipo de movimiento
     if (origen === 'ACCOUNT' && !this.form.value.id_cuenta_origen) {
       this.form.get('id_cuenta_origen')?.setErrors({ required: true });
       this.form.get('id_cuenta_origen')?.markAsTouched();
       return;
     }
-
+  
     if (destino === 'ACCOUNT' && !this.form.value.id_cuenta_destino) {
       this.form.get('id_cuenta_destino')?.setErrors({ required: true });
       this.form.get('id_cuenta_destino')?.markAsTouched();
       return;
     }
-
+  
     if (origen === 'WALLET' && !this.form.value.id_bolsillo_origen) {
       this.form.get('id_bolsillo_origen')?.setErrors({ required: true });
       this.form.get('id_bolsillo_origen')?.markAsTouched();
       return;
     }
-
+  
     if (destino === 'WALLET' && !this.form.value.id_bolsillo_destino) {
       this.form.get('id_bolsillo_destino')?.setErrors({ required: true });
       this.form.get('id_bolsillo_destino')?.markAsTouched();
       return;
     }
-
+  
+    // Logs para depuración
+    console.log('🧪 Monto ingresado en el formulario:', this.form.value.monto);
+    console.log('🧪 Formulario completo antes de enviar:', this.form.value);
+  
     // Ejecutar la transacción con los datos del formulario
     this.ejecutarTransaccion(this.form.value);
   }
+  
 
   // Cancelar y cerrar el diálogo
   cancelar(): void {

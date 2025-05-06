@@ -75,6 +75,10 @@ class CuentaServicio:
             nueva_cuenta.usuario_id = usuario_id
             print(f"Confirmando que usuario_id está establecido: {nueva_cuenta.usuario_id}")
 
+        numero_existente = self.repositorioCuenta.query({"numero_cuenta": nueva_cuenta.numero_cuenta})
+        if numero_existente:
+            return {"error": "Ya existe una cuenta con ese número de cuenta"}, 400
+
         # Guardar la cuenta en la base de datos
         print(f"Guardando cuenta en la base de datos: {nueva_cuenta.__dict__}")
         cuenta_guardada = self.repositorioCuenta.save(nueva_cuenta)
@@ -93,6 +97,7 @@ class CuentaServicio:
             print(f"Notificando al servicio de seguridad sobre la asociación de usuario {usuario_id} con cuenta {cuenta_guardada['_id']}")
             self._notificar_seguridad_asociacion(cuenta_guardada["_id"], usuario_id)
 
+        cuenta_guardada["_id"] = str(cuenta_guardada["_id"])
         return cuenta_guardada
 
     def _generar_numero_cuenta(self):

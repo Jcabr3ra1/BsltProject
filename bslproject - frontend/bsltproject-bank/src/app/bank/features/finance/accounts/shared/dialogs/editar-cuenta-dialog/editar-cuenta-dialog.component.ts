@@ -32,15 +32,10 @@ export class EditarCuentaDialogComponent implements OnInit {
   form!: FormGroup;
   cuenta!: Cuenta;
   cargando: boolean = false;
+  esAdmin: boolean = false;
   coloresPredefinidos: string[] = [
-    '#a46cf5', // Morado (primary)
-    '#64b5f6', // Azul
-    '#4caf50', // Verde
-    '#ff5252', // Rojo
-    '#ffb300', // Ámbar
-    '#607d8b', // Gris azulado
-    '#9c27b0', // Púrpura
-    '#009688'  // Verde azulado
+    '#a46cf5', '#64b5f6', '#4caf50', '#ff5252',
+    '#ffb300', '#607d8b', '#9c27b0', '#009688'
   ];
 
   constructor(
@@ -50,65 +45,53 @@ export class EditarCuentaDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: Cuenta
   ) {
     this.cuenta = data;
-    
-    // Configurar clases para el diálogo
     this.dialogRef.addPanelClass(['custom-dialog', 'custom-dark-dialog']);
   }
 
   ngOnInit(): void {
+    // Detectar rol del usuario desde localStorage
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const roles = Array.isArray(user.roles) ? user.roles.map((r: any) => typeof r === 'string' ? r : r.nombre) : [];
+    this.esAdmin = roles.includes('ADMIN');
+
     this.inicializarFormulario();
-    
-    // Observar cambios en el tipo de cuenta para ajustar el color
+
+    // Ajustar el color según tipo de cuenta
     this.form.get('tipo_cuenta')?.valueChanges.subscribe(tipo => {
       this.ajustarColorPorTipo(tipo);
     });
+
+    // Si NO es admin, desactivar campos
+    if (!this.esAdmin) {
+      this.form.get('tipo_cuenta')?.disable();
+      this.form.get('numero_cuenta')?.disable();
+      this.form.get('saldo')?.disable();
+    }
   }
 
   inicializarFormulario(): void {
     this.form = this.fb.group({
       tipo_cuenta: [this.data.tipo, Validators.required],
-      numero_cuenta: [
-        this.data.numero_cuenta, 
-        [Validators.required, Validators.pattern('[0-9\\-]*')]
-      ],
-      saldo: [
-        this.data.saldo, 
-        [Validators.required, Validators.min(0)]
-      ],
-      meta_ahorro: [
-        this.data.meta_ahorro || 0, 
-        [Validators.min(0)]
-      ],
-      color: [
-        this.data.color || '#a46cf5', 
-        Validators.required
-      ]
+      numero_cuenta: [this.data.numero_cuenta, [Validators.required, Validators.pattern('[0-9\\-]*')]],
+      saldo: [this.data.saldo, [Validators.required, Validators.min(0)]],
+      meta_ahorro: [this.data.meta_ahorro || 0, [Validators.min(0)]],
+      color: [this.data.color || '#a46cf5', Validators.required]
     });
   }
 
   ajustarColorPorTipo(tipo: string): void {
-    // Si el usuario ya modificó el color manualmente, no lo cambiamos
     const colorActual = this.form.get('color')?.value;
     const colorExistente = this.coloresPredefinidos.includes(colorActual);
-    
     if (!colorExistente) return;
-    
+
     let colorPredeterminado = '';
-    
-    switch(tipo) {
-      case 'CUENTA_AHORRO':
-        colorPredeterminado = this.coloresPredefinidos[0]; // Morado
-        break;
-      case 'CUENTA_CORRIENTE':
-        colorPredeterminado = this.coloresPredefinidos[1]; // Azul
-        break;
-      case 'CUENTA_NOMINA':
-        colorPredeterminado = this.coloresPredefinidos[3]; // Rojo
-        break;
-      default:
-        colorPredeterminado = this.coloresPredefinidos[5]; // Gris azulado
+    switch (tipo) {
+      case 'CUENTA_AHORRO': colorPredeterminado = this.coloresPredefinidos[0]; break;
+      case 'CUENTA_CORRIENTE': colorPredeterminado = this.coloresPredefinidos[1]; break;
+      case 'CUENTA_NOMINA': colorPredeterminado = this.coloresPredefinidos[3]; break;
+      default: colorPredeterminado = this.coloresPredefinidos[5];
     }
-    
+
     this.form.get('color')?.setValue(colorPredeterminado);
   }
 
@@ -120,21 +103,23 @@ export class EditarCuentaDialogComponent implements OnInit {
   guardar(): void {
     if (this.form.valid) {
       this.cargando = true;
-      
-      const payload = {
+
+      const id = this.cuenta._id || this.cuenta.id;
+      if (!id) {
+        this.cargando = false;
+        return;
+      }
+
+      const payload: any = {
         ...this.data,
-        tipo: this.form.value.tipo_cuenta,
-        numero_cuenta: this.form.value.numero_cuenta,
-        saldo: parseFloat(this.form.value.saldo.toFixed(2)),
         meta_ahorro: parseFloat((this.form.value.meta_ahorro || 0).toFixed(2)),
         color: this.form.value.color
       };
 
-      const id = this.cuenta._id || this.cuenta.id;
-      if (!id) {
-        console.error('❌ ID de cuenta no definido');
-        this.cargando = false;
-        return;
+      if (this.esAdmin) {
+        payload.tipo = this.form.value.tipo_cuenta;
+        payload.numero_cuenta = this.form.value.numero_cuenta;
+        payload.saldo = parseFloat(this.form.value.saldo.toFixed(2));
       }
 
       this.cuentasService.actualizarCuenta(id, payload).subscribe({
@@ -142,13 +127,11 @@ export class EditarCuentaDialogComponent implements OnInit {
           this.cargando = false;
           this.dialogRef.close(true);
         },
-        error: (error) => {
-          console.error('❌ Error al actualizar cuenta', error);
+        error: () => {
           this.cargando = false;
         }
       });
     } else {
-      // Marcar todos los campos como tocados para mostrar errores
       Object.keys(this.form.controls).forEach(key => {
         this.form.get(key)?.markAsTouched();
       });

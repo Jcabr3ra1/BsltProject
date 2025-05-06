@@ -35,7 +35,7 @@ import { AsignarCuentaDialogComponent } from '../../shared/dialogs/asignar-cuent
     MatTooltipModule,
     MatPaginatorModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
   ],
   templateUrl: './account-page.component.html',
   styleUrls: ['./account-page.component.scss'],
@@ -43,6 +43,7 @@ import { AsignarCuentaDialogComponent } from '../../shared/dialogs/asignar-cuent
 export class AccountPageComponent implements OnInit {
   cuentas: Cuenta[] = [];
   bolsillos: any[] = [];
+  isAdmin: boolean = false;
   cargando: boolean = true;
   dataSource = new MatTableDataSource<Cuenta>([]);
   pageSizeOptions: number[] = [5, 10, 25, 50];
@@ -69,6 +70,12 @@ export class AccountPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const roles = Array.isArray(user.roles)
+      ? user.roles.map((r: any) => (typeof r === 'string' ? r : r.nombre))
+      : [];
+    this.isAdmin = roles.includes('ADMIN');
+
     this.cargarDatos();
   }
 
@@ -80,8 +87,22 @@ export class AccountPageComponent implements OnInit {
 
   cargarDatos(): void {
     this.cargando = true;
+
+    const rawUser = localStorage.getItem('user');
+    const user = rawUser ? JSON.parse(rawUser) : null;
+
+    if (!user) {
+      console.warn('⚠️ No hay usuario autenticado');
+      this.cargando = false;
+      return;
+    }
+
+    const cuentas$ = this.isAdmin
+      ? this.cuentasService.getCuentas()
+      : this.cuentasService.getCuentasPorUsuario(user.id);
+
     forkJoin({
-      cuentas: this.cuentasService.getCuentas(),
+      cuentas: cuentas$,
       usuarios: this.cuentasService.getUsuarios(),
       bolsillos: this.cuentasService.getBolsillos(),
     }).subscribe({
@@ -91,7 +112,7 @@ export class AccountPageComponent implements OnInit {
           const tieneBolsillo = bolsillos.some(
             (b) => b.id_cuenta === cuenta.id || b.id_cuenta === cuenta._id
           );
-  
+
           return {
             ...cuenta,
             id: cuenta.id,
@@ -104,11 +125,10 @@ export class AccountPageComponent implements OnInit {
               : undefined,
           };
         });
-        
+
         this.dataSource.data = this.cuentas;
         this.cargando = false;
-        
-        // Actualizamos el paginador después de cargar los datos
+
         setTimeout(() => {
           if (this.paginador) {
             this.dataSource.paginator = this.paginador;
@@ -118,27 +138,27 @@ export class AccountPageComponent implements OnInit {
       error: (error) => {
         console.error('❌ Error al cargar datos:', error);
         this.cargando = false;
-      }
+      },
     });
   }
 
   cambiarTamanoPagina(event: any): void {
     this.tamanoActual = event.value;
     this.paginaActual = 0;
-    
+
     if (this.paginador) {
       this.paginador.pageSize = this.tamanoActual;
       this.paginador.pageIndex = 0;
     }
   }
-  
+
   irAPrimeraPagina(): void {
     this.paginaActual = 0;
     if (this.paginador) {
       this.paginador.firstPage();
     }
   }
-  
+
   irAPaginaAnterior(): void {
     if (this.paginaActual > 0) {
       this.paginaActual--;
@@ -147,7 +167,7 @@ export class AccountPageComponent implements OnInit {
       }
     }
   }
-  
+
   irAPaginaSiguiente(): void {
     if (this.paginaActual < this.getTotalPaginas() - 1) {
       this.paginaActual++;
@@ -156,38 +176,41 @@ export class AccountPageComponent implements OnInit {
       }
     }
   }
-  
+
   irAUltimaPagina(): void {
     this.paginaActual = this.getTotalPaginas() - 1;
     if (this.paginador) {
       this.paginador.lastPage();
     }
   }
-  
+
   puedeRetroceder(): boolean {
     return this.paginaActual > 0;
   }
-  
+
   puedeAvanzar(): boolean {
     return this.paginaActual < this.getTotalPaginas() - 1;
   }
-  
+
   getTotalPaginas(): number {
     return Math.ceil(this.cuentas.length / this.tamanoActual);
   }
-  
+
   getInfoPaginacion(): string {
     if (this.cuentas.length === 0) return '0 - 0 de 0';
-    
+
     const inicio = this.paginaActual * this.tamanoActual + 1;
-    const fin = Math.min((this.paginaActual + 1) * this.tamanoActual, this.cuentas.length);
+    const fin = Math.min(
+      (this.paginaActual + 1) * this.tamanoActual,
+      this.cuentas.length
+    );
     return `${inicio} - ${fin} de ${this.cuentas.length}`;
   }
 
   abrirFormularioCuenta(): void {
     const dialogRef = this.dialog.open(CrearCuentaDialogComponent, {
       width: '450px',
-      panelClass: ['custom-dialog', 'custom-dark-dialog']
+      panelClass: ['custom-dialog', 'custom-dark-dialog'],
     });
 
     dialogRef.afterClosed().subscribe((resultado) => {
@@ -200,7 +223,7 @@ export class AccountPageComponent implements OnInit {
           error: (error) => {
             console.error('❌ Error al crear cuenta:', error);
             this.cargando = false;
-          }
+          },
         });
       }
     });
@@ -210,7 +233,7 @@ export class AccountPageComponent implements OnInit {
     const dialogRef = this.dialog.open(EditarCuentaDialogComponent, {
       width: '450px',
       data: cuenta,
-      panelClass: ['custom-dialog', 'custom-dark-dialog']
+      panelClass: ['custom-dialog', 'custom-dark-dialog'],
     });
 
     dialogRef.afterClosed().subscribe((resultado) => {
@@ -242,7 +265,7 @@ export class AccountPageComponent implements OnInit {
         error: (err) => {
           console.error('❌ Error al eliminar la cuenta:', err);
           this.cargando = false;
-        }
+        },
       });
     };
 
@@ -266,7 +289,7 @@ export class AccountPageComponent implements OnInit {
     const dialogRef = this.dialog.open(AsignarCuentaDialogComponent, {
       width: '450px',
       data: cuenta,
-      panelClass: ['custom-dialog', 'custom-dark-dialog']
+      panelClass: ['custom-dialog', 'custom-dark-dialog'],
     });
 
     dialogRef.afterClosed().subscribe((resultado) => {
@@ -282,8 +305,8 @@ export class AccountPageComponent implements OnInit {
       CUENTA_AHORRO: 'Cuenta de ahorro',
       CUENTA_CORRIENTE: 'Cuenta corriente',
       CUENTA_NOMINA: 'Cuenta nómina',
-      OTRO: 'Otro'
+      OTRO: 'Otro',
     };
     return tiposLegibles[tipo] || tipo;
-  }  
+  }
 }

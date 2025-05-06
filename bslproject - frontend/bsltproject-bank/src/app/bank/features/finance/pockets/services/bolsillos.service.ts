@@ -16,12 +16,13 @@ export class BolsillosService {
   getBolsillos(): Observable<Bolsillo[]> {
     return this.http.get<Bolsillo[]>(`${this.baseUrl}/finanzas/bolsillos`);
   }
+  
 
   // ✅ Crear un nuevo bolsillo
-  crearBolsillo(data: { nombre: string; color: string; saldo: number; id_cuenta: string }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/finanzas/bolsillos`, data);
+  crearBolsillo(datos: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/finanzas/bolsillos`, datos);
   }
-
+  
   // ✅ Actualizar un bolsillo
   actualizarBolsillo(id: string, bolsillo: Partial<Bolsillo>): Observable<any> {
     return this.http.put(`${this.baseUrl}/finanzas/bolsillos/${id}`, bolsillo);

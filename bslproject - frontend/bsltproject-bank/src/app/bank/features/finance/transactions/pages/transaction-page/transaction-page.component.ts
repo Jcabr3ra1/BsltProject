@@ -367,9 +367,18 @@ export class TransactionPageComponent
    * Carga el resumen financiero del usuario
    */
   cargarResumenUsuario(): void {
+    const rawUser = localStorage.getItem('user');
+    const user = rawUser ? JSON.parse(rawUser) : null;
+  
+    if (!user?.id) {
+      this.mostrarNotificacion('⚠️ No hay usuario autenticado', 5000);
+      return;
+    }
+  
+    const esAdmin = user.rol === 'ADMIN';
+  
     this.isLoading = true;
-
-    // Usar forkJoin para ejecutar ambas peticiones en paralelo
+  
     const resumenSub = forkJoin({
       cuentas: this.cuentasService.getCuentas(),
       bolsillos: this.bolsillosService.getBolsillos(),
@@ -387,21 +396,26 @@ export class TransactionPageComponent
       )
       .subscribe({
         next: ({ cuentas, bolsillos }) => {
-          const cuentasAsignadas = cuentas.filter((c) => c.usuario_id);
-          const bolsillosAsignados = bolsillos.filter((b) => b.id_cuenta);
-
+          const cuentasAsignadas = esAdmin
+            ? cuentas
+            : cuentas.filter((c) => c.usuario_id === user.id);
+            
+          const bolsillosAsignados = esAdmin
+            ? bolsillos
+            : bolsillos.filter((b) => cuentasAsignadas.some(c => c.id === b.id_cuenta || c._id === b.id_cuenta));
+  
           const totalCuentas = cuentasAsignadas.reduce(
             (acc, c) => acc + (c.saldo || 0),
             0
           );
-
+  
           const totalBolsillos = bolsillosAsignados.reduce(
             (acc, b) => acc + (b.saldo || 0),
             0
           );
-
+  
           this.usuarioResumen = {
-            nombre: 'Usuario autenticado',
+            nombre: esAdmin ? 'Administrador' : `${user.nombre} ${user.apellido || ''}`,
             totalCuentas,
             totalBolsillos,
             cuentas: cuentasAsignadas,
@@ -409,7 +423,7 @@ export class TransactionPageComponent
           };
         },
       });
-
+  
     this.subscriptions.add(resumenSub);
   }
 
@@ -418,46 +432,41 @@ export class TransactionPageComponent
    */
   cargarTransacciones(): void {
     const rawUser = localStorage.getItem('user');
-    const idUsuario = rawUser ? JSON.parse(rawUser).id : null;
-
-    if (!idUsuario) {
+    const user = rawUser ? JSON.parse(rawUser) : null;
+  
+    if (!user?.id) {
       console.warn('⚠️ No se pudo obtener el ID de usuario desde localStorage');
       this.mostrarNotificacion('⚠️ No hay usuario autenticado', 5000);
       return;
     }
-
+  
+    const esAdmin = user.rol === 'ADMIN'; // o el campo real que uses para el rol
+  
     this.isLoading = true;
-    const transaccionesSub = this.transaccionService
-      .getTransaccionesPorUsuario(idUsuario)
+    const request$ = esAdmin
+      ? this.transaccionService.getTransacciones()
+      : this.transaccionService.getTransaccionesPorUsuario(user.id);
+  
+    const transaccionesSub = request$
       .pipe(
         finalize(() => (this.isLoading = false)),
         catchError((error) => {
           console.error('Error al cargar transacciones:', error);
-          this.mostrarNotificacion(
-            '❌ Error al cargar las transacciones',
-            5000
-          );
+          this.mostrarNotificacion('❌ Error al cargar las transacciones', 5000);
           throw error;
         })
       )
       .subscribe({
         next: (data) => {
           this.transacciones = data;
-
-          // Crea un nuevo MatTableDataSource en lugar de solo asignar los datos
-          this.dataSource = new MatTableDataSource<Transaccion>(
-            this.transacciones
-          );
-
-          // Asigna el paginador después de crear un nuevo dataSource
-          if (this.paginator) {
-            this.dataSource.paginator = this.paginator;
-          }
+          this.dataSource = new MatTableDataSource<Transaccion>(data);
+          if (this.paginator) this.dataSource.paginator = this.paginator;
         },
       });
-
+  
     this.subscriptions.add(transaccionesSub);
   }
+  
 
   /**
    * Anula una transacción existente

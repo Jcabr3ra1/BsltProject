@@ -2,6 +2,7 @@
   <h3 class="sidebar-title">Banco Púrpura</h3>
 
   <div class="sidebar-content">
+    <!-- Siempre visible -->
     <a mat-button routerLink="/dashboard" class="sidebar-link" [class.active]="activePage === 'dashboard'">
       <mat-icon>dashboard</mat-icon>
       Dashboard
@@ -9,7 +10,8 @@
 
     <div class="divider"></div>
 
-    <div class="sidebar-section">
+    <!-- ✅ SEGURIDAD: Solo ADMIN -->
+    <div *ngIf="isAdmin()" class="sidebar-section">
       <div class="section-header" [class.expanded]="expandedMenus['seguridad']" (click)="toggleMenu('seguridad')">
         <div>
           <mat-icon>admin_panel_settings</mat-icon>
@@ -37,7 +39,8 @@
       </div>
     </div>
 
-    <div class="sidebar-section">
+    <!-- ✅ FINANZAS: visible para todos, pero con opciones limitadas para USER -->
+    <div *ngIf="isAdmin() || isModerador() || isUsuario()" class="sidebar-section">
       <div class="section-header" [class.expanded]="expandedMenus['finanzas']" (click)="toggleMenu('finanzas')">
         <div>
           <mat-icon>savings</mat-icon>
@@ -58,11 +61,13 @@
           <mat-icon>account_balance_wallet</mat-icon>
           Bolsillos
         </a>
-        <a mat-button routerLink="/tipo-transaccion" class="sidebar-link" [class.active]="activePage === 'tipo-transaccion'">
+
+        <!-- Estos 2 solo para ADMIN o MODERADOR -->
+        <a *ngIf="!isUsuario()" mat-button routerLink="/tipo-transaccion" class="sidebar-link" [class.active]="activePage === 'tipo-transaccion'">
           <mat-icon>description</mat-icon>
           Tipos de Transacción
         </a>
-        <a mat-button routerLink="/tipo-movimiento" class="sidebar-link" [class.active]="activePage === 'tipo-movimiento'">
+        <a *ngIf="!isUsuario()" mat-button routerLink="/tipo-movimiento" class="sidebar-link" [class.active]="activePage === 'tipo-movimiento'">
           <mat-icon>shuffle</mat-icon>
           Tipos de Movimiento
         </a>
@@ -71,6 +76,7 @@
 
     <div class="divider"></div>
 
+    <!-- Siempre visibles -->
     <a mat-button routerLink="/configuracion" class="sidebar-link" [class.active]="activePage === 'configuracion'">
       <mat-icon>settings</mat-icon>
       Configuración

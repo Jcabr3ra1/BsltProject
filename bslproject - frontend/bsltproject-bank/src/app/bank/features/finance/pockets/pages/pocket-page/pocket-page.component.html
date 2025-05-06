@@ -30,12 +30,18 @@
         <th mat-header-cell *matHeaderCellDef>Color</th>
         <td mat-cell *matCellDef="let b">
           <div class="color-container">
-            <span [style.background]="b.color" class="color-box"></span>
-            <span class="color-text">{{ b.color }}</span>
+            <span
+              class="color-box"
+              [style.background]="b.color"
+              [matTooltip]="getNombreColor(b.color)"
+            ></span>
+            <span class="color-text">
+              {{ b.color }}
+            </span>
           </div>
         </td>
       </ng-container>
-
+      
       <!-- Saldo -->
       <ng-container matColumnDef="saldo">
         <th mat-header-cell *matHeaderCellDef>Saldo</th>
@@ -56,7 +62,8 @@
             <button mat-icon-button color="primary" matTooltip="Editar bolsillo" (click)="abrirEditar(b)">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn" matTooltip="Eliminar bolsillo" (click)="eliminarBolsillo(b.id || b._id)">
+            <button mat-icon-button color="warn" matTooltip="Eliminar bolsillo"
+              (click)="eliminarBolsillo(b.id || b._id)">
               <mat-icon>delete</mat-icon>
             </button>
             <button mat-icon-button color="accent" matTooltip="Asignar bolsillo" (click)="abrirAsignar(b)">
@@ -82,19 +89,22 @@
           </mat-select>
         </mat-form-field>
       </div>
-      
+
       <div class="paginacion-info">
         {{ getInfoPaginacion() }}
       </div>
-      
+
       <div class="paginacion-controles">
-        <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPrimeraPagina()" matTooltip="Primera página">
+        <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPrimeraPagina()"
+          matTooltip="Primera página">
           <mat-icon>first_page</mat-icon>
         </button>
-        <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPaginaAnterior()" matTooltip="Página anterior">
+        <button mat-icon-button [disabled]="!puedeRetroceder()" (click)="irAPaginaAnterior()"
+          matTooltip="Página anterior">
           <mat-icon>chevron_left</mat-icon>
         </button>
-        <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAPaginaSiguiente()" matTooltip="Página siguiente">
+        <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAPaginaSiguiente()"
+          matTooltip="Página siguiente">
           <mat-icon>chevron_right</mat-icon>
         </button>
         <button mat-icon-button [disabled]="!puedeAvanzar()" (click)="irAUltimaPagina()" matTooltip="Última página">

@@ -328,3 +328,22 @@ $key-color: #ffb300;
     }
   }
 }
+
+.color-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-box {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.snackbar-success {
+  background-color: #4caf50;
+  color: white;
+}
+

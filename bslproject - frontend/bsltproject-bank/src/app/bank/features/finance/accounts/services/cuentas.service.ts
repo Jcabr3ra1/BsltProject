@@ -21,6 +21,11 @@ export class CuentasService {
   crearCuenta(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/finanzas/cuentas`, data);
   }
+  
+
+  getCuentasPorUsuario(id_usuario: string): Observable<Cuenta[]> {
+    return this.http.get<Cuenta[]>(`${this.baseUrl}/finanzas/cuentas/usuario/${id_usuario}`);
+  }
 
   // ✅ Actualizar cuenta
   actualizarCuenta(id: string, cuenta: Partial<Cuenta>) {

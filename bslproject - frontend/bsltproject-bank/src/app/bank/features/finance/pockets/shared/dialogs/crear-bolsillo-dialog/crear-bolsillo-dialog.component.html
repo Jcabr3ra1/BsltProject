@@ -24,10 +24,12 @@
       <div class="form-field">
         <label for="nombrePersonalizado">Nombre personalizado<span class="required">*</span></label>
         <div class="input-with-icon">
-          <input id="nombrePersonalizado" type="text" formControlName="nombrePersonalizado" placeholder="Ej. Vacaciones, Compras">
+          <input id="nombrePersonalizado" type="text" formControlName="nombrePersonalizado"
+            placeholder="Ej. Vacaciones, Compras">
           <mat-icon>edit</mat-icon>
         </div>
-        <div class="error-message" *ngIf="form.get('nombrePersonalizado')?.touched && form.get('nombrePersonalizado')?.hasError('required')">
+        <div class="error-message"
+          *ngIf="form.get('nombrePersonalizado')?.touched && form.get('nombrePersonalizado')?.hasError('required')">
           El nombre personalizado es obligatorio
         </div>
       </div>
@@ -39,7 +41,7 @@
             <input id="color-display" type="text" [value]="form.get('colorPersonalizado')?.value" readonly>
             <mat-icon>palette</mat-icon>
           </div>
-          
+
           <div class="color-preview" [style.background-color]="form.get('colorPersonalizado')?.value">
             <input type="color" id="colorPersonalizado" formControlName="colorPersonalizado" />
           </div>
@@ -73,7 +75,8 @@
 
     <div class="info-container">
       <mat-icon>info</mat-icon>
-      <p>Los bolsillos te permiten organizar y separar tu dinero según diferentes objetivos o categorías. Puedes crear bolsillos para ahorrar para metas específicas.</p>
+      <p>Los bolsillos te permiten organizar y separar tu dinero según diferentes objetivos o categorías. Puedes crear
+        bolsillos para ahorrar para metas específicas.</p>
     </div>
 
     <div class="dialog-actions">
@@ -81,11 +84,12 @@
         <mat-icon>close</mat-icon>
         Cancelar
       </button>
-      <button type="submit" class="btn-save" [disabled]="form.invalid">
+      <button type="submit" class="btn-save" [disabled]="form.invalid || isLoading" (click)="guardar()">
         <div class="spinner" *ngIf="isLoading"></div>
         <mat-icon *ngIf="!isLoading">save</mat-icon>
         Crear
-      </button>      
+      </button>
+
     </div>
   </form>
 </div>

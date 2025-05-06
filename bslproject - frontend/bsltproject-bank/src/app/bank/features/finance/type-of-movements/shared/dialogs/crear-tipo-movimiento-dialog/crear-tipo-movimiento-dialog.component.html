@@ -5,14 +5,6 @@
   </div>
 
   <form [formGroup]="form" class="formulario-movimiento">
-    <div class="tipo-movimiento-info">
-      <div class="tipo-badge" [ngClass]="getTipoClase()">
-        <mat-icon>{{ getTipoIcono() }}</mat-icon>
-        <span>{{ getTipoEtiqueta() }}</span>
-      </div>
-      <p class="tipo-description">{{ getTipoDescripcion() }}</p>
-    </div>
-
     <div class="form-field">
       <label for="codigo_origen">Código Origen<span class="required">*</span></label>
       <div class="input-with-icon">

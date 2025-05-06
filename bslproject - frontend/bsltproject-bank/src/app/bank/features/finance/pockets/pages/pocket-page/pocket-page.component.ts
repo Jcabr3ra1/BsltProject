@@ -11,6 +11,10 @@ import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
+
 
 import { CrearBolsilloDialogComponent } from '../../shared/dialogs/crear-bolsillo-dialog/crear-bolsillo-dialog.component';
 import { EditarBolsilloDialogComponent } from '../../shared/dialogs/editar-bolsillo-dialog/editar-bolsillo-dialog.component';
@@ -37,7 +41,8 @@ import { Cuenta } from '../../../../../../core/models/cuenta.model';
     MatTooltipModule,
     MatPaginatorModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    MatSnackBarModule
   ],
 })
 export class PocketPageComponent implements OnInit {
@@ -62,7 +67,8 @@ export class PocketPageComponent implements OnInit {
   constructor(
     private bolsillosService: BolsillosService,
     private cuentasService: CuentasService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -75,6 +81,22 @@ export class PocketPageComponent implements OnInit {
     }
   }
 
+  getNombreColor(hex: string): string {
+    const colores: { [key: string]: string } = {
+      '#ff0000': 'Rojo',
+      '#00ff00': 'Verde',
+      '#0000ff': 'Azul',
+      '#a46cf5': 'Morado',
+      '#1976d2': 'Azul Oscuro',
+      '#f44336': 'Rojo Intenso',
+      '#4caf50': 'Verde Brillante',
+      '#2196f3': 'Azul Brillante',
+      '#ff9800': 'Naranja',
+    };
+  
+    return colores[hex.toLowerCase()] || 'Color personalizado';
+  }
+  
   cargarDatos(): void {
     this.cargando = true;
     
@@ -92,13 +114,24 @@ export class PocketPageComponent implements OnInit {
   }
 
   cargarBolsillos(): void {
+    const rawUser = localStorage.getItem('user');
+    const user = rawUser ? JSON.parse(rawUser) : null;
+    const esAdmin = user?.rol === 'ADMIN';
+  
     this.bolsillosService.getBolsillos().subscribe({
       next: (data) => {
-        this.bolsillos = data;
+        // Si es admin, muestra todos; si no, solo los asignados a cuentas del usuario
+        this.bolsillos = esAdmin
+          ? data
+          : data.filter((b) =>
+              this.cuentas.some(
+                (c) => (c.id === b.id_cuenta || c._id === b.id_cuenta) && c.usuario_id === user?.id
+              )
+            );
+  
         this.dataSource.data = this.bolsillos;
         this.cargando = false;
-        
-        // Actualizamos el paginador después de cargar los datos
+  
         setTimeout(() => {
           if (this.paginador) {
             this.dataSource.paginator = this.paginador;
@@ -108,10 +141,10 @@ export class PocketPageComponent implements OnInit {
       error: (err) => {
         console.error('Error al obtener bolsillos', err);
         this.cargando = false;
-      }
+      },
     });
   }
-
+  
   getNumeroCuenta(id: string): string {
     const cuenta = this.cuentas.find(c => c.id === id || c._id === id);
   
@@ -135,35 +168,37 @@ export class PocketPageComponent implements OnInit {
       return;
     }
   
-    const confirmar = confirm('¿Estás seguro de eliminar este bolsillo? Se desasociará de la cuenta si existe.');
+    const confirmar = confirm('¿Estás seguro de eliminar este bolsillo? Se desasociará de la cuenta y se reintegrará el saldo.');
     if (!confirmar) return;
   
     this.cargando = true;
     this.bolsillosService.desasociarYEliminarBolsillo(id).subscribe({
-      next: () => this.cargarDatos(),
+      next: (res) => {
+        this.snackBar.open(
+          res?.mensaje || '✅ Bolsillo eliminado y saldo reintegrado.',
+          'Cerrar',
+          { duration: 5000, panelClass: ['snackbar-success'] }
+        );
+        this.cargarDatos();
+      },
       error: () => {
         alert('❌ Error al eliminar el bolsillo o al desasociarlo de la cuenta.');
         this.cargando = false;
       }
     });
   }
+  
 
   abrirCrear(): void {
     const dialogRef = this.dialog.open(CrearBolsilloDialogComponent, {
       width: '450px',
       panelClass: ['custom-dialog', 'custom-dark-dialog']
     });
-
-    dialogRef.afterClosed().subscribe((nuevoBolsillo) => {
-      if (nuevoBolsillo) {
-        this.cargando = true;
-        this.bolsillosService.crearBolsillo(nuevoBolsillo).subscribe({
-          next: () => this.cargarDatos(),
-          error: (err) => {
-            console.error('Error al crear bolsillo', err);
-            this.cargando = false;
-          }
-        });
+  
+    dialogRef.afterClosed().subscribe((resultado) => {
+      // Solo recarga los datos si se creó un bolsillo correctamente
+      if (resultado === true) {
+        this.cargarDatos();
       }
     });
   }

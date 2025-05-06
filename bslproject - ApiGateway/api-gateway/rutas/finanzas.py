@@ -33,7 +33,7 @@ async def obtener_bolsillos(request: Request):
 
     raise HTTPException(status_code=response.status_code, detail=f"Error al obtener bolsillos: {response.text}")
 
-@router.post("/bolsillos", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
+@router.post("/bolsillos", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def crear_bolsillo(request: Request):
     """Crea un nuevo bolsillo en el sistema de finanzas."""
     data = await request.json()
@@ -115,7 +115,7 @@ async def asignar_cuenta_a_bolsillo(id_bolsillo: str, id_cuenta: str, request: R
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail=f"Error al asignar cuenta a bolsillo: {response.text}")
 
-@router.delete("/bolsillos/{id}/desasociar", dependencies=[Depends(verificar_rol("ADMIN"))])
+@router.delete("/bolsillos/{id}/desasociar", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "USER", "MODERATOR"]))])
 async def eliminar_bolsillo_y_quitar_referencia(id: str, request: Request):
     """Elimina un bolsillo y desasocia la cuenta si estaba asociada."""
     response = requests.delete(
@@ -188,7 +188,7 @@ async def obtener_cuenta(id: str, request: Request):
 
     raise HTTPException(status_code=response.status_code, detail=f"Error al obtener cuenta: {response.text}")
 
-@router.put("/cuentas/{id}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
+@router.put("/cuentas/{id}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def actualizar_cuenta(id: str, request: Request):
     """Actualiza una cuenta en el sistema financiero."""
     auth_header = request.headers.get("Authorization")
