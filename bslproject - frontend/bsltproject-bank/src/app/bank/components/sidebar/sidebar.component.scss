@@ -3,20 +3,116 @@ $primary-purple: #a46cf5;
 $light-purple: #c39af7;
 $dark-purple: #2c1658;
 $darker-purple: #1e1339;
-$dark-bg: #1f1f1f;
+$dark-bg: #0f0f0f;
 $light-text: #ffffff;
+$hover-bg: rgba(255, 255, 255, 0.08);
+$active-bg: rgba($primary-purple, 0.3);
+$sidebar-width: 270px;
+$sidebar-collapsed-width: 70px;
+$transition-speed: 0.3s;
+
+// Gradients
+$sidebar-gradient: linear-gradient(180deg, $dark-purple 0%, $darker-purple 100%);
+$active-item-gradient: linear-gradient(90deg, rgba($primary-purple, 0.2) 0%, rgba($primary-purple, 0.05) 100%);
 
 .sidebar-container {
-  width: 260px;
-  background: linear-gradient(180deg, $darker-purple 0%, $dark-bg 100%);
+  width: $sidebar-width;
+  background: $sidebar-gradient;
   height: 100%;
-  padding: 1.25rem 1rem 1.25rem 1.25rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden !important;
   position: relative;
   border-radius: 0 !important;
-  box-shadow: none !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  border-right: 1px solid rgba($primary-purple, 0.15);
+  transition: width $transition-speed ease, min-width $transition-speed ease, max-width $transition-speed ease;
+  
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+    min-width: $sidebar-collapsed-width;
+    max-width: $sidebar-collapsed-width;
+    
+    .sidebar-content {
+      width: $sidebar-collapsed-width;
+      min-width: $sidebar-collapsed-width;
+      max-width: $sidebar-collapsed-width;
+      overflow: hidden;
+    }
+    
+    .sidebar-link {
+      width: $sidebar-collapsed-width;
+      min-width: $sidebar-collapsed-width;
+      max-width: $sidebar-collapsed-width;
+      justify-content: center;
+      padding: 10px 0;
+      margin: 0;
+      border-radius: 0;
+      overflow: hidden;
+      
+      .link-text {
+        display: none;
+        width: 0;
+        max-width: 0;
+        overflow: hidden;
+        visibility: hidden;
+      }
+      
+      mat-icon {
+        margin: 0;
+      }
+    }
+    
+    .section-header {
+      width: $sidebar-collapsed-width;
+      min-width: $sidebar-collapsed-width;
+      max-width: $sidebar-collapsed-width;
+      justify-content: center;
+      padding: 10px 0;
+      margin: 0;
+      border-radius: 0;
+      overflow: hidden;
+      
+      .section-title {
+        display: none;
+        width: 0;
+        max-width: 0;
+        overflow: hidden;
+        visibility: hidden;
+      }
+      
+      .expand-icon {
+        display: none;
+        width: 0;
+        max-width: 0;
+        overflow: hidden;
+        visibility: hidden;
+      }
+      
+      .header-content {
+        justify-content: center;
+        width: $sidebar-collapsed-width;
+        min-width: $sidebar-collapsed-width;
+        max-width: $sidebar-collapsed-width;
+        overflow: hidden;
+        
+        mat-icon {
+          margin: 0;
+        }
+      }
+    }
+    
+    .section-content {
+      display: none;
+      height: 0;
+      width: 0;
+      max-height: 0;
+      max-width: 0;
+      overflow: hidden;
+      visibility: hidden;
+    }
+  }
 }
 
 html, body {
@@ -30,145 +126,245 @@ html, body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow: hidden !important;
+  overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
-}
-
-.sidebar-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 1.25rem;
-  color: $light-text;
-  text-align: center;
-  letter-spacing: 1px;
-  position: relative;
-  padding-bottom: 0.5rem;
+  padding: 16px 0;
   
+  &.collapsed-content {
+    width: $sidebar-collapsed-width;
+    min-width: $sidebar-collapsed-width;
+    max-width: $sidebar-collapsed-width;
+    overflow: hidden;
+  }
+  
+  // Hide scrollbar but keep functionality
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  
+  // Add subtle fade effect at top and bottom
+  &::before,
   &::after {
     content: '';
     position: absolute;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    pointer-events: none;
+    z-index: 10;
+  }
+  
+  &::before {
+    top: 0;
+    background: linear-gradient(to bottom, $dark-purple, transparent);
+  }
+  
+  &::after {
     bottom: 0;
-    left: 25%;
-    width: 50%;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, $primary-purple, transparent);
-    border-radius: 3px;
+    background: linear-gradient(to top, $dark-purple, transparent);
+  }
+}
+
+
+
+// Divider style
+.sidebar-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  margin: 8px 16px;
+  opacity: 0.7;
+  
+  .collapsed & {
+    margin: 8px 10px;
+    width: 50px;
   }
 }
 
 .sidebar-link {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  color: #e0e0e0;
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
   text-decoration: none;
-  margin: 0.3rem 0;
-  padding: 0.5rem 0.75rem;
-  width: 100%;
-  border-radius: 8px;
+  margin: 4px 12px;
+  padding: 10px 12px;
+  width: calc(100% - 24px);
+  border-radius: 10px;
   transition: all 0.2s ease-in-out;
   position: relative;
   overflow: hidden;
   white-space: nowrap;
+  height: 40px;
   
-  &::before {
-    content: '';
-    position: absolute;
-    left: -100%;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba($primary-purple, 0.1), transparent);
-    transition: all 0.4s ease;
+  .link-text {
+    margin-left: 16px;
+    font-size: 14px;
+    transition: opacity $transition-speed ease, color 0.2s ease;
+    letter-spacing: 0.2px;
   }
   
   &:hover {
-    background-color: rgba($primary-purple, 0.15);
+    background-color: $hover-bg;
     color: $light-text;
-    transform: translateX(4px);
-    
-    &::before {
-      left: 100%;
-    }
     
     mat-icon {
-      transform: scale(1.1);
+      color: $light-purple;
     }
   }
   
   &.active {
-    background-color: rgba($primary-purple, 0.2);
-    border-left: 3px solid $primary-purple;
-    font-weight: 600;
+    background: $active-item-gradient;
+    color: $light-text;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      height: 24px;
+      width: 4px;
+      background: $primary-purple;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    mat-icon {
+      color: $primary-purple;
+    }
+    
+    .link-text {
+      font-weight: 600;
+    }
   }
   
   mat-icon {
-    color: $primary-purple;
-    transition: transform 0.2s ease;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.2s ease;
     min-width: 24px;
+    height: 24px;
+    width: 24px;
+    font-size: 22px;
   }
 }
 
 .sidebar-section {
-  margin: 0.4rem 0;
+  margin: 16px 0;
   
   .section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: $light-text;
-    padding: 0.5rem 0.75rem;
-    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 8px 16px;
+    margin: 4px 12px;
     cursor: pointer;
-    background-color: rgba($primary-purple, 0.1);
-    margin-bottom: 0.4rem;
     transition: all 0.2s ease;
+    height: 40px;
+    border-radius: 10px;
     
     &:hover {
-      background-color: rgba($primary-purple, 0.2);
+      background-color: $hover-bg;
+      color: $light-text;
+      
+      .header-content mat-icon,
+      .expand-icon {
+        color: $light-purple;
+      }
     }
     
-    div {
+    .header-content {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      font-weight: 600;
+      
+      mat-icon {
+        color: rgba(255, 255, 255, 0.6);
+        transition: all 0.3s ease;
+        min-width: 24px;
+        height: 24px;
+        width: 24px;
+        font-size: 22px;
+      }
+      
+      .section-title {
+        margin-left: 16px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
     }
     
-    mat-icon {
-      color: $primary-purple;
-      transition: transform 0.3s ease;
-      min-width: 24px;
+    .expand-icon {
+      color: rgba(255, 255, 255, 0.5);
+      transition: transform 0.3s ease, color 0.2s ease;
+      font-size: 18px;
     }
     
-    &.expanded mat-icon:last-child {
-      transform: rotate(180deg);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      
+      .header-content mat-icon,
+      .expand-icon {
+        color: $light-text;
+      }
+    }
+    
+    &.expanded {
+      .header-content mat-icon {
+        color: $primary-purple;
+      }
+      
+      .section-title {
+        font-weight: 600;
+      }
     }
   }
   
   .section-content {
-    padding-left: 0.75rem;
-    margin-top: 0.4rem;
-    border-left: 1px solid rgba($primary-purple, 0.3);
-    animation: fadeIn 0.3s ease;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    
+    &.expanded {
+      max-height: 500px; // Ajustar según sea necesario
+    }
+    
+    .sidebar-link {
+      padding-left: 48px;
+      margin-left: 16px;
+      margin-right: 16px;
+      width: calc(100% - 32px);
+      height: 36px;
+      font-size: 13px;
+      
+      &::before {
+        left: 4px;
+        height: 20px;
+      }
+      
+      mat-icon {
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+        min-width: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .link-text {
+        font-size: 13px;
+        margin-left: 12px;
+      }
+    }
   }
 }
 
-.divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba($primary-purple, 0.3), transparent);
-  margin: 0.5rem 0;
-}
+// Divider removed
 
-.app-version {
-  margin-top: auto;
-  color: rgba($light-text, 0.4);
-  font-size: 0.8rem;
-  text-align: center;
-  padding: 0.4rem 0;
-  letter-spacing: 1px;
-}
+// App version removed
 
 // Clase para sidebar colapsado
 .sidebar-collapsed {
@@ -180,8 +376,30 @@ html, body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// Styles for collapsed sidebar (to be implemented with media queries)
+@media (max-width: 768px) {
+  .sidebar-container {
+    width: $sidebar-collapsed-width;
+  }
+  
+  .sidebar-link .link-text,
+  .section-header .section-title {
+    opacity: 0;
+    width: 0;
+    visibility: hidden;
+  }
+  
+  .section-content .sidebar-link {
+    padding-left: 24px;
+  }
+  
+  .section-header .expand-icon {
+    display: none;
+  }
 }
 
 // Soluciones para problemas de scroll

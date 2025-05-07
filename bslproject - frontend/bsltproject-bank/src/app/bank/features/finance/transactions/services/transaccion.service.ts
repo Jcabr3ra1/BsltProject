@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../../../../environments/environment';
 import { Transaccion } from '../../../../../core/models/transaccion.model';
 
@@ -31,7 +32,15 @@ export class TransaccionService {
   }
 
   anularTransaccion(id: string): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}/anular`, {});
+    // Primero anulamos la transacción en el backend (cambia a estado ANULADA)
+    return this.http.put(`${this.baseUrl}/${id}/anular`, {}).pipe(
+      // Luego eliminamos la transacción localmente en el frontend
+      // El backend solo cambia el estado a ANULADA pero no la elimina
+      map(response => ({
+        ...response,
+        eliminado: true // Marcador para que el frontend sepa que debe eliminar esta transacción de la lista
+      }))
+    );
   }
 
   eliminarTransaccion(id: string): Observable<any> {
@@ -39,7 +48,15 @@ export class TransaccionService {
   }
 
   actualizarTransaccion(id: string, data: Partial<Transaccion>): Observable<any> {
+    // Volvemos a usar PUT ya que el backend está configurado para aceptar PUT
     return this.http.put(`${this.baseUrl}/${id}`, data);
+  }
+  
+  aprobarTransaccion(id: string): Observable<any> {
+    // Usamos la URL completa para asegurar que se dirija correctamente
+    return this.http.put(`${this.baseUrl}/${id}/aprobar`, {
+      estado: 'APROBADA'
+    });
   }
 
   // ------------------ TRANSFERENCIAS ------------------

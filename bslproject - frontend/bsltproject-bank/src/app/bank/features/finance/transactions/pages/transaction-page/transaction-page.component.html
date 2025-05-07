@@ -117,6 +117,12 @@
             <span class="estado-anulada" *ngIf="t.estado === 'ANULADA'">
               ANULADA
             </span>
+            <span class="estado-aprobada" *ngIf="t.estado === 'APROBADA'">
+              APROBADA
+            </span>
+            <span class="estado-pendiente" *ngIf="t.estado === 'PENDIENTE'">
+              PENDIENTE
+            </span>
             <span class="estado-activa" *ngIf="!t.estado || t.estado === 'ACTIVA'">
               ACTIVA
             </span>

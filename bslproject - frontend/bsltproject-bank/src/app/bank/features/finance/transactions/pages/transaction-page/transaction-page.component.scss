@@ -336,6 +336,26 @@ $success-color: #4caf50;
         font-size: 0.8rem;
       }
       
+      .estado-aprobada {
+        color: #2196F3; // Azul
+        font-weight: 600;
+        background-color: rgba(33, 150, 243, 0.1);
+        padding: 4px 10px;
+        border-radius: 12px;
+        display: inline-block;
+        font-size: 0.8rem;
+      }
+      
+      .estado-pendiente {
+        color: #FF9800; // Naranja
+        font-weight: 600;
+        background-color: rgba(255, 152, 0, 0.1);
+        padding: 4px 10px;
+        border-radius: 12px;
+        display: inline-block;
+        font-size: 0.8rem;
+      }
+      
       .estado-activa {
         color: $success-color;
         font-weight: 600;

@@ -1,22 +1,24 @@
 <div class="app-container">
-  <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav #drawer class="sidenav" 
-                 [mode]="isMobile ? 'over' : 'side'" 
-                 [opened]="!isMobile && sidebarOpen" 
-                 fixedInViewport="true" 
-                 fixedTopGap="0" 
-                 [ngClass]="{'sidebar-hidden': !sidebarOpen}">
+  <!-- Navbar at the top -->
+  <app-navbar 
+    (menuToggle)="toggleSidebar($event)" 
+    [isSidebarOpen]="sidebarOpen"
+    [isMobile]="isMobile">
+  </app-navbar>
+  
+  <!-- Main content area with sidebar -->
+  <div class="main-content-area">
+    <!-- Sidebar -->
+    <div class="sidebar-wrapper" [ngClass]="{'hidden': !sidebarOpen}">
       <app-sidebar></app-sidebar>
-    </mat-sidenav>
-
-    <mat-sidenav-content>
-      <app-navbar (menuToggle)="toggleSidebar($event)" [isSidebarOpen]="sidebarOpen"></app-navbar>
-
-      <main class="layout-content">
-        <router-outlet></router-outlet>
-      </main>
-      
-      <app-footer></app-footer>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+    </div>
+    
+    <!-- Main content -->
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  
+  <!-- Footer at the bottom -->
+  <app-footer></app-footer>
 </div>

@@ -4,8 +4,8 @@
         "puerto": 7777
     },
     "servicios": {
-        "seguridad": "http://localhost:8080",
-        "finanzas": "http://localhost:9999"
+        "seguridad": "http://192.168.1.15:8080",
+        "finanzas": "http://192.168.1.15:9999"
     },
     "seguridad": {
         "clave_jwt": "qwertyuiopasdfghjklzxcvbnm123456"

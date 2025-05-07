@@ -78,7 +78,7 @@ public class UsuarioServicio {
 
     public List<Usuario> obtenerTodosLosUsuarios() {
         List<Usuario> usuarios = repositorioUsuario.findAll();
-        String backendFinancieroURL = "http://localhost:9999/finanzas/cuentas/"; // URL corregida
+        String backendFinancieroURL = "http://192.168.1.15:9999/finanzas/cuentas/"; // URL corregida
         RestTemplate restTemplate = new RestTemplate();
 
         // Usamos parallelStream() para mejorar el rendimiento
@@ -113,7 +113,7 @@ public class UsuarioServicio {
 
         // Verificar si el usuario tiene una cuenta asignada
         if (usuario.getCuentaId() != null && !usuario.getCuentaId().isEmpty()) {
-            String urlCuenta = "http://localhost:9999/finanzas/cuentas/" + usuario.getCuentaId();  // URL corregida
+            String urlCuenta = "http://192.168.1.15:9999/finanzas/cuentas/" + usuario.getCuentaId();  // URL corregida
             RestTemplate restTemplate = new RestTemplate();
 
             try {
@@ -196,7 +196,7 @@ public class UsuarioServicio {
             if (usuario.getCuentaId() != null) {
                 try {
                     String cuentaId = usuario.getCuentaId();
-                    String urlFinanzas = "http://localhost:9999/finanzas/cuentas/" + cuentaId;
+                    String urlFinanzas = "http://192.168.1.15:9999/finanzas/cuentas/" + cuentaId;
 
                     HttpClient client = HttpClient.newHttpClient();
                     HttpRequest request = HttpRequest.newBuilder()

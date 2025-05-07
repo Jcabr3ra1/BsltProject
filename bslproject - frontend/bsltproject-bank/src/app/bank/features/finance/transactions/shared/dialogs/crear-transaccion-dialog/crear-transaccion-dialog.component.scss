@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Variables de color
 $primary-purple: #a46cf5;
 $light-purple: #c39af7;
@@ -25,6 +27,9 @@ $transfer-color: #5ac8fa; // Azul
   width: 100%;
   padding: 0;
   margin: 0;
+  max-width: 650px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
 }
 
 // Cabecera del diálogo
@@ -72,11 +77,67 @@ $transfer-color: #5ac8fa; // Azul
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+// Contenedor de pasos
+.step-container {
+  position: relative;
+  padding: 0.8rem 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  
+  &.active-step {
+    border-color: rgba($primary-purple, 0.3);
+    background-color: rgba($primary-purple, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    // Removed animation to keep frames static
+  }
+  
+  .step-number {
+    position: absolute;
+    top: -12px;
+    left: 10px;
+    width: 24px;
+    height: 24px;
+    background-color: $primary-purple;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .step-content {
+    padding: 0.5rem;
+  }
+}
+
+// Fila de campos
+.fields-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 // Media queries
 @media (max-width: 600px) {
   .transaction-grid, 
   .movement-grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  
+  .fields-row {
+    grid-template-columns: 1fr;
   }
   
   .dialog-actions {
@@ -105,6 +166,7 @@ $transfer-color: #5ac8fa; // Azul
     overflow: hidden !important;
     background: transparent !important;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+    width: auto !important;
   }
   
   .mat-dialog-title {
@@ -120,6 +182,8 @@ $transfer-color: #5ac8fa; // Azul
   .snackbar-success {
     background-color: $success-color !important;
     color: white !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
     
     .mat-simple-snackbar-action {
       color: white !important;
@@ -129,10 +193,22 @@ $transfer-color: #5ac8fa; // Azul
   .snackbar-error {
     background-color: $error-color !important;
     color: white !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
     
     .mat-simple-snackbar-action {
       color: white !important;
     }
+  }
+  
+  // Mejoras para el overlay del diálogo
+  .cdk-overlay-dark-backdrop {
+    background: rgba(0, 0, 0, 0.7);
+  }
+  
+  .cdk-overlay-pane {
+    max-width: 650px !important;
+    width: auto !important;
   }
 }
 
@@ -141,9 +217,25 @@ $transfer-color: #5ac8fa; // Azul
   position: relative;
   
   input {
-    padding-right: 2.5rem;
+    padding: 0.9rem 2.5rem 0.9rem 1rem;
     width: 100%;
     box-sizing: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: $light-text;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-purple;
+      box-shadow: 0 0 0 2px rgba($primary-purple, 0.2);
+    }
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
   }
   
   mat-icon {
@@ -162,11 +254,39 @@ $transfer-color: #5ac8fa; // Azul
   select {
     width: 100%;
     box-sizing: border-box;
+    padding: 0.9rem 2.5rem 0.9rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: $light-text;
+    font-size: 0.95rem;
+    appearance: none;
+    background-image: 
+      linear-gradient(45deg, transparent 50%, $primary-purple 50%),
+      linear-gradient(135deg, $primary-purple 50%, transparent 50%);
+    background-position: 
+      calc(100% - 20px) center,
+      calc(100% - 15px) center;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    transition: all 0.2s ease;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-purple;
+      box-shadow: 0 0 0 2px rgba($primary-purple, 0.2);
+    }
+    
+    option {
+      background-color: $dark-bg;
+      color: $light-text;
+      padding: 10px;
+    }
   }
   
   mat-icon {
     position: absolute;
-    right: 2rem;
+    right: 2.5rem;
     top: 50%;
     transform: translateY(-50%);
     color: $primary-purple;
@@ -179,8 +299,8 @@ $transfer-color: #5ac8fa; // Azul
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   
   button {
@@ -188,47 +308,49 @@ $transfer-color: #5ac8fa; // Azul
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.7rem 1.2rem;
-    border-radius: 4px;
-    font-size: 0.95rem;
+    padding: 0.8rem 1.4rem;
+    border-radius: 8px;
+    font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     border: none;
     
     mat-icon {
-      font-size: 1.1rem;
-      height: 1.1rem;
-      width: 1.1rem;
+      font-size: 1.2rem;
+      height: 1.2rem;
+      width: 1.2rem;
     }
   }
   
   .btn-cancel {
-    background-color: transparent;
-    color: $medium-text;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.08);
+    color: $light-text;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     
     &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.12);
       transform: translateY(-2px);
     }
   }
   
   .btn-save {
-    background-color: $primary-purple;
-    color: $light-text;
+    background: linear-gradient(135deg, $primary-purple, color.adjust($primary-purple, $lightness: -10%));
+    color: white;
+    box-shadow: 0 4px 12px rgba($primary-purple, 0.4);
     
-    &:hover:not(:disabled) {
-      background-color: $light-purple;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    &:hover {
+      background: linear-gradient(135deg, color.adjust($primary-purple, $lightness: 5%), $primary-purple);
       transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba($primary-purple, 0.6);
     }
     
     &:disabled {
-      opacity: 0.6;
       cursor: not-allowed;
-      background-color: rgba($primary-purple, 0.6);
+      background: linear-gradient(135deg, color.adjust($primary-purple, $saturation: -30%), color.adjust($primary-purple, $lightness: -10%, $saturation: -30%));
+      opacity: 0.7;
       box-shadow: none;
+      transform: none;
     }
   }
 }
@@ -342,6 +464,13 @@ $transfer-color: #5ac8fa; // Azul
   gap: 1.2rem;
   overflow-y: auto;
   max-height: 75vh;
+  
+  // Hide scrollbar but keep functionality
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 }
 
 // Etiqueta de sección
@@ -374,7 +503,8 @@ $transfer-color: #5ac8fa; // Azul
 .transaction-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: 1rem;
+  margin: 1rem 0;
   
   button {
     display: flex;
@@ -382,18 +512,23 @@ $transfer-color: #5ac8fa; // Azul
     align-items: center;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(164, 108, 245, 0.2);
-    border-radius: 10px;
-    padding: 1rem;
-    min-width: 90px;
-    transition: all 0.2s ease;
+    border-radius: 12px;
+    padding: 1.2rem 1rem;
+    min-width: 100px;
+    flex: 1;
+    transition: all 0.3s ease;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     
     &.selected {
-      background-color: rgba($primary-purple, 0.2);
+      background: linear-gradient(135deg, rgba($primary-purple, 0.2) 0%, rgba($primary-purple, 0.1) 100%);
       border-color: $primary-purple;
+      box-shadow: 0 4px 12px rgba($primary-purple, 0.3);
+      transform: translateY(-3px);
       
       .transaction-icon-container {
-        background-color: $primary-purple;
+        background: linear-gradient(135deg, $primary-purple, color.adjust($primary-purple, $lightness: -10%));
+        box-shadow: 0 4px 10px rgba($primary-purple, 0.4);
       
         mat-icon {
           color: white;
@@ -409,23 +544,25 @@ $transfer-color: #5ac8fa; // Azul
     &:hover:not(.selected) {
       background-color: rgba(255, 255, 255, 0.1);
       transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
     
     .transaction-icon-container {
-      width: 36px;
-      height: 36px;
+      width: 48px;
+      height: 48px;
       background-color: rgba($primary-purple, 0.15);
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
       
       mat-icon {
         color: $primary-purple;
-        font-size: 18px;
-        height: 18px;
-        width: 18px;
+        font-size: 24px;
+        height: 24px;
+        width: 24px;
       }
     }
     
@@ -445,8 +582,9 @@ $transfer-color: #5ac8fa; // Azul
 
 .movement-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
   
   button {
     display: flex;
@@ -454,18 +592,22 @@ $transfer-color: #5ac8fa; // Azul
     align-items: center;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(164, 108, 245, 0.2);
-    border-radius: 10px;
-    padding: 1rem;
+    border-radius: 12px;
+    padding: 1.2rem 1rem;
     height: 100%;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     
     &.selected {
-      background-color: rgba($primary-purple, 0.2);
+      background: linear-gradient(135deg, rgba($primary-purple, 0.2) 0%, rgba($primary-purple, 0.1) 100%);
       border-color: $primary-purple;
+      box-shadow: 0 4px 12px rgba($primary-purple, 0.3);
+      transform: translateY(-3px);
       
       .movement-icon-container {
-        background-color: $primary-purple;
+        background: linear-gradient(135deg, $primary-purple, color.adjust($primary-purple, $lightness: -10%));
+        box-shadow: 0 4px 10px rgba($primary-purple, 0.4);
       
         .movement-icon {
           color: white;
@@ -481,21 +623,23 @@ $transfer-color: #5ac8fa; // Azul
     &:hover:not(.selected) {
       background-color: rgba(255, 255, 255, 0.1);
       transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
     
     .movement-icon-container {
-      width: 36px;
-      height: 36px;
+      width: 48px;
+      height: 48px;
       background-color: rgba($primary-purple, 0.15);
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
       
       .movement-icon {
         color: $primary-purple;
-        font-size: 18px;
+        font-size: 22px;
         line-height: 1;
       }
     }
@@ -507,3 +651,4 @@ $transfer-color: #5ac8fa; // Azul
     }
   }
 }
+

@@ -25,6 +25,7 @@ import { firstValueFrom } from 'rxjs';
 import { finalize, catchError } from 'rxjs/operators';
 
 import { TransaccionService } from '../../services/transaccion.service';
+import { AutoApproveService } from '../../services/auto-approve.service';
 import { Transaccion } from '../../../../../../core/models/transaccion.model';
 import { CrearTransaccionDialogComponent } from '../../shared/dialogs/crear-transaccion-dialog/crear-transaccion-dialog.component';
 import { EditarTransaccionDialogComponent } from '../../shared/dialogs/editar-transaccion-dialog/editar-transaccion-dialog.component';
@@ -58,7 +59,7 @@ import { Bolsillo } from '../../../../../../core/models/bolsillo.model';
     MatPaginatorModule,
     MatSnackBarModule,
     MatDividerModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
 })
 export class TransactionPageComponent
@@ -83,7 +84,7 @@ export class TransactionPageComponent
   ];
   isLoading: boolean = false;
   private subscriptions = new Subscription();
-  
+
   // Para la paginación personalizada
   pageSizeOptions: number[] = [5, 10, 25, 50];
   paginaActual: number = 0;
@@ -104,11 +105,18 @@ export class TransactionPageComponent
     private cuentasService: CuentasService,
     private bolsillosService: BolsillosService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private autoApproveService: AutoApproveService
   ) {}
 
   ngOnInit(): void {
     this.inicializarDatos();
+    
+    // Iniciar el servicio de aprobación automática
+    const userId = JSON.parse(localStorage.getItem('user') || '{}')?.id;
+    if (userId) {
+      this.autoApproveService.startAutoApproveCheck(userId);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -119,26 +127,29 @@ export class TransactionPageComponent
   ngOnDestroy(): void {
     // Asegurar que todas las suscripciones se cancelen al destruir el componente
     this.subscriptions.unsubscribe();
+    
+    // Detener el servicio de aprobación automática
+    this.autoApproveService.stopAutoApproveCheck();
   }
 
   // Métodos para la paginación personalizada
   cambiarTamanoPagina(event: any): void {
     this.tamanoActual = event.value;
     this.paginaActual = 0;
-    
+
     if (this.paginator) {
       this.paginator.pageSize = this.tamanoActual;
       this.paginator.pageIndex = 0;
     }
   }
-  
+
   irAPrimeraPagina(): void {
     this.paginaActual = 0;
     if (this.paginator) {
       this.paginator.firstPage();
     }
   }
-  
+
   irAPaginaAnterior(): void {
     if (this.paginaActual > 0) {
       this.paginaActual--;
@@ -147,7 +158,7 @@ export class TransactionPageComponent
       }
     }
   }
-  
+
   irAPaginaSiguiente(): void {
     if (this.paginaActual < this.getTotalPaginas() - 1) {
       this.paginaActual++;
@@ -156,31 +167,34 @@ export class TransactionPageComponent
       }
     }
   }
-  
+
   irAUltimaPagina(): void {
     this.paginaActual = this.getTotalPaginas() - 1;
     if (this.paginator) {
       this.paginator.lastPage();
     }
   }
-  
+
   puedeRetroceder(): boolean {
     return this.paginaActual > 0;
   }
-  
+
   puedeAvanzar(): boolean {
     return this.paginaActual < this.getTotalPaginas() - 1;
   }
-  
+
   getTotalPaginas(): number {
     return Math.ceil(this.transacciones.length / this.tamanoActual);
   }
-  
+
   getInfoPaginacion(): string {
     if (this.transacciones.length === 0) return '0 - 0 de 0';
-    
+
     const inicio = this.paginaActual * this.tamanoActual + 1;
-    const fin = Math.min((this.paginaActual + 1) * this.tamanoActual, this.transacciones.length);
+    const fin = Math.min(
+      (this.paginaActual + 1) * this.tamanoActual,
+      this.transacciones.length
+    );
     return `${inicio} - ${fin} de ${this.transacciones.length}`;
   }
 
@@ -201,7 +215,7 @@ export class TransactionPageComponent
       duration: duracion,
       horizontalPosition: 'end',
       verticalPosition: 'top',
-      panelClass: ['snackbar-success']
+      panelClass: ['snackbar-success'],
     });
   }
 
@@ -235,6 +249,7 @@ export class TransactionPageComponent
         const [tiposMovimiento, tiposTransaccion, cuentas, bolsillos] =
           result as [TipoMovimiento[], TipoTransaccion[], Cuenta[], Bolsillo[]];
 
+        // Usar la configuración estándar de Angular Material para el diálogo
         const dialogRef = this.dialog.open(CrearTransaccionDialogComponent, {
           data: {
             tiposMovimiento,
@@ -243,8 +258,7 @@ export class TransactionPageComponent
             bolsillos,
           },
           width: '800px',
-          maxWidth: '90vw',
-          panelClass: ['custom-dialog', 'custom-dark-dialog'],
+          panelClass: 'custom-dark-dialog',
           disableClose: true,
         });
 
@@ -269,14 +283,15 @@ export class TransactionPageComponent
 
           // Adaptando los nombres de campos al formato backend
           const backendData = {
-            cuentaOrigenId: data.id_cuenta_origen,
-            cuentaDestinoId: data.id_cuenta_destino,
-            bolsilloOrigenId: data.id_bolsillo_origen,
-            bolsilloDestinoId: data.id_bolsillo_destino,
-            tipoMovimientoId: data.id_tipo_movimiento,
-            tipoTransaccionId: data.id_tipo_transaccion,
+            id_cuenta_origen: data.id_cuenta_origen,
+            id_cuenta_destino: data.id_cuenta_destino,
+            id_bolsillo_origen: data.id_bolsillo_origen,
+            id_bolsillo_destino: data.id_bolsillo_destino,
+            id_tipo_movimiento: data.id_tipo_movimiento,
+            id_tipo_transaccion: data.id_tipo_transaccion,
             monto: data.monto,
             descripcion: data.descripcion,
+            uuid_transaccion: data.uuid_transaccion,
           };
 
           this.ejecutarTransaccion(origen, destino, backendData);
@@ -303,27 +318,21 @@ export class TransactionPageComponent
     backendData: any
   ): void {
     let request$: Observable<any> | null = null;
-
-    if (origen === 'ACCOUNT' && destino === 'ACCOUNT') {
-      request$ = this.transaccionService.transferenciaCuentaCuenta(backendData);
-    } else if (origen === 'ACCOUNT' && destino === 'WALLET') {
-      request$ =
-        this.transaccionService.transferenciaCuentaBolsillo(backendData);
-    } else if (origen === 'WALLET' && destino === 'ACCOUNT') {
-      request$ =
-        this.transaccionService.transferenciaBolsilloCuenta(backendData);
-    } else if (origen === 'BANK' && destino === 'ACCOUNT') {
-      request$ = this.transaccionService.consignacionBancoCuenta(backendData);
-    } else if (origen === 'BANK' && destino === 'WALLET') {
-      request$ = this.transaccionService.consignacionBancoBolsillo(backendData);
-    } else if (origen === 'ACCOUNT' && destino === 'BANK') {
-      request$ = this.transaccionService.retiroCuentaBanco(backendData);
-    } else if (origen === 'WALLET' && destino === 'BANK') {
-      request$ = this.transaccionService.retiroBolsilloBanco(backendData);
-    } else if (origen === 'WALLET' && destino === 'WALLET') {
-      request$ =
-        this.transaccionService.transferenciaBolsilloBolsillo(backendData);
-    }
+    
+    // Simplificamos la lógica para usar directamente el endpoint de crear transacción
+    // que manejará los diferentes tipos de transacciones en el backend
+    backendData.tipo_origen = origen;
+    backendData.tipo_destino = destino;
+    
+    // Preparamos los datos para la transacción
+    const transaccionData: Partial<Transaccion> = {
+      ...backendData,
+      fecha_transaccion: new Date(),
+      estado: 'PENDIENTE' // Las transacciones comienzan como pendientes
+    };
+    
+    // Usamos el método genérico para crear transacciones
+    request$ = this.transaccionService.crearTransaccion(transaccionData as Transaccion);
 
     if (request$) {
       this.isLoading = true;
@@ -369,16 +378,16 @@ export class TransactionPageComponent
   cargarResumenUsuario(): void {
     const rawUser = localStorage.getItem('user');
     const user = rawUser ? JSON.parse(rawUser) : null;
-  
+
     if (!user?.id) {
       this.mostrarNotificacion('⚠️ No hay usuario autenticado', 5000);
       return;
     }
-  
+
     const esAdmin = user.rol === 'ADMIN';
-  
+
     this.isLoading = true;
-  
+
     const resumenSub = forkJoin({
       cuentas: this.cuentasService.getCuentas(),
       bolsillos: this.bolsillosService.getBolsillos(),
@@ -399,23 +408,30 @@ export class TransactionPageComponent
           const cuentasAsignadas = esAdmin
             ? cuentas
             : cuentas.filter((c) => c.usuario_id === user.id);
-            
-          const bolsillosAsignados = esAdmin
-            ? bolsillos
-            : bolsillos.filter((b) => cuentasAsignadas.some(c => c.id === b.id_cuenta || c._id === b.id_cuenta));
-  
+
+            const bolsillosAsignados = esAdmin
+  ? bolsillos // ✅ Mostrar todos los bolsillos si es administrador
+  : bolsillos.filter((b) =>
+      cuentasAsignadas.some(
+        (c) => c.id === b.id_cuenta || c._id === b.id_cuenta
+      )
+    );
+
+    
           const totalCuentas = cuentasAsignadas.reduce(
             (acc, c) => acc + (c.saldo || 0),
             0
           );
-  
+
           const totalBolsillos = bolsillosAsignados.reduce(
             (acc, b) => acc + (b.saldo || 0),
             0
           );
-  
+
           this.usuarioResumen = {
-            nombre: esAdmin ? 'Administrador' : `${user.nombre} ${user.apellido || ''}`,
+            nombre: esAdmin
+              ? 'Administrador'
+              : `${user.nombre} ${user.apellido || ''}`,
             totalCuentas,
             totalBolsillos,
             cuentas: cuentasAsignadas,
@@ -423,7 +439,7 @@ export class TransactionPageComponent
           };
         },
       });
-  
+
     this.subscriptions.add(resumenSub);
   }
 
@@ -433,26 +449,29 @@ export class TransactionPageComponent
   cargarTransacciones(): void {
     const rawUser = localStorage.getItem('user');
     const user = rawUser ? JSON.parse(rawUser) : null;
-  
+
     if (!user?.id) {
       console.warn('⚠️ No se pudo obtener el ID de usuario desde localStorage');
       this.mostrarNotificacion('⚠️ No hay usuario autenticado', 5000);
       return;
     }
-  
+
     const esAdmin = user.rol === 'ADMIN'; // o el campo real que uses para el rol
-  
+
     this.isLoading = true;
     const request$ = esAdmin
       ? this.transaccionService.getTransacciones()
       : this.transaccionService.getTransaccionesPorUsuario(user.id);
-  
+
     const transaccionesSub = request$
       .pipe(
         finalize(() => (this.isLoading = false)),
         catchError((error) => {
           console.error('Error al cargar transacciones:', error);
-          this.mostrarNotificacion('❌ Error al cargar las transacciones', 5000);
+          this.mostrarNotificacion(
+            '❌ Error al cargar las transacciones',
+            5000
+          );
           throw error;
         })
       )
@@ -463,16 +482,15 @@ export class TransactionPageComponent
           if (this.paginator) this.dataSource.paginator = this.paginator;
         },
       });
-  
+
     this.subscriptions.add(transaccionesSub);
   }
-  
 
   /**
-   * Anula una transacción existente
+   * Anula una transacción existente y la elimina de la lista
    */
   anularTransaccion(transaccion: Transaccion): void {
-    const confirmacion = confirm('¿Estás seguro de anular esta transacción?');
+    const confirmacion = confirm('¿Estás seguro de anular esta transacción? El dinero será reintegrado a la cuenta de origen y la transacción será eliminada permanentemente.');
     const id = transaccion.id || transaccion._id;
 
     if (confirmacion && id) {
@@ -488,9 +506,33 @@ export class TransactionPageComponent
           })
         )
         .subscribe({
-          next: () => {
-            this.mostrarNotificacion('✅ Transacción anulada correctamente');
-            this.cargarTransacciones();
+          next: (response) => {
+            // Mostrar notificación de éxito
+            this.mostrarNotificacion('✅ Transacción anulada correctamente. El dinero ha sido reintegrado a la cuenta de origen.');
+            
+            // Primero, actualizar el estado de la transacción a ANULADA en la lista local
+            this.transacciones = this.transacciones.map(t => {
+              const transId = t.id || t._id;
+              if (transId === id) {
+                return { ...t, estado: 'ANULADA' };
+              }
+              return t;
+            });
+            
+            // Actualizar la tabla para mostrar la transacción como ANULADA
+            this.dataSource.data = this.transacciones;
+            
+            // Después de 1 minuto, eliminar la transacción de la lista
+            setTimeout(() => {
+              this.transacciones = this.transacciones.filter(t => {
+                const transId = t.id || t._id;
+                return transId !== id;
+              });
+              this.dataSource.data = this.transacciones;
+              this.mostrarNotificacion('Transacción eliminada de la lista', 2000);
+            }, 60000); // 60000 ms = 1 minuto
+            
+            // Actualizamos el resumen financiero
             this.cargarResumenUsuario();
           },
         });

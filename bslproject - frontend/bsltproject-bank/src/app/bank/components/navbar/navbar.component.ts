@@ -25,6 +25,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 export class NavbarComponent implements OnInit {
   user: any;
   @Input() isSidebarOpen = true;
+  @Input() isMobile = false;
   @Output() menuToggle = new EventEmitter<boolean>();
 
   constructor(
@@ -37,12 +38,18 @@ export class NavbarComponent implements OnInit {
     console.log('Usuario en Navbar:', this.user);
   }
 
-  toggleSidebar() {
+  toggleSidebarState() {
+    // Simplified toggle - just open/close
     this.isSidebarOpen = !this.isSidebarOpen;
     this.menuToggle.emit(this.isSidebarOpen);
     
-    // Guardar preferencia del usuario
+    // Guardar preferencias del usuario
     localStorage.setItem('sidebarOpen', this.isSidebarOpen.toString());
+  }
+  
+  getMenuIcon(): string {
+    // Simplificado a solo mostrar iconos de menú abierto/cerrado
+    return this.isSidebarOpen ? 'menu_open' : 'menu';
   }
 
   logout() {

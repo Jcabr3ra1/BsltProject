@@ -24,6 +24,7 @@ class Transaccion(AbstractModelo):
         # Relaciones con bolsillos
         self.id_bolsillo_origen = data.get("id_bolsillo_origen", None)
         self.id_bolsillo_destino = data.get("id_bolsillo_destino", None)
+        self.uuid_transaccion = data.get("uuid_transaccion")
 
         # Llamar al constructor padre al final
         super().__init__(data)
