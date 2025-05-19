@@ -7,6 +7,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -20,7 +22,9 @@ import { of } from 'rxjs';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatSelectModule,
+    MatOptionModule
   ],
   templateUrl: './editar-usuario-dialog.component.html',
   styleUrls: ['./editar-usuario-dialog.component.scss']
@@ -45,11 +49,16 @@ export class EditarUsuarioDialogComponent implements OnInit {
   }
 
   private initForm(): void {
-    // Corregido: Acceder a los datos del usuario desde data.usuario
+    // Acceder a los datos del usuario desde data.usuario
+    const currentRolId = this.data.usuario.roles?.[0]?.id || '';
+    const currentEstadoId = this.data.usuario.estado?.id || '';
+    
     this.form = this.fb.group({
       nombre: [this.data.usuario.nombre, [Validators.required, Validators.maxLength(50)]],
       apellido: [this.data.usuario.apellido, [Validators.required, Validators.maxLength(50)]],
-      email: [this.data.usuario.email, [Validators.required, Validators.email, Validators.maxLength(100)]]
+      email: [this.data.usuario.email, [Validators.required, Validators.email, Validators.maxLength(100)]],
+      rolId: [currentRolId, [Validators.required]],
+      estadoId: [currentEstadoId, [Validators.required]]
     });
   }
 
@@ -64,13 +73,18 @@ export class EditarUsuarioDialogComponent implements OnInit {
     }
     
     this.isLoading = true;
+    
+    // Encontrar el rol seleccionado
+    const selectedRol = this.data.roles.find((rol: any) => rol.id === this.form.value.rolId);
+    // Encontrar el estado seleccionado
+    const selectedEstado = this.data.estados.find((estado: any) => estado.id === this.form.value.estadoId);
+    
     const usuarioPayload = {
       nombre: this.form.value.nombre,
       apellido: this.form.value.apellido,
       email: this.form.value.email,
-      // Corregido: Mantener los roles y estado actuales del usuario
-      roles: this.data.usuario.roles,
-      estado: this.data.usuario.estado 
+      roles: selectedRol ? [selectedRol] : this.data.usuario.roles,
+      estado: selectedEstado || this.data.usuario.estado
     };
   
     this.usuariosService.actualizarUsuario(this.data.usuario.id, usuarioPayload)
@@ -96,5 +110,14 @@ export class EditarUsuarioDialogComponent implements OnInit {
 
   cancelar(): void {
     this.dialogRef.close(false);
+  }
+  
+  // Funciones para trackBy en los ngFor
+  trackRolById(index: number, rol: any): string {
+    return rol.id;
+  }
+  
+  trackEstadoById(index: number, estado: any): string {
+    return estado.id;
   }
 }

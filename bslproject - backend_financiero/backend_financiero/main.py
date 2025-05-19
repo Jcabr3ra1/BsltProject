@@ -36,7 +36,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # ⚠️ Cambiar en producción
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 print("✅ CORS configurado correctamente.")

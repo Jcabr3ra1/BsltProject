@@ -1,11 +1,11 @@
 {
-  "url-backend": "127.0.0.1",
+  "url-backend": "192.168.1.15",
   "port": 9999,
   "data-db-connection": "mongodb+srv://root:root@bstproject.98lqw.mongodb.net/BstProject_db?retryWrites=true&w=majority&appName=BstProject",
   "name-db": "BstProject_db",
   "jwt-secret": "qwertyuiopasdfghjklzxcvbnm123456",
   "servicios": {
-    "seguridad": "http://localhost:7777/seguridad",
-    "finanzas": "http://localhost:7777/finanzas"
+    "seguridad": "http://192.168.1.15:7777/seguridad",
+    "finanzas": "http://192.168.1.15:7777/finanzas"
   }
 }

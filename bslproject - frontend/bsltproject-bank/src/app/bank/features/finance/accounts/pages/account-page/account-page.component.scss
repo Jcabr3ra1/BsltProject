@@ -15,116 +15,254 @@ $edit-color: #a46cf5;
 $delete-color: #ff5252;
 $key-color: #ffb300;
 
+// Colores para estados
+$success-color: #4CAF50;
+$warning-color: #FF9800;
+$info-color: #2196F3;
+
+// Variables para efectos
+$card-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+$hover-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+// Clases de utilidad para alineación
+.text-center {
+  text-align: center !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
 // Contenedor principal
 .cuentas-page-container {
   background: linear-gradient(145deg, #2c1658 0%, #1f1f1f 100%);
   color: $light-text;
-  padding: 2rem;
-  min-height: calc(100vh - 110px);
+  padding: 2.5rem;
+  height: auto;
   display: flex;
   flex-direction: column;
-  border-radius: 10px;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="%23ffffff" fill-opacity="0.03" width="50" height="50" x="0" y="0"/><rect fill="%23ffffff" fill-opacity="0.03" width="50" height="50" x="50" y="50"/></svg>');
+    opacity: 0.05;
+    pointer-events: none;
+  }
   
   // Encabezado y acciones
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    padding-bottom: 1.5rem;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        rgba($primary-purple, 0) 0%, 
+        rgba($primary-purple, 0.7) 50%, 
+        rgba($primary-purple, 0) 100%);
+    }
     
     h1 {
       margin: 0;
-      font-size: 1.6rem;
-      font-weight: 600;
+      font-size: 2rem;
+      font-weight: 700;
       color: $light-text;
       display: flex;
       align-items: center;
+      letter-spacing: 0.5px;
+      position: relative;
+      padding-left: 1rem;
       
       &::before {
-        content: "account_balance";
-        font-family: 'Material Icons';
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 70%;
+        background: $primary-purple;
+        border-radius: 4px;
+      }
+      
+      mat-icon {
         color: $primary-purple;
         margin-right: 0.75rem;
-        font-size: 1.6rem;
+        font-size: 2rem;
+        height: 2rem;
+        width: 2rem;
+        animation: pulse 2s infinite ease-in-out;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
       }
     }
     
     button[mat-raised-button] {
-      background: $primary-purple;
+      background: linear-gradient(135deg, $primary-purple, color.adjust($primary-purple, $lightness: -10%));
       color: $light-text;
       border: none;
-      padding: 0.5rem 1.25rem;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba($primary-purple, 0.3);
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 6px 15px rgba($primary-purple, 0.4);
+      position: relative;
+      overflow: hidden;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transform: translateX(-100%);
+        transition: 0.6s;
+      }
       
       &:hover {
-        background: color.adjust($primary-purple, $lightness: 5%);
-        box-shadow: 0 6px 16px rgba($primary-purple, 0.4);
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, color.adjust($primary-purple, $lightness: 5%), $primary-purple);
+        box-shadow: 0 8px 20px rgba($primary-purple, 0.6);
+        transform: translateY(-3px);
+        
+        &::before {
+          transform: translateX(100%);
+        }
+      }
+      
+      &:active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba($primary-purple, 0.4);
       }
       
       mat-icon {
         margin-right: 0.5rem;
+        font-size: 1.2rem;
+        height: 1.2rem;
+        width: 1.2rem;
       }
     }
   }
   
   // Divisor
   mat-divider {
-    margin-bottom: 1.5rem;
-    border-top-color: rgba(164, 108, 245, 0.3);
-    position: relative;
-    
-    &::after {
-      content: "";
-      position: absolute;
-      top: -1px;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, 
-        rgba($primary-purple, 0) 0%, 
-        rgba($primary-purple, 0.6) 50%, 
-        rgba($primary-purple, 0) 100%);
-    }
+    display: none; // Eliminamos el divisor ya que ahora el header tiene su propio separador
   }
   
   // Spinner de carga
   .cargando {
     display: flex;
     justify-content: center;
-    margin: 3rem 0;
+    margin: 4rem 0;
+    z-index: 10;
     
-    mat-spinner ::ng-deep circle {
-      stroke: $primary-purple !important;
+    mat-spinner {
+      animation: fadeIn 0.5s ease-out;
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      
+      ::ng-deep circle {
+        stroke: $primary-purple !important;
+      }
     }
   }
   
   // Mensaje cuando no hay cuentas
   .sin-cuentas {
     text-align: center;
-    margin: 3rem auto;
-    max-width: 450px;
-    font-style: italic;
+    margin: 4rem auto;
+    max-width: 500px;
     color: $medium-text;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    padding: 2rem;
-    border: 1px dashed rgba(164, 108, 245, 0.3);
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    animation: fadeIn 0.5s ease-out;
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     
     mat-icon {
-      font-size: 2rem;
-      height: 2rem;
-      width: 2rem;
-      margin-bottom: 0.5rem;
-      color: $primary-purple;
-      opacity: 0.8;
+      font-size: 4rem;
+      height: 4rem;
+      width: 4rem;
+      margin-bottom: 1.5rem;
+      color: rgba($primary-purple, 0.6);
+      animation: float 3s infinite ease-in-out;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
     }
     
     p {
-      margin-bottom: 0;
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      line-height: 1.5;
+      color: $light-text;
+    }
+    
+    .paginacion-controles {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 12px;
+      padding: 0.25rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba($primary-purple, 0.1);
+    }
+    
+    .paginacion-info {
+      color: #444444;
+      font-size: 0.95rem;
+      font-weight: 500;
+      background-color: rgba($primary-purple, 0.05);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba($primary-purple, 0.1);
+      letter-spacing: 0.3px;
     }
   }
   
@@ -132,259 +270,450 @@ $key-color: #ffb300;
   .cuentas-table {
     flex: 1;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.5s ease-out;
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     
     table {
       width: 100%;
       background-color: #ffffff !important;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
       
       tr.mat-header-row {
-        background-color: $primary-purple !important;
-        height: 56px;
+        background: linear-gradient(90deg, $dark-purple, $primary-purple) !important;
+        height: 64px;
+        position: relative;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg, 
+            rgba(255,255,255,0.1) 0%, 
+            rgba(255,255,255,0.3) 50%, 
+            rgba(255,255,255,0.1) 100%);
+        }
       }
       
       th.mat-header-cell {
         color: $light-text !important;
         font-weight: 600 !important;
-        padding: 1rem 1.25rem !important;
-        font-size: 1rem !important;
-        border-bottom: 1px solid rgba(164, 108, 245, 0.3) !important;
+        padding: 1rem 1.5rem !important;
+        border-bottom: none !important;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.9rem !important;
+        position: relative;
         
-        &:first-child {
-          padding-left: 1.5rem !important;
+        &:nth-child(4), &:nth-child(5) {
+          text-align: right;
+        }
+        
+        &:nth-child(7), &:nth-child(8) {
+          text-align: center;
+        }
+        
+        &::after {
+          content: '';
+          position: absolute;
+          right: 0;
+          top: 20%;
+          height: 60%;
+          width: 1px;
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        &:last-child::after {
+          display: none;
         }
       }
       
       tr.mat-row {
-        background-color: #ffffff !important;
-        transition: all 0.2s ease !important;
-        height: 52px;
+        height: 70px;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         
         &:nth-child(odd) {
-          background-color: #f5f0ff !important;
+          background-color: #f8f5ff !important;
         }
         
         &:hover {
           background-color: rgba(164, 108, 245, 0.1) !important;
-          transform: translateY(-1px);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+          z-index: 1;
+          position: relative;
         }
       }
       
       td.mat-cell {
-        padding: 0.8rem 1.25rem !important;
+        padding: 1rem 1.5rem !important;
         color: #333333 !important;
-        border-bottom: 1px solid rgba(164, 108, 245, 0.15) !important;
-        font-size: 0.95rem !important;
-        
-        &:first-child {
-          padding-left: 1.5rem !important;
-        }
-        
-        &.saldo-cell, &.meta-cell {
-          font-weight: 500 !important;
-        }
-        
-        &.bolsillo-cell {
-          text-align: center;
-          
-          mat-icon {
-            vertical-align: middle;
-          }
-        }
+        border-bottom: 1px solid rgba(164, 108, 245, 0.1) !important;
+        font-size: 1rem !important;
+        vertical-align: middle;
       }
       
-      .cuenta-tipo {
-        font-weight: 600 !important;
-        color: #333333 !important;
-        letter-spacing: 0.5px !important;
-        position: relative;
-        padding-left: 12px;
-        
-        &::before {
-          content: "";
-          position: absolute;
-          left: 0;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background-color: $primary-purple;
-          box-shadow: 0 0 8px rgba($primary-purple, 0.7);
-        }
-      }
-      
-      .usuario-nombre {
-        color: #333333;
-        
-        &:empty::before {
-          content: "Sin asignar";
-          font-style: italic;
-          color: #888888;
-        }
-      }
-      
-      .color-container {
-        display: flex;
-        align-items: center;
-        
-        .color-box {
-          display: inline-block;
-          width: 18px;
-          height: 18px;
-          margin-right: 8px;
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          vertical-align: middle;
-          border-radius: 4px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .color-text {
-          font-size: 0.9rem;
-          color: #555555;
-        }
-      }
-      
-      .acciones {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        justify-content: flex-end;
-        
-        button {
-          width: 36px;
-          height: 36px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 8px;
-          transition: all 0.2s ease;
-          background-color: rgba(164, 108, 245, 0.05);
-          
-          mat-icon {
-            font-size: 1.1rem;
-            width: 1.1rem;
-            height: 1.1rem;
-          }
-          
-          &[color="accent"] {
-            color: $edit-color;
-            
-            &:hover {
-              background-color: rgba(164, 108, 245, 0.15);
-              transform: translateY(-2px);
-              box-shadow: 0 3px 6px rgba($edit-color, 0.25);
-            }
-          }
-          
-          &[color="warn"] {
-            color: $delete-color;
-            
-            &:hover {
-              background-color: rgba(255, 82, 82, 0.15);
-              transform: translateY(-2px);
-              box-shadow: 0 3px 6px rgba($delete-color, 0.25);
-            }
-          }
-          
-          &[color="primary"] {
-            color: $view-color;
-            
-            &:hover:not([disabled]) {
-              background-color: rgba(100, 181, 246, 0.15);
-              transform: translateY(-2px);
-              box-shadow: 0 3px 6px rgba($view-color, 0.25);
-            }
-            
-            &[disabled] {
-              color: rgba(0, 0, 0, 0.26);
-            }
-          }
-        }
+      tr.mat-row:hover {
+        background-color: rgba(164, 108, 245, 0.1) !important;
+        transform: translateY(-2px);
       }
     }
     
-    // Ocultar el paginador estándar pero mantener su funcionalidad
-    .paginator-invisible {
-      height: 0;
-      visibility: hidden;
-      position: absolute;
-    }
-    
-    // Estilos para la paginación
-    .paginacion-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 1.5rem;
-      background-color: #ffffff;
-      border-top: 1px solid rgba(164, 108, 245, 0.1);
+    .usuario-nombre {
+      color: #333333;
+      font-weight: 500;
+      position: relative;
+      display: inline-block;
       
-      .paginacion-items-por-pagina {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        
-        span {
-          color: #555555;
-          font-size: 0.9rem;
-        }
-        
-        mat-form-field {
-          width: 80px;
-          margin-bottom: -1.25em;
-          
-          ::ng-deep {
-            .mat-form-field-wrapper {
-              padding-bottom: 0;
-            }
-            
-            .mat-form-field-infix {
-              padding: 0.5em 0;
-              border-top: 0;
-            }
-            
-            .mat-form-field-outline {
-              color: rgba(164, 108, 245, 0.3);
-            }
-            
-            .mat-select-value {
-              color: #333333;
-              font-size: 0.9rem;
-            }
-            
-            .mat-select-arrow {
-              color: $primary-purple;
-            }
-          }
-        }
-      }
-      
-      .paginacion-info {
-        color: #555555;
+      &:empty::before {
+        content: "Sin asignar";
+        font-style: italic;
+        color: #888888;
+        background-color: rgba(0, 0, 0, 0.05);
+        padding: 4px 10px;
+        border-radius: 12px;
         font-size: 0.9rem;
       }
       
-      .paginacion-controles {
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background-color: $info-color;
+        transition: width 0.3s ease;
+      }
+      
+      tr:hover & {
+        &::after {
+          width: 100%;
+        }
+      }
+    }
+    
+    .saldo-cell, .meta-cell {
+      font-weight: 700;
+      color: #333333 !important;
+      font-size: 1.05rem !important;
+      position: relative;
+      text-align: right;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background-color: $primary-purple;
+        transition: width 0.3s ease;
+      }
+      
+      tr:hover & {
+        &::after {
+          width: 60%;
+        }
+      }
+    }
+    
+    .saldo-cell {
+      color: $success-color !important;
+    }
+
+    .bolsillo-cell {
+      text-align: center;
+      
+      mat-icon {
+        font-size: 1.5rem;
+        height: 1.5rem;
+        width: 1.5rem;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+        
+        tr:hover & {
+          transform: scale(1.2);
+          filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
+        }
+        
+        &[color="primary"] {
+          animation: pulse-success 2s infinite;
+          
+          @keyframes pulse-success {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+          }
+        }
+        
+        &[color="warn"] {
+          opacity: 0.7;
+        }
+      }
+    }
+
+    .cuenta-tipo {
+      font-weight: 600;
+      color: $primary-purple;
+      background-color: rgba(164, 108, 245, 0.08);
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 5px rgba($primary-purple, 0.1);
+      transition: all 0.3s ease;
+      letter-spacing: 0.3px;
+      
+      tr:hover & {
+        background-color: rgba(164, 108, 245, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba($primary-purple, 0.15);
+      }
+    }
+
+    .acciones {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      justify-content: center;
+      
+      button {
+        width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         
-        button {
-          color: $primary-purple;
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+          transition: all 0.3s ease;
+        }
+        
+        &[color="accent"] {
+          color: $edit-color;
           
-          &[disabled] {
-            color: rgba(0, 0, 0, 0.26);
+          &:hover {
+            background-color: rgba($edit-color, 0.1);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 5px 10px rgba($edit-color, 0.25);
+            border-color: rgba($edit-color, 0.3);
+            
+            mat-icon {
+              transform: rotate(10deg);
+            }
           }
           
-          &:not([disabled]):hover {
-            background-color: rgba(164, 108, 245, 0.05);
+          &:active {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba($edit-color, 0.2);
+          }
+        }
+        
+        &[color="warn"] {
+          color: $delete-color;
+          
+          &:hover {
+            background-color: rgba($delete-color, 0.1);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 5px 10px rgba($delete-color, 0.25);
+            border-color: rgba($delete-color, 0.3);
+            
+            mat-icon {
+              transform: rotate(90deg);
+            }
+          }
+          
+          &:active {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba($delete-color, 0.2);
           }
         }
       }
     }
+  }
+  
+  // Estilos para la paginación
+  .paginacion-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(to bottom, #ffffff, #f8f5ff);
+    border-top: 1px solid rgba(164, 108, 245, 0.1);
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.03);
+  }
+  
+  .paginacion-items-por-pagina {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    
+    span {
+      color: #444444;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    
+    mat-form-field {
+      width: 90px;
+      margin-bottom: -1.25em;
+    }
+  }
+  
+  .color-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .color-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%);
+      border-radius: 3px;
+    }
+    
+    &:hover {
+      transform: scale(1.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  .color-cell {
+    text-align: center;
+  }
+  
+  // Estilos para los elementos del select de paginación
+  ::ng-deep .paginacion-items-por-pagina mat-form-field {
+    .mat-form-field-wrapper {
+      padding-bottom: 0;
+    }
+    
+    .mat-form-field-infix {
+      padding: 0.5em 0;
+      border-top: 0;
+    }
+    
+    .mat-form-field-outline {
+      color: rgba(164, 108, 245, 0.3);
+    }
+    
+    .mat-select-value {
+      color: #333333;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+    
+    .mat-select-arrow {
+      color: $primary-purple;
+    }
+    
+    .mat-form-field-flex {
+      background-color: rgba($primary-purple, 0.03);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: rgba($primary-purple, 0.05);
+      }
+    }
+  }
+  
+  .paginacion-info {
+    color: #444444;
+    font-size: 0.95rem;
+    font-weight: 500;
+    background-color: rgba($primary-purple, 0.05);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba($primary-purple, 0.1);
+    letter-spacing: 0.3px;
+  }
+  
+  .paginacion-controles {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    padding: 0.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba($primary-purple, 0.1);
+    
+    button {
+      color: $primary-purple;
+      border-radius: 8px;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      
+      &[disabled] {
+        color: rgba(0, 0, 0, 0.2);
+      }
+      
+      &:not([disabled]) {
+        &:hover {
+          background-color: rgba($primary-purple, 0.1);
+          transform: translateY(-2px);
+          box-shadow: 0 3px 8px rgba($primary-purple, 0.15);
+        }
+        
+        &:active {
+          transform: translateY(0);
+          box-shadow: 0 1px 3px rgba($primary-purple, 0.1);
+        }
+      }
+      
+      mat-icon {
+        font-size: 1.2rem;
+        height: 1.2rem;
+        width: 1.2rem;
+        transition: all 0.3s ease;
+      }
+    }
+  }
+  
+  // Ocultar el paginador estándar pero mantener su funcionalidad
+  .paginator-invisible {
+    height: 0;
+    visibility: hidden;
+    position: absolute;
   }
 }
 

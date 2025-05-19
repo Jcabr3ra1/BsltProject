@@ -1,43 +1,59 @@
 @use 'sass:color';
 
 // Variables de color
-$primary-purple: #a46cf5;
+$primary-purple: #7e22ce; // Morado más profundo
+$primary-light: #a855f7; // Morado más claro
 $dark-purple: #2c1658;
 $darker-purple: #1e1339;
 $dark-bg: #1f1f1f;
 $light-text: #ffffff;
 $medium-text: #e0e0e0;
-$error-color: #ff4d4f;
-$success-color: #4cd964;
-$pending-color: #ffcc00;
+$error-color: #ef4444;
+$success-color: #10b981;
+$pending-color: #f59e0b;
+$border-color: rgba(126, 34, 206, 0.4);
 
 // Estilos del diálogo
 .dialog-content {
   background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
   color: $light-text;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   width: 100%;
   padding: 0;
   margin: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 // Cabecera del diálogo
 .dialog-header {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 1rem;
   padding: 1.2rem 1.5rem;
-  border-bottom: 1px solid rgba(164, 108, 245, 0.3);
-  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid $border-color;
+  background-color: rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, $primary-purple, $primary-light);
+  }
   
   .header-icon {
-    color: $primary-purple;
-    font-size: 1.8rem;
-    height: 1.8rem;
-    width: 1.8rem;
+    color: $primary-light;
+    font-size: 2rem;
+    height: 2rem;
+    width: 2rem;
+    filter: drop-shadow(0 0 8px rgba($primary-light, 0.5));
   }
   
   h2 {
@@ -45,6 +61,7 @@ $pending-color: #ffcc00;
     font-size: 1.5rem;
     font-weight: 600;
     color: $light-text;
+    letter-spacing: 0.5px;
   }
 }
 
@@ -53,39 +70,66 @@ $pending-color: #ffcc00;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.5rem;
+}
+
+// Filas de formulario para layout en columnas
+.form-row {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+  
+  .form-field {
+    flex: 1;
+  }
 }
 
 // Campos de formulario
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
   
   label {
     font-size: 0.9rem;
     font-weight: 500;
     color: $light-text;
+    display: flex;
+    align-items: center;
     
     .required {
       color: $error-color;
-      margin-left: 2px;
+      margin-left: 4px;
+      font-size: 1.1rem;
     }
   }
   
   input, select {
-    background-color: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(164, 108, 245, 0.3);
-    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid $border-color;
+    border-radius: 8px;
     color: $light-text;
-    padding: 0.8rem 1rem;
+    padding: 0.9rem 1rem;
     font-size: 0.95rem;
     outline: none;
     transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
     
     &:focus {
-      border-color: $primary-purple;
-      box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.3);
+      border-color: $primary-light;
+      box-shadow: 0 0 0 3px rgba($primary-light, 0.25);
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+    
+    &:hover:not(:focus) {
+      border-color: rgba($primary-light, 0.6);
+      background-color: rgba(255, 255, 255, 0.08);
     }
     
     &::placeholder {
@@ -99,8 +143,16 @@ $pending-color: #ffcc00;
   
   select {
     appearance: none;
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.06);
     cursor: pointer;
+    padding-right: 3rem;
+    color: $light-text;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-light;
+      box-shadow: 0 0 0 2px rgba($primary-light, 0.3);
+    }
   }
   
   .error-message {
@@ -108,26 +160,49 @@ $pending-color: #ffcc00;
     font-size: 0.8rem;
     margin-top: 0.2rem;
     animation: fadeIn 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    
+    mat-icon {
+      font-size: 1rem;
+      height: 1rem;
+      width: 1rem;
+    }
   }
 }
 
 // Contenedor de selección con icono
 .select-container {
   position: relative;
+  width: 100%;
   
-  mat-icon {
+  .select-icon-container {
     position: absolute;
     right: 0.8rem;
     top: 50%;
     transform: translateY(-50%);
-    color: $primary-purple;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
     pointer-events: none;
+    
+    mat-icon {
+      color: $primary-light;
+      
+      &.dropdown-icon {
+        font-size: 1.5rem;
+        height: 1.5rem;
+        width: 1.5rem;
+      }
+    }
   }
 }
 
 // Campo de entrada con icono
 .input-with-icon {
   position: relative;
+  width: 100%;
   
   input {
     padding-right: 2.5rem;
@@ -140,11 +215,18 @@ $pending-color: #ffcc00;
     right: 0.8rem;
     top: 50%;
     transform: translateY(-50%);
-    color: $primary-purple;
+    color: $primary-light;
+    opacity: 0.8;
+    transition: all 0.2s ease;
     
     &.clickable {
       cursor: pointer;
     }
+  }
+  
+  &:focus-within mat-icon {
+    opacity: 1;
+    color: $primary-light;
   }
 }
 
@@ -195,52 +277,93 @@ $pending-color: #ffcc00;
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
   
   button {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.7rem 1.2rem;
-    border-radius: 4px;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     border: none;
+    min-width: 120px;
+    
+    span {
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
     
     mat-icon {
-      font-size: 1.1rem;
-      height: 1.1rem;
-      width: 1.1rem;
+      font-size: 1.2rem;
+      height: 1.2rem;
+      width: 1.2rem;
     }
   }
   
   .btn-cancel {
-    background-color: transparent;
+    background-color: rgba(255, 255, 255, 0.05);
     color: $medium-text;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: translateY(0);
     }
   }
   
   .btn-save {
-    background-color: $primary-purple;
+    background: linear-gradient(135deg, $primary-purple, $primary-light);
     color: $light-text;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 60%);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.3s ease;
+    }
     
     &:hover {
-      background-color: color.adjust($primary-purple, $lightness: -10%);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+      
+      &::before {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    &:active {
+      transform: translateY(0);
     }
     
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      background-color: color.adjust($primary-purple, $lightness: -20%);
+      background: linear-gradient(135deg, desaturate($primary-purple, 30%), desaturate($primary-light, 30%));
       box-shadow: none;
+      transform: none;
+      
+      &::before {
+        display: none;
+      }
     }
   }
 }
@@ -282,5 +405,36 @@ $pending-color: #ffcc00;
   .mat-dialog-actions {
     margin-bottom: 0 !important;
     min-height: auto !important;
+  }
+  
+  // Estilos para los menús desplegables
+  .mat-select-panel {
+    background-color: $dark-purple !important;
+    border: 1px solid $border-color !important;
+    border-radius: 8px !important;
+    margin-top: 8px !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  .mat-option {
+    color: $light-text !important;
+    font-size: 0.95rem !important;
+    height: 48px !important;
+    
+    &:hover:not(.mat-option-disabled) {
+      background-color: rgba($primary-light, 0.2) !important;
+    }
+    
+    &.mat-selected:not(.mat-option-disabled) {
+      background-color: rgba($primary-light, 0.3) !important;
+      color: $primary-light !important;
+    }
+  }
+  
+  // Estilos para los menús nativos
+  .select-container select option {
+    background-color: $dark-purple !important;
+    color: $light-text !important;
+    padding: 12px !important;
   }
 }

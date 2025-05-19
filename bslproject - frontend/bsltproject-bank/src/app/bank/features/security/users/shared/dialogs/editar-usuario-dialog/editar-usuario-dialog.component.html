@@ -1,63 +1,119 @@
 <div class="dialog-content">
   <div class="dialog-header">
-    <mat-icon class="header-icon">edit_note</mat-icon>
+    <mat-icon class="header-icon">manage_accounts</mat-icon>
     <h2 mat-dialog-title>Editar usuario</h2>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario">
-    <div class="form-field">
-      <label for="nombre">Nombre<span class="required">*</span></label>
-      <input id="nombre" type="text" formControlName="nombre" placeholder="Ingrese el nombre">
-      <div class="error-message" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')">
-        El nombre es requerido
+    <div class="form-row">
+      <!-- Nombre -->
+      <div class="form-field">
+        <label for="nombre">Nombre<span class="required">*</span></label>
+        <div class="input-with-icon">
+          <input id="nombre" type="text" formControlName="nombre" placeholder="Ingrese el nombre">
+          <mat-icon>person</mat-icon>
+        </div>
+        @if (form.get('nombre')?.touched && form.get('nombre')?.hasError('required')) {
+          <div class="error-message">
+            <mat-icon>error_outline</mat-icon>
+            <span>El nombre es requerido</span>
+          </div>
+        }
+      </div>
+
+      <!-- Apellido -->
+      <div class="form-field">
+        <label for="apellido">Apellido<span class="required">*</span></label>
+        <div class="input-with-icon">
+          <input id="apellido" type="text" formControlName="apellido" placeholder="Ingrese el apellido">
+          <mat-icon>badge</mat-icon>
+        </div>
+        @if (form.get('apellido')?.touched && form.get('apellido')?.hasError('required')) {
+          <div class="error-message">
+            <mat-icon>error_outline</mat-icon>
+            <span>El apellido es requerido</span>
+          </div>
+        }
       </div>
     </div>
 
-    <div class="form-field">
-      <label for="apellido">Apellido<span class="required">*</span></label>
-      <input id="apellido" type="text" formControlName="apellido" placeholder="Ingrese el apellido">
-      <div class="error-message" *ngIf="form.get('apellido')?.touched && form.get('apellido')?.hasError('required')">
-        El apellido es requerido
-      </div>
-    </div>
-
+    <!-- Email -->
     <div class="form-field">
       <label for="email">Email<span class="required">*</span></label>
       <div class="input-with-icon">
         <input id="email" type="email" formControlName="email" placeholder="ejemplo@correo.com">
         <mat-icon>email</mat-icon>
       </div>
-      <div class="error-message" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('required')">
-        El email es requerido
-      </div>
-      <div class="error-message" *ngIf="form.get('email')?.touched && form.get('email')?.hasError('email')">
-        Formato de email inválido
-      </div>
+      @if (form.get('email')?.touched && form.get('email')?.hasError('required')) {
+        <div class="error-message">
+          <mat-icon>error_outline</mat-icon>
+          <span>El email es requerido</span>
+        </div>
+      }
+      @if (form.get('email')?.touched && form.get('email')?.hasError('email')) {
+        <div class="error-message">
+          <mat-icon>error_outline</mat-icon>
+          <span>Formato de email inválido</span>
+        </div>
+      }
     </div>
 
-    <div class="user-info-display">
-      <div class="info-item">
-        <span class="info-label">Rol actual:</span>
-        <span class="info-value">{{ data.usuario.roles?.[0]?.nombre || 'No definido' }}</span>
+    <div class="form-row">
+      <!-- Selector de Rol -->
+      <div class="form-field">
+        <label for="rol">Rol<span class="required">*</span></label>
+        <div class="select-container">
+          <select id="rol" formControlName="rolId" class="custom-select">
+            <option [value]="">Seleccione un rol</option>
+            @for (rol of data.roles; track rol.id) {
+              <option [value]="rol.id" [style.background-color]="'#2c1658'" [style.color]="'white'">{{ rol.nombre }}</option>
+            }
+          </select>
+          <div class="select-icon-container">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+          </div>
+        </div>
+        @if (form.get('rolId')?.touched && form.get('rolId')?.hasError('required')) {
+          <div class="error-message">
+            <mat-icon>error_outline</mat-icon>
+            <span>El rol es requerido</span>
+          </div>
+        }
       </div>
-      <div class="info-item">
-        <span class="info-label">Estado actual:</span>
-        <span class="info-value" [ngClass]="{
-          'estado-activo': data.usuario.estado?.nombre === 'Activo',
-          'estado-inactivo': data.usuario.estado?.nombre === 'Inactivo',
-          'estado-pendiente': data.usuario.estado?.nombre === 'Pendiente'
-        }">{{ data.usuario.estado?.nombre || 'No definido' }}</span>
+
+      <!-- Selector de Estado -->
+      <div class="form-field">
+        <label for="estado">Estado<span class="required">*</span></label>
+        <div class="select-container">
+          <select id="estado" formControlName="estadoId" class="custom-select">
+            <option [value]="">Seleccione un estado</option>
+            @for (estado of data.estados; track estado.id) {
+              <option [value]="estado.id" [style.background-color]="'#2c1658'" [style.color]="'white'">{{ estado.nombre }}</option>
+            }
+          </select>
+          <div class="select-icon-container">
+            <mat-icon>verified_user</mat-icon>
+            <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+          </div>
+        </div>
+        @if (form.get('estadoId')?.touched && form.get('estadoId')?.hasError('required')) {
+          <div class="error-message">
+            <mat-icon>error_outline</mat-icon>
+            <span>El estado es requerido</span>
+          </div>
+        }
       </div>
     </div>
 
     <div class="dialog-actions">
       <button type="button" class="btn-cancel" (click)="cancelar()">
         <mat-icon>close</mat-icon>
-        Cancelar
+        <span>Cancelar</span>
       </button>
       <button type="submit" class="btn-save" [disabled]="form.invalid">
         <mat-icon>save</mat-icon>
-        Guardar
+        <span>Guardar</span>
       </button>
     </div>
   </form>

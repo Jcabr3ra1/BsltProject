@@ -44,7 +44,7 @@
 
       <!-- Saldo -->
       <ng-container matColumnDef="saldo">
-        <th mat-header-cell *matHeaderCellDef>Saldo</th>
+        <th mat-header-cell *matHeaderCellDef class="text-right">Saldo</th>
         <td mat-cell *matCellDef="let cuenta" class="saldo-cell">
           ${{ cuenta.saldo | number: '1.2-2' }}
         </td>
@@ -52,7 +52,7 @@
 
       <!-- Meta de ahorro -->
       <ng-container matColumnDef="meta_ahorro">
-        <th mat-header-cell *matHeaderCellDef>Meta de ahorro</th>
+        <th mat-header-cell *matHeaderCellDef class="text-right">Meta de ahorro</th>
         <td mat-cell *matCellDef="let cuenta" class="meta-cell">
           ${{ cuenta.meta_ahorro | number: '1.2-2' }}
         </td>
@@ -60,11 +60,10 @@
 
       <!-- Color -->
       <ng-container matColumnDef="color">
-        <th mat-header-cell *matHeaderCellDef>Color</th>
-        <td mat-cell *matCellDef="let bolsillo">
+        <th mat-header-cell *matHeaderCellDef class="text-center">Color</th>
+        <td mat-cell *matCellDef="let cuenta" class="color-cell">
           <div class="color-container">
-            <span class="color-box" [style.background]="bolsillo.color" matTooltip="{{ bolsillo.color }}"></span>
-            <span class="color-text">{{ bolsillo.color }}</span>
+            <span class="color-box" [style.background]="cuenta.color" matTooltip="{{ cuenta.color }}"></span>
           </div>
         </td>
       </ng-container>
@@ -79,7 +78,7 @@
 
       <!-- ¿Tiene bolsillo? -->
       <ng-container matColumnDef="tieneBolsillo">
-        <th mat-header-cell *matHeaderCellDef>Bolsillo</th>
+        <th mat-header-cell *matHeaderCellDef class="text-center">Bolsillo</th>
         <td mat-cell *matCellDef="let cuenta" class="bolsillo-cell">
           <mat-icon color="primary" *ngIf="cuenta.tieneBolsillo" matTooltip="Tiene bolsillo">check_circle</mat-icon>
           <mat-icon color="warn" *ngIf="!cuenta.tieneBolsillo" matTooltip="No tiene bolsillo">cancel</mat-icon>
@@ -88,7 +87,7 @@
 
       <!-- Acciones -->
       <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <th mat-header-cell *matHeaderCellDef class="text-center">Acciones</th>
         <td mat-cell *matCellDef="let cuenta">
           <div class="acciones">
             <button mat-icon-button color="accent" matTooltip="Editar cuenta" (click)="editarCuenta(cuenta)">

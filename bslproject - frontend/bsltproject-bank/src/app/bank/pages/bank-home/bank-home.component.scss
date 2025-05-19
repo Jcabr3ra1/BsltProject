@@ -1,133 +1,166 @@
+// Main container for the entire application
 .app-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2c1658 0%, #1e1339 70%, #0f0f0f 100%);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    // Usar un patrón de puntos en lugar de una imagen externa
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+// Container for the main content area (sidebar + content)
+.main-content-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  min-height: 0; // Importante para que flex: 1 funcione correctamente
+}
+
+// Sidebar wrapper styles
+.sidebar-wrapper {
+  width: 270px;
+  transition: width 0.3s ease, min-width 0.3s ease, transform 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
+  &.hidden {
+    width: 0;
+    min-width: 0;
     overflow: hidden;
+    visibility: hidden;
   }
   
-  .sidenav-container {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%);
-    transition: all 0.3s ease;
-  }
-  
-  .sidenav {
-    width: 260px;
-    border-right: none !important;
-    box-shadow: none !important;
-    z-index: 2;
-    background: transparent;
-    transition: all 0.3s ease;
-    overflow: hidden !important;
-  }
-  
-  .sidebar-hidden {
-    width: 0 !important;
-    min-width: 0 !important;
+  &.collapsed {
+    width: 70px;
+    min-width: 70px;
+    max-width: 70px;
+    overflow-x: hidden;
     
-    ::ng-deep .mat-drawer-inner-container {
-      width: 0 !important;
+    ::ng-deep .sidebar-container {
+      width: 70px !important;
+      min-width: 70px !important;
+      max-width: 70px !important;
       overflow: hidden !important;
     }
   }
+}
+
+// Content wrapper styles
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 24px 0 24px; // Quitar padding bottom para el footer
+  background-color: transparent;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
   
-  .mat-drawer-inner-container {
-    overflow: hidden !important;
+  // Añadir efecto de desvanecimiento en la parte superior
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 30px;
+    pointer-events: none;
+    z-index: 10;
+    background: linear-gradient(to bottom, rgba(44, 22, 88, 0.5), transparent);
+  }
+  
+  // Hide scrollbar but keep functionality
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  
+  // El contenido principal debe crecer para ocupar el espacio disponible
+  router-outlet + * {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; // Importante para que flex: 1 funcione correctamente
+  }
+}
+  
+// Additional styling for app components
+:host ::ng-deep {
+  // Navbar styling
+  app-navbar {
+    display: block;
+    position: relative;
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  // Footer styling
+  app-footer {
+    z-index: 5;
+    position: relative;
+    width: 100%;
+    margin-top: auto; // Empujar el footer al fondo del contenedor
+    
+    .footer {
+      background: linear-gradient(180deg, #1f1f1f 0%, #18121e 100%) !important;
+      border-top: 1px solid rgba(164, 108, 245, 0.15) !important;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  // Sidebar component styling
+  app-sidebar {
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: transparent;
-    transition: width 0.3s ease;
-    
-    /* Añadir un degradado sutil en la parte inferior para armonizar con el footer */
-    &::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background-color: #1f1f1f;
-    }
-  }
-  
-  .mat-sidenav-content {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
     overflow: hidden;
-    background: #ffffff;
-    border-radius: 0 !important;
-    transition: margin-left 0.3s ease;
-  }
-  
-  .layout-content {
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
     flex: 1;
-    overflow-y: auto;
-    background-color: #f9f9f9;
-    position: relative;
-    height: calc(100vh - 64px - 56px); 
-    z-index: 1;
-    padding: 20px;
   }
   
-  :host ::ng-deep {
-    // Eliminar bordes entre componentes
-    .mat-drawer-side {
-      border-right: none !important;
-    }
+  // Mejorar la apariencia de los botones en toda la aplicación
+  .mat-button, .mat-raised-button, .mat-stroked-button, .mat-flat-button {
+    border-radius: 8px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
     
-    // Eliminar el espacio entre el contenido y el sidebar
-    .mat-drawer-container, .mat-drawer-content {
-      overflow: visible;
-    }
-    
-    // Aplicar gradiente al contenedor del sidebar
-    .mat-drawer-container {
-      background: linear-gradient(180deg, #2c1658 0%, #1f1f1f 100%);
-    }
-    
-    // Eliminar la sombra entre el sidebar y el contenido
-    .mat-drawer {
-      box-shadow: none !important;
-      overflow: hidden !important;
-    }
-    
-    // Asegurar que el navbar se muestre correctamente
-    app-navbar {
-      display: block;
-      position: relative;
-      z-index: 2;
-    }
-    
-    // Asegurar que el footer esté dentro del contenido principal
-    app-footer {
-      z-index: 2;
-      position: relative;
-    }
-    
-    // Aplicar fondo blanco solo al contenido principal, no al sidebar
-    .mat-sidenav-content {
-      border-radius: 0 !important;
-      overflow: hidden;
-    }
-    
-    // Forzar que el sidebar no tenga scroll 
-    .mat-drawer-inner-container {
-      overflow: hidden !important;
-    }
-    
-    app-sidebar {
-      overflow: hidden !important;
-      height: 100% !important;
-    }
-    
-    // Integración perfecta entre footer y sidebar
-    app-footer .footer {
-      background: linear-gradient(180deg, #1f1f1f 0%, #18121e 100%) !important;
-      border-top: none !important;
+    &:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
     }
   }
+  
+  // Mejorar la apariencia de los inputs
+  .mat-form-field {
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    
+    &.mat-focused {
+      .mat-form-field-outline {
+        color: rgba(164, 108, 245, 0.5) !important;
+      }
+    }
+  }
+}

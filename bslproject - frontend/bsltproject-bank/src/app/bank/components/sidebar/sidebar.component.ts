@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
@@ -31,7 +31,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
   ],
 })
 export class SidebarComponent implements OnInit {
-  isCollapsed = false;
   expandedMenus: { [key: string]: boolean } = {
     seguridad: true,
     finanzas: true,
@@ -84,10 +83,13 @@ export class SidebarComponent implements OnInit {
   toggleMenu(menu: string): void {
     this.expandedMenus[menu] = !this.expandedMenus[menu];
   }
-
-  expandSidebar(): void {
-    this.isCollapsed = false;
+  
+  navigateTo(route: string): void {
+    this.router.navigate([route]);
+    this.activePage = route;
   }
+
+  // Método eliminado: expandSidebar
 
   isAdmin(): boolean {
     return (
@@ -118,10 +120,5 @@ export class SidebarComponent implements OnInit {
     );
   }
   
-  @HostListener('mouseenter')
-  onMouseEnter(): void {
-    if (this.isCollapsed) {
-      this.expandSidebar();
-    }
-  }
+  // Método eliminado: onMouseEnter
 }

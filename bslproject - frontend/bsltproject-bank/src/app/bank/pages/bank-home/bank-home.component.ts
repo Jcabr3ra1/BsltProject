@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -6,6 +6,7 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { MatSidenav } from '@angular/material/sidenav';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-bank-home',
@@ -21,67 +22,67 @@ import { MatSidenav } from '@angular/material/sidenav';
   templateUrl: './bank-home.component.html',
   styleUrls: ['./bank-home.component.scss']
 })
-export class BankHomeComponent implements OnInit, AfterViewInit {
-  @ViewChild('drawer') drawer!: MatSidenav;
-  
-  // Detectar tamaño de pantalla para decidir si el sidebar debe estar abierto por defecto
-  isMobile: boolean = false;
-  sidebarOpen: boolean = true;
+export class BankHomeComponent implements OnInit, AfterViewInit, OnDestroy {
+  // No longer need ViewChild for MatSidenav since we're using a simpler structure
+  isMobile = false;
+  sidebarOpen = true;
+  private resizeSubscription: Subscription | null = null;
 
-  constructor() {
-    // Comprobar el tamaño de la pantalla
+  constructor() { }
+
+  ngOnInit(): void {
     this.checkScreenSize();
-    
-    // Recuperar preferencia del usuario
+    // Cargar estado del sidebar desde localStorage
     const savedState = localStorage.getItem('sidebarOpen');
     if (savedState !== null) {
       this.sidebarOpen = savedState === 'true';
+    } else {
+      // Si no hay estado guardado, el sidebar estará abierto por defecto en desktop y cerrado en mobile
+      this.sidebarOpen = !this.isMobile;
     }
   }
 
-  ngOnInit(): void {
-    // Escuchar cambios en el tamaño de la ventana
-    window.addEventListener('resize', this.checkScreenSize.bind(this));
-  }
+  // This is intentionally left empty as ngOnDestroy is implemented below
 
   ngAfterViewInit(): void {
     // En dispositivos móviles, el sidebar comienza cerrado
     if (this.isMobile) {
       setTimeout(() => {
         this.sidebarOpen = false;
-        if (this.drawer) {
-          this.drawer.close();
-        }
+        localStorage.setItem('sidebarOpen', 'false');
       }, 0);
     }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.checkScreenSize();
   }
 
   checkScreenSize(): void {
     const prevIsMobile = this.isMobile;
     this.isMobile = window.innerWidth < 768;
-    
-    // Si cambia de escritorio a móvil, cerrar el sidebar
-    if (!prevIsMobile && this.isMobile) {
+    if (this.isMobile && this.sidebarOpen) {
       this.sidebarOpen = false;
+      localStorage.setItem('sidebarOpen', 'false');
     }
   }
-  
+
   toggleSidebar(isOpen?: boolean): void {
     if (isOpen !== undefined) {
       this.sidebarOpen = isOpen;
     } else {
       this.sidebarOpen = !this.sidebarOpen;
     }
-    
-    if (this.drawer) {
-      if (this.sidebarOpen) {
-        this.drawer.open();
-      } else {
-        this.drawer.close();
-      }
-    }
-    
-    // Guardar preferencia del usuario
     localStorage.setItem('sidebarOpen', this.sidebarOpen.toString());
+  }
+  
+  // Método eliminado: toggleSidebarCollapse
+  
+  ngOnDestroy(): void {
+    // Limpiar suscripciones para evitar memory leaks
+    if (this.resizeSubscription) {
+      this.resizeSubscription.unsubscribe();
+    }
   }
 }

@@ -3,173 +3,332 @@
     <mat-icon class="header-icon">receipt_long</mat-icon>
     <h2 mat-dialog-title>Registrar nueva transacción</h2>
   </div>
+  
+  <!-- Barra de progreso -->
+  <div class="progress-bar-container">
+    <div class="progress-steps">
+      <div class="progress-step" [class.active]="pasoActivo >= 1" [class.completed]="pasoActivo > 1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Operación</div>
+      </div>
+      <div class="progress-line" [class.active]="pasoActivo > 1"></div>
+      <div class="progress-step" [class.active]="pasoActivo >= 2" [class.completed]="pasoActivo > 2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Cuentas</div>
+      </div>
+      <div class="progress-line" [class.active]="pasoActivo > 2"></div>
+      <div class="progress-step" [class.active]="pasoActivo >= 3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Detalles</div>
+      </div>
+    </div>
+  </div>
 
   <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-transaccion">
-    <!-- Mensajes de error generales (como saldo insuficiente) -->
-    <div class="error-mensaje-global" *ngIf="mensajeError">
-      <div class="error-icon-container">
-        <mat-icon>error_outline</mat-icon>
-      </div>
-      <div class="error-mensaje-texto">
-        {{ mensajeError }}
-      </div>
-    </div>
-    
-    <!-- Tipo de transacción -->
-    <div class="section-label">
-      <div class="label-bar"></div>
-      <span>Tipo de transacción</span>
-    </div>
-    
-    <div class="transaction-type-section">
-      <div class="transaction-grid">
-        <button type="button" *ngFor="let tipo of data.tiposTransaccion"
-            [class.selected]="form.get('id_tipo_transaccion')?.value === (tipo.id || tipo._id)"
-            (click)="seleccionarTipoTransaccion(tipo.id || tipo._id)">
-          <div class="transaction-icon-container">
-            <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('consignación')">arrow_downward</mat-icon>
-            <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('retiro')">arrow_upward</mat-icon>
-            <mat-icon *ngIf="tipo.descripcion.toLowerCase().includes('transferencia')">sync_alt</mat-icon>
-          </div>
-          <span>{{tipo.descripcion}}</span>
-        </button>
-      </div>
-    </div>
-  
-    <!-- Tipo de movimiento -->
-    <div class="section-label">
-      <div class="label-bar"></div>
-      <span>Origen y destino del dinero</span>
-    </div>
-  
-    <div class="movement-type-section">
-      <div class="movement-grid">
-        <button type="button" *ngFor="let tipo of data.tiposMovimiento"
-            [class.selected]="form.get('id_tipo_movimiento')?.value === (tipo.id || tipo._id)"
-            (click)="seleccionarTipoMovimiento(tipo.id || tipo._id)">
-          <div class="movement-icon-container">
-            <span class="movement-icon" [innerHTML]="obtenerIconoMovimiento(tipo)"></span>
-          </div>
-          <span>{{obtenerDescripcionCorta(tipo)}}</span>
-        </button>
-      </div>
-    </div>
-  
-    <!-- Campos de formulario dinámicos -->
-    <div class="section-label" *ngIf="tipoMovimientoSeleccionado">
-      <div class="label-bar"></div>
-      <span>Detalles de la transacción</span>
-    </div>
-    
-    <div class="dynamic-fields" *ngIf="tipoMovimientoSeleccionado">
-      <!-- Cuenta origen -->
-      <div class="form-field" *ngIf="mostrarCampo('cuenta_origen')">
-        <label for="id_cuenta_origen">Cuenta origen<span class="required">*</span></label>
-        <div class="select-with-icon">
-          <select id="id_cuenta_origen" formControlName="id_cuenta_origen">
-            <option [value]="null" disabled>Selecciona una cuenta</option>
-            <option *ngFor="let cuenta of data.cuentas" [value]="cuenta.id || cuenta._id">
-              {{ cuenta.numero_cuenta }} - Saldo: ${{ cuenta.saldo | number:'1.0-2' }}
-            </option>
-          </select>
-          <mat-icon>account_balance</mat-icon>
+    <!-- Mensaje de error global -->
+    @if (mensajeError) {
+      <div class="error-mensaje-global">
+        <div class="error-icon-container">
+          <mat-icon>error_outline</mat-icon>
         </div>
-        <div class="error-message" *ngIf="form.get('id_cuenta_origen')?.touched && form.get('id_cuenta_origen')?.hasError('required')">
-          Debes seleccionar una cuenta de origen
+        <div class="error-mensaje-texto">
+          {{ mensajeError }}
         </div>
       </div>
-  
-      <!-- Cuenta destino -->
-      <div class="form-field" *ngIf="mostrarCampo('cuenta_destino')">
-        <label for="id_cuenta_destino">Cuenta destino<span class="required">*</span></label>
-        <div class="select-with-icon">
-          <select id="id_cuenta_destino" formControlName="id_cuenta_destino">
-            <option [value]="null" disabled>Selecciona una cuenta</option>
-            <option *ngFor="let cuenta of data.cuentas" [value]="cuenta.id || cuenta._id">
-              {{ cuenta.numero_cuenta }} - Saldo: ${{ cuenta.saldo | number:'1.0-2' }}
-            </option>
-          </select>
-          <mat-icon>account_balance</mat-icon>
+    }
+
+    <!-- Paso 1: Tipo de operación -->
+    <div class="step-container" [class.active-step]="pasoActivo === 1" *ngIf="pasoActivo === 1">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <div class="section-label">
+          <mat-icon>category</mat-icon>
+          <span>¿Qué operación quieres realizar?</span>
         </div>
-        <div class="error-message" *ngIf="form.get('id_cuenta_destino')?.touched && form.get('id_cuenta_destino')?.hasError('required')">
-          Debes seleccionar una cuenta de destino
-        </div>
-      </div>
-  
-      <!-- Bolsillo origen -->
-      <div class="form-field" *ngIf="mostrarCampo('bolsillo_origen')">
-        <label for="id_bolsillo_origen">Bolsillo origen<span class="required">*</span></label>
-        <div class="select-with-icon">
-          <select id="id_bolsillo_origen" formControlName="id_bolsillo_origen">
-            <option [value]="null" disabled>Selecciona un bolsillo</option>
-            <option *ngFor="let b of data.bolsillos" [value]="b.id || b._id">
-              {{ b.nombre }} - Saldo: ${{ b.saldo | number:'1.0-2' }}
-            </option>
-          </select>
-          <mat-icon>wallet</mat-icon>
-        </div>
-        <div class="error-message" *ngIf="form.get('id_bolsillo_origen')?.touched && form.get('id_bolsillo_origen')?.hasError('required')">
-          Debes seleccionar un bolsillo de origen
-        </div>
-      </div>
-  
-      <!-- Bolsillo destino -->
-      <div class="form-field" *ngIf="mostrarCampo('bolsillo_destino')">
-        <label for="id_bolsillo_destino">Bolsillo destino<span class="required">*</span></label>
-        <div class="select-with-icon">
-          <select id="id_bolsillo_destino" formControlName="id_bolsillo_destino">
-            <option [value]="null" disabled>Selecciona un bolsillo</option>
-            <option *ngFor="let b of data.bolsillos" [value]="b.id || b._id">
-              {{ b.nombre }} - Saldo: ${{ b.saldo | number:'1.0-2' }}
-            </option>
-          </select>
-          <mat-icon>wallet</mat-icon>
-        </div>
-        <div class="error-message" *ngIf="form.get('id_bolsillo_destino')?.touched && form.get('id_bolsillo_destino')?.hasError('required')">
-          Debes seleccionar un bolsillo de destino
-        </div>
-      </div>
-    
-      <!-- Valor y descripción -->
-      <div class="form-field">
-        <label for="monto">Valor a transferir<span class="required">*</span></label>
-        <div class="input-with-icon">
-          <input id="monto" type="number" formControlName="monto" placeholder="Ingresa el monto de la transacción">
-          <mat-icon>attach_money</mat-icon>
-        </div>
-        <div class="error-message" *ngIf="form.get('monto')?.touched && form.get('monto')?.hasError('required')">
-          El monto es obligatorio
-        </div>
-        <div class="error-message" *ngIf="form.get('monto')?.touched && form.get('monto')?.hasError('min')">
-          El monto debe ser mayor a 0
-        </div>
-      </div>
-  
-      <div class="form-field">
-        <label for="descripcion">Descripción<span class="required">*</span></label>
-        <div class="input-with-icon">
-          <input id="descripcion" type="text" formControlName="descripcion" placeholder="Añade una breve descripción">
-          <mat-icon>description</mat-icon>
-        </div>
-        <div class="error-message" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.hasError('required')">
-          La descripción es obligatoria
-        </div>
-        <div class="error-message" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.hasError('minlength')">
-          Debe tener al menos 3 caracteres
+
+        <!-- Transacciones agrupadas por categoría -->
+        <div class="transaction-categories">
+          @for (categoria of ordenCategorias; track categoria) {
+            @if (transaccionesPorCategoria[categoria] && transaccionesPorCategoria[categoria].length > 0) {
+              <div class="transaction-category">
+                <div class="category-header">
+                  @if (categoria === 'TRANSFERENCIAS') {
+                    <div class="category-icon-container">
+                      <mat-icon class="category-icon transferencia-icon">swap_horiz</mat-icon>
+                    </div>
+                  } 
+                  @else if (categoria === 'CONSIGNACIONES') {
+                    <div class="category-icon-container">
+                      <mat-icon class="category-icon consignacion-icon">add_circle</mat-icon>
+                    </div>
+                  }
+                  @else if (categoria === 'RETIROS') {
+                    <div class="category-icon-container">
+                      <mat-icon class="category-icon retiro-icon">remove_circle</mat-icon>
+                    </div>
+                  }
+                  <h3 class="category-title">{{ categoria }}</h3>
+                </div>
+                
+                <div class="transaction-grid">
+                  @for (tipo of transaccionesPorCategoria[categoria]; track tipo?.id || tipo?._id) {
+                    <button type="button" 
+                      [class.selected]="form.get('id_tipo_transaccion')?.value === (tipo?.id || tipo?._id)"
+                      (click)="seleccionarTipoTransaccion((tipo?.id || tipo?._id) || '')"
+                      (mouseenter)="mostrarInfoTooltip($event, tipo.descripcion)">
+                      <div class="transaction-icon-container custom-icon">
+                        <!-- Iconos según el tipo de transacción -->
+                        @if (categoria === 'TRANSFERENCIAS') {
+                          <div class="icon-wrapper transferencia-wrapper">
+                            <mat-icon class="transferencia-icon">sync_alt</mat-icon>
+                          </div>
+                        } 
+                        @else if (categoria === 'CONSIGNACIONES') {
+                          <div class="icon-wrapper consignacion-wrapper">
+                            <mat-icon class="consignacion-icon">add_circle</mat-icon>
+                          </div>
+                        }
+                        @else if (categoria === 'RETIROS') {
+                          <div class="icon-wrapper retiro-wrapper">
+                            <mat-icon class="retiro-icon">remove_circle</mat-icon>
+                          </div>
+                        }
+                        @else {
+                          <div class="icon-wrapper">
+                            <mat-icon>sync_alt</mat-icon>
+                          </div>
+                        }
+                        <!-- Quitamos el texto para mostrar solo iconos -->
+                      </div>
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          }
         </div>
       </div>
     </div>
 
+    <!-- Paso 2: Tipo de movimiento -->
+    @if (form.get('id_tipo_transaccion')?.value && pasoActivo === 2) {
+      <div class="step-container" [class.active-step]="pasoActivo === 2">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <div class="section-label">
+            <button type="button" class="back-button" (click)="regresarPasoAnterior()">
+              <mat-icon>arrow_back</mat-icon>
+              <span>Volver</span>
+            </button>
+            <mat-icon>account_balance_wallet</mat-icon>
+            <span>¿Entre qué cuentas se moverá el dinero?</span>
+          </div>
+
+          <!-- Movimientos agrupados por categoría -->
+          <div class="movement-categories">
+            @for (categoria of ordenCategoriasMovimiento; track categoria) {
+              @if (movimientosPorCategoria[categoria] && movimientosPorCategoria[categoria].length > 0) {
+                <div class="movement-category">
+                  <div class="category-header">
+                    @if (categoria === 'TRANSFERENCIAS') {
+                      <mat-icon class="category-icon transferencia-icon">swap_horiz</mat-icon>
+                    } 
+                    @else if (categoria === 'CONSIGNACIONES') {
+                      <mat-icon class="category-icon consignacion-icon">add_circle</mat-icon>
+                    }
+                    @else if (categoria === 'RETIROS') {
+                      <mat-icon class="category-icon retiro-icon">remove_circle</mat-icon>
+                    }
+                    <h3 class="category-title">{{ categoria }}</h3>
+                  </div>
+                  
+                  <div class="movement-grid">
+                    @for (tipo of movimientosPorCategoria[categoria]; track tipo?.id || tipo?._id) {
+                      <!-- Verificar que el tipo_operacion corresponda a la categoría correcta -->
+                      @if (
+                        (categoria === 'TRANSFERENCIAS' && (tipo.tipo_operacion?.startsWith('transferencias'))) ||
+                        (categoria === 'CONSIGNACIONES' && (tipo.tipo_operacion?.startsWith('consignacion'))) ||
+                        (categoria === 'RETIROS' && (tipo.tipo_operacion?.startsWith('retiro')))
+                      ) {
+                        <button type="button" 
+                          [class.selected]="form.get('id_tipo_movimiento')?.value === (tipo?.id || tipo?._id)"
+                          (click)="seleccionarTipoMovimiento(tipo?.id || tipo?._id)"
+                          (mouseenter)="mostrarInfoTooltip($event, obtenerDescripcionCorta(tipo))">
+                          <div class="movement-icon-container custom-icon" [ngClass]="obtenerIconoMovimiento(tipo).type">
+                            <mat-icon>{{ obtenerIconoMovimiento(tipo).icon }}</mat-icon>
+                            <!-- Quitamos el texto para mostrar solo iconos -->
+                          </div>
+                        </button>
+                      }
+                    }
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Paso 3: Detalles de la transacción -->
+    @if (tipoMovimientoSeleccionado && pasoActivo === 3) {
+      <div class="step-container active-step paso-detalles">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <div class="section-label">
+            <button type="button" class="back-button" (click)="regresarPasoAnterior()">
+              <mat-icon>arrow_back</mat-icon>
+              <span>Volver</span>
+            </button>
+            <mat-icon>info</mat-icon>
+            <span>Detalles de la transacción</span>
+          </div>
+
+          <!-- Categorías de campos para la opción 3 -->
+          <div class="transaction-details-container">
+            
+            <!-- Categoría: Cuentas y Bolsillos (solo se muestra si hay al menos un campo visible) -->
+            @if (mostrarCampo('bolsillo_origen') || mostrarCampo('bolsillo_destino') || mostrarCampo('cuenta_origen') || mostrarCampo('cuenta_destino')) {
+              <div class="details-category">
+                <div class="category-header accounts-header">
+                  <mat-icon>account_balance</mat-icon>
+                  <h3>Cuentas y Bolsillos</h3>
+                </div>
+                
+                <div class="category-content">
+                  <!-- Campos de bolsillos -->
+                  <div class="fields-group centered-fields">
+                    @if (mostrarCampo('bolsillo_origen')) {
+                      <div class="form-field animated-field">
+                        <label for="nombre_bolsillo_origen">Bolsillo origen<span class="required">*</span></label>
+                        <div class="select-with-icon wallet-select">
+                          <select id="nombre_bolsillo_origen" formControlName="nombre_bolsillo_origen">
+                            <option value="" disabled selected>Selecciona el bolsillo</option>
+                            @for (bolsillo of data.bolsillos; track bolsillo.nombre) {
+                              <option [value]="bolsillo.nombre">
+                                {{ bolsillo.nombre }} - {{ bolsillo.saldo | currency }}
+                              </option>
+                            }
+                          </select>
+                          <mat-icon>wallet</mat-icon>
+                        </div>
+                        @if (form.get('nombre_bolsillo_origen')?.invalid && (form.get('nombre_bolsillo_origen')?.dirty || form.get('nombre_bolsillo_origen')?.touched)) {
+                          <div class="error-message">El bolsillo origen es obligatorio</div>
+                        }
+                      </div>
+                    }
+
+                    @if (mostrarCampo('bolsillo_destino')) {
+                      <div class="form-field animated-field">
+                        <label for="nombre_bolsillo_destino">Bolsillo destino<span class="required">*</span></label>
+                        <div class="select-with-icon wallet-select">
+                          <select id="nombre_bolsillo_destino" formControlName="nombre_bolsillo_destino">
+                            <option value="" disabled selected>Selecciona el bolsillo</option>
+                            @for (bolsillo of data.bolsillos; track bolsillo.nombre) {
+                              <option [value]="bolsillo.nombre">
+                                {{ bolsillo.nombre }} - {{ bolsillo.saldo | currency }}
+                              </option>
+                            }
+                          </select>
+                          <mat-icon>wallet</mat-icon>
+                        </div>
+                        @if (form.get('nombre_bolsillo_destino')?.invalid && (form.get('nombre_bolsillo_destino')?.dirty || form.get('nombre_bolsillo_destino')?.touched)) {
+                          <div class="error-message">El bolsillo destino es obligatorio</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                  
+                  <!-- Campos de cuentas -->
+                  <div class="fields-group centered-fields">
+                    @if (mostrarCampo('cuenta_origen')) {
+                      <div class="form-field animated-field">
+                        <label for="numero_cuenta_origen">Cuenta origen<span class="required">*</span></label>
+                        <div class="input-with-icon account-input">
+                          <input id="numero_cuenta_origen" type="text" formControlName="numero_cuenta_origen" placeholder="Ej: 1234567890" />
+                          <mat-icon>account_balance</mat-icon>
+                        </div>
+                        @if (form.get('numero_cuenta_origen')?.touched && form.get('numero_cuenta_origen')?.hasError('required')) {
+                          <div class="error-message">El número de cuenta origen es obligatorio</div>
+                        }
+                      </div>
+                    }
+
+                    @if (mostrarCampo('cuenta_destino')) {
+                      <div class="form-field animated-field">
+                        <label for="numero_cuenta_destino">Cuenta destino<span class="required">*</span></label>
+                        <div class="input-with-icon account-input">
+                          <input id="numero_cuenta_destino" type="text" formControlName="numero_cuenta_destino" placeholder="Ej: 0987654321" />
+                          <mat-icon>account_balance</mat-icon>
+                        </div>
+                        @if (form.get('numero_cuenta_destino')?.touched && form.get('numero_cuenta_destino')?.hasError('required')) {
+                          <div class="error-message">El número de cuenta destino es obligatorio</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+            <!-- Categoría: Detalles del Monto -->
+            <div class="details-category">
+              <div class="category-header amount-header">
+                <mat-icon>payments</mat-icon>
+                <h3>Detalles del Monto</h3>
+              </div>
+              
+              <div class="category-content">
+                <div class="fields-group centered-fields">
+                  <div class="form-field animated-field monto-field">
+                    <label for="monto">Valor a transferir<span class="required">*</span></label>
+                    <div class="input-with-icon amount-input">
+                      <input id="monto" type="number" formControlName="monto" placeholder="Ingresa el monto">
+                      <mat-icon>attach_money</mat-icon>
+                    </div>
+                    @if (form.get('monto')?.touched && form.get('monto')?.hasError('required')) {
+                      <div class="error-message">El monto es obligatorio</div>
+                    } @else if (form.get('monto')?.touched && form.get('monto')?.hasError('min')) {
+                      <div class="error-message">El monto debe ser mayor a 0</div>
+                    }
+                  </div>
+                </div>
+
+                <div class="fields-group centered-fields">
+                  <div class="form-field animated-field">
+                    <label for="descripcion">Descripción<span class="required">*</span></label>
+                    <div class="input-with-icon description-input">
+                      <textarea id="descripcion" formControlName="descripcion" placeholder="Añade una breve descripción" rows="3"></textarea>
+                      <mat-icon>description</mat-icon>
+                    </div>
+                    @if (form.get('descripcion')?.touched && form.get('descripcion')?.hasError('required')) {
+                      <div class="error-message">La descripción es obligatoria</div>
+                    } @else if (form.get('descripcion')?.touched && form.get('descripcion')?.hasError('minlength')) {
+                      <div class="error-message">Debe tener al menos 3 caracteres</div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Botones de acción -->
     <div class="dialog-actions">
       <button type="button" class="btn-cancel" (click)="cancelar()">
         <mat-icon>close</mat-icon>
         Cancelar
       </button>
       <button type="submit" class="btn-save" [disabled]="form.invalid || !form.dirty || isLoading">
-        <div class="spinner" *ngIf="isLoading"></div>
-        <mat-icon *ngIf="!isLoading">save</mat-icon>
+        @if (isLoading) {
+          <div class="spinner"></div>
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
         Guardar transacción
-      </button>      
+      </button>
     </div>
   </form>
 </div>

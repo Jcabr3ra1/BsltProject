@@ -20,7 +20,7 @@ $key-color: #ffb300;
   background: linear-gradient(145deg, #2c1658 0%, #1f1f1f 100%);
   color: $light-text;
   padding: 2rem;
-  min-height: calc(100vh - 110px);
+  height: auto;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
@@ -213,7 +213,9 @@ $key-color: #ffb300;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        justify-content: flex-end;
+        justify-content: center;
+        width: 100%;
+        min-width: 100px;
         
         button {
           width: 36px;

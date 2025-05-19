@@ -1,106 +1,230 @@
-.navbar {
-  background: linear-gradient(90deg, #2c1658 0%, #1f1f1f 100%) !important;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 1rem;
-  height: 64px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  position: relative;
-  z-index: 10;
+// Variables
+$primary-purple: #a46cf5;
+$light-purple: #c39af7;
+$dark-purple: #2c1658;
+$darker-purple: #1e1339;
+$dark-bg: #1f1f1f;
+$light-text: #ffffff;
+$hover-bg: rgba($primary-purple, 0.15);
+$active-bg: rgba($primary-purple, 0.25);
 
-  .menu-toggle {
-    margin-right: 0.5rem;
-    transition: all 0.2s ease;
+// Animations
+@keyframes bell-ring {
+  0% { transform: rotate(0); }
+  20% { transform: rotate(15deg); }
+  40% { transform: rotate(-15deg); }
+  60% { transform: rotate(7deg); }
+  80% { transform: rotate(-7deg); }
+  100% { transform: rotate(0); }
+}
+
+.navbar {
+  background: linear-gradient(90deg, $dark-purple 0%, $dark-bg 100%) !important;
+  color: $light-text;
+  height: 64px;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  position: relative;
+  width: 100%;
+  z-index: 10;
+  border-bottom: 1px solid rgba($primary-purple, 0.3);
+  
+  // Left section of navbar
+  .navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     
-    mat-icon {
-      color: #a46cf5;
-      transition: transform 0.3s ease;
-    }
-    
-    &:hover {
-      background-color: rgba(164, 108, 245, 0.15);
+    .menu-button, .collapse-button {
+      margin-right: 0.25rem;
       
       mat-icon {
-        transform: rotate(90deg);
-        color: white;
+        color: $light-text;
+        transition: all 0.2s ease;
+      }
+      
+      &:hover mat-icon {
+        color: $light-purple;
+        transform: scale(1.1);
       }
     }
-  }
-
-  .logo {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: white;
-    letter-spacing: 1px;
-    position: relative;
-    padding: 0 1rem;
-    display: flex;
-    align-items: center;
-    background: linear-gradient(90deg, #a46cf5, #ffffff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0px 0px 10px rgba(164, 108, 245, 0.3);
-  }
-
-  .spacer {
-    flex: 1;
-  }
-
-  a {
-    color: white !important;
-    font-weight: 500;
-    text-decoration: none;
-    margin: 0 0.5rem;
-    transition: color 0.2s ease;
     
-    &:hover {
-      color: #a46cf5 !important;
+    .collapse-button {
+      margin-left: -0.25rem;
     }
-  }
-
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 24px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
     
-    &:hover {
-      background-color: rgba(164, 108, 245, 0.15);
-      border-color: rgba(164, 108, 245, 0.3);
-    }
-
-    span {
-      color: white;
-      font-weight: 500;
+    .menu-toggle {
       margin-right: 0.5rem;
-    }
-
-    mat-icon {
-      color: #a46cf5;
-    }
-
-    button {
-      color: white;
-      margin-left: 0.5rem;
       transition: all 0.2s ease;
       
       mat-icon {
-        color: #a46cf5;
-        transition: color 0.2s ease, transform 0.3s ease;
+        color: $primary-purple;
+        transition: transform 0.3s ease;
+        font-size: 24px;
       }
       
       &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: $hover-bg;
         
         mat-icon {
-          color: white;
-          transform: translateX(2px);
+          transform: rotate(90deg);
+          color: $light-text;
+        }
+      }
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      
+      .logo-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        mat-icon {
+          color: $primary-purple;
+          font-size: 28px;
+          height: 28px;
+          width: 28px;
+        }
+      }
+      
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        background: linear-gradient(90deg, $primary-purple, $light-text);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0px 0px 10px rgba($primary-purple, 0.3);
+      }
+    }
+  }
+  
+  .spacer {
+    flex: 1;
+  }
+  
+  // Right section of navbar
+  .navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    
+    // Notification bell
+    .notification-bell {
+      position: relative;
+      
+      button {
+        transition: all 0.2s ease;
+        
+        mat-icon {
+          color: $primary-purple;
+          transition: all 0.2s ease;
+        }
+        
+        &:hover {
+          background-color: $hover-bg;
+          
+          mat-icon {
+            color: $light-text;
+            animation: bell-ring 0.5s ease;
+          }
+        }
+      }
+      
+      .notification-badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: #ff4081;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+    }
+    
+    // User info section
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.35rem 0.75rem 0.35rem 0.5rem;
+      border-radius: 28px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: $hover-bg;
+        border-color: rgba($primary-purple, 0.3);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      }
+      
+      .user-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        mat-icon {
+          color: $primary-purple;
+          font-size: 32px;
+          height: 32px;
+          width: 32px;
+        }
+      }
+      
+      .user-details {
+        display: flex;
+        flex-direction: column;
+        
+        .user-name {
+          color: $light-text;
+          font-weight: 600;
+          font-size: 0.9rem;
+          line-height: 1.2;
+        }
+        
+        .user-role {
+          color: rgba($light-text, 0.7);
+          font-size: 0.75rem;
+          line-height: 1.2;
+        }
+      }
+      
+      .logout-button {
+        color: $light-text;
+        margin-left: 0.25rem;
+        transition: all 0.2s ease;
+        
+        mat-icon {
+          color: $primary-purple;
+          transition: all 0.2s ease;
+          font-size: 20px;
+        }
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+          
+          mat-icon {
+            color: $light-text;
+            transform: translateX(2px);
+          }
         }
       }
     }
@@ -116,14 +240,15 @@
   z-index: 1000;
   
   .toggle-fab {
-    background: linear-gradient(135deg, #2c1658, #a46cf5) !important;
+    background: linear-gradient(135deg, $dark-purple, $primary-purple) !important;
     border-radius: 0 25px 25px 0 !important;
     width: 40px;
     height: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
     
     .toggle-icon-container {
       display: flex;
@@ -132,11 +257,45 @@
       
       mat-icon {
         margin-left: 5px;
+        color: $light-text;
+        transition: all 0.3s ease;
       }
     }
     
     &:hover {
       width: 44px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      
+      .toggle-icon-container mat-icon {
+        transform: translateX(2px);
+      }
+    }
+  }
+}
+
+// Media queries for responsive design
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 0.75rem;
+    
+    .navbar-left .logo-container .logo {
+      font-size: 1.3rem;
+    }
+    
+    .navbar-right {
+      gap: 0.75rem;
+      
+      .user-info {
+        padding: 0.25rem 0.5rem 0.25rem 0.35rem;
+        
+        .user-details .user-name {
+          font-size: 0.8rem;
+        }
+        
+        .user-details .user-role {
+          font-size: 0.7rem;
+        }
+      }
     }
   }
 }

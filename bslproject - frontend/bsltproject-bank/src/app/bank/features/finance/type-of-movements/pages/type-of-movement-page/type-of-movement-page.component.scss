@@ -7,21 +7,34 @@ $dark-bg: #1f1f1f;
 $light-text: #ffffff;
 $medium-text: #e0e0e0;
 
+// Colores para botones de acción
+$view-color: #64b5f6;
+$edit-color: #a46cf5;
+$delete-color: #ff5252;
+$key-color: #ffb300;
+
 // Variables para transacciones
 $ingreso-color: #4cd964;
 $gasto-color: #ff3b30;
 $transfer-color: #5ac8fa;
+$otro-color: #ffcc00;
+
+// Variables para sombras y efectos
+$card-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+$hover-transition: all 0.3s ease;
 
 // Contenedor principal
 .movement-types-container {
   background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
   color: $light-text;
   padding: 1.5rem;
-  min-height: calc(100vh - 110px);
-  border-radius: 0;
+  height: auto;
+  border-radius: 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: $card-shadow;
 }
 
 // Header con acciones
@@ -29,39 +42,53 @@ $transfer-color: #5ac8fa;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
   
-  h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: $light-text;
+  .header-title {
     display: flex;
     align-items: center;
-    margin: 0;
+    gap: 0.75rem;
     
     mat-icon {
-      margin-right: 0.75rem;
       color: $primary-purple;
+      font-size: 2rem;
+      height: 2rem;
+      width: 2rem;
+    }
+    
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: $light-text;
+      margin: 0;
+      letter-spacing: 0.5px;
     }
   }
   
-  button[mat-raised-button] {
-    background: $primary-purple;
-    color: $light-text;
-    border: none;
-    padding: 0.5rem 1.25rem;
-    border-radius: 6px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
     
-    &:hover {
-      background: #b685f7; // Color más claro que $primary-purple
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transform: translateY(-2px);
-    }
-    
-    mat-icon {
-      margin-right: 0.5rem;
+    .add-button {
+      background: $primary-purple;
+      color: $light-text;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: $hover-transition;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      &:hover {
+        background: #b685f7; // Color más claro que $primary-purple
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+      }
     }
   }
 }
@@ -69,38 +96,40 @@ $transfer-color: #5ac8fa;
 // Barra de búsqueda
 .search-container {
   margin-bottom: 1rem;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  width: 100%;
+  max-width: 350px;
+  gap: 0.5rem;
+  transition: $hover-transition;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
-  .search-box {
-    display: flex;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
+  &:focus-within {
+    background-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.5);
+    transform: translateY(-2px);
+  }
+  
+  mat-icon {
+    color: $primary-purple;
+  }
+  
+  input {
+    background: transparent;
+    border: none;
+    color: $light-text;
+    outline: none;
     width: 100%;
-    max-width: 350px;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
+    font-size: 1rem;
     
-    &:focus-within {
-      background-color: rgba(255, 255, 255, 0.12);
-      box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.3);
-    }
-    
-    mat-icon {
-      color: $primary-purple;
-    }
-    
-    input {
-      background: transparent;
-      border: none;
-      color: $light-text;
-      outline: none;
-      width: 100%;
-      font-size: 0.95rem;
-      
-      &::placeholder {
-        color: rgba(255, 255, 255, 0.5);
-      }
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
     }
   }
 }
@@ -108,37 +137,71 @@ $transfer-color: #5ac8fa;
 // Tabla principal
 .table-container {
   flex: 1;
-  background-color: rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  overflow: auto;
+  background-color: rgba(30, 19, 57, 0.7);
+  border-radius: 12px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   min-height: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  
+  // Estado de carga
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 300px;
+    gap: 1rem;
+    
+    p {
+      color: $medium-text;
+      font-size: 1rem;
+      margin: 0;
+    }
+  }
 }
 
 .full-width-table {
   width: 100%;
   table-layout: fixed;
+  border-collapse: collapse;
   
   // Ajustar el ancho de las columnas
   .mat-column-codigo_origen {
-    width: 15%;
+    width: 20%;
+    text-align: left;
   }
   
   .mat-column-codigo_destino {
-    width: 15%;
+    width: 20%;
+    text-align: left;
   }
   
   .mat-column-descripcion {
-    width: 40%;
-  }
-  
-  .mat-column-tipo_transaccion {
-    width: 15%;
+    width: 45%;
+    text-align: left;
   }
   
   .mat-column-acciones {
     width: 15%;
+    text-align: center;
+  }
+  
+  .acciones-header {
+    text-align: center !important;
+  }
+  
+  .acciones-cell {
+    text-align: center !important;
+    padding: 0.5rem !important;
+  }
+  
+  // Asegurar que todas las celdas tengan el mismo padding
+  th.mat-header-cell, td.mat-cell {
+    padding: 1rem !important;
   }
   
   // Encabezados de tabla
@@ -146,97 +209,182 @@ $transfer-color: #5ac8fa;
     background-color: $darker-purple;
     color: $light-text;
     font-weight: 600;
-    padding: 0.75rem;
-    font-size: 0.9rem;
+    padding: 1rem 0.75rem;
+    font-size: 0.95rem;
     letter-spacing: 0.5px;
     border-bottom: none;
     text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
   
   // Celdas de la tabla
   td.mat-cell {
-    padding: 0.75rem;
-    color: $medium-text;
-    border-bottom: 1px solid rgba(164, 108, 245, 0.1);
-    font-size: 0.9rem;
+    padding: 0.85rem 0.75rem;
+    color: $light-text;
+    border-bottom: 1px solid rgba(164, 108, 245, 0.2);
+    font-size: 0.95rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    vertical-align: middle;
+    text-align: left;
   }
   
   // Filas de la tabla
   tr.mat-row {
-    background-color: rgba(255, 255, 255, 0.02);
-    transition: background-color 0.2s ease;
+    background-color: rgba(30, 19, 57, 0.8);
+    transition: $hover-transition;
     
     &:nth-child(odd) {
-      background-color: rgba(0, 0, 0, 0.15);
+      background-color: rgba(25, 14, 50, 0.9);
     }
     
     &:hover {
-      background-color: rgba(164, 108, 245, 0.08);
+      background-color: rgba(164, 108, 245, 0.2);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
   }
 }
 
 // Badge para códigos
 .codigo-badge {
-  display: inline-block;
-  padding: 0.2rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
   background-color: rgba(164, 108, 245, 0.1);
   border: 1px solid rgba(164, 108, 245, 0.3);
   color: $primary-purple;
-  border-radius: 4px;
+  border-radius: 6px;
   font-family: 'Courier New', monospace;
   font-weight: 500;
   font-size: 0.9rem;
+  transition: $hover-transition;
+  
+  &.zero-code {
+    background-color: rgba(90, 200, 250, 0.1);
+    border-color: rgba(90, 200, 250, 0.3);
+    color: $transfer-color;
+  }
+  
+  .badge-icon {
+    font-size: 1rem;
+    height: 1rem;
+    width: 1rem;
+  }
 }
 
 // Badge para tipo de transacción
 .transaccion-badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
+  transition: $hover-transition;
+  min-width: 100px;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  .badge-icon {
+    font-size: 1rem;
+    height: 1rem;
+    width: 1rem;
+  }
   
   &.ingreso {
     background-color: rgba(76, 217, 100, 0.15);
     color: $ingreso-color;
     border: 1px solid rgba(76, 217, 100, 0.3);
+    
+    &:hover {
+      background-color: rgba(76, 217, 100, 0.25);
+      transform: translateY(-2px);
+    }
   }
   
   &.gasto {
     background-color: rgba(255, 59, 48, 0.15);
     color: $gasto-color;
     border: 1px solid rgba(255, 59, 48, 0.3);
+    
+    &:hover {
+      background-color: rgba(255, 59, 48, 0.25);
+      transform: translateY(-2px);
+    }
   }
   
   &.transferencia {
     background-color: rgba(90, 200, 250, 0.15);
     color: $transfer-color;
     border: 1px solid rgba(90, 200, 250, 0.3);
+    
+    &:hover {
+      background-color: rgba(90, 200, 250, 0.25);
+      transform: translateY(-2px);
+    }
+  }
+  
+  &.otro {
+    background-color: rgba(255, 204, 0, 0.15);
+    color: $otro-color;
+    border: 1px solid rgba(255, 204, 0, 0.3);
+    
+    &:hover {
+      background-color: rgba(255, 204, 0, 0.25);
+      transform: translateY(-2px);
+    }
   }
 }
 
 // Botones de acción
-.action-buttons {
+.acciones {
   display: flex;
   gap: 0.25rem;
   justify-content: center;
+  align-items: center;
   
   button {
     transition: all 0.2s ease;
+    opacity: 1 !important;
+    visibility: visible !important;
     
-    &.edit-button:hover {
-      color: $primary-purple;
-      transform: translateY(-2px);
+    mat-icon {
+      opacity: 1 !important;
+      visibility: visible !important;
     }
     
-    &.delete-button:hover {
-      color: #ff3b30;
-      transform: translateY(-2px);
+    &[color="accent"] {
+      color: $edit-color;
+      
+      &:hover {
+        background-color: rgba($edit-color, 0.1);
+        transform: translateY(-2px);
+      }
+    }
+    
+    &[color="warn"] {
+      color: $delete-color;
+      
+      &:hover {
+        background-color: rgba($delete-color, 0.1);
+        transform: translateY(-2px);
+      }
+    }
+    
+    &[color="primary"] {
+      color: $view-color;
+      
+      &:hover {
+        background-color: rgba($view-color, 0.1);
+        transform: translateY(-2px);
+      }
     }
   }
 }
@@ -247,24 +395,52 @@ $transfer-color: #5ac8fa;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 3rem;
   color: $medium-text;
   flex: 1;
+  gap: 1rem;
   
   mat-icon {
-    font-size: 2.5rem;
-    height: 2.5rem;
-    width: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 3rem;
+    height: 3rem;
+    width: 3rem;
     color: rgba(164, 108, 245, 0.5);
+    animation: pulse 2s infinite ease-in-out;
   }
   
   p {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  
+  button {
+    margin-top: 0.5rem;
+    transition: $hover-transition;
+    border: 1px solid $primary-purple;
+    
+    &:hover {
+      background-color: rgba(164, 108, 245, 0.1);
+      transform: translateY(-2px);
+    }
   }
 }
 
-// Paginador con fondo transparente
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+}
+
+// Paginador con fondo transparente y otros estilos globales
 ::ng-deep {
   // Paginador
   .mat-paginator {
@@ -273,7 +449,8 @@ $transfer-color: #5ac8fa;
     border-top: 1px solid rgba(164, 108, 245, 0.1);
     
     .mat-paginator-container {
-      min-height: 48px;
+      min-height: 56px;
+      padding: 0 1rem;
     }
     
     .mat-paginator-page-size-label,
@@ -287,12 +464,33 @@ $transfer-color: #5ac8fa;
     .mat-paginator-navigation-last {
       color: $primary-purple;
     }
+    
+    .mat-select-value {
+      color: $light-text;
+    }
+    
+    .mat-select-arrow {
+      color: $primary-purple;
+    }
   }
   
   // Tooltips
   .mat-tooltip {
-    background-color: rgba(44, 22, 88, 0.9);
+    background-color: rgba(44, 22, 88, 0.95);
     border: 1px solid $primary-purple;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  // Spinner
+  .mat-progress-spinner circle {
+    stroke: $primary-purple;
+  }
+  
+  // Ordenamiento
+  .mat-sort-header-arrow {
+    color: $primary-purple;
   }
 }

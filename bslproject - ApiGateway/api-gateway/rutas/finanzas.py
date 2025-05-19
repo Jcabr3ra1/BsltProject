@@ -314,7 +314,17 @@ async def crear_transaccion(request: Request, token_info: Dict[str, Any] = Depen
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al crear transacción")
 
-@router.put("/transacciones/{id}/anular", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
+@router.put("/transacciones/{id}", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
+async def actualizar_transaccion(id: str, request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Actualiza una transacción existente."""
+    response = requests.put(
+        f"{URL_FINANZAS}/finanzas/transacciones/{id}",
+        json=await request.json(),
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al actualizar transacción")
+
+@router.put("/transacciones/{id}/anular", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def anular_transaccion(id: str, token_info: Dict[str, Any] = Depends(verificar_token)):
     """Anula una transacción."""
     response = requests.put(
@@ -322,6 +332,15 @@ async def anular_transaccion(id: str, token_info: Dict[str, Any] = Depends(verif
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
     return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al anular transacción")
+
+@router.put("/transacciones/{id}/aprobar", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
+async def aprobar_transaccion(id: str, token_info: Dict[str, Any] = Depends(verificar_token)):
+    """Aprueba una transacción pendiente."""
+    response = requests.put(
+        f"{URL_FINANZAS}/finanzas/transacciones/{id}/aprobar",
+        headers={"Authorization": f"Bearer {token_info['token']}"}
+    )
+    return response.json() if response.status_code == 200 else HTTPException(status_code=response.status_code, detail="Error al aprobar transacción")
 
 @router.get("/transacciones/historial", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def historial_transacciones(
@@ -371,140 +390,392 @@ async def obtener_proximos_pagos(id_usuario: str, token_info: Dict[str, Any] = D
 async def transferencia_cuenta_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
     """Transferencia de cuenta a cuenta."""
     data = await request.json()
-    data["id_usuario"] = token_info["contenido"]["sub"]
+
+    # ✔ Validar que los campos requeridos estén presentes
+    required_fields = ["id_cuenta_origen", "id_cuenta_destino", "id_tipo_movimiento", "monto"]
+    missing = [field for field in required_fields if field not in data]
+    if missing:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Campos faltantes en la solicitud: {', '.join(missing)}"
+        )
+
+    # 📦 Opcional: imprimir para depurar
+    print("📨 JSON recibido:", data)
+
+    # 🧱 Construcción del payload esperado por el backend financiero
+    payload_backend = {
+        "cuentaOrigenId": data["id_cuenta_origen"],
+        "cuentaDestinoId": data["id_cuenta_destino"],
+        "tipoMovimientoId": data["id_tipo_movimiento"],
+        "tipoTransaccionId": data.get("id_tipo_transaccion"),
+        "descripcion": data.get("descripcion", "Transferencia entre cuentas"),
+        "monto": data["monto"],
+        "uuid_transaccion": data.get("uuid_transaccion")
+    }
+
+    # 🚀 Enviar al backend financiero
     response = requests.post(
         f"{URL_FINANZAS}/finanzas/transacciones/cuenta-cuenta",
-        json=data,
+        json=payload_backend,
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
+
     if response.status_code == 200:
         return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error en la transferencia cuenta-cuenta")
+
+    raise HTTPException(
+        status_code=response.status_code,
+        detail=f"Error en la transferencia cuenta-cuenta: {response.text}"
+    )
 
 
 @router.post("/transferencias/cuenta-bolsillo", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def transferencia_cuenta_bolsillo(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
     """Transferencia de cuenta a bolsillo."""
     data = await request.json()
-    data["id_usuario"] = token_info["contenido"]["sub"]
+
+    # ✔ Validar campos requeridos
+    required_fields = ["id_cuenta_origen", "id_bolsillo_destino", "id_tipo_movimiento", "monto"]
+    missing = [field for field in required_fields if field not in data]
+    if missing:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Campos faltantes en la solicitud: {', '.join(missing)}"
+        )
+
+    # 🧾 Log opcional para depurar
+    print("📨 JSON recibido:", data)
+
+    # 🧱 Construir payload para backend financiero
+    payload_backend = {
+        "cuentaOrigenId": data["id_cuenta_origen"],
+        "bolsilloDestinoId": data["id_bolsillo_destino"],
+        "tipoMovimientoId": data["id_tipo_movimiento"],
+        "tipoTransaccionId": data.get("id_tipo_transaccion"),
+        "uuid_transaccion": data.get("uuid_transaccion"),
+        "monto": data["monto"],
+        "descripcion": data.get("descripcion", "Transferencia de cuenta a bolsillo")
+    }
+
+    # 🚀 Llamada al backend financiero
     response = requests.post(
         f"{URL_FINANZAS}/finanzas/transacciones/cuenta-bolsillo",
-        json=data,
+        json=payload_backend,
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
+
     if response.status_code == 200:
         return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error en la transferencia cuenta-bolsillo")
+
+    raise HTTPException(
+        status_code=response.status_code,
+        detail=f"Error en la transferencia cuenta-bolsillo: {response.text}"
+    )
+
+
 
 
 @router.post("/transferencias/bolsillo-cuenta", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def transferencia_bolsillo_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
     """Transferencia de bolsillo a cuenta."""
     data = await request.json()
-    data["id_usuario"] = token_info["contenido"]["sub"]
+
+    # ✔ Validación de campos requeridos
+    required_fields = ["id_bolsillo_origen", "id_cuenta_destino", "id_tipo_movimiento", "monto"]
+    missing = [field for field in required_fields if field not in data]
+    if missing:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Campos faltantes en la solicitud: {', '.join(missing)}"
+        )
+
+    # 🧾 Log opcional para depuración
+    print("📨 JSON recibido:", data)
+
+    # 🧱 Payload esperado por el backend financiero
+    payload_backend = {
+        "bolsilloOrigenId": data["id_bolsillo_origen"],
+        "cuentaDestinoId": data["id_cuenta_destino"],
+        "tipoMovimientoId": data["id_tipo_movimiento"],
+        "tipoTransaccionId": data.get("id_tipo_transaccion"),
+        "uuid_transaccion": data.get("uuid_transaccion"),
+        "monto": data["monto"],
+        "descripcion": data.get("descripcion", "Transferencia de bolsillo a cuenta")
+    }
+
+    # 🚀 Envío al backend financiero
     response = requests.post(
         f"{URL_FINANZAS}/finanzas/transacciones/bolsillo-cuenta",
-        json=data,
+        json=payload_backend,
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
+
     if response.status_code == 200:
         return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error en la transferencia bolsillo-cuenta")
+
+    raise HTTPException(
+        status_code=response.status_code,
+        detail=f"Error en la transferencia bolsillo-cuenta: {response.text}"
+    )
+
+
 
 @router.post("/transferencias/bolsillo-bolsillo", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def transferencia_bolsillo_bolsillo(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
     """Transferencia de bolsillo a bolsillo."""
     data = await request.json()
-    data["id_usuario"] = token_info["contenido"]["sub"]
+
+    # ✔ Validación de campos requeridos
+    required_fields = ["id_bolsillo_origen", "id_bolsillo_destino", "id_tipo_movimiento", "monto"]
+    missing = [field for field in required_fields if field not in data]
+    if missing:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Campos faltantes en la solicitud: {', '.join(missing)}"
+        )
+
+    # 🧾 Log para depuración
+    print("📨 JSON recibido:", data)
+
+    # 🧱 Construcción del payload para el backend financiero
+    payload_backend = {
+        "bolsilloOrigenId": data["id_bolsillo_origen"],
+        "bolsilloDestinoId": data["id_bolsillo_destino"],
+        "tipoMovimientoId": data["id_tipo_movimiento"],
+        "tipoTransaccionId": data.get("id_tipo_transaccion"),
+        "uuid_transaccion": data.get("uuid_transaccion"),
+        "monto": data["monto"],
+        "descripcion": data.get("descripcion", "Transferencia entre bolsillos")
+    }
+
+    # 🚀 Envío al backend financiero
     response = requests.post(
         f"{URL_FINANZAS}/finanzas/transacciones/bolsillo-bolsillo",
-        json=data,
+        json=payload_backend,
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
+
     if response.status_code == 200:
         return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error en la transferencia bolsillo-bolsillo")
 
+    raise HTTPException(
+        status_code=response.status_code,
+        detail=f"Error en la transferencia bolsillo-bolsillo: {response.text}"
+    )
 
 
 # ---------------------------- CONSIGNACIONES ----------------------------
 
 @router.post("/consignaciones/banco-cuenta", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
 async def consignacion_banco_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Consignación desde banco a cuenta."""
+    """Consignación desde banco hacia cuenta."""
     data = await request.json()
-    data["id_usuario"] = token_info["contenido"]["sub"]
+
+    # ✔ Validar campos requeridos
+    required_fields = ["id_cuenta_destino", "id_tipo_movimiento", "monto"]
+    missing = [field for field in required_fields if field not in data]
+    if missing:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Campos faltantes en la solicitud: {', '.join(missing)}"
+        )
+
+    # 🧾 Log para depuración
+    print("📨 JSON recibido:", data)
+
+    # 🧱 Payload para el backend financiero
+    payload_backend = {
+        "cuentaDestinoId": data["id_cuenta_destino"],
+        "tipoMovimientoId": data["id_tipo_movimiento"],
+        "tipoTransaccionId": data.get("id_tipo_transaccion"),
+        "uuid_transaccion": data.get("uuid_transaccion"),
+        "monto": data["monto"],
+        "descripcion": data.get("descripcion", "Consignación de banco a cuenta")
+    }
+
+    # 🚀 Enviar al backend financiero
     response = requests.post(
         f"{URL_FINANZAS}/finanzas/transacciones/banco-cuenta",
-        json=data,
+        json=payload_backend,
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
+
     if response.status_code == 200:
         return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error en la consignación banco-cuenta")
 
+    raise HTTPException(
+        status_code=response.status_code,
+        detail=f"Error en la consignación banco-cuenta: {response.text}"
+    )
 
 @router.post("/consignaciones/banco-bolsillo", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR"]))])
 async def consignacion_banco_bolsillo(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Consignación desde banco a bolsillo."""
+    """Consignación desde banco hacia bolsillo."""
     data = await request.json()
-    data["id_usuario"] = token_info["contenido"]["sub"]
+
+    # ✔ Validar campos requeridos
+    required_fields = ["id_bolsillo_destino", "id_tipo_movimiento", "monto"]
+    missing = [field for field in required_fields if field not in data]
+    if missing:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Campos faltantes en la solicitud: {', '.join(missing)}"
+        )
+
+    # 🧾 Log de depuración
+    print("📨 JSON recibido:", data)
+
+    # 🧱 Payload para el backend financiero
+    payload_backend = {
+        "bolsilloDestinoId": data["id_bolsillo_destino"],
+        "tipoMovimientoId": data["id_tipo_movimiento"],
+        "tipoTransaccionId": data.get("id_tipo_transaccion"),
+        "uuid_transaccion": data.get("uuid_transaccion"),
+        "monto": data["monto"],
+        "descripcion": data.get("descripcion", "Consignación de banco a bolsillo")
+    }
+
+    # 🚀 Enviar al backend financiero
     response = requests.post(
         f"{URL_FINANZAS}/finanzas/transacciones/banco-bolsillo",
-        json=data,
+        json=payload_backend,
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
+
     if response.status_code == 200:
         return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error en la consignación banco-bolsillo")
+
+    raise HTTPException(
+        status_code=response.status_code,
+        detail=f"Error en la consignación banco-bolsillo: {response.text}"
+    )
+
+
 
 
 # ---------------------------- RETIROS ----------------------------
 
 @router.post("/retiros/cuenta-banco", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def retiro_cuenta_banco(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Retiro de cuenta a banco."""
+    """Retiro desde cuenta hacia banco."""
     data = await request.json()
-    data["id_usuario"] = token_info["contenido"]["sub"]
+
+    # ✔ Validar campos requeridos
+    required_fields = ["id_cuenta_origen", "id_tipo_movimiento", "monto"]
+    missing = [field for field in required_fields if field not in data]
+    if missing:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Campos faltantes en la solicitud: {', '.join(missing)}"
+        )
+
+    # 🧾 Log para depurar
+    print("📨 JSON recibido:", data)
+
+    # 🧱 Construir el payload para el backend financiero
+    payload_backend = {
+        "cuentaOrigenId": data["id_cuenta_origen"],
+        "tipoMovimientoId": data["id_tipo_movimiento"],
+        "tipoTransaccionId": data.get("id_tipo_transaccion"),
+        "uuid_transaccion": data.get("uuid_transaccion"),
+        "monto": data["monto"],
+        "descripcion": data.get("descripcion", "Retiro de cuenta a banco")
+    }
+
+    # 🚀 Enviar solicitud al backend financiero
     response = requests.post(
         f"{URL_FINANZAS}/finanzas/transacciones/cuenta-banco",
-        json=data,
+        json=payload_backend,
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
+
     if response.status_code == 200:
         return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error en el retiro cuenta-banco")
 
+    raise HTTPException(
+        status_code=response.status_code,
+        detail=f"Error en el retiro cuenta-banco: {response.text}"
+    )
 
 @router.post("/retiros/bolsillo-cuenta", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def retiro_bolsillo_cuenta(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Retiro de bolsillo a cuenta."""
+    """Retiro desde bolsillo hacia cuenta."""
     data = await request.json()
-    data["id_usuario"] = token_info["contenido"]["sub"]
+
+    # ✔ Verificación de campos requeridos
+    required_fields = ["id_bolsillo_origen", "id_cuenta_destino", "id_tipo_movimiento", "monto"]
+    missing = [field for field in required_fields if field not in data]
+    if missing:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Campos faltantes en la solicitud: {', '.join(missing)}"
+        )
+
+    # 📦 Construcción del payload para el backend financiero
+    payload_backend = {
+        "bolsilloOrigenId": data["id_bolsillo_origen"],
+        "cuentaDestinoId": data["id_cuenta_destino"],
+        "tipoMovimientoId": data["id_tipo_movimiento"],
+        "tipoTransaccionId": data.get("id_tipo_transaccion"),
+        "uuid_transaccion": data.get("uuid_transaccion"),
+        "monto": data["monto"],
+        "descripcion": data.get("descripcion", "Retiro de bolsillo a cuenta")
+    }
+
+    # 🚀 Enviar al backend financiero
     response = requests.post(
         f"{URL_FINANZAS}/finanzas/transacciones/bolsillo-cuenta",
-        json=data,
+        json=payload_backend,
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
+
     if response.status_code == 200:
         return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error en el retiro bolsillo-cuenta")
 
+    raise HTTPException(
+        status_code=response.status_code,
+        detail=f"Error en el retiro bolsillo-cuenta: {response.text}"
+    )
 
 @router.post("/retiros/bolsillo-banco", dependencies=[Depends(verificar_roles_permitidos(["ADMIN", "MODERATOR", "USER"]))])
 async def retiro_bolsillo_banco(request: Request, token_info: Dict[str, Any] = Depends(verificar_token)):
-    """Retiro de bolsillo a banco."""
+    """Retiro desde un bolsillo hacia el banco."""
     data = await request.json()
-    data["id_usuario"] = token_info["contenido"]["sub"]
+
+    # ✔ Validar campos requeridos
+    required_fields = ["id_bolsillo_origen", "id_tipo_movimiento", "monto"]
+    missing = [field for field in required_fields if field not in data]
+    if missing:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Campos faltantes en la solicitud: {', '.join(missing)}"
+        )
+
+    # 📦 Construir el payload
+    payload_backend = {
+        "bolsilloOrigenId": data["id_bolsillo_origen"],
+        "tipoMovimientoId": data["id_tipo_movimiento"],
+        "tipoTransaccionId": data.get("id_tipo_transaccion"),
+        "uuid_transaccion": data.get("uuid_transaccion"),
+        "monto": data["monto"],
+        "descripcion": data.get("descripcion", "Retiro de bolsillo a banco")
+    }
+
+    # 🚀 Enviar al backend financiero
     response = requests.post(
         f"{URL_FINANZAS}/finanzas/transacciones/bolsillo-banco",
-        json=data,
+        json=payload_backend,
         headers={"Authorization": f"Bearer {token_info['token']}"}
     )
+
     if response.status_code == 200:
         return response.json()
-    raise HTTPException(status_code=response.status_code, detail="Error en el retiro bolsillo-banco")
 
+    raise HTTPException(
+        status_code=response.status_code,
+        detail=f"Error en el retiro bolsillo-banco: {response.text}"
+    )
 
 ####################################### TIPO MOVIMIENTO #######################################
 @router.get("/tipos-movimiento")
