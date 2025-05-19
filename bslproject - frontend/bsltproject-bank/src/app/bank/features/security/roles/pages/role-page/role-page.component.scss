@@ -26,7 +26,7 @@ $key-color: #ffb300;
   background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%) !important;
   color: $light-text;
   padding: 1.5rem;
-  min-height: calc(100vh - 110px);
+  height: auto;
   display: flex;
   flex-direction: column;
 }
@@ -37,9 +37,9 @@ $key-color: #ffb300;
   align-items: center;
   justify-content: flex-end;
   padding: 0.75rem 1.25rem;
-  border-top: 1px solid rgba(164, 108, 245, 0.2);
-  background-color: rgba(0, 0, 0, 0.15);
-  color: $medium-text;
+  border-top: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  color: #333333;
   
   .items-per-page {
     display: flex;
@@ -52,7 +52,7 @@ $key-color: #ffb300;
     
     ::ng-deep .mat-select {
       width: 50px;
-      background-color: rgba(255, 255, 255, 0.05);
+      background-color: #f5f5f5;
       border-radius: 4px;
       padding: 0.2rem 0.5rem;
       
@@ -61,7 +61,7 @@ $key-color: #ffb300;
       }
       
       .mat-select-value {
-        color: $light-text;
+        color: #333333;
       }
       
       .mat-select-arrow {
@@ -73,7 +73,7 @@ $key-color: #ffb300;
   .pagination-info {
     margin: 0 1.5rem;
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: #555555;
   }
   
   .pagination-controls {
@@ -84,7 +84,7 @@ $key-color: #ffb300;
       color: $primary-purple;
       
       &:disabled {
-        color: rgba(255, 255, 255, 0.3);
+        color: rgba(0, 0, 0, 0.3);
       }
       
       &:hover:not(:disabled) {

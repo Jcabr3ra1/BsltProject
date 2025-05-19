@@ -46,7 +46,7 @@ export class UserPageComponent implements OnInit, AfterViewInit {
   searchTerm: string = '';
 
   // Columnas de la tabla
-  displayedColumns: string[] = ['nombre', 'email', 'tieneCuenta', 'estado', 'rol', 'acciones'];
+  displayedColumns: string[] = ['nombre', 'email', 'tieneCuenta', 'rol', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -311,4 +311,4 @@ export class UserPageComponent implements OnInit, AfterViewInit {
       }
     });
   }
-}
+}   

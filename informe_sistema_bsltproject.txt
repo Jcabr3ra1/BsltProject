@@ -1,0 +1,437 @@
+# INFORME TÉCNICO: SISTEMA BSLTPROJECT
+
+## RESUMEN EJECUTIVO
+
+Este informe presenta un análisis técnico completo del sistema BSLTPROJECT, una aplicación bancaria desarrollada con una arquitectura de microservicios. El sistema está compuesto por cuatro componentes principales:
+
+1. **Frontend Angular**: Interfaz de usuario moderna y responsive
+2. **API Gateway**: Punto de entrada centralizado que enruta las peticiones
+3. **Servicio de Seguridad**: Gestiona autenticación y autorización
+4. **Servicio Financiero**: Maneja operaciones bancarias (cuentas, transacciones, etc.)
+
+La arquitectura implementa buenas prácticas de desarrollo como separación de responsabilidades, seguridad basada en JWT, y comunicación entre microservicios a través de un API Gateway.
+
+## 1. ARQUITECTURA GENERAL DEL SISTEMA
+
+### 1.1 Visión General
+
+El sistema BSLTPROJECT implementa una arquitectura de microservicios distribuida:
+
+```
+[Cliente Web] <--> [API Gateway (Puerto 7777)]
+                       |
+          -------------------------
+          |                       |
+[Servicio de Seguridad]  [Servicio Financiero]
+    (Puerto 8080)
+```
+
+### 1.2 Flujo de Comunicación
+
+1. El cliente (frontend Angular) realiza peticiones al API Gateway
+2. El API Gateway autentica la petición y la enruta al microservicio correspondiente
+3. El microservicio procesa la petición y devuelve la respuesta al API Gateway
+4. El API Gateway devuelve la respuesta al cliente
+
+### 1.3 Tecnologías Principales
+
+- **Frontend**: Angular 17+, Material Design
+- **API Gateway**: FastAPI (Python)
+- **Servicio de Seguridad**: Spring Boot (Java)
+- **Servicio Financiero**: FastAPI (Python)
+- **Base de Datos**: MongoDB (Servicio Financiero), PostgreSQL (Servicio de Seguridad)
+- **Autenticación**: JWT (JSON Web Tokens)
+
+## 2. FRONTEND (ANGULAR)
+
+### 2.1 Estructura del Proyecto
+
+El frontend está organizado siguiendo una arquitectura modular con enfoque en características (feature-based):
+
+```
+src/
+├── app/
+│   ├── bank/                 # Módulo principal de la aplicación bancaria
+│   │   ├── features/         # Características principales organizadas por dominio
+│   │   │   ├── finance/      # Funcionalidades financieras
+│   │   │   │   ├── accounts/ # Gestión de cuentas
+│   │   │   │   └── transactions/ # Gestión de transacciones
+│   │   │   └── security/     # Funcionalidades de seguridad
+│   │   ├── layout/           # Componentes de layout (navbar, sidebar)
+│   │   └── shared/           # Componentes compartidos
+│   ├── core/                 # Servicios, modelos e interceptores centrales
+│   │   ├── interceptors/     # Interceptores HTTP
+│   │   ├── models/           # Modelos de datos
+│   │   └── services/         # Servicios principales
+│   └── shared/               # Componentes y utilidades compartidas globalmente
+├── assets/                   # Recursos estáticos
+└── environments/             # Configuraciones por entorno
+```
+
+### 2.2 Características Principales
+
+#### 2.2.1 Autenticación y Autorización
+
+- Implementación completa de flujo de autenticación con JWT
+- Interceptor HTTP para añadir token a todas las peticiones
+- Manejo de roles y permisos
+- Protección de rutas mediante guards
+
+#### 2.2.2 Gestión de Cuentas
+
+- Listado de cuentas del usuario
+- Creación y edición de cuentas
+- Visualización de detalles de cuenta
+- Filtrado y búsqueda de cuentas
+
+#### 2.2.3 Gestión de Transacciones
+
+- Creación de diferentes tipos de transacciones:
+  - Transferencias entre cuentas
+  - Consignaciones
+  - Retiros
+- Listado y filtrado de transacciones
+- Visualización de estados de transacción
+- Interfaz mejorada con iconos animados y efectos visuales
+
+### 2.3 Servicios Principales
+
+#### 2.3.1 AuthService
+
+Gestiona la autenticación y autorización:
+- Login/logout
+- Almacenamiento y gestión de tokens JWT
+- Verificación de tokens
+- Obtención de información del usuario autenticado
+
+#### 2.3.2 TransactionService
+
+Maneja las operaciones relacionadas con transacciones:
+- Obtención de transacciones del usuario
+- Creación de nuevas transacciones
+- Comunicación con el API Gateway para operaciones financieras
+
+#### 2.3.3 AccountService
+
+Gestiona las operaciones relacionadas con cuentas:
+- Obtención de cuentas del usuario
+- Creación y actualización de cuentas
+- Comunicación con el API Gateway para operaciones de cuentas
+
+#### 2.3.4 CatalogoService
+
+Servicio centralizado para gestionar catálogos del sistema:
+- Estados de transacción
+- Tipos de transacción
+- Roles
+- Estados generales
+
+### 2.4 Tecnologías y Patrones Implementados
+
+- **Angular 17+**: Utilización de la sintaxis moderna de control de flujo (@if/@else, @for)
+- **Angular Material**: Componentes UI consistentes y modernos
+- **Reactive Forms**: Para manejo de formularios complejos
+- **RxJS**: Programación reactiva para manejo de flujos asíncronos
+- **Lazy Loading**: Carga diferida de módulos para mejor rendimiento
+- **Interceptores HTTP**: Para manejo centralizado de autenticación y errores
+- **Servicios Singleton**: Para estado compartido y lógica de negocio
+- **Componentes Presentacionales y Contenedores**: Separación de responsabilidades
+
+## 3. API GATEWAY
+
+### 3.1 Visión General
+
+El API Gateway actúa como punto de entrada único para todas las peticiones del frontend, proporcionando:
+- Enrutamiento a microservicios
+- Validación de tokens JWT
+- Transformación de peticiones/respuestas
+- Manejo centralizado de errores
+
+### 3.2 Estructura del Proyecto
+
+```
+bslproject - ApiGateway/
+├── app/
+│   ├── routers/
+│   │   ├── finanzas.py       # Rutas para el servicio financiero
+│   │   └── seguridad.py      # Rutas para el servicio de seguridad
+│   ├── config.py             # Configuración de la aplicación
+│   ├── dependencies.py       # Dependencias compartidas
+│   └── main.py               # Punto de entrada de la aplicación
+├── requirements.txt          # Dependencias Python
+└── Dockerfile                # Configuración para contenedorización
+```
+
+### 3.3 Rutas Principales
+
+#### 3.3.1 Rutas de Seguridad
+
+- **POST /seguridad/autenticacion/login**: Autenticación de usuarios
+- **POST /seguridad/autenticacion/registro**: Registro de nuevos usuarios
+- **POST /seguridad/cerrar-sesion**: Cierre de sesión
+
+#### 3.3.2 Rutas Financieras
+
+- **GET /finanzas/cuentas/usuario/{id_usuario}**: Obtener cuentas de un usuario
+- **POST /finanzas/cuentas**: Crear nueva cuenta
+- **GET /finanzas/transacciones/usuario/{id_usuario}**: Obtener transacciones de un usuario
+- **POST /finanzas/transacciones**: Crear nueva transacción
+
+### 3.4 Características Principales
+
+- **Enrutamiento Inteligente**: Redirección de peticiones al microservicio adecuado
+- **Prefijos de Ruta**: Uso de prefijos (/seguridad/, /finanzas/) para identificar el destino
+- **Propagación de Headers**: Transmisión de tokens de autenticación a los microservicios
+- **Manejo de Errores**: Transformación y estandarización de respuestas de error
+- **Logging**: Registro detallado de peticiones y respuestas para depuración
+
+### 3.5 Tecnologías Implementadas
+
+- **FastAPI**: Framework Python de alto rendimiento
+- **Pydantic**: Validación de datos y serialización
+- **Uvicorn**: Servidor ASGI para despliegue
+- **HTTPx**: Cliente HTTP asíncrono para comunicación con microservicios
+- **Python 3.9+**: Aprovechamiento de características modernas del lenguaje
+
+## 4. SERVICIO DE SEGURIDAD
+
+### 4.1 Visión General
+
+El servicio de seguridad gestiona todos los aspectos relacionados con la autenticación, autorización y gestión de usuarios del sistema.
+
+### 4.2 Estructura del Proyecto
+
+```
+bslproject - seguridad/
+├── src/
+│   ├── main/
+│   │   ├── java/com/bsltproject/seguridad/
+│   │   │   ├── controladores/           # Controladores REST
+│   │   │   ├── modelos/                 # Entidades y DTOs
+│   │   │   ├── repositorios/            # Interfaces de acceso a datos
+│   │   │   ├── servicios/               # Lógica de negocio
+│   │   │   ├── configuracion/           # Configuración de seguridad
+│   │   │   └── excepciones/             # Manejo de excepciones
+│   │   └── resources/
+│   │       ├── application.properties   # Configuración de la aplicación
+│   │       └── schema.sql               # Esquema de base de datos
+│   └── test/                            # Pruebas unitarias e integración
+├── pom.xml                              # Dependencias Maven
+└── Dockerfile                           # Configuración para contenedorización
+```
+
+### 4.3 Componentes Principales
+
+#### 4.3.1 Controladores
+
+- **AutenticacionControlador**: Maneja login, registro y cierre de sesión
+- **UsuarioControlador**: Gestión de usuarios (CRUD)
+
+#### 4.3.2 Modelos
+
+- **Usuario**: Entidad principal con información de usuario
+- **Rol**: Entidad para gestión de roles y permisos
+- **AutenticacionRequest/Response**: DTOs para peticiones/respuestas de autenticación
+
+#### 4.3.3 Servicios
+
+- **UsuarioServicio**: Lógica de negocio para gestión de usuarios
+- **AutenticacionServicio**: Lógica para autenticación y generación de tokens
+- **JwtServicio**: Generación y validación de tokens JWT
+
+### 4.4 Características Principales
+
+- **Autenticación JWT**: Implementación completa de autenticación basada en tokens
+- **Gestión de Usuarios**: CRUD completo de usuarios
+- **Control de Acceso**: Basado en roles (USER, ADMIN)
+- **Encriptación de Contraseñas**: Uso de BCrypt para almacenamiento seguro
+- **Validación de Datos**: Validación completa de entradas de usuario
+
+### 4.5 Tecnologías Implementadas
+
+- **Spring Boot**: Framework Java para desarrollo de aplicaciones
+- **Spring Security**: Gestión de seguridad y autenticación
+- **Spring Data JPA**: Acceso a datos simplificado
+- **PostgreSQL**: Base de datos relacional
+- **JWT**: Tokens de autenticación
+- **Lombok**: Reducción de código boilerplate
+- **Hibernate Validator**: Validación de datos
+
+## 5. SERVICIO FINANCIERO
+
+### 5.1 Visión General
+
+El servicio financiero gestiona todas las operaciones bancarias del sistema, incluyendo cuentas, transacciones y bolsillos.
+
+### 5.2 Estructura del Proyecto
+
+```
+bslproject - backend_financiero/
+├── app/
+│   ├── controladores/
+│   │   ├── ControladorCuenta.py        # API para gestión de cuentas
+│   │   ├── ControladorTransaccion.py   # API para gestión de transacciones
+│   │   └── ControladorBolsillo.py      # API para gestión de bolsillos
+│   ├── modelos/
+│   │   ├── Cuenta.py                   # Modelo de cuenta
+│   │   ├── Transaccion.py              # Modelo de transacción
+│   │   └── Bolsillo.py                 # Modelo de bolsillo
+│   ├── repositorios/
+│   │   ├── RepositorioCuenta.py        # Acceso a datos de cuentas
+│   │   ├── RepositorioTransaccion.py   # Acceso a datos de transacciones
+│   │   └── RepositorioBolsillo.py      # Acceso a datos de bolsillos
+│   ├── servicios/
+│   │   ├── CuentaServicio.py           # Lógica de negocio para cuentas
+│   │   ├── TransaccionServicio.py      # Lógica de negocio para transacciones
+│   │   └── BolsilloServicio.py         # Lógica de negocio para bolsillos
+│   ├── config.py                       # Configuración de la aplicación
+│   └── main.py                         # Punto de entrada de la aplicación
+├── requirements.txt                    # Dependencias Python
+└── Dockerfile                          # Configuración para contenedorización
+```
+
+### 5.3 Componentes Principales
+
+#### 5.3.1 Controladores
+
+- **ControladorCuenta**: API REST para gestión de cuentas
+- **ControladorTransaccion**: API REST para gestión de transacciones
+- **ControladorBolsillo**: API REST para gestión de bolsillos
+
+#### 5.3.2 Modelos
+
+- **Cuenta**: Representa una cuenta bancaria
+- **Transaccion**: Representa una transacción financiera
+- **Bolsillo**: Representa un bolsillo (subcuenta) asociado a una cuenta
+
+#### 5.3.3 Servicios
+
+- **CuentaServicio**: Lógica de negocio para operaciones con cuentas
+- **TransaccionServicio**: Lógica para creación y gestión de transacciones
+- **BolsilloServicio**: Lógica para operaciones con bolsillos
+
+### 5.4 Características Principales
+
+- **Gestión de Cuentas**: Creación, actualización y consulta de cuentas
+- **Procesamiento de Transacciones**: Soporte para diferentes tipos:
+  - Transferencias entre cuentas
+  - Consignaciones
+  - Retiros
+- **Bolsillos**: Subcuentas para organización de fondos
+- **Asociación Usuario-Cuenta**: Vinculación de cuentas a usuarios
+- **Enriquecimiento de Datos**: Inclusión de información detallada en respuestas
+
+### 5.5 Tecnologías Implementadas
+
+- **FastAPI**: Framework Python de alto rendimiento
+- **Pydantic**: Validación de datos y serialización
+- **MongoDB**: Base de datos NoSQL para almacenamiento
+- **Motor**: ODM (Object Document Mapper) para MongoDB
+- **Python 3.9+**: Aprovechamiento de características modernas del lenguaje
+- **Uvicorn**: Servidor ASGI para despliegue
+
+## 6. INTEGRACIÓN Y FLUJOS PRINCIPALES
+
+### 6.1 Flujo de Autenticación
+
+1. Usuario ingresa credenciales en el frontend
+2. Frontend envía petición a `/seguridad/autenticacion/login` en el API Gateway
+3. API Gateway redirige a Servicio de Seguridad
+4. Servicio de Seguridad valida credenciales y genera token JWT
+5. Token JWT se devuelve al frontend y se almacena
+6. Frontend incluye token en cabecera Authorization para futuras peticiones
+
+### 6.2 Flujo de Creación de Cuenta
+
+1. Usuario completa formulario de nueva cuenta
+2. Frontend envía datos a `/finanzas/cuentas` en el API Gateway
+3. API Gateway verifica token y redirige al Servicio Financiero
+4. Servicio Financiero crea la cuenta y la asocia al usuario
+5. Servicio Financiero devuelve datos de la cuenta creada
+6. Frontend actualiza la interfaz con la nueva cuenta
+
+### 6.3 Flujo de Transacción
+
+1. Usuario selecciona tipo de transacción y completa formulario
+2. Frontend envía datos a `/finanzas/transacciones` en el API Gateway
+3. API Gateway verifica token y redirige al Servicio Financiero
+4. Servicio Financiero valida la transacción y actualiza saldos
+5. Servicio Financiero devuelve datos de la transacción creada
+6. Frontend actualiza la interfaz con la nueva transacción
+
+## 7. DESAFÍOS Y SOLUCIONES IMPLEMENTADAS
+
+### 7.1 Integración entre Microservicios
+
+**Desafío**: Comunicación efectiva entre servicios con diferentes tecnologías (Java/Python).
+
+**Solución**: Implementación de API Gateway como punto central de comunicación y estandarización de formatos de respuesta.
+
+### 7.2 Autenticación y Autorización
+
+**Desafío**: Mantener la seguridad a través de múltiples servicios.
+
+**Solución**: Implementación de JWT con verificación en API Gateway y propagación de tokens a microservicios.
+
+### 7.3 Consistencia de Datos
+
+**Desafío**: Mantener la consistencia entre bases de datos heterogéneas (PostgreSQL/MongoDB).
+
+**Solución**: Implementación de servicios con responsabilidades claramente definidas y modelos de datos coherentes.
+
+### 7.4 Problemas de Rutas en API Gateway
+
+**Desafío**: Errores 404/500 debido a discrepancias en las rutas.
+
+**Solución**: Estandarización de prefijos de ruta (/seguridad/, /finanzas/) y corrección de rutas duplicadas.
+
+### 7.5 Asociación Usuario-Cuenta
+
+**Desafío**: Cuentas creadas no aparecían asociadas a usuarios.
+
+**Solución**: Corrección en CuentaServicio para preservar el ID de usuario durante la creación de cuentas.
+
+## 8. CONCLUSIONES Y RECOMENDACIONES
+
+### 8.1 Fortalezas del Sistema
+
+- **Arquitectura Modular**: Facilita mantenimiento y escalabilidad
+- **Separación de Responsabilidades**: Cada servicio con funciones específicas
+- **Seguridad Robusta**: Implementación completa de JWT
+- **Frontend Moderno**: Uso de características avanzadas de Angular
+- **API Gateway Centralizado**: Simplifica la comunicación entre servicios
+
+### 8.2 Áreas de Mejora
+
+- **Implementación de Tests**: Aumentar cobertura de pruebas
+- **Documentación API**: Mejorar documentación con Swagger/OpenAPI
+- **Monitoreo**: Implementar herramientas de observabilidad
+- **Containerización**: Completar la configuración Docker para todos los servicios
+- **CI/CD**: Implementar pipeline de integración/despliegue continuo
+
+### 8.3 Recomendaciones Técnicas
+
+- **Implementar Refresh Token**: Para mejorar la experiencia de usuario
+- **Caché Distribuida**: Para optimizar rendimiento
+- **Validación Consistente**: Estandarizar validación entre frontend y backend
+- **Logging Centralizado**: Implementar solución de logging unificada
+- **Versionado de API**: Preparar para evolución de la API
+
+## 9. ANEXOS
+
+### 9.1 Diagrama de Arquitectura
+
+[Incluir diagrama de arquitectura]
+
+### 9.2 Modelo de Datos
+
+[Incluir diagrama de modelo de datos]
+
+### 9.3 Endpoints API
+
+[Incluir documentación detallada de endpoints]
+
+---
+
+Informe preparado para propósitos académicos.
+Fecha: 10 de mayo de 2025

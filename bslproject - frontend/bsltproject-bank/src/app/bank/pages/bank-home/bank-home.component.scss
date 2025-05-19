@@ -3,8 +3,25 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
-  background-color: #f9f9f9;
+  background: linear-gradient(135deg, #2c1658 0%, #1e1339 70%, #0f0f0f 100%);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    // Usar un patrón de puntos en lugar de una imagen externa
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+  }
 }
 
 // Container for the main content area (sidebar + content)
@@ -12,16 +29,21 @@
   display: flex;
   flex: 1;
   overflow: hidden;
-  background-color: #f9f9f9;
+  position: relative;
+  z-index: 1;
+  min-height: 0; // Importante para que flex: 1 funcione correctamente
 }
 
 // Sidebar wrapper styles
 .sidebar-wrapper {
   width: 270px;
-  background-color: #2c1658;
-  transition: width 0.3s ease, min-width 0.3s ease;
+  transition: width 0.3s ease, min-width 0.3s ease, transform 0.3s ease;
   overflow: hidden;
   position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   
   &.hidden {
     width: 0;
@@ -49,14 +71,39 @@
 .content-wrapper {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
-  background-color: #f9f9f9;
+  padding: 24px 24px 0 24px; // Quitar padding bottom para el footer
+  background-color: transparent;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  
+  // Añadir efecto de desvanecimiento en la parte superior
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 30px;
+    pointer-events: none;
+    z-index: 10;
+    background: linear-gradient(to bottom, rgba(44, 22, 88, 0.5), transparent);
+  }
   
   // Hide scrollbar but keep functionality
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
   &::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
+  }
+  
+  // El contenido principal debe crecer para ocupar el espacio disponible
+  router-outlet + * {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; // Importante para que flex: 1 funcione correctamente
   }
 }
   
@@ -66,24 +113,54 @@
   app-navbar {
     display: block;
     position: relative;
-    z-index: 10;
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
   
   // Footer styling
   app-footer {
-    z-index: 2;
+    z-index: 5;
     position: relative;
+    width: 100%;
+    margin-top: auto; // Empujar el footer al fondo del contenedor
     
     .footer {
       background: linear-gradient(180deg, #1f1f1f 0%, #18121e 100%) !important;
-      border-top: none !important;
+      border-top: 1px solid rgba(164, 108, 245, 0.15) !important;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
     }
   }
   
   // Sidebar component styling
   app-sidebar {
-    display: block;
+    display: flex;
+    flex-direction: column;
     height: 100%;
     overflow: hidden;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+    flex: 1;
+  }
+  
+  // Mejorar la apariencia de los botones en toda la aplicación
+  .mat-button, .mat-raised-button, .mat-stroked-button, .mat-flat-button {
+    border-radius: 8px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    
+    &:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+  }
+  
+  // Mejorar la apariencia de los inputs
+  .mat-form-field {
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    
+    &.mat-focused {
+      .mat-form-field-outline {
+        color: rgba(164, 108, 245, 0.5) !important;
+      }
+    }
   }
 }

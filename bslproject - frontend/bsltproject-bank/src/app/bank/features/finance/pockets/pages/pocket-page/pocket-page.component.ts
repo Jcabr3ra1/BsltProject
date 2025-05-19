@@ -49,19 +49,23 @@ export class PocketPageComponent implements OnInit {
   cuentas: Cuenta[] = [];
   cargando: boolean = true;
   dataSource = new MatTableDataSource<Bolsillo>([]);
-  pageSizeOptions: number[] = [5, 10, 25];
+  pageSizeOptions: number[] = [5, 10, 20, 25];
   paginaActual: number = 0;
   tamanoActual: number = 5;
   
-  displayedColumns: string[] = [
+  columnasTabla: string[] = [
     'nombre',
-    'color',
     'saldo',
-    'id_cuenta',
+    'color',
+    'cuenta',
     'acciones',
   ];
 
   @ViewChild(MatPaginator) paginador!: MatPaginator;
+  // Alias para usar en el HTML
+  get paginator(): MatPaginator {
+    return this.paginador;
+  }
 
   constructor(
     private bolsillosService: BolsillosService,
@@ -190,7 +194,8 @@ export class PocketPageComponent implements OnInit {
     return `${tipoNombre} - ${cuenta.numero_cuenta}`;
   }
   
-  eliminarBolsillo(id: string): void {
+  eliminarBolsillo(bolsillo: Bolsillo): void {
+    const id = bolsillo.id || bolsillo._id;
     if (!id) {
       alert('ID de bolsillo no válido.');
       return;
@@ -216,6 +221,11 @@ export class PocketPageComponent implements OnInit {
     });
   }
   
+  // Alias para el método abrirCrear para mantener compatibilidad con el HTML actualizado
+  abrirCrearBolsillo(): void {
+    this.abrirCrear();
+  }
+
   abrirCrear(): void {
     const dialogRef = this.dialog.open(CrearBolsilloDialogComponent, {
       width: '450px',
@@ -228,6 +238,11 @@ export class PocketPageComponent implements OnInit {
         this.cargarDatos();
       }
     });
+  }
+
+  // Alias para el método abrirEditar para mantener compatibilidad con el HTML actualizado
+  editarBolsillo(bolsillo: Bolsillo): void {
+    this.abrirEditar(bolsillo);
   }
 
   abrirEditar(bolsillo: Bolsillo): void {

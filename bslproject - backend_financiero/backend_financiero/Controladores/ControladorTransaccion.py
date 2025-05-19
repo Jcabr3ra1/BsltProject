@@ -46,14 +46,35 @@ def aprobar_transaccion(id: str):
     return resultado
 
 @router.put("/{id}/anular")
-def anular_transaccion(id: str):
-    resultado = servicio.anular(id)
+def anular_transaccion(id: str, reintegrar_fondos: bool = True):
+    print(f"Anulando transacción {id} con reintegrar_fondos={reintegrar_fondos}")
+    
+    # Llamar al servicio con el parámetro de reintegro
+    resultado = servicio.anular(id, reintegrar_fondos=reintegrar_fondos)
+    
+    # Manejar posibles errores
     if isinstance(resultado, tuple):
         error_msg, error_code = resultado
         raise HTTPException(status_code=error_code, detail=error_msg)
     if "error" in resultado:
         raise HTTPException(status_code=500, detail=resultado["error"])
+    
     return resultado
+
+@router.delete("/{id}")
+def eliminar_transaccion_permanente(id: str):
+    print(f"Eliminando permanentemente la transacción {id} de la base de datos")
+    
+    # Llamar al servicio para eliminar permanentemente la transacción
+    resultado = servicio.eliminar_permanente(id)
+    
+    # Manejar posibles errores
+    if isinstance(resultado, tuple):
+        error_msg, error_code = resultado
+        raise HTTPException(status_code=error_code, detail=error_msg)
+    if "error" in resultado:
+        raise HTTPException(status_code=500, detail=resultado["error"])
+    return {"message": f"Transacción {id} eliminada permanentemente", "eliminada": True}
 
 @router.get("/usuario/{id_usuario}")
 def obtener_transacciones_por_usuario(id_usuario: str):
@@ -206,8 +227,6 @@ def retiro_bolsillo_cuenta(data: dict):
         "uuid_transaccion": data.get("uuid_transaccion")  # ✅ Añadido para prevenir duplicación
     }
     return servicio._retiroBolsilloCuenta(info_transaccion, data["monto"])
-
-
 
 @router.post("/bolsillo-banco")
 def retiro_bolsillo_banco(data: dict):

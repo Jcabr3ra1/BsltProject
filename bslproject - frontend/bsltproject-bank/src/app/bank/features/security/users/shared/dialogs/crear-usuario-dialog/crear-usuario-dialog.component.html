@@ -81,9 +81,9 @@
       <div class="form-field half-width">
         <label for="rol">Rol<span class="required">*</span></label>
         <div class="select-container">
-          <select id="rol" formControlName="rol_id" class="custom-select">
+          <select id="rol" formControlName="rol_id" class="custom-select" [style.background-color]="'#2c1658'" [style.color]="'white'">
             <option value="" disabled selected hidden>Seleccione un rol</option>
-            <option *ngFor="let rol of roles" [value]="rol.id">{{ rol.nombre }}</option>
+            <option *ngFor="let rol of roles" [value]="rol.id" [style.background-color]="'#2c1658'" [style.color]="'white'">{{ rol.nombre }}</option>
           </select>
           <mat-icon>arrow_drop_down</mat-icon>
         </div>
@@ -95,14 +95,13 @@
       <div class="form-field half-width">
         <label for="estado">Estado<span class="required">*</span></label>
         <div class="select-container">
-          <select id="estado" formControlName="estado_id" class="custom-select">
+          <select id="estado" formControlName="estado_id" class="custom-select" [style.background-color]="'#2c1658'" [style.color]="'white'">
             <option value="" disabled selected hidden>Seleccione un estado</option>
-            <option *ngFor="let estado of estados" [value]="estado.id">{{ estado.nombre }}</option>
+            <option *ngFor="let estado of estados" [value]="estado.id" [style.background-color]="'#2c1658'" [style.color]="'white'">{{ estado.nombre }}</option>
           </select>
           <mat-icon>arrow_drop_down</mat-icon>
         </div>
-        <div class="error-message"
-          *ngIf="form.get('estado_id')?.touched && form.get('estado_id')?.hasError('required')">
+        <div class="error-message" *ngIf="form.get('estado_id')?.touched && form.get('estado_id')?.hasError('required')">
           El estado es requerido
         </div>
       </div>

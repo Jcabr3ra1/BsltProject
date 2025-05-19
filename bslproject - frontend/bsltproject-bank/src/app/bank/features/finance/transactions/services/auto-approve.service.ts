@@ -26,16 +26,22 @@ export class AutoApproveService {
     this.userId = userId;
     this.processedTransactionIds.clear(); // Limpiar el historial al iniciar
     
-    // Verificar cada 30 segundos las transacciones pendientes (aumentado de 5 a 30 segundos)
+    // Verificar cada 30 segundos las transacciones pendientes para reducir la carga en el servidor
+    // Aumentamos de 5 a 30 segundos para evitar el bucle constante de peticiones
     this.checkInterval = interval(30000)
       .pipe(
-        switchMap(() => this.transaccionService.getTransaccionesPorUsuario(userId)),
+        switchMap(() => {
+          console.log('Verificando transacciones pendientes...');
+          return this.transaccionService.getTransaccionesPorUsuario(userId);
+        }),
         catchError(error => {
           console.error('Error al verificar transacciones pendientes:', error);
           return [];
         })
       )
       .subscribe(transacciones => {
+        console.log(`Recibidas ${transacciones.length} transacciones para revisar`);
+        
         // Filtrar transacciones pendientes que no hayan sido procesadas recientemente
         const transaccionesPendientes = transacciones.filter(t => {
           const id = t.id || t._id;
@@ -45,6 +51,8 @@ export class AutoApproveService {
         if (transaccionesPendientes.length > 0) {
           console.log('Nuevas transacciones pendientes encontradas:', transaccionesPendientes.length);
           this.aprobarTransaccionesPendientes(transaccionesPendientes);
+        } else {
+          console.log('No se encontraron nuevas transacciones pendientes');
         }
       });
   }
@@ -65,34 +73,50 @@ export class AutoApproveService {
    * Aprueba automáticamente las transacciones pendientes
    */
   private aprobarTransaccionesPendientes(transacciones: Transaccion[]): void {
-    transacciones.forEach(transaccion => {
+    // Procesamos todas las transacciones pendientes en paralelo para mayor velocidad
+    console.log(`Procesando ${transacciones.length} transacciones pendientes en paralelo`);
+    
+    // Crear un array de promesas para aprobar todas las transacciones
+    const promesasAprobacion = transacciones.map(transaccion => {
       const id = transaccion.id || transaccion._id;
-      if (id) {
-        // Marcar esta transacción como procesada para evitar procesarla nuevamente
-        this.processedTransactionIds.add(id);
-        
-        console.log(`Intentando aprobar transacción ${id}...`);
-        
-        // Usar SIEMPRE el método de actualización general para evitar errores 405
-        this.transaccionService.actualizarTransaccion(id, { estado: 'APROBADA' })
+      if (!id) return Promise.resolve(); // Ignorar transacciones sin ID
+      
+      // Marcar esta transacción como procesada para evitar procesarla nuevamente
+      this.processedTransactionIds.add(id);
+      
+      console.log(`Intentando aprobar transacción ${id}...`);
+      
+      // Convertir el observable a promesa para manejar todas las aprobaciones en paralelo
+      return new Promise<void>((resolve) => {
+        // Usar el método de aprobación específico en lugar del método general
+        this.transaccionService.aprobarTransaccion(id)
           .pipe(
             catchError(error => {
               console.error(`Error al aprobar transacción ${id}:`, error);
               // Si hay un error, eliminamos el ID de la lista de procesados
-              // para que se pueda intentar nuevamente en el futuro
               this.processedTransactionIds.delete(id);
+              resolve(); // Resolver la promesa aún con error para continuar con las demás
               return [];
             })
           )
           .subscribe(response => {
-            console.log(`Transacción ${id} aprobada automáticamente`, response);
-            // Después de 5 minutos, eliminamos el ID de la lista de procesados
-            // para permitir que se vuelva a intentar si aún está pendiente
+            console.log(`✅ Transacción ${id} aprobada automáticamente`, response);
+            // Reducimos el tiempo a 1 minuto para permitir reintento más rápido si es necesario
             setTimeout(() => {
               this.processedTransactionIds.delete(id);
-            }, 5 * 60 * 1000); // 5 minutos
+            }, 60 * 1000); // 1 minuto
+            resolve();
           });
-      }
+      });
     });
+    
+    // Ejecutar todas las aprobaciones en paralelo
+    Promise.all(promesasAprobacion)
+      .then(() => {
+        console.log('Proceso de aprobación automática completado');
+      })
+      .catch(error => {
+        console.error('Error en el proceso de aprobación automática:', error);
+      });
   }
 }

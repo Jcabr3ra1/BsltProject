@@ -9,6 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { MovementTypeService } from '../../services/movement-type.service';
 import { TipoMovimiento } from '../../../../../../core/models/movement-type.model';
@@ -28,6 +29,7 @@ import { EditarTipoMovimientoDialogComponent } from '../../shared/dialogs/editar
     MatTooltipModule,
     MatSnackBarModule,
     FormsModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './type-of-movement-page.component.html',
   styleUrls: ['./type-of-movement-page.component.scss'],
@@ -36,6 +38,7 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
   tiposMovimiento: TipoMovimiento[] = [];
   filteredTipos: TipoMovimiento[] = [];
   searchTerm: string = '';
+  isLoading: boolean = false;
 
   displayedColumns: string[] = [
     'codigo_origen',
@@ -67,6 +70,7 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
   }
 
   cargarTiposMovimiento(): void {
+    this.isLoading = true;
     this.movementTypeService.getTiposMovimiento().subscribe({
       next: (data) => {
         this.tiposMovimiento = data;
@@ -78,18 +82,21 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         }
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error al cargar los tipos de movimiento', error);
         this.mostrarError('Error al cargar los tipos de movimiento');
+        this.isLoading = false;
       },
     });
   }
 
   abrirCrear(): void {
     const dialogRef = this.dialog.open(CrearTipoMovimientoDialogComponent, {
-      width: '450px',
+      width: '500px',
       panelClass: ['custom-dialog', 'custom-dark-dialog'],
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((nuevo) => {
@@ -110,9 +117,10 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
 
   abrirEditar(tipo: TipoMovimiento): void {
     const dialogRef = this.dialog.open(EditarTipoMovimientoDialogComponent, {
-      width: '450px',
+      width: '500px',
       data: tipo,
       panelClass: ['custom-dialog', 'custom-dark-dialog'],
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((actualizado) => {
@@ -135,7 +143,7 @@ export class TypeOfMovementPageComponent implements OnInit, AfterViewInit {
 
   eliminarTipo(id: string | undefined): void {
     const confirmacion = confirm(
-      '¿Estás seguro de eliminar este tipo de movimiento?'
+      '¿Estás seguro de eliminar este tipo de movimiento? Esta acción no se puede deshacer.'
     );
 
     if (confirmacion && id) {

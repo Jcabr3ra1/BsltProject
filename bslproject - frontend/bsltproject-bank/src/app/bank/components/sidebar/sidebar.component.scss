@@ -5,15 +5,19 @@ $dark-purple: #2c1658;
 $darker-purple: #1e1339;
 $dark-bg: #0f0f0f;
 $light-text: #ffffff;
+$medium-text: rgba(255, 255, 255, 0.85);
+$muted-text: rgba(255, 255, 255, 0.6);
 $hover-bg: rgba(255, 255, 255, 0.08);
 $active-bg: rgba($primary-purple, 0.3);
 $sidebar-width: 270px;
 $sidebar-collapsed-width: 70px;
 $transition-speed: 0.3s;
 
-// Gradients
-$sidebar-gradient: linear-gradient(180deg, $dark-purple 0%, $darker-purple 100%);
-$active-item-gradient: linear-gradient(90deg, rgba($primary-purple, 0.2) 0%, rgba($primary-purple, 0.05) 100%);
+// Gradients y efectos
+$sidebar-gradient: linear-gradient(135deg, rgba($dark-purple, 0.95) 0%, rgba($darker-purple, 0.95) 80%, rgba(15, 10, 30, 0.95) 100%);
+$active-item-gradient: linear-gradient(90deg, rgba($primary-purple, 0.25) 0%, rgba($primary-purple, 0.05) 100%);
+$glow-effect: 0 0 15px rgba($primary-purple, 0.3);
+$subtle-border: 1px solid rgba($primary-purple, 0.15);
 
 .sidebar-container {
   width: $sidebar-width;
@@ -22,12 +26,42 @@ $active-item-gradient: linear-gradient(90deg, rgba($primary-purple, 0.2) 0%, rgb
   padding: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden !important;
+  overflow: hidden;
   position: relative;
   border-radius: 0 !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
-  border-right: 1px solid rgba($primary-purple, 0.15);
-  transition: width $transition-speed ease, min-width $transition-speed ease, max-width $transition-speed ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+  border-right: $subtle-border;
+  transition: all $transition-speed ease;
+  
+  // Efecto de cristal (glassmorphism)
+  @supports (backdrop-filter: blur(10px)) {
+    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, 
+      rgba($dark-purple, 0.85) 0%, 
+      rgba($darker-purple, 0.9) 80%, 
+      rgba(15, 10, 30, 0.92) 100%);
+  }
+  
+  // Borde luminoso sutil
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, 
+      rgba($primary-purple, 0.05) 0%,
+      rgba($primary-purple, 0.2) 50%,
+      rgba($primary-purple, 0.05) 100%);
+    box-shadow: $glow-effect;
+    opacity: 0.7;
+  }
+  
+  @supports (backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px)) {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
   
   &.collapsed {
     width: $sidebar-collapsed-width;
@@ -126,56 +160,64 @@ html, body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto !important;
   overflow-x: hidden;
   position: relative;
-  padding: 16px 0;
+  padding: 20px 12px;
+  gap: 8px;
   
-  &.collapsed-content {
-    width: $sidebar-collapsed-width;
-    min-width: $sidebar-collapsed-width;
-    max-width: $sidebar-collapsed-width;
-    overflow: hidden;
-  }
-  
-  // Hide scrollbar but keep functionality
+  // Ocultar scrollbar pero mantener funcionalidad
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
   &::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
   }
   
-  // Add subtle fade effect at top and bottom
+  // Efecto de desvanecimiento en la parte superior e inferior
   &::before,
   &::after {
     content: '';
     position: absolute;
     left: 0;
     width: 100%;
-    height: 20px;
+    height: 30px;
     pointer-events: none;
     z-index: 10;
   }
   
   &::before {
     top: 0;
-    background: linear-gradient(to bottom, $dark-purple, transparent);
+    background: linear-gradient(to bottom, rgba($darker-purple, 0.95), transparent);
   }
   
   &::after {
     bottom: 0;
-    background: linear-gradient(to top, $dark-purple, transparent);
+    background: linear-gradient(to top, rgba($darker-purple, 0.95), transparent);
   }
 }
 
-
-
-// Divider style
+// Divider style - solo visible para el divider explícito
 .sidebar-divider {
   height: 1px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-  margin: 8px 16px;
+  background: linear-gradient(90deg, 
+    rgba($primary-purple, 0.05), 
+    rgba($primary-purple, 0.3), 
+    rgba($primary-purple, 0.05));
+  margin: 12px 16px;
   opacity: 0.7;
+  position: relative;
+  
+  // Efecto de brillo en el centro
+  &::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 40%;
+    right: 40%;
+    height: 3px;
+    background: radial-gradient(circle, rgba($primary-purple, 0.5) 0%, transparent 70%);
+    filter: blur(2px);
+  }
   
   .collapsed & {
     margin: 8px 10px;
@@ -193,49 +235,65 @@ html, body {
   padding: 10px 12px;
   width: calc(100% - 24px);
   border-radius: 10px;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  white-space: nowrap;
-  height: 40px;
+  border: none !important;
+  letter-spacing: 0.3px;
   
-  .link-text {
-    margin-left: 16px;
-    font-size: 14px;
-    transition: opacity $transition-speed ease, color 0.2s ease;
-    letter-spacing: 0.2px;
+  @supports (backdrop-filter: blur(5px)) or (-webkit-backdrop-filter: blur(5px)) {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
   }
   
   &:hover {
-    background-color: $hover-bg;
-    color: $light-text;
+    background-color: rgba($primary-purple, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    
+    &::after {
+      opacity: 1;
+    }
     
     mat-icon {
-      color: $light-purple;
+      color: rgba(255, 255, 255, 0.95);
+      transform: scale(1.1);
+    }
+    
+    .link-text {
+      letter-spacing: 0.3px;
     }
   }
   
   &.active {
-    background: $active-item-gradient;
+    background: linear-gradient(90deg, 
+      rgba($primary-purple, 0.25) 0%, 
+      rgba($primary-purple, 0.15) 70%,
+      rgba($primary-purple, 0.05) 100%);
     color: $light-text;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     
     &::before {
       content: '';
       position: absolute;
       left: 0;
-      top: 8px;
-      height: 24px;
+      top: 6px;
+      height: calc(100% - 12px);
       width: 4px;
-      background: $primary-purple;
+      background: linear-gradient(to bottom, $light-purple, $primary-purple);
       border-radius: 0 4px 4px 0;
+      box-shadow: 0 0 8px rgba($primary-purple, 0.5);
     }
     
     mat-icon {
-      color: $primary-purple;
+      color: $light-purple;
+      text-shadow: 0 0 10px rgba($light-purple, 0.7);
     }
     
     .link-text {
       font-weight: 600;
+      letter-spacing: 0.3px;
     }
   }
   
@@ -250,27 +308,61 @@ html, body {
 }
 
 .sidebar-section {
-  margin: 16px 0;
+  margin: 8px 0;
+  border: none;
   
   .section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: rgba(255, 255, 255, 0.7);
-    padding: 8px 16px;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 10px 16px;
     margin: 4px 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    height: 40px;
-    border-radius: 10px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    
+    // Fondo sutil con gradiente
+    background: linear-gradient(90deg, 
+      rgba($primary-purple, 0.1) 0%, 
+      rgba($darker-purple, 0.2) 100%);
+    
+    // Efecto de brillo sutil
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.02) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
     
     &:hover {
-      background-color: $hover-bg;
-      color: $light-text;
+      background: linear-gradient(90deg, 
+        rgba($primary-purple, 0.15) 0%, 
+        rgba($darker-purple, 0.25) 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       
-      .header-content mat-icon,
-      .expand-icon {
-        color: $light-purple;
+      &::after {
+        opacity: 1;
+      }
+      
+      .header-content {
+        mat-icon {
+          color: $light-purple;
+          transform: scale(1.1);
+        }
+        
+        .section-title {
+          letter-spacing: 0.6px;
+        }
       }
     }
     
@@ -279,45 +371,58 @@ html, body {
       align-items: center;
       
       mat-icon {
-        color: rgba(255, 255, 255, 0.6);
-        transition: all 0.3s ease;
-        min-width: 24px;
-        height: 24px;
-        width: 24px;
+        color: rgba(255, 255, 255, 0.8);
+        margin-right: 16px;
+        transition: all 0.25s ease;
         font-size: 22px;
+        width: 24px;
+        height: 24px;
       }
       
       .section-title {
-        margin-left: 16px;
-        font-size: 13px;
-        font-weight: 600;
+        font-size: 14px;
+        font-weight: 500;
         letter-spacing: 0.5px;
         text-transform: uppercase;
+        transition: all 0.25s ease;
       }
     }
     
     .expand-icon {
-      color: rgba(255, 255, 255, 0.5);
-      transition: transform 0.3s ease, color 0.2s ease;
-      font-size: 18px;
-    }
-    
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      
-      .header-content mat-icon,
-      .expand-icon {
-        color: $light-text;
-      }
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 20px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 0 0 rgba($primary-purple, 0);
     }
     
     &.expanded {
+      background: linear-gradient(90deg, 
+        rgba($primary-purple, 0.2) 0%, 
+        rgba($primary-purple, 0.1) 100%);
+      
       .header-content mat-icon {
-        color: $primary-purple;
+        color: $light-purple;
+        text-shadow: 0 0 10px rgba($light-purple, 0.4);
       }
       
       .section-title {
         font-weight: 600;
+        color: $light-text;
+        letter-spacing: 0.6px;
+      }
+      
+      .expand-icon {
+        color: $light-text;
+        background: rgba($primary-purple, 0.3);
+        transform: rotate(180deg);
+        box-shadow: 0 0 8px rgba($primary-purple, 0.5);
       }
     }
   }
@@ -325,10 +430,15 @@ html, body {
   .section-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, transform 0.3s ease;
+    border: none !important;
+    opacity: 0;
+    transform: translateY(-10px);
     
     &.expanded {
       max-height: 500px; // Ajustar según sea necesario
+      opacity: 1;
+      transform: translateY(0);
     }
     
     .sidebar-link {
@@ -338,15 +448,15 @@ html, body {
       width: calc(100% - 32px);
       height: 36px;
       font-size: 13px;
+      border: none !important;
+      border-bottom: none !important;
+      border-top: none !important;
+      position: relative;
       
-      &::before {
-        left: 4px;
-        height: 20px;
-      }
+      // Eliminar el pseudo-elemento vacío que podría causar problemas
       
       mat-icon {
-        font-size: 20px;
-        height: 20px;
+        font-size: 18px;
         width: 20px;
         min-width: 20px;
         display: inline-flex;
@@ -357,14 +467,11 @@ html, body {
       .link-text {
         font-size: 13px;
         margin-left: 12px;
+        font-weight: 500;
       }
     }
   }
 }
-
-// Divider removed
-
-// App version removed
 
 // Clase para sidebar colapsado
 .sidebar-collapsed {
@@ -402,25 +509,118 @@ html, body {
   }
 }
 
-// Soluciones para problemas de scroll
+// Soluciones para problemas de scroll y líneas divisorias
 ::ng-deep {
-  // Forzar que los contenedores padres también respeten el overflow: hidden
+  // Configuración para permitir scroll oculto
   .mat-drawer-inner-container {
     overflow: hidden !important;
   }
   
-  // Forzar el overflow: hidden en todos los elementos del sidebar
+  // Configurar app-sidebar
   app-sidebar {
     overflow: hidden !important;
     background: linear-gradient(180deg, $darker-purple 0%, $dark-bg 100%);
+    height: 100% !important;
+    display: block !important;
   }
   
-  // Corregir posibles problemas con Angular Material
+  // Eliminar líneas divisorias en el sidebar
+  .sidebar-link, 
+  .section-content a,
+  .sidebar-section .section-content .sidebar-link {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    position: relative;
+    
+    &:after, &:before {
+      display: none !important;
+    }
+  }
+  
+  // Eliminar línea divisoria entre elementos de Finanzas
+  .sidebar-section:nth-child(3) .section-content a {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    position: relative;
+    background-image: none !important;
+    box-shadow: none !important;
+    
+    &:after, &:before {
+      content: none !important;
+      display: none !important;
+    }
+  }
+  
+  // Eliminar cualquier separador o borde en todos los elementos del sidebar
+  .mat-list-item, 
+  .mat-list-item-content,
+  .mat-nav-list .mat-list-item,
+  .sidebar-section .section-content,
+  .sidebar-section .section-content .sidebar-link,
+  .sidebar-section .section-content a,
+  .sidebar-link {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    background-image: none !important;
+  }
+  
+  // Corregir el problema visual específico entre Tipos de Transacción y Tipos de Movimiento
+  a[routerlink='[\"tipo-transaccion\"]'] + a[routerlink='[\"tipo-movimiento\"]'],
+  a[routerlink='[\"tipo-transaccion\"]'],
+  a[routerlink='[\"tipo-movimiento\"]'] {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+    background-image: none !important;
+  }
+  
+  // Configurar el drawer
   .mat-drawer {
     overflow: hidden !important;
     background: linear-gradient(180deg, $darker-purple 0%, $dark-bg 100%) !important;
   }
   
+  // Ocultar completamente el scrollbar del sidebar
+  .sidebar-content {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    
+    &::-webkit-scrollbar {
+      width: 0 !important;
+      height: 0 !important;
+      display: none !important;
+    }
+    
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  
+  // Corregir el bug visual en elementos activos
+  .sidebar-link.active {
+    background: $active-bg !important;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: $primary-purple;
+      border-radius: 0 4px 4px 0;
+    }
+  }
+  
+  // Configuración de contenedores principales
   .mat-drawer-container, 
   .mat-sidenav-container {
     background-color: $dark-bg !important;

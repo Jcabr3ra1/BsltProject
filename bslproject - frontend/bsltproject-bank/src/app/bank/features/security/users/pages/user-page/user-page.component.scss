@@ -19,7 +19,7 @@ $warning-color: #ffcc00;
   background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
   color: $light-text;
   padding: 1.5rem;
-  min-height: calc(100vh - 110px);
+  min-height: auto;
   border-radius: 0;
   overflow: hidden;
   display: flex;
@@ -156,6 +156,10 @@ $warning-color: #ffcc00;
     letter-spacing: 0.5px;
     border-bottom: none;
     text-align: left;
+    
+    &.text-center {
+      text-align: center;
+    }
   }
   
   // Celdas de la tabla
@@ -167,6 +171,10 @@ $warning-color: #ffcc00;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    
+    &.text-center {
+      text-align: center;
+    }
   }
   
   // Filas de la tabla
@@ -301,22 +309,39 @@ $warning-color: #ffcc00;
   }
 }
 
-// Botones de acción
-.action-buttons {
-  display: flex;
-  gap: 0.25rem;
-  justify-content: center;
+// Estilos para los iconos de acción
+.edit-icon, .delete-icon {
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 5px;
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  line-height: 18px;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+  border-radius: 50%;
+  padding: 5px;
+  box-sizing: content-box;
+}
+
+.edit-icon {
+  color: #4f46e5;
   
-  button {
-    transition: all 0.2s ease;
-    
-    &.edit-button:hover {
-      color: $primary-purple;
-    }
-    
-    &.delete-button:hover {
-      color: #ff3b30;
-    }
+  &:hover {
+    color: #6366f1;
+    background-color: rgba(79, 70, 229, 0.1);
+    transform: scale(1.1);
+  }
+}
+
+.delete-icon {
+  color: #ef4444;
+  
+  &:hover {
+    color: #f87171;
+    background-color: rgba(239, 68, 68, 0.1);
+    transform: scale(1.1);
   }
 }
 

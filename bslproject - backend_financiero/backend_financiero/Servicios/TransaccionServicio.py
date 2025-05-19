@@ -26,6 +26,43 @@ class TransaccionServicio:
             return transaccion
         return {"error": "Transacción no encontrada"}, 404
 
+    def eliminar_permanente(self, id):
+        """
+        Elimina permanentemente una transacción de la base de datos.
+
+        Args:
+            id (str): ID de la transacción a eliminar
+
+        Returns:
+            dict: Mensaje de confirmación o error
+        """
+        print(f"Eliminando permanentemente la transacción con ID: {id}")
+
+        # Verificar que la transacción existe
+        transaccion_data = self.repositorioTransaccion.findById(id)
+        if not transaccion_data:
+            print(f"Error: Transacción con ID {id} no encontrada")
+            return {"error": "Transacción no encontrada"}, 404
+
+        print(f"Transacción encontrada: {transaccion_data}")
+
+        # Guardar una copia de la transacción para retornarla en la respuesta
+        transaccion_eliminada = transaccion_data.copy()
+        
+        try:
+            # Eliminar la transacción de la base de datos
+            resultado = self.repositorioTransaccion.delete(id)
+            print(f"Transacción eliminada permanentemente: {resultado}")
+            
+            return {
+                "message": "Transacción eliminada permanentemente", 
+                "transaccion": transaccion_eliminada,
+                "eliminada": True
+            }
+        except Exception as e:
+            print(f"Error al eliminar permanentemente la transacción: {e}")
+            return {"error": f"Error al eliminar la transacción: {str(e)}"}, 500
+
     def obtener_por_usuario(self, id_usuario):
         """
         Obtiene todas las transacciones asociadas a un usuario específico.
@@ -721,12 +758,13 @@ class TransaccionServicio:
     🔹 Eliminar una transacción
     """
 
-    def anular(self, id):
+    def anular(self, id, reintegrar_fondos=True):
         """
         Anula una transacción y reintegra el dinero a las cuentas correspondientes.
 
         Args:
             id (str): ID de la transacción a anular
+            reintegrar_fondos (bool): Indica si se debe reintegrar el dinero
 
         Returns:
             dict: Mensaje de confirmación o error
@@ -749,110 +787,284 @@ class TransaccionServicio:
             return {"message": "La transacción ya estaba anulada", "transaccion": transaccion_data}
 
         # Reintegrar el dinero según el tipo de transacción
+        print(f"Datos completos de la transacción: {transaccion_data}")
+        
+        # Verificar el monto de la transacción
         monto = transaccion_data.get("monto", 0)
+        print(f"Monto obtenido de la transacción: {monto}, tipo: {type(monto)}")
+        
         if not monto:
-            print("Advertencia: La transacción no tiene monto especificado")
+            print("Advertencia: La transacción no tiene monto especificado o es cero")
             monto = 0
         
-        # Revertir la transferencia según el tipo de movimiento
+        resultado_actualizar = None
+        
         try:
-            # Caso 1: Transferencia entre cuentas
-            if "id_cuenta_origen" in transaccion_data and "id_cuenta_destino" in transaccion_data:
-                print("Reintegrando dinero en transferencia entre cuentas")
-                cuenta_origen_id = transaccion_data["id_cuenta_origen"]
-                cuenta_destino_id = transaccion_data["id_cuenta_destino"]
-                
-                cuenta_origen_data = self.repositorioCuenta.findById(cuenta_origen_id)
-                cuenta_destino_data = self.repositorioCuenta.findById(cuenta_destino_id)
-                
-                if cuenta_origen_data and cuenta_destino_data:
-                    cuenta_origen = Cuenta(cuenta_origen_data)
-                    cuenta_destino = Cuenta(cuenta_destino_data)
-                    
-                    # Revertir: sumar a la cuenta origen y restar de la cuenta destino
-                    cuenta_origen.saldo += monto
-                    cuenta_destino.saldo -= monto
-                    
-                    self.repositorioCuenta.save(cuenta_origen)
-                    self.repositorioCuenta.save(cuenta_destino)
-                    print(f"Dinero reintegrado: {monto} de cuenta {cuenta_destino_id} a cuenta {cuenta_origen_id}")
-            
-            # Caso 2: Transferencia de cuenta a bolsillo
-            elif "id_cuenta_origen" in transaccion_data and "id_bolsillo_destino" in transaccion_data:
-                print("Reintegrando dinero en transferencia de cuenta a bolsillo")
-                cuenta_origen_id = transaccion_data["id_cuenta_origen"]
-                bolsillo_destino_id = transaccion_data["id_bolsillo_destino"]
-                
-                cuenta_origen_data = self.repositorioCuenta.findById(cuenta_origen_id)
-                bolsillo_destino_data = self.repositorioBolsillo.findById(bolsillo_destino_id)
-                
-                if cuenta_origen_data and bolsillo_destino_data:
-                    cuenta_origen = Cuenta(cuenta_origen_data)
-                    bolsillo_destino = Bolsillo(bolsillo_destino_data)
-                    
-                    # Revertir: sumar a la cuenta origen y restar del bolsillo destino
-                    cuenta_origen.saldo += monto
-                    bolsillo_destino.saldo -= monto
-                    
-                    self.repositorioCuenta.save(cuenta_origen)
-                    self.repositorioBolsillo.save(bolsillo_destino)
-                    print(f"Dinero reintegrado: {monto} de bolsillo {bolsillo_destino_id} a cuenta {cuenta_origen_id}")
-            
-            # Caso 3: Transferencia de bolsillo a cuenta
-            elif "id_bolsillo_origen" in transaccion_data and "id_cuenta_destino" in transaccion_data:
-                print("Reintegrando dinero en transferencia de bolsillo a cuenta")
-                bolsillo_origen_id = transaccion_data["id_bolsillo_origen"]
-                cuenta_destino_id = transaccion_data["id_cuenta_destino"]
-                
-                bolsillo_origen_data = self.repositorioBolsillo.findById(bolsillo_origen_id)
-                cuenta_destino_data = self.repositorioCuenta.findById(cuenta_destino_id)
-                
-                if bolsillo_origen_data and cuenta_destino_data:
-                    bolsillo_origen = Bolsillo(bolsillo_origen_data)
-                    cuenta_destino = Cuenta(cuenta_destino_data)
-                    
-                    # Revertir: sumar al bolsillo origen y restar de la cuenta destino
-                    bolsillo_origen.saldo += monto
-                    cuenta_destino.saldo -= monto
-                    
-                    self.repositorioBolsillo.save(bolsillo_origen)
-                    self.repositorioCuenta.save(cuenta_destino)
-                    print(f"Dinero reintegrado: {monto} de cuenta {cuenta_destino_id} a bolsillo {bolsillo_origen_id}")
-            
-            # Caso 4: Transferencia entre bolsillos
-            elif "id_bolsillo_origen" in transaccion_data and "id_bolsillo_destino" in transaccion_data:
-                print("Reintegrando dinero en transferencia entre bolsillos")
-                bolsillo_origen_id = transaccion_data["id_bolsillo_origen"]
-                bolsillo_destino_id = transaccion_data["id_bolsillo_destino"]
-                
-                bolsillo_origen_data = self.repositorioBolsillo.findById(bolsillo_origen_id)
-                bolsillo_destino_data = self.repositorioBolsillo.findById(bolsillo_destino_id)
-                
-                if bolsillo_origen_data and bolsillo_destino_data:
-                    bolsillo_origen = Bolsillo(bolsillo_origen_data)
-                    bolsillo_destino = Bolsillo(bolsillo_destino_data)
-                    
-                    # Revertir: sumar al bolsillo origen y restar del bolsillo destino
-                    bolsillo_origen.saldo += monto
-                    bolsillo_destino.saldo -= monto
-                    
-                    self.repositorioBolsillo.save(bolsillo_origen)
-                    self.repositorioBolsillo.save(bolsillo_destino)
-                    print(f"Dinero reintegrado: {monto} de bolsillo {bolsillo_destino_id} a bolsillo {bolsillo_origen_id}")
-            
-            # Otros casos (consignaciones, retiros)
+            # Verificar si debemos reintegrar fondos
+            if not reintegrar_fondos:
+                print("No se solicitó reintegrar fondos, solo se marcará la transacción como ANULADA")
             else:
-                print("Tipo de transacción no soportado para reintegro automático")
+                print(f"Reintegrando fondos para la transacción {id} con monto {monto}")
+                
+                # Asegurarnos de que el monto sea numérico
+                if isinstance(monto, str):
+                    monto = float(monto)
+                
+                # Caso 1: Transferencia entre cuentas
+                if "id_cuenta_origen" in transaccion_data and "id_cuenta_destino" in transaccion_data:
+                    print("Reintegrando dinero en transferencia entre cuentas")
+                    cuenta_origen_id = transaccion_data["id_cuenta_origen"]
+                    cuenta_destino_id = transaccion_data["id_cuenta_destino"]
+                    
+                    print(f"Buscando cuenta origen con ID: {cuenta_origen_id}")
+                    cuenta_origen_data = self.repositorioCuenta.findById(cuenta_origen_id)
+                    print(f"Cuenta origen encontrada: {cuenta_origen_data is not None}")
+                    if cuenta_origen_data:
+                        print(f"Datos de cuenta origen: {cuenta_origen_data}")
+                    else:
+                        print(f"ERROR: No se encontró la cuenta origen con ID {cuenta_origen_id}")
+                    
+                    print(f"Buscando cuenta destino con ID: {cuenta_destino_id}")
+                    cuenta_destino_data = self.repositorioCuenta.findById(cuenta_destino_id)
+                    print(f"Cuenta destino encontrada: {cuenta_destino_data is not None}")
+                    if cuenta_destino_data:
+                        print(f"Datos de cuenta destino: {cuenta_destino_data}")
+                    else:
+                        print(f"ERROR: No se encontró la cuenta destino con ID {cuenta_destino_id}")
+                    
+                    if cuenta_origen_data and cuenta_destino_data:
+                        cuenta_origen = Cuenta(cuenta_origen_data)
+                        cuenta_destino = Cuenta(cuenta_destino_data)
+                        
+                        print(f"Saldo actual cuenta origen: {cuenta_origen.saldo}")
+                        print(f"Saldo actual cuenta destino: {cuenta_destino.saldo}")
+                        
+                        # Ensure saldo values are numeric
+                        if isinstance(cuenta_origen.saldo, str):
+                            cuenta_origen.saldo = float(cuenta_origen.saldo)
+                        if isinstance(cuenta_destino.saldo, str):
+                            cuenta_destino.saldo = float(cuenta_destino.saldo)
+                            
+                        # Revertir: sumar a la cuenta origen y restar de la cuenta destino
+                        print(f"Reintegrando {monto} de la cuenta destino a la cuenta origen")
+                        cuenta_origen.saldo = float(cuenta_origen.saldo) + float(monto)
+                        cuenta_destino.saldo = float(cuenta_destino.saldo) - float(monto)
+                        
+                        print(f"Nuevo saldo cuenta origen: {cuenta_origen.saldo}")
+                        print(f"Nuevo saldo cuenta destino: {cuenta_destino.saldo}")
+                        
+                        # Guardar los cambios en la base de datos - con más detalle para depuración
+                        print(f"Guardando cuenta origen con ID {cuenta_origen_id} y nuevo saldo {cuenta_origen.saldo}")
+                        cuenta_origen_actualizada = self.repositorioCuenta.save(cuenta_origen)
+                        print(f"Cuenta origen actualizada: {cuenta_origen_actualizada}")
+                        
+                        print(f"Guardando cuenta destino con ID {cuenta_destino_id} y nuevo saldo {cuenta_destino.saldo}")
+                        cuenta_destino_actualizada = self.repositorioCuenta.save(cuenta_destino)
+                        print(f"Cuenta destino actualizada: {cuenta_destino_actualizada}")
+                        
+                        # Verificar que los cambios se guardaron correctamente
+                        cuenta_origen_verificada = self.repositorioCuenta.findById(cuenta_origen_id)
+                        cuenta_destino_verificada = self.repositorioCuenta.findById(cuenta_destino_id)
+                        
+                        print(f"Verificación - Cuenta origen: {cuenta_origen_verificada}")
+                        print(f"Verificación - Cuenta destino: {cuenta_destino_verificada}")
+                        
+                        print(f"Dinero reintegrado: {monto} de cuenta {cuenta_destino_id} a cuenta {cuenta_origen_id}")
+                    else:
+                        print(f"ERROR: No se encontraron las cuentas para reintegrar fondos")
+                
+                # Caso 2: Transferencia de cuenta a bolsillo
+                elif "id_cuenta_origen" in transaccion_data and "id_bolsillo_destino" in transaccion_data:
+                    print("Reintegrando dinero en transferencia de cuenta a bolsillo")
+                    cuenta_origen_id = transaccion_data["id_cuenta_origen"]
+                    bolsillo_destino_id = transaccion_data["id_bolsillo_destino"]
+                    
+                    print(f"Buscando cuenta origen con ID: {cuenta_origen_id}")
+                    cuenta_origen_data = self.repositorioCuenta.findById(cuenta_origen_id)
+                    print(f"Cuenta origen encontrada: {cuenta_origen_data is not None}")
+                    if cuenta_origen_data:
+                        print(f"Datos de cuenta origen: {cuenta_origen_data}")
+                        if 'saldo' in cuenta_origen_data:
+                            print(f"Saldo actual de cuenta origen: {cuenta_origen_data['saldo']}")
+                        else:
+                            print("ERROR: La cuenta origen no tiene campo 'saldo'")
+                    else:
+                        print(f"ERROR: No se encontró la cuenta origen con ID {cuenta_origen_id}")
+                    
+                    print(f"Buscando bolsillo destino con ID: {bolsillo_destino_id}")
+                    bolsillo_destino_data = self.repositorioBolsillo.findById(bolsillo_destino_id)
+                    print(f"Bolsillo destino encontrado: {bolsillo_destino_data is not None}")
+                    if bolsillo_destino_data:
+                        print(f"Datos de bolsillo destino: {bolsillo_destino_data}")
+                        if 'saldo' in bolsillo_destino_data:
+                            print(f"Saldo actual de bolsillo destino: {bolsillo_destino_data['saldo']}")
+                        else:
+                            print("ERROR: El bolsillo destino no tiene campo 'saldo'")
+                    else:
+                        print(f"ERROR: No se encontró el bolsillo destino con ID {bolsillo_destino_id}")
+                    
+                    if cuenta_origen_data and bolsillo_destino_data:
+                        cuenta_origen = Cuenta(cuenta_origen_data)
+                        bolsillo_destino = Bolsillo(bolsillo_destino_data)
+                        
+                        print(f"Saldo actual cuenta origen: {cuenta_origen.saldo}")
+                        print(f"Saldo actual bolsillo destino: {bolsillo_destino.saldo}")
+                        
+                        # Ensure saldo values are numeric
+                        if isinstance(cuenta_origen.saldo, str):
+                            cuenta_origen.saldo = float(cuenta_origen.saldo)
+                        if isinstance(bolsillo_destino.saldo, str):
+                            bolsillo_destino.saldo = float(bolsillo_destino.saldo)
+                            
+                        # Revertir: sumar a la cuenta origen y restar del bolsillo destino
+                        print(f"Reintegrando {monto} del bolsillo destino a la cuenta origen")
+                        cuenta_origen.saldo = float(cuenta_origen.saldo) + float(monto)
+                        bolsillo_destino.saldo = float(bolsillo_destino.saldo) - float(monto)
+                        
+                        print(f"Nuevo saldo cuenta origen: {cuenta_origen.saldo}")
+                        print(f"Nuevo saldo bolsillo destino: {bolsillo_destino.saldo}")
+                        
+                        # Guardar los cambios en la base de datos - con más detalle para depuración
+                        print(f"Guardando cuenta origen con ID {cuenta_origen_id} y nuevo saldo {cuenta_origen.saldo}")
+                        cuenta_origen_actualizada = self.repositorioCuenta.save(cuenta_origen)
+                        print(f"Cuenta origen actualizada: {cuenta_origen_actualizada}")
+                        
+                        print(f"Guardando bolsillo destino con ID {bolsillo_destino_id} y nuevo saldo {bolsillo_destino.saldo}")
+                        bolsillo_destino_actualizado = self.repositorioBolsillo.save(bolsillo_destino)
+                        print(f"Bolsillo destino actualizado: {bolsillo_destino_actualizado}")
+                        
+                        # Verificar que los cambios se guardaron correctamente
+                        cuenta_origen_verificada = self.repositorioCuenta.findById(cuenta_origen_id)
+                        bolsillo_destino_verificado = self.repositorioBolsillo.findById(bolsillo_destino_id)
+                        
+                        print(f"Verificación - Cuenta origen: {cuenta_origen_verificada}")
+                        print(f"Verificación - Bolsillo destino: {bolsillo_destino_verificado}")
+                        
+                        print(f"Dinero reintegrado: {monto} de bolsillo {bolsillo_destino_id} a cuenta {cuenta_origen_id}")
+                    else:
+                        print(f"ERROR: No se encontraron la cuenta o bolsillo para reintegrar fondos")
+                
+                # Caso 3: Transferencia de bolsillo a cuenta
+                elif "id_bolsillo_origen" in transaccion_data and "id_cuenta_destino" in transaccion_data:
+                    print("Reintegrando dinero en transferencia de bolsillo a cuenta")
+                    bolsillo_origen_id = transaccion_data["id_bolsillo_origen"]
+                    cuenta_destino_id = transaccion_data["id_cuenta_destino"]
+                    
+                    print(f"Buscando bolsillo origen con ID: {bolsillo_origen_id}")
+                    bolsillo_origen_data = self.repositorioBolsillo.findById(bolsillo_origen_id)
+                    print(f"Bolsillo origen encontrado: {bolsillo_origen_data is not None}")
+                    
+                    print(f"Buscando cuenta destino con ID: {cuenta_destino_id}")
+                    cuenta_destino_data = self.repositorioCuenta.findById(cuenta_destino_id)
+                    print(f"Cuenta destino encontrada: {cuenta_destino_data is not None}")
+                    
+                    if bolsillo_origen_data and cuenta_destino_data:
+                        bolsillo_origen = Bolsillo(bolsillo_origen_data)
+                        cuenta_destino = Cuenta(cuenta_destino_data)
+                        
+                        print(f"Saldo actual bolsillo origen: {bolsillo_origen.saldo}")
+                        print(f"Saldo actual cuenta destino: {cuenta_destino.saldo}")
+                        
+                        # Ensure saldo values are numeric
+                        if isinstance(bolsillo_origen.saldo, str):
+                            bolsillo_origen.saldo = float(bolsillo_origen.saldo)
+                        if isinstance(cuenta_destino.saldo, str):
+                            cuenta_destino.saldo = float(cuenta_destino.saldo)
+                            
+                        # Revertir: sumar al bolsillo origen y restar de la cuenta destino
+                        print(f"Reintegrando {monto} de la cuenta destino al bolsillo origen")
+                        bolsillo_origen.saldo = float(bolsillo_origen.saldo) + float(monto)
+                        cuenta_destino.saldo = float(cuenta_destino.saldo) - float(monto)
+                        
+                        print(f"Nuevo saldo bolsillo origen: {bolsillo_origen.saldo}")
+                        print(f"Nuevo saldo cuenta destino: {cuenta_destino.saldo}")
+                        
+                        # Guardar los cambios en la base de datos - con más detalle para depuración
+                        print(f"Guardando bolsillo origen con ID {bolsillo_origen_id} y nuevo saldo {bolsillo_origen.saldo}")
+                        bolsillo_origen_actualizado = self.repositorioBolsillo.save(bolsillo_origen)
+                        print(f"Bolsillo origen actualizado: {bolsillo_origen_actualizado}")
+                        
+                        print(f"Guardando cuenta destino con ID {cuenta_destino_id} y nuevo saldo {cuenta_destino.saldo}")
+                        cuenta_destino_actualizada = self.repositorioCuenta.save(cuenta_destino)
+                        print(f"Cuenta destino actualizada: {cuenta_destino_actualizada}")
+                        
+                        # Verificar que los cambios se guardaron correctamente
+                        bolsillo_origen_verificado = self.repositorioBolsillo.findById(bolsillo_origen_id)
+                        cuenta_destino_verificada = self.repositorioCuenta.findById(cuenta_destino_id)
+                        
+                        print(f"Verificación - Bolsillo origen: {bolsillo_origen_verificado}")
+                        print(f"Verificación - Cuenta destino: {cuenta_destino_verificada}")
+                        
+                        print(f"Dinero reintegrado: {monto} de cuenta {cuenta_destino_id} a bolsillo {bolsillo_origen_id}")
+                    else:
+                        print(f"ERROR: No se encontraron el bolsillo o la cuenta para reintegrar fondos")
+                
+                # Caso 4: Transferencia entre bolsillos
+                elif "id_bolsillo_origen" in transaccion_data and "id_bolsillo_destino" in transaccion_data:
+                    print("Reintegrando dinero en transferencia entre bolsillos")
+                    bolsillo_origen_id = transaccion_data["id_bolsillo_origen"]
+                    bolsillo_destino_id = transaccion_data["id_bolsillo_destino"]
+                    
+                    print(f"Buscando bolsillo origen con ID: {bolsillo_origen_id}")
+                    bolsillo_origen_data = self.repositorioBolsillo.findById(bolsillo_origen_id)
+                    print(f"Bolsillo origen encontrado: {bolsillo_origen_data is not None}")
+                    
+                    print(f"Buscando bolsillo destino con ID: {bolsillo_destino_id}")
+                    bolsillo_destino_data = self.repositorioBolsillo.findById(bolsillo_destino_id)
+                    print(f"Bolsillo destino encontrado: {bolsillo_destino_data is not None}")
+                    
+                    if bolsillo_origen_data and bolsillo_destino_data:
+                        bolsillo_origen = Bolsillo(bolsillo_origen_data)
+                        bolsillo_destino = Bolsillo(bolsillo_destino_data)
+                        
+                        print(f"Saldo actual bolsillo origen: {bolsillo_origen.saldo}")
+                        print(f"Saldo actual bolsillo destino: {bolsillo_destino.saldo}")
+                        
+                        # Ensure saldo values are numeric
+                        if isinstance(bolsillo_origen.saldo, str):
+                            bolsillo_origen.saldo = float(bolsillo_origen.saldo)
+                        if isinstance(bolsillo_destino.saldo, str):
+                            bolsillo_destino.saldo = float(bolsillo_destino.saldo)
+                            
+                        # Revertir: sumar al bolsillo origen y restar del bolsillo destino
+                        print(f"Reintegrando {monto} del bolsillo destino al bolsillo origen")
+                        bolsillo_origen.saldo = float(bolsillo_origen.saldo) + float(monto)
+                        bolsillo_destino.saldo = float(bolsillo_destino.saldo) - float(monto)
+                        
+                        print(f"Nuevo saldo bolsillo origen: {bolsillo_origen.saldo}")
+                        print(f"Nuevo saldo bolsillo destino: {bolsillo_destino.saldo}")
+                        
+                        # Guardar los cambios en la base de datos - con más detalle para depuración
+                        print(f"Guardando bolsillo origen con ID {bolsillo_origen_id} y nuevo saldo {bolsillo_origen.saldo}")
+                        bolsillo_origen_actualizado = self.repositorioBolsillo.save(bolsillo_origen)
+                        print(f"Bolsillo origen actualizado: {bolsillo_origen_actualizado}")
+                        
+                        print(f"Guardando bolsillo destino con ID {bolsillo_destino_id} y nuevo saldo {bolsillo_destino.saldo}")
+                        bolsillo_destino_actualizado = self.repositorioBolsillo.save(bolsillo_destino)
+                        print(f"Bolsillo destino actualizado: {bolsillo_destino_actualizado}")
+                        
+                        # Verificar que los cambios se guardaron correctamente
+                        bolsillo_origen_verificado = self.repositorioBolsillo.findById(bolsillo_origen_id)
+                        bolsillo_destino_verificado = self.repositorioBolsillo.findById(bolsillo_destino_id)
+                        
+                        print(f"Verificación - Bolsillo origen: {bolsillo_origen_verificado}")
+                        print(f"Verificación - Bolsillo destino: {bolsillo_destino_verificado}")
+                        
+                        print(f"Dinero reintegrado: {monto} de bolsillo {bolsillo_destino_id} a bolsillo {bolsillo_origen_id}")
+                    else:
+                        print(f"ERROR: No se encontraron los bolsillos para reintegrar fondos")
+                
+                # Otros casos (consignaciones, retiros)
+                else:
+                    print("Tipo de transacción no soportado para reintegro automático")
+                    print(f"Datos de la transacción: {transaccion_data}")
+                    print("No se pudo reintegrar el dinero automáticamente")
             
-            # Primero cambiar el estado a ANULADA
+            # Cambiar el estado a ANULADA
             transaccion = Transaccion(transaccion_data)
             transaccion.estado = "ANULADA"
             resultado_actualizar = self.repositorioTransaccion.save(transaccion)
             print(f"Transacción con ID {id} marcada como ANULADA")
-            
-            # Esperar un breve momento antes de eliminar la transacción
-            # En un entorno de producción, esto podría hacerse con un job programado
-            # Aquí simplemente devolvemos la transacción actualizada
             
             # Retornar mensaje de éxito junto con los datos de la transacción anulada
             return {
@@ -860,6 +1072,7 @@ class TransaccionServicio:
                 "transaccion": resultado_actualizar,
                 "anulada": True
             }
+            
         except Exception as e:
             print(f"Error al anular la transacción: {e}")
             return {"error": f"Error al anular la transacción: {str(e)}"}, 500

@@ -238,6 +238,7 @@ export class TransactionPageComponent
   abrirCrear(): void {
     this.isLoading = true;
 
+    // Cargar los datos necesarios para el diálogo usando Promise.all
     Promise.all([
       firstValueFrom(this.movementTypeService.getTiposMovimiento()),
       firstValueFrom(this.tipoTransaccionService.getTiposTransaccion()),
@@ -262,39 +263,21 @@ export class TransactionPageComponent
           disableClose: true,
         });
 
-        const dialogSub = dialogRef.afterClosed().subscribe((data) => {
-          if (!data) return;
-
-          // ✅ Adjuntar el id_usuario antes de enviar
-          const user = JSON.parse(localStorage.getItem('user')!);
-          if (!user?.id) {
-            console.warn('⚠️ No hay ID de usuario autenticado');
-            return;
-          }
-          data.id_usuario = user.id;
-
-          const tipo = tiposMovimiento.find(
-            (t) =>
-              t.id === data.id_tipo_movimiento ||
-              t._id === data.id_tipo_movimiento
-          );
-          const origen = tipo?.codigo_origen?.toUpperCase();
-          const destino = tipo?.codigo_destino?.toUpperCase();
-
-          // Adaptando los nombres de campos al formato backend
-          const backendData = {
-            id_cuenta_origen: data.id_cuenta_origen,
-            id_cuenta_destino: data.id_cuenta_destino,
-            id_bolsillo_origen: data.id_bolsillo_origen,
-            id_bolsillo_destino: data.id_bolsillo_destino,
-            id_tipo_movimiento: data.id_tipo_movimiento,
-            id_tipo_transaccion: data.id_tipo_transaccion,
-            monto: data.monto,
-            descripcion: data.descripcion,
-            uuid_transaccion: data.uuid_transaccion,
-          };
-
-          this.ejecutarTransaccion(origen, destino, backendData);
+        const dialogSub = dialogRef.afterClosed().subscribe((result) => {
+          if (!result) return;
+          
+          console.log('Resultado del diálogo:', result);
+          
+          // La transacción ya fue creada en el diálogo, solo necesitamos actualizar los datos
+          this.mostrarNotificacion('✅ Transacción registrada correctamente');
+          
+          // Recargar la lista de transacciones y el resumen del usuario
+          // Añadimos un pequeño retraso para asegurar que el backend ha procesado la transacción
+          setTimeout(() => {
+            this.cargarTransacciones();
+            this.cargarResumenUsuario();
+            console.log('🔄 Actualizando datos después de crear transacción');
+          }, 1000);
         });
 
         this.subscriptions.add(dialogSub);
@@ -321,52 +304,60 @@ export class TransactionPageComponent
     
     // Simplificamos la lógica para usar directamente el endpoint de crear transacción
     // que manejará los diferentes tipos de transacciones en el backend
-    backendData.tipo_origen = origen;
-    backendData.tipo_destino = destino;
-    
-    // Preparamos los datos para la transacción
-    const transaccionData: Partial<Transaccion> = {
-      ...backendData,
-      fecha_transaccion: new Date(),
-      estado: 'PENDIENTE' // Las transacciones comienzan como pendientes
-    };
-    
-    // Usamos el método genérico para crear transacciones
-    request$ = this.transaccionService.crearTransaccion(transaccionData as Transaccion);
-
-    if (request$) {
+    if (origen && destino) {
+      backendData.tipo_origen = origen;
+      backendData.tipo_destino = destino;
+      
+      // Preparamos los datos para la transacción
+      const transaccionData: Partial<Transaccion> = {
+        ...backendData,
+        fecha_transaccion: new Date(),
+        estado: 'PENDIENTE' // Las transacciones comienzan como pendientes
+      };
+      
       this.isLoading = true;
-      const transaccionSub = request$
-        .pipe(
-          finalize(() => (this.isLoading = false)),
-          catchError((error) => {
-            console.error('Error en la transacción:', error);
-            this.mostrarNotificacion(
-              `❌ Error: ${
-                error.error?.detail || 'No se pudo completar la transacción'
-              }`,
-              5000
-            );
-            throw error;
-          })
-        )
-        .subscribe({
-          next: (response) => {
-            console.log('Transacción realizada:', response);
-            // Notificación de éxito
-            this.mostrarNotificacion('✅ Transacción realizada con éxito');
-            // Recargar datos
-            setTimeout(() => {
-              this.cargarTransacciones();
-              this.cargarResumenUsuario();
-            }, 500);
-          },
-        });
+      // Usamos el método genérico para crear transacciones
+      request$ = this.transaccionService.crearTransaccion(transaccionData as Transaccion);
 
-      this.subscriptions.add(transaccionSub);
+      if (request$) {
+        const transaccionSub = request$
+          .pipe(
+            finalize(() => (this.isLoading = false)),
+            catchError((error) => {
+              console.error('Error en la transacción:', error);
+              this.mostrarNotificacion(
+                `❌ Error: ${
+                  error.error?.detail || 'No se pudo completar la transacción'
+                }`,
+                5000
+              );
+              throw error;
+            })
+          )
+          .subscribe({
+            next: (response) => {
+              console.log('Transacción realizada:', response);
+              // Notificación de éxito
+              this.mostrarNotificacion('✅ Transacción realizada con éxito');
+              // Recargar datos con un pequeño retraso para asegurar que el backend ha procesado la transacción
+              setTimeout(() => {
+                this.cargarTransacciones();
+                this.cargarResumenUsuario();
+              }, 1000);
+            },
+          });
+
+        this.subscriptions.add(transaccionSub);
+      } else {
+        this.isLoading = false;
+        this.mostrarNotificacion(
+          '❌ No se pudo determinar el tipo de transacción.',
+          5000
+        );
+      }
     } else {
       this.mostrarNotificacion(
-        '❌ No se pudo determinar el tipo de transacción.',
+        '❌ Faltan datos para la transacción: origen o destino no especificados.',
         5000
       );
     }
@@ -379,25 +370,30 @@ export class TransactionPageComponent
     const rawUser = localStorage.getItem('user');
     const user = rawUser ? JSON.parse(rawUser) : null;
 
-    if (!user?.id) {
-      this.mostrarNotificacion('⚠️ No hay usuario autenticado', 5000);
+    if (!user || !user.id) {
+      this.mostrarNotificacion('No hay usuario autenticado', 5000);
       return;
     }
 
-    const esAdmin = user.rol === 'ADMIN';
+    const esAdmin = user?.rol?.toUpperCase() === 'ADMIN';
 
     this.isLoading = true;
+    console.log('🔄 Cargando resumen financiero del usuario...');
 
+    // Usamos forkJoin para obtener cuentas y bolsillos en paralelo
     const resumenSub = forkJoin({
       cuentas: this.cuentasService.getCuentas(),
       bolsillos: this.bolsillosService.getBolsillos(),
     })
       .pipe(
-        finalize(() => (this.isLoading = false)),
+        finalize(() => {
+          this.isLoading = false;
+          console.log('✅ Resumen financiero cargado');
+        }),
         catchError((error) => {
-          console.error('Error al cargar resumen:', error);
+          console.error('Error al cargar resumen financiero:', error);
           this.mostrarNotificacion(
-            '❌ Error al cargar el resumen financiero',
+            '❌ Error al cargar datos financieros',
             5000
           );
           throw error;
@@ -405,37 +401,46 @@ export class TransactionPageComponent
       )
       .subscribe({
         next: ({ cuentas, bolsillos }) => {
-          const cuentasAsignadas = esAdmin
-            ? cuentas
-            : cuentas.filter((c) => c.usuario_id === user.id);
+          console.log('Cuentas recibidas:', cuentas);
+          console.log('Bolsillos recibidos:', bolsillos);
+          
+          // Filtrar cuentas y bolsillos por usuario si no es admin
+          if (!esAdmin) {
+            cuentas = cuentas.filter(
+              (c) => c.usuario_id === user.id || (c as any).id_usuario === user.id
+            );
 
-            const bolsillosAsignados = esAdmin
-  ? bolsillos // ✅ Mostrar todos los bolsillos si es administrador
-  : bolsillos.filter((b) =>
-      cuentasAsignadas.some(
-        (c) => c.id === b.id_cuenta || c._id === b.id_cuenta
-      )
-    );
+            // Filtrar bolsillos por usuario o por cuentas del usuario
+            const idsCuentasUsuario = cuentas.map((c) => c.id || c._id);
+            bolsillos = bolsillos.filter(
+              (b) =>
+                b.usuario_id === user.id ||
+                idsCuentasUsuario.includes(b.id_cuenta)
+            );
+            
+            console.log('Cuentas filtradas:', cuentas);
+            console.log('Bolsillos filtrados:', bolsillos);
+          }
 
-    
-          const totalCuentas = cuentasAsignadas.reduce(
-            (acc, c) => acc + (c.saldo || 0),
+          // Calcular totales
+          const totalCuentas = cuentas.reduce(
+            (acc, c) => acc + (typeof c.saldo === 'string' ? parseFloat(c.saldo) || 0 : (c.saldo || 0)),
+            0
+          );
+          const totalBolsillos = bolsillos.reduce(
+            (acc, b) => acc + (typeof b.saldo === 'string' ? parseFloat(b.saldo) || 0 : (b.saldo || 0)),
             0
           );
 
-          const totalBolsillos = bolsillosAsignados.reduce(
-            (acc, b) => acc + (b.saldo || 0),
-            0
-          );
+          console.log('Total cuentas:', totalCuentas);
+          console.log('Total bolsillos:', totalBolsillos);
 
           this.usuarioResumen = {
-            nombre: esAdmin
-              ? 'Administrador'
-              : `${user.nombre} ${user.apellido || ''}`,
-            totalCuentas,
-            totalBolsillos,
-            cuentas: cuentasAsignadas,
-            bolsillos: bolsillosAsignados,
+            nombre: esAdmin ? 'Administrador' : user.nombre,
+            totalCuentas: totalCuentas,
+            totalBolsillos: totalBolsillos,
+            cuentas,
+            bolsillos,
           };
         },
       });
@@ -443,29 +448,44 @@ export class TransactionPageComponent
     this.subscriptions.add(resumenSub);
   }
 
+  // Variable para controlar si ya hay una carga en progreso
+  private cargaEnProgreso = false;
+  
   /**
    * Carga las transacciones del usuario
    */
   cargarTransacciones(): void {
+    // Evitar múltiples solicitudes simultáneas
+    if (this.cargaEnProgreso) {
+      console.log('Ya hay una carga de transacciones en progreso. Solicitud ignorada.');
+      return;
+    }
+    
     const rawUser = localStorage.getItem('user');
     const user = rawUser ? JSON.parse(rawUser) : null;
 
-    if (!user?.id) {
-      console.warn('⚠️ No se pudo obtener el ID de usuario desde localStorage');
-      this.mostrarNotificacion('⚠️ No hay usuario autenticado', 5000);
+    if (!user || !user.id) {
+      this.mostrarNotificacion('No hay usuario autenticado', 5000);
       return;
     }
 
-    const esAdmin = user.rol === 'ADMIN'; // o el campo real que uses para el rol
+    const esAdmin = user?.rol?.toUpperCase() === 'ADMIN';
 
     this.isLoading = true;
+    this.cargaEnProgreso = true;
+    console.log('🔄 Cargando transacciones del usuario...');
+
     const request$ = esAdmin
       ? this.transaccionService.getTransacciones()
       : this.transaccionService.getTransaccionesPorUsuario(user.id);
 
     const transaccionesSub = request$
       .pipe(
-        finalize(() => (this.isLoading = false)),
+        finalize(() => {
+          this.isLoading = false;
+          this.cargaEnProgreso = false;
+          console.log('✅ Transacciones cargadas');
+        }),
         catchError((error) => {
           console.error('Error al cargar transacciones:', error);
           this.mostrarNotificacion(
@@ -477,9 +497,49 @@ export class TransactionPageComponent
       )
       .subscribe({
         next: (data) => {
-          this.transacciones = data;
-          this.dataSource = new MatTableDataSource<Transaccion>(data);
-          if (this.paginator) this.dataSource.paginator = this.paginator;
+          console.group('🔍 Depuración de carga de transacciones');
+          console.log('💾 Transacciones recibidas:', data);
+          
+          // Mostrar detalles de cada transacción para depuración
+          data.forEach((t, index) => {
+            console.log(`Transacción ${index + 1}:`, {
+              id: t.id || t._id,
+              tipo: t.id_tipo_transaccion,
+              estado: t.estado,
+              origen: t.id_bolsillo_origen ? 'BOLSILLO' : (t.id_cuenta_origen ? 'CUENTA' : 'BANCO'),
+              destino: t.id_bolsillo_destino ? 'BOLSILLO' : (t.id_cuenta_destino ? 'CUENTA' : 'BANCO'),
+              monto: t.monto,
+              fecha: t.fecha_transaccion
+            });
+          });
+        
+          // Filtrar transacciones ELIMINADAS y ANULADAS
+          const transaccionesFiltradas = data.filter(t => {
+            // Excluir transacciones con estado ELIMINADA o ANULADA
+            const incluir = t.estado !== 'ELIMINADA' && t.estado !== 'ANULADA';
+            if (!incluir) {
+              console.log(`Excluyendo transacción ${t.id || t._id} con estado ${t.estado}`);
+            }
+            return incluir;
+          });
+          
+          console.log(`🔎 Filtrando transacciones: ${data.length} totales, ${transaccionesFiltradas.length} activas`);
+          console.groupEnd();
+        
+        // Ordenar transacciones por fecha (más recientes primero)
+        this.transacciones = transaccionesFiltradas.sort((a, b) => {
+          const fechaA = new Date(a.fecha_transaccion).getTime();
+          const fechaB = new Date(b.fecha_transaccion).getTime();
+          return fechaB - fechaA;
+        });
+          
+          // Actualizar el dataSource
+          this.dataSource.data = this.transacciones;
+          
+          // Configurar el paginador
+          if (this.paginator) {
+            this.dataSource.paginator = this.paginator;
+          }
         },
       });
 
@@ -495,45 +555,94 @@ export class TransactionPageComponent
 
     if (confirmacion && id) {
       this.isLoading = true;
+      console.log('🔄 Anulando transacción:', id);
+      console.log('Tipo de transacción:', transaccion.tipo_transaccion?.nombre);
+      console.log('Monto:', transaccion.monto);
+      console.log('Origen:', transaccion.id_cuenta_origen ? 'Cuenta' : 'Bolsillo');
+      console.log('Destino:', transaccion.id_cuenta_destino ? 'Cuenta' : (transaccion.id_bolsillo_destino ? 'Bolsillo' : 'Externo'));
+      
+      // Primero, actualizar el estado de la transacción a ANULADA en la lista local
+      // para dar feedback inmediato al usuario
+      this.transacciones = this.transacciones.map(t => {
+        const transId = t.id || t._id;
+        if (transId === id) {
+          return { ...t, estado: 'ANULADA' };
+        }
+        return t;
+      });
+      
+      // Actualizar la tabla para mostrar la transacción como ANULADA
+      this.dataSource.data = this.transacciones;
+      
+      // Forzamos una recarga inmediata para asegurarnos de tener los datos más recientes
+      this.cargarResumenUsuario();
+      
+      // Llamamos al servicio para anular la transacción en el backend
       const anularSub = this.transaccionService
         .anularTransaccion(id)
         .pipe(
-          finalize(() => (this.isLoading = false)),
+          finalize(() => {
+            this.isLoading = false;
+            console.log('✅ Proceso de anulación completado');
+          }),
           catchError((error) => {
             console.error('Error al anular transacción:', error);
             this.mostrarNotificacion('❌ Error al anular la transacción', 5000);
+            
+            // Si hay error, revertimos el cambio de estado en la lista local
+            this.transacciones = this.transacciones.map(t => {
+              const transId = t.id || t._id;
+              if (transId === id) {
+                return { ...t, estado: transaccion.estado || 'PENDIENTE' };
+              }
+              return t;
+            });
+            this.dataSource.data = this.transacciones;
+            
             throw error;
           })
         )
         .subscribe({
           next: (response) => {
-            // Mostrar notificación de éxito
-            this.mostrarNotificacion('✅ Transacción anulada correctamente. El dinero ha sido reintegrado a la cuenta de origen.');
+            console.log('Respuesta de anulación:', response);
             
-            // Primero, actualizar el estado de la transacción a ANULADA en la lista local
-            this.transacciones = this.transacciones.map(t => {
+            // Mostrar notificación de éxito
+            this.mostrarNotificacion('✅ Transacción anulada correctamente. El dinero ha sido reintegrado.');
+            
+            // Eliminamos inmediatamente la transacción de la lista local
+            // para dar feedback inmediato al usuario
+            this.transacciones = this.transacciones.filter(t => {
               const transId = t.id || t._id;
-              if (transId === id) {
-                return { ...t, estado: 'ANULADA' };
-              }
-              return t;
+              return transId !== id;
             });
             
-            // Actualizar la tabla para mostrar la transacción como ANULADA
+            // Actualizamos el dataSource
             this.dataSource.data = this.transacciones;
             
-            // Después de 1 minuto, eliminar la transacción de la lista
-            setTimeout(() => {
-              this.transacciones = this.transacciones.filter(t => {
-                const transId = t.id || t._id;
-                return transId !== id;
-              });
-              this.dataSource.data = this.transacciones;
-              this.mostrarNotificacion('Transacción eliminada de la lista', 2000);
-            }, 60000); // 60000 ms = 1 minuto
+            // Notificamos al usuario sobre la anulación y reintegro
+            this.mostrarNotificacion('Transacción anulada y dinero reintegrado correctamente', 2000);
             
-            // Actualizamos el resumen financiero
-            this.cargarResumenUsuario();
+            // Ahora intentamos eliminar permanentemente la transacción de la base de datos
+            // usando el nuevo endpoint actualizado
+            setTimeout(() => {
+              console.log(`Intentando eliminar permanentemente la transacción con ID: ${id}`);
+              this.transaccionService.eliminarTransaccionPermanente(id).subscribe({
+                next: (response) => {
+                  console.log('Transacción eliminada permanentemente:', response);
+                  this.mostrarNotificacion('Transacción eliminada permanentemente de la base de datos', 2000);
+                },
+                error: (err) => {
+                  console.error('Error al eliminar permanentemente la transacción:', err);
+                  console.log('La transacción sigue en la base de datos marcada como ANULADA');
+                  // No mostramos error al usuario ya que la transacción ya fue anulada y el dinero reintegrado
+                }
+              });
+            }, 1000);
+            
+            // Actualizamos el resumen del usuario para mostrar los saldos actualizados
+            setTimeout(() => {
+              this.cargarResumenUsuario();
+            }, 1500);
           },
         });
 
@@ -590,10 +699,19 @@ export class TransactionPageComponent
    * Obtiene el nombre de origen para mostrar en la tabla
    */
   obtenerNombreOrigen(trans: Transaccion): string {
+    // Usar el objeto si está disponible
     if (trans.cuenta_origen)
       return `Cuenta: ${trans.cuenta_origen.numero_cuenta}`;
     if (trans.bolsillo_origen)
       return `Bolsillo: ${trans.bolsillo_origen.nombre}`;
+    
+    // Si no hay objeto pero hay ID, usar el ID
+    if (trans.id_cuenta_origen)
+      return `Cuenta: ${trans.id_cuenta_origen}`;
+    if (trans.id_bolsillo_origen)
+      return `Bolsillo: ${trans.id_bolsillo_origen}`;
+    
+    // Si no hay origen, es una consignación desde el banco
     return 'Banco';
   }
 
@@ -601,10 +719,19 @@ export class TransactionPageComponent
    * Obtiene el nombre de destino para mostrar en la tabla
    */
   obtenerNombreDestino(trans: Transaccion): string {
+    // Usar el objeto si está disponible
     if (trans.cuenta_destino)
       return `Cuenta: ${trans.cuenta_destino.numero_cuenta}`;
     if (trans.bolsillo_destino)
       return `Bolsillo: ${trans.bolsillo_destino.nombre}`;
+    
+    // Si no hay objeto pero hay ID, usar el ID
+    if (trans.id_cuenta_destino)
+      return `Cuenta: ${trans.id_cuenta_destino}`;
+    if (trans.id_bolsillo_destino)
+      return `Bolsillo: ${trans.id_bolsillo_destino}`;
+    
+    // Si no hay destino, es un retiro al banco
     return 'Banco';
   }
 }

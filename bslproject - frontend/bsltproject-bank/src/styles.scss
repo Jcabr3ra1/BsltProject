@@ -42,6 +42,19 @@
 }
 
 /* =======================================================================
+   ESTILOS GLOBALES
+======================================================================= */
+
+/* Eliminar scroll horizontal en diálogos de Material */
+.mat-mdc-dialog-surface {
+  overflow-x: hidden !important;
+}
+
+.mdc-dialog__surface {
+  overflow-x: hidden !important;
+}
+
+/* =======================================================================
    ESTILOS BASE
 ======================================================================= */
 html, body {
@@ -111,10 +124,31 @@ app-navbar, app-sidebar, app-footer {
 .mat-drawer-side {
   border-right: none !important;
   overflow: hidden !important;
+  
+  .mat-drawer-inner-container {
+    overflow: auto !important;
+  }
+  
+  .mat-drawer.mat-sidenav .mat-drawer-inner-container {
+    overflow: hidden !important;
+    
+    app-sidebar {
+      height: 100%;
+      overflow: hidden !important;
+      
+      .sidebar-container {
+        height: 100%;
+        overflow: hidden !important;
+        
+        .sidebar-content {
+          overflow-y: auto !important;
+        }
+      }
+    }
+  }
 }
 
 .mat-drawer-inner-container {
-  overflow: hidden !important;
   background-color: transparent !important;
   display: flex;
   flex-direction: column;
@@ -131,10 +165,9 @@ app-navbar, app-sidebar, app-footer {
   }
 }
 
-// Hide scrollbars but keep functionality
+// Hide scrollbars but keep functionality (excepto para sidebar-content)
 .mat-drawer-inner-container,
-.layout-content,
-.sidebar-content {
+.layout-content {
   &::-webkit-scrollbar {
     display: none !important;
     width: 0 !important;
@@ -143,6 +176,33 @@ app-navbar, app-sidebar, app-footer {
   
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
+}
+
+// Permitir scroll en el sidebar pero ocultar el scrollbar
+.sidebar-content {
+  overflow-y: auto !important;
+  
+  &::-webkit-scrollbar {
+    width: 0 !important;
+    display: none !important;
+  }
+  
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  
+  // Eliminar bordes y separadores
+  a, div, span {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+  }
+  
+  // Corregir el problema de la línea divisoria
+  .mat-list-item, .mat-list-item-content {
+    border: none !important;
+    border-bottom: none !important;
+  }
 }
 
 .sidebar-hidden {
