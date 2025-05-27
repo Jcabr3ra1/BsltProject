@@ -357,7 +357,7 @@ $border-color: rgba(126, 34, 206, 0.4);
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      background: linear-gradient(135deg, desaturate($primary-purple, 30%), desaturate($primary-light, 30%));
+      background: linear-gradient(135deg, color.adjust($primary-purple, $saturation: -30%), color.adjust($primary-light, $saturation: -30%));
       box-shadow: none;
       transform: none;
       

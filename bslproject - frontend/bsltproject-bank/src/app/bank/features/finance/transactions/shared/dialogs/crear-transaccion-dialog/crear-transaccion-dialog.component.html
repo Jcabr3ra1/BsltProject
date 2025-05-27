@@ -196,7 +196,8 @@
                 </div>
                 
                 <div class="category-content">
-                  <!-- Campos de bolsillos -->
+                  <!-- Campos de bolsillos y cuentas en orden lógico: primero origen, después destino -->
+                  <!-- Campos de origen (bolsillos y cuentas) -->
                   <div class="fields-group centered-fields">
                     @if (mostrarCampo('bolsillo_origen')) {
                       <div class="form-field animated-field">
@@ -217,7 +218,23 @@
                         }
                       </div>
                     }
-
+                    
+                    @if (mostrarCampo('cuenta_origen')) {
+                      <div class="form-field animated-field">
+                        <label for="numero_cuenta_origen">Cuenta origen<span class="required">*</span></label>
+                        <div class="input-with-icon account-input">
+                          <input id="numero_cuenta_origen" type="text" formControlName="numero_cuenta_origen" placeholder="Ej: 1234567890" />
+                          <mat-icon>account_balance</mat-icon>
+                        </div>
+                        @if (form.get('numero_cuenta_origen')?.touched && form.get('numero_cuenta_origen')?.hasError('required')) {
+                          <div class="error-message">El número de cuenta origen es obligatorio</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                  
+                  <!-- Campos de destino (bolsillos y cuentas) -->
+                  <div class="fields-group centered-fields">
                     @if (mostrarCampo('bolsillo_destino')) {
                       <div class="form-field animated-field">
                         <label for="nombre_bolsillo_destino">Bolsillo destino<span class="required">*</span></label>
@@ -237,23 +254,7 @@
                         }
                       </div>
                     }
-                  </div>
-                  
-                  <!-- Campos de cuentas -->
-                  <div class="fields-group centered-fields">
-                    @if (mostrarCampo('cuenta_origen')) {
-                      <div class="form-field animated-field">
-                        <label for="numero_cuenta_origen">Cuenta origen<span class="required">*</span></label>
-                        <div class="input-with-icon account-input">
-                          <input id="numero_cuenta_origen" type="text" formControlName="numero_cuenta_origen" placeholder="Ej: 1234567890" />
-                          <mat-icon>account_balance</mat-icon>
-                        </div>
-                        @if (form.get('numero_cuenta_origen')?.touched && form.get('numero_cuenta_origen')?.hasError('required')) {
-                          <div class="error-message">El número de cuenta origen es obligatorio</div>
-                        }
-                      </div>
-                    }
-
+                    
                     @if (mostrarCampo('cuenta_destino')) {
                       <div class="form-field animated-field">
                         <label for="numero_cuenta_destino">Cuenta destino<span class="required">*</span></label>

@@ -413,6 +413,9 @@ $hover-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     margin-bottom: 2rem;
     position: relative;
     z-index: 2;
+    display: flex;
+    justify-content: center;
+    width: 100%;
     
     &::before {
       content: '';
@@ -432,7 +435,6 @@ $hover-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     mat-form-field {
       width: 100%;
       max-width: 550px;
-      margin: 0 auto;
       display: block;
       
       ::ng-deep {
