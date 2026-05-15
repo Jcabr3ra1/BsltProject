@@ -1,0 +1,112 @@
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">edit</mat-icon>
+    <h2 mat-dialog-title>Editar cuenta</h2>
+  </div>
+
+  <form [formGroup]="form" class="formulario-cuenta">
+    <!-- Tipo de cuenta -->
+    <div class="form-field">
+      <label for="tipo_cuenta">Tipo de cuenta<span class="required">*</span></label>
+      <div class="select-with-icon">
+        <select id="tipo_cuenta" formControlName="tipo_cuenta" [disabled]="!esAdmin">
+          <option value="CUENTA_AHORRO">Cuenta de ahorro</option>
+          <option value="CUENTA_CORRIENTE">Cuenta corriente</option>
+          <option value="CUENTA_NOMINA">Cuenta nómina</option>
+          <option value="OTRO">Otro</option>
+        </select>
+        <mat-icon>credit_card</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('tipo_cuenta')?.touched && form.get('tipo_cuenta')?.hasError('required')">
+        El tipo de cuenta es obligatorio
+      </div>
+    </div>
+
+    <!-- Número de cuenta -->
+    <div class="form-field">
+      <label for="numero_cuenta">Número de cuenta<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="numero_cuenta" type="text" formControlName="numero_cuenta" placeholder="Ej. 1234-5678-9012-3456" [disabled]="!esAdmin">
+        <mat-icon>numbers</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('numero_cuenta')?.touched && form.get('numero_cuenta')?.hasError('required')">
+        El número de cuenta es obligatorio
+      </div>
+      <div class="error-message" *ngIf="form.get('numero_cuenta')?.touched && form.get('numero_cuenta')?.hasError('pattern')">
+        El número de cuenta solo debe contener números y guiones
+      </div>
+    </div>
+
+    <!-- Saldo -->
+    <div class="form-field">
+      <label for="saldo">Saldo<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="saldo" type="number" formControlName="saldo" placeholder="0.00" [disabled]="!esAdmin">
+        <mat-icon>attach_money</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('saldo')?.touched && form.get('saldo')?.hasError('required')">
+        El saldo es obligatorio
+      </div>
+      <div class="error-message" *ngIf="form.get('saldo')?.touched && form.get('saldo')?.hasError('min')">
+        El saldo no puede ser negativo
+      </div>
+    </div>
+
+    <!-- Meta de ahorro -->
+    <div class="form-field">
+      <label for="meta_ahorro">Meta de ahorro</label>
+      <div class="input-with-icon">
+        <input id="meta_ahorro" type="number" formControlName="meta_ahorro" placeholder="0.00">
+        <mat-icon>flag</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('meta_ahorro')?.touched && form.get('meta_ahorro')?.hasError('min')">
+        La meta no puede ser negativa
+      </div>
+    </div>
+
+    <!-- Color con vista previa -->
+    <div class="form-field">
+      <label for="color">Color<span class="required">*</span></label>
+      <div class="color-field-container">
+        <div class="input-with-icon color-input">
+          <input id="color-display" type="text" [value]="form.get('color')?.value" readonly>
+          <mat-icon>palette</mat-icon>
+        </div>
+        <div class="color-preview" [style.background-color]="form.get('color')?.value">
+          <input type="color" id="color" formControlName="color" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Colores predefinidos -->
+    <div class="predefined-colors">
+      <div class="colors-label">Colores sugeridos:</div>
+      <div class="colors-grid">
+        <div *ngFor="let color of coloresPredefinidos"
+             class="color-chip"
+             [style.background-color]="color"
+             (click)="seleccionarColorPredefinido(color)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Información -->
+    <div class="info-container">
+      <mat-icon>info</mat-icon>
+      <p>Estás editando la cuenta <strong>{{ cuenta.numero_cuenta }}</strong>. Los cambios se reflejarán en todos los movimientos asociados a esta cuenta.</p>
+    </div>
+
+    <!-- Botones -->
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid || !form.dirty" (click)="guardar()">
+        <div class="spinner" *ngIf="cargando"></div>
+        <mat-icon *ngIf="!cargando">save</mat-icon>
+        Actualizar
+      </button>
+    </div>
+  </form>
+</div>

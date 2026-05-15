@@ -1,0 +1,742 @@
+{
+  "info": {
+    "name": "BSLTProject - Seguridad",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección para probar los endpoints del servicio de seguridad"
+  },
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Registro de Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"usuario@ejemplo.com\",\n    \"password\": \"contraseña123\",\n    \"nombre\": \"Usuario\",\n    \"apellido\": \"Ejemplo\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/seguridad/autenticacion/registro",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "autenticacion", "registro"]
+            },
+            "description": "Registra un nuevo usuario en el sistema"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"usuario@ejemplo.com\",\n    \"password\": \"contraseña123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/seguridad/autenticacion/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "autenticacion", "login"]
+            },
+            "description": "Inicia sesión y obtiene un token JWT"
+          }
+        },
+        {
+          "name": "Verificar Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"token\": \"{{token}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/seguridad/autenticacion/verificar-token",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "autenticacion", "verificar-token"]
+            },
+            "description": "Verifica si un token JWT es válido"
+          }
+        },
+        {
+          "name": "Cerrar Sesión",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/cerrar-sesion",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "cerrar-sesion"]
+            },
+            "description": "Cierra la sesión del usuario"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Obtener Todos los Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/usuarios",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "usuarios"]
+            },
+            "description": "Obtiene todos los usuarios registrados"
+          }
+        },
+        {
+          "name": "Obtener Usuario por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/usuarios/{{userId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "usuarios", "{{userId}}"]
+            },
+            "description": "Obtiene un usuario específico por su ID"
+          }
+        },
+        {
+          "name": "Actualizar Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Nombre Actualizado\",\n    \"apellido\": \"Apellido Actualizado\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/seguridad/usuarios/{{userId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "usuarios", "{{userId}}"]
+            },
+            "description": "Actualiza la información de un usuario"
+          }
+        },
+        {
+          "name": "Eliminar Usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/usuarios/{{userId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "usuarios", "{{userId}}"]
+            },
+            "description": "Elimina un usuario del sistema"
+          }
+        },
+        {
+          "name": "Asignar Rol a Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/usuarios/{{userId}}/roles/{{roleId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "usuarios", "{{userId}}", "roles", "{{roleId}}"]
+            },
+            "description": "Asigna un rol a un usuario"
+          }
+        },
+        {
+          "name": "Asignar Estado a Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/usuarios/{{userId}}/estados/{{estadoId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "usuarios", "{{userId}}", "estados", "{{estadoId}}"]
+            },
+            "description": "Asigna un estado a un usuario"
+          }
+        },
+        {
+          "name": "Asignar Cuenta a Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/usuarios/{{userId}}/cuentas/{{accountId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "usuarios", "{{userId}}", "cuentas", "{{accountId}}"]
+            },
+            "description": "Asigna una cuenta a un usuario"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "Obtener Todos los Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/roles",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "roles"]
+            },
+            "description": "Obtiene todos los roles disponibles"
+          }
+        },
+        {
+          "name": "Obtener Rol por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/roles/{{roleId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "roles", "{{roleId}}"]
+            },
+            "description": "Obtiene un rol específico por su ID"
+          }
+        },
+        {
+          "name": "Obtener Rol por Nombre",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/roles/name/{{roleName}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "roles", "name", "{{roleName}}"]
+            },
+            "description": "Obtiene un rol específico por su nombre"
+          }
+        },
+        {
+          "name": "Crear Rol",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"NUEVO_ROL\",\n    \"descripcion\": \"Descripción del nuevo rol\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/seguridad/roles",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "roles"]
+            },
+            "description": "Crea un nuevo rol en el sistema"
+          }
+        },
+        {
+          "name": "Actualizar Rol",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"ROL_ACTUALIZADO\",\n    \"descripcion\": \"Descripción actualizada del rol\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/seguridad/roles/{{roleId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "roles", "{{roleId}}"]
+            },
+            "description": "Actualiza un rol existente"
+          }
+        },
+        {
+          "name": "Eliminar Rol",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/roles/{{roleId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "roles", "{{roleId}}"]
+            },
+            "description": "Elimina un rol del sistema"
+          }
+        },
+        {
+          "name": "Obtener Permisos de Rol",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/roles/{{roleId}}/permisos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "roles", "{{roleId}}", "permisos"]
+            },
+            "description": "Obtiene todos los permisos asociados a un rol"
+          }
+        },
+        {
+          "name": "Obtener Usuarios con Rol",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/roles/{{roleId}}/users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "roles", "{{roleId}}", "users"]
+            },
+            "description": "Obtiene todos los usuarios que tienen asignado un rol específico"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Permisos",
+      "item": [
+        {
+          "name": "Obtener Todos los Permisos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/permisos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "permisos"]
+            },
+            "description": "Obtiene todos los permisos disponibles"
+          }
+        },
+        {
+          "name": "Obtener Permiso por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/permisos/{{permissionId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "permisos", "{{permissionId}}"]
+            },
+            "description": "Obtiene un permiso específico por su ID"
+          }
+        },
+        {
+          "name": "Obtener Permiso por Nombre",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/permisos/nombre/{{permissionName}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "permisos", "nombre", "{{permissionName}}"]
+            },
+            "description": "Obtiene un permiso específico por su nombre"
+          }
+        },
+        {
+          "name": "Crear Permiso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"NUEVO_PERMISO\",\n    \"descripcion\": \"Descripción del nuevo permiso\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/seguridad/permisos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "permisos"]
+            },
+            "description": "Crea un nuevo permiso en el sistema"
+          }
+        },
+        {
+          "name": "Actualizar Permiso",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"PERMISO_ACTUALIZADO\",\n    \"descripcion\": \"Descripción actualizada del permiso\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/seguridad/permisos/{{permissionId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "permisos", "{{permissionId}}"]
+            },
+            "description": "Actualiza un permiso existente"
+          }
+        },
+        {
+          "name": "Eliminar Permiso",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/permisos/{{permissionId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "permisos", "{{permissionId}}"]
+            },
+            "description": "Elimina un permiso del sistema"
+          }
+        },
+        {
+          "name": "Asignar Permiso a Rol",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/permisos/{{permissionId}}/roles/{{roleId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "permisos", "{{permissionId}}", "roles", "{{roleId}}"]
+            },
+            "description": "Asigna un permiso a un rol"
+          }
+        },
+        {
+          "name": "Eliminar Permiso de Rol",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/permisos/{{permissionId}}/roles/{{roleId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "permisos", "{{permissionId}}", "roles", "{{roleId}}"]
+            },
+            "description": "Elimina un permiso de un rol"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Estados",
+      "item": [
+        {
+          "name": "Obtener Todos los Estados",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/estados",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "estados"]
+            },
+            "description": "Obtiene todos los estados disponibles"
+          }
+        },
+        {
+          "name": "Obtener Estado por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/estados/{{estadoId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "estados", "{{estadoId}}"]
+            },
+            "description": "Obtiene un estado específico por su ID"
+          }
+        },
+        {
+          "name": "Crear Estado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"NUEVO_ESTADO\",\n    \"descripcion\": \"Descripción del nuevo estado\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/seguridad/estados",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "estados"]
+            },
+            "description": "Crea un nuevo estado en el sistema"
+          }
+        },
+        {
+          "name": "Actualizar Estado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"ESTADO_ACTUALIZADO\",\n    \"descripcion\": \"Descripción actualizada del estado\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/seguridad/estados/{{estadoId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "estados", "{{estadoId}}"]
+            },
+            "description": "Actualiza un estado existente"
+          }
+        },
+        {
+          "name": "Eliminar Estado",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/seguridad/estados/{{estadoId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["seguridad", "estados", "{{estadoId}}"]
+            },
+            "description": "Elimina un estado del sistema"
+          }
+        }
+      ]
+    }
+  ]
+}

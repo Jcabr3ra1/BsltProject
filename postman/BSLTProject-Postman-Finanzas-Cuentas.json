@@ -1,0 +1,170 @@
+{
+  "info": {
+    "name": "BSLTProject - Finanzas - Cuentas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección para probar los endpoints de cuentas del servicio financiero"
+  },
+  "item": [
+    {
+      "name": "Cuentas",
+      "item": [
+        {
+          "name": "Obtener Todas las Cuentas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas"]
+            },
+            "description": "Obtiene todas las cuentas disponibles"
+          }
+        },
+        {
+          "name": "Crear Cuenta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Cuenta Principal\",\n    \"saldo\": 1000,\n    \"tipo\": \"AHORRO\",\n    \"usuario_id\": \"{{userId}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas"]
+            },
+            "description": "Crea una nueva cuenta"
+          }
+        },
+        {
+          "name": "Obtener Cuenta por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas/{{cuentaId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas", "{{cuentaId}}"]
+            },
+            "description": "Obtiene una cuenta específica por su ID"
+          }
+        },
+        {
+          "name": "Actualizar Cuenta",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Cuenta Actualizada\",\n    \"saldo\": 2000\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas/{{cuentaId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas", "{{cuentaId}}"]
+            },
+            "description": "Actualiza una cuenta existente"
+          }
+        },
+        {
+          "name": "Eliminar Cuenta",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas/{{cuentaId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas", "{{cuentaId}}"]
+            },
+            "description": "Elimina una cuenta"
+          }
+        },
+        {
+          "name": "Obtener Cuentas por Usuario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas/usuario/{{userId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas", "usuario", "{{userId}}"]
+            },
+            "description": "Obtiene todas las cuentas asociadas a un usuario específico"
+          }
+        },
+        {
+          "name": "Asignar Usuario a Cuenta",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/cuentas/{{cuentaId}}/usuario/{{userId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "cuentas", "{{cuentaId}}", "usuario", "{{userId}}"]
+            },
+            "description": "Asigna un usuario a una cuenta"
+          }
+        }
+      ]
+    }
+  ]
+}

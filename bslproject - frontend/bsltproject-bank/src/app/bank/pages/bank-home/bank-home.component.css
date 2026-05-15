@@ -1,0 +1,119 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2c1658 0%, #1e1339 70%, #0f0f0f 100%);
+  position: relative;
+}
+.app-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.main-content-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  min-height: 0;
+}
+
+.sidebar-wrapper {
+  width: 270px;
+  transition: width 0.3s ease, min-width 0.3s ease, transform 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.sidebar-wrapper.hidden {
+  width: 0;
+  min-width: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+.sidebar-wrapper.collapsed {
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
+  overflow-x: hidden;
+}
+.sidebar-wrapper.collapsed .sidebar-container {
+  width: 70px !important;
+  min-width: 70px !important;
+  max-width: 70px !important;
+  overflow: hidden !important;
+}
+
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 24px 0 24px;
+  background-color: transparent;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.content-wrapper::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 30px;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(to bottom, rgba(44, 22, 88, 0.5), transparent);
+}
+.content-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+.content-wrapper router-outlet + * {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+app-navbar {
+  display: block;
+  position: relative;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+app-footer {
+  z-index: 5;
+  position: relative;
+  width: 100%;
+  margin-top: auto;
+}
+app-footer .footer {
+  background: linear-gradient(180deg, #1f1f1f 0%, #18121e 100%) !important;
+  border-top: 1px solid rgba(164, 108, 245, 0.15) !important;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+}
+app-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  flex: 1;
+}

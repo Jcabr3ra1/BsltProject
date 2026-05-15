@@ -1,0 +1,41 @@
+<mat-toolbar class="navbar">
+  <div class="navbar-left">
+    <div class="logo-container">
+      <mat-icon class="bank-icon">account_balance</mat-icon>
+      <span class="logo">BSLTProject-Bank</span>
+    </div>
+  </div>
+  
+  <span class="spacer"></span>
+  
+  <div class="navbar-right">
+    <div class="notification-bell" matTooltip="Notificaciones">
+      <button mat-icon-button>
+        <mat-icon>notifications</mat-icon>
+        <span class="notification-badge">3</span>
+      </button>
+    </div>
+    
+    <div class="user-info">
+      <div class="user-avatar">
+        <mat-icon>account_circle</mat-icon>
+      </div>
+      <div class="user-details">
+        <span class="user-name">{{ user?.nombre || 'Usuario' }}</span>
+        <span class="user-role">{{ user?.roles?.[0] || 'Usuario' }}</span>
+      </div>
+      <button mat-icon-button (click)="logout()" class="logout-button" matTooltip="Cerrar sesión">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<!-- Botón flotante para mostrar sidebar cuando está oculto -->
+<div class="sidebar-toggle-button" *ngIf="!isSidebarOpen">
+  <button mat-mini-fab (click)="toggleSidebarState()" class="toggle-fab" aria-label="Mostrar menú">
+    <div class="toggle-icon-container">
+      <mat-icon>chevron_right</mat-icon>
+    </div>
+  </button>
+</div>

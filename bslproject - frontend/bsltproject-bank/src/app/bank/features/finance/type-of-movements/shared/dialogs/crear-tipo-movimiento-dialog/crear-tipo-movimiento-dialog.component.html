@@ -1,0 +1,58 @@
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">sync_alt</mat-icon>
+    <h2 mat-dialog-title>Nuevo tipo de movimiento</h2>
+  </div>
+
+  <form [formGroup]="form" class="formulario-movimiento">
+    <div class="form-field">
+      <label for="codigo_origen">Código Origen<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="codigo_origen" type="text" formControlName="codigo_origen" placeholder="0 para ingresos">
+        <mat-icon>arrow_back</mat-icon>
+      </div>
+      <div class="helper-text">Cuenta de donde sale el dinero (0 para ingresos)</div>
+      <div class="error-message" *ngIf="form.get('codigo_origen')?.touched && form.get('codigo_origen')?.hasError('required')">
+        El código origen es obligatorio
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="codigo_destino">Código Destino<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="codigo_destino" type="text" formControlName="codigo_destino" placeholder="0 para gastos">
+        <mat-icon>arrow_forward</mat-icon>
+      </div>
+      <div class="helper-text">Cuenta donde entra el dinero (0 para gastos)</div>
+      <div class="error-message" *ngIf="form.get('codigo_destino')?.touched && form.get('codigo_destino')?.hasError('required')">
+        El código destino es obligatorio
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="descripcion">Descripción<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="descripcion" type="text" formControlName="descripcion" placeholder="Ej. Pago de nómina">
+        <mat-icon>description</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.hasError('required')">
+        La descripción es obligatoria
+      </div>
+      <div class="error-message" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.hasError('minlength')">
+        Debe tener al menos 3 caracteres
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid" (click)="guardar()">
+        <div class="spinner" *ngIf="isLoading"></div>
+        <mat-icon *ngIf="!isLoading">save</mat-icon>
+        Crear
+      </button>      
+    </div>
+  </form>
+</div>

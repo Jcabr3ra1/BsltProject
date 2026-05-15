@@ -1,0 +1,45 @@
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">{{ modoEdicion ? 'edit' : 'add_circle' }}</mat-icon>
+    <h2 mat-dialog-title>{{ modoEdicion ? 'Editar Estado' : 'Crear Nuevo Estado' }}</h2>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="formulario-estado">
+    <div class="form-field">
+      <label for="nombre">Nombre del Estado<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Ej: Activo, Inactivo">
+        <mat-icon>label</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('required')">
+        El nombre es obligatorio
+      </div>
+      <div class="error-message" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.hasError('minlength')">
+        Debe tener al menos 3 caracteres
+      </div>
+    </div>
+
+    <!-- Sección informativa dependiendo del modo -->
+    <div class="info-container" *ngIf="modoEdicion">
+      <mat-icon>info</mat-icon>
+      <p>Estás editando un estado existente. Los cambios afectarán a todos los usuarios asociados a este estado.</p>
+    </div>
+    
+    <div class="info-container" *ngIf="!modoEdicion">
+      <mat-icon>info</mat-icon>
+      <p>Los estados permiten gestionar el ciclo de vida de los usuarios en el sistema.</p>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid || isLoading">
+        <div class="spinner" *ngIf="isLoading"></div>
+        <mat-icon *ngIf="!isLoading">{{ modoEdicion ? 'save' : 'add' }}</mat-icon>
+        {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+      </button>      
+    </div>
+  </form>
+</div>

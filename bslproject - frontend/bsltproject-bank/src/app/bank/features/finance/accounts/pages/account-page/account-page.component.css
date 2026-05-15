@@ -1,0 +1,481 @@
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+.text-left { text-align: left !important; }
+
+.cuentas-page-container {
+  background: linear-gradient(145deg, #2c1658 0%, #1f1f1f 100%);
+  color: #ffffff;
+  padding: 2.5rem;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.cuentas-page-container .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.cuentas-page-container .header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(164, 108, 245, 0) 0%, rgba(164, 108, 245, 0.7) 50%, rgba(164, 108, 245, 0) 100%);
+}
+
+.cuentas-page-container .header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.cuentas-page-container .header h1::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 70%;
+  background: #a46cf5;
+  border-radius: 4px;
+}
+
+.cuentas-page-container .header h1 mat-icon {
+  color: #a46cf5;
+  margin-right: 0.75rem;
+  font-size: 2rem;
+  height: 2rem;
+  width: 2rem;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.cuentas-page-container .header button[mat-raised-button] {
+  background: linear-gradient(135deg, #a46cf5, rgb(134, 60, 242));
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 6px 15px rgba(164, 108, 245, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.cuentas-page-container .header button[mat-raised-button]:hover {
+  background: linear-gradient(135deg, rgb(179, 132, 247), #a46cf5);
+  box-shadow: 0 8px 20px rgba(164, 108, 245, 0.6);
+  transform: translateY(-3px);
+}
+
+.cuentas-page-container .header button[mat-raised-button]:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(164, 108, 245, 0.4);
+}
+
+.cuentas-page-container .header button[mat-raised-button] mat-icon {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+}
+
+.cuentas-page-container mat-divider {
+  display: none;
+}
+
+.cuentas-page-container .cargando {
+  display: flex;
+  justify-content: center;
+  margin: 4rem 0;
+  z-index: 10;
+}
+
+.cuentas-page-container .cargando mat-spinner {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.cuentas-page-container .sin-cuentas {
+  text-align: center;
+  margin: 4rem auto;
+  max-width: 500px;
+  color: #e0e0e0;
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.cuentas-page-container .sin-cuentas mat-icon {
+  font-size: 4rem;
+  height: 4rem;
+  width: 4rem;
+  margin-bottom: 1.5rem;
+  color: rgba(164, 108, 245, 0.6);
+  animation: float 3s infinite ease-in-out;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.cuentas-page-container .sin-cuentas p {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+.cuentas-page-container .cuentas-table {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cuentas-page-container .cuentas-table table {
+  width: 100%;
+  background-color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+.cuentas-page-container .cuentas-table table tr.mat-header-row {
+  background: linear-gradient(90deg, #2c1658, #a46cf5) !important;
+  height: 64px;
+  position: relative;
+}
+
+.cuentas-page-container .cuentas-table table th.mat-header-cell {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  padding: 1rem 1.5rem !important;
+  border-bottom: none !important;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.9rem !important;
+  position: relative;
+}
+
+.cuentas-page-container .cuentas-table table th.mat-header-cell:nth-child(4),
+.cuentas-page-container .cuentas-table table th.mat-header-cell:nth-child(5) {
+  text-align: right;
+}
+
+.cuentas-page-container .cuentas-table table th.mat-header-cell:nth-child(7),
+.cuentas-page-container .cuentas-table table th.mat-header-cell:nth-child(8) {
+  text-align: center;
+}
+
+.cuentas-page-container .cuentas-table table tr.mat-row {
+  height: 70px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.cuentas-page-container .cuentas-table table tr.mat-row:nth-child(odd) {
+  background-color: #f8f5ff !important;
+}
+
+.cuentas-page-container .cuentas-table table tr.mat-row:hover {
+  background-color: rgba(164, 108, 245, 0.1) !important;
+}
+
+.cuentas-page-container .cuentas-table table td.mat-cell {
+  padding: 1rem 1.5rem !important;
+  color: #333333 !important;
+  border-bottom: 1px solid rgba(164, 108, 245, 0.1) !important;
+  font-size: 1rem !important;
+  vertical-align: middle;
+}
+
+.cuentas-page-container .cuentas-table .usuario-nombre {
+  color: #333333;
+  font-weight: 500;
+}
+
+.cuentas-page-container .cuentas-table .usuario-nombre:empty::before {
+  content: "Sin asignar";
+  font-style: italic;
+  color: #888888;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.cuentas-page-container .cuentas-table .saldo-cell,
+.cuentas-page-container .cuentas-table .meta-cell {
+  font-weight: 700;
+  color: #333333 !important;
+  font-size: 1.05rem !important;
+  text-align: right;
+}
+
+.cuentas-page-container .cuentas-table .saldo-cell {
+  color: #4CAF50 !important;
+}
+
+.cuentas-page-container .cuentas-table .bolsillo-cell {
+  text-align: center;
+}
+
+.cuentas-page-container .cuentas-table .bolsillo-cell mat-icon {
+  font-size: 1.5rem;
+  height: 1.5rem;
+  width: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.cuentas-page-container .cuentas-table .bolsillo-cell mat-icon[color=primary] {
+  animation: pulse-success 2s infinite;
+}
+
+@keyframes pulse-success {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+.cuentas-page-container .cuentas-table .bolsillo-cell mat-icon[color=warn] {
+  opacity: 0.7;
+}
+
+.cuentas-page-container .cuentas-table .cuenta-tipo {
+  font-weight: 600;
+  color: #a46cf5;
+  background-color: rgba(164, 108, 245, 0.08);
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 5px rgba(164, 108, 245, 0.1);
+  transition: all 0.3s ease;
+  letter-spacing: 0.3px;
+}
+
+.cuentas-page-container .cuentas-table .acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.cuentas-page-container .cuentas-table .acciones button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.cuentas-page-container .cuentas-table .acciones button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  transition: all 0.3s ease;
+}
+
+.cuentas-page-container .cuentas-table .acciones button[color=accent] {
+  color: #a46cf5;
+}
+
+.cuentas-page-container .cuentas-table .acciones button[color=accent]:hover {
+  background-color: rgba(164, 108, 245, 0.1);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 5px 10px rgba(164, 108, 245, 0.25);
+  border-color: rgba(164, 108, 245, 0.3);
+}
+
+.cuentas-page-container .cuentas-table .acciones button[color=accent]:hover mat-icon {
+  transform: rotate(10deg);
+}
+
+.cuentas-page-container .cuentas-table .acciones button[color=accent]:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(164, 108, 245, 0.2);
+}
+
+.cuentas-page-container .cuentas-table .acciones button[color=warn] {
+  color: #ff5252;
+}
+
+.cuentas-page-container .cuentas-table .acciones button[color=warn]:hover {
+  background-color: rgba(255, 82, 82, 0.1);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 5px 10px rgba(255, 82, 82, 0.25);
+  border-color: rgba(255, 82, 82, 0.3);
+}
+
+.cuentas-page-container .cuentas-table .acciones button[color=warn]:hover mat-icon {
+  transform: rotate(90deg);
+}
+
+.cuentas-page-container .cuentas-table .acciones button[color=warn]:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(255, 82, 82, 0.2);
+}
+
+.cuentas-page-container .paginacion-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(to bottom, #ffffff, #f8f5ff);
+  border-top: 1px solid rgba(164, 108, 245, 0.1);
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.cuentas-page-container .paginacion-items-por-pagina {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cuentas-page-container .paginacion-items-por-pagina span {
+  color: #444444;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.cuentas-page-container .paginacion-items-por-pagina mat-form-field {
+  width: 90px;
+  margin-bottom: -1.25em;
+}
+
+.cuentas-page-container .color-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cuentas-page-container .color-box {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.cuentas-page-container .color-box:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cuentas-page-container .color-cell {
+  text-align: center;
+}
+
+.cuentas-page-container .paginacion-info {
+  color: #444444;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background-color: rgba(164, 108, 245, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(164, 108, 245, 0.1);
+  letter-spacing: 0.3px;
+}
+
+.cuentas-page-container .paginacion-controles {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 0.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(164, 108, 245, 0.1);
+}
+
+.cuentas-page-container .paginacion-controles button {
+  color: #a46cf5;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.cuentas-page-container .paginacion-controles button[disabled] {
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.cuentas-page-container .paginacion-controles button:not([disabled]):hover {
+  background-color: rgba(164, 108, 245, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(164, 108, 245, 0.15);
+}
+
+.cuentas-page-container .paginacion-controles button:not([disabled]):active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(164, 108, 245, 0.1);
+}
+
+.cuentas-page-container .paginacion-controles button mat-icon {
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.cuentas-page-container .paginator-invisible {
+  height: 0;
+  visibility: hidden;
+  position: absolute;
+}

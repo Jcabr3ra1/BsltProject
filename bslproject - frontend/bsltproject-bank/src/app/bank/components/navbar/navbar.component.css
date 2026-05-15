@@ -1,0 +1,253 @@
+@keyframes bell-ring {
+  0% {
+    transform: rotate(0);
+  }
+  20% {
+    transform: rotate(15deg);
+  }
+  40% {
+    transform: rotate(-15deg);
+  }
+  60% {
+    transform: rotate(7deg);
+  }
+  80% {
+    transform: rotate(-7deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+.navbar {
+  background: linear-gradient(90deg, #2c1658 0%, #1f1f1f 100%) !important;
+  color: #ffffff;
+  height: 64px;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  position: relative;
+  width: 100%;
+  z-index: 10;
+  border-bottom: 1px solid rgba(164, 108, 245, 0.3);
+}
+.navbar .navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.navbar .navbar-left .menu-button, .navbar .navbar-left .collapse-button {
+  margin-right: 0.25rem;
+}
+.navbar .navbar-left .menu-button mat-icon, .navbar .navbar-left .collapse-button mat-icon {
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+.navbar .navbar-left .menu-button:hover mat-icon, .navbar .navbar-left .collapse-button:hover mat-icon {
+  color: #c39af7;
+  transform: scale(1.1);
+}
+.navbar .navbar-left .collapse-button {
+  margin-left: -0.25rem;
+}
+.navbar .navbar-left .menu-toggle {
+  margin-right: 0.5rem;
+  transition: all 0.2s ease;
+}
+.navbar .navbar-left .menu-toggle mat-icon {
+  color: #a46cf5;
+  transition: transform 0.3s ease;
+  font-size: 24px;
+}
+.navbar .navbar-left .menu-toggle:hover {
+  background-color: rgba(164, 108, 245, 0.15);
+}
+.navbar .navbar-left .menu-toggle:hover mat-icon {
+  transform: rotate(90deg);
+  color: #ffffff;
+}
+.navbar .navbar-left .logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.navbar .navbar-left .logo-container .logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.navbar .navbar-left .logo-container .logo-icon mat-icon {
+  color: #a46cf5;
+  font-size: 28px;
+  height: 28px;
+  width: 28px;
+}
+.navbar .navbar-left .logo-container .logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, #a46cf5, #ffffff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0px 0px 10px rgba(164, 108, 245, 0.3);
+}
+.navbar .spacer {
+  flex: 1;
+}
+.navbar .navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.navbar .navbar-right .notification-bell {
+  position: relative;
+}
+.navbar .navbar-right .notification-bell button {
+  transition: all 0.2s ease;
+}
+.navbar .navbar-right .notification-bell button mat-icon {
+  color: #a46cf5;
+  transition: all 0.2s ease;
+}
+.navbar .navbar-right .notification-bell button:hover {
+  background-color: rgba(164, 108, 245, 0.15);
+}
+.navbar .navbar-right .notification-bell button:hover mat-icon {
+  color: #ffffff;
+  animation: bell-ring 0.5s ease;
+}
+.navbar .navbar-right .notification-bell .notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #ff4081;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.navbar .navbar-right .user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.5rem;
+  border-radius: 28px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+.navbar .navbar-right .user-info:hover {
+  background-color: rgba(164, 108, 245, 0.15);
+  border-color: rgba(164, 108, 245, 0.3);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+.navbar .navbar-right .user-info .user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.navbar .navbar-right .user-info .user-avatar mat-icon {
+  color: #a46cf5;
+  font-size: 32px;
+  height: 32px;
+  width: 32px;
+}
+.navbar .navbar-right .user-info .user-details {
+  display: flex;
+  flex-direction: column;
+}
+.navbar .navbar-right .user-info .user-details .user-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+.navbar .navbar-right .user-info .user-details .user-role {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+.navbar .navbar-right .user-info .logout-button {
+  color: #ffffff;
+  margin-left: 0.25rem;
+  transition: all 0.2s ease;
+}
+.navbar .navbar-right .user-info .logout-button mat-icon {
+  color: #a46cf5;
+  transition: all 0.2s ease;
+  font-size: 20px;
+}
+.navbar .navbar-right .user-info .logout-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.navbar .navbar-right .user-info .logout-button:hover mat-icon {
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.sidebar-toggle-button {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+}
+.sidebar-toggle-button .toggle-fab {
+  background: linear-gradient(135deg, #2c1658, #a46cf5) !important;
+  border-radius: 0 25px 25px 0 !important;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+.sidebar-toggle-button .toggle-fab .toggle-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.sidebar-toggle-button .toggle-fab .toggle-icon-container mat-icon {
+  margin-left: 5px;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+.sidebar-toggle-button .toggle-fab:hover {
+  width: 44px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.sidebar-toggle-button .toggle-fab:hover .toggle-icon-container mat-icon {
+  transform: translateX(2px);
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 0.75rem;
+  }
+  .navbar .navbar-left .logo-container .logo {
+    font-size: 1.3rem;
+  }
+  .navbar .navbar-right {
+    gap: 0.75rem;
+  }
+  .navbar .navbar-right .user-info {
+    padding: 0.25rem 0.5rem 0.25rem 0.35rem;
+  }
+  .navbar .navbar-right .user-info .user-details .user-name {
+    font-size: 0.8rem;
+  }
+  .navbar .navbar-right .user-info .user-details .user-role {
+    font-size: 0.7rem;
+  }
+}

@@ -1,0 +1,347 @@
+.dialog-content {
+  background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+  color: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: dialogFadeIn 0.3s ease-out;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(164, 108, 245, 0.3);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+  position: relative;
+  overflow: hidden;
+}
+.dialog-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, #a46cf5, transparent);
+}
+.dialog-header .header-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(164, 108, 245, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+.dialog-header .header-icon {
+  color: #a46cf5;
+  font-size: 1.8rem;
+  height: 1.8rem;
+  width: 1.8rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  animation: pulse 2s infinite;
+}
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+}
+@keyframes dialogFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.formulario-transaccion {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.form-field label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.form-field label .required {
+  color: #ff4d4f;
+  margin-left: 4px;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.form-field input {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(164, 108, 245, 0.3);
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) inset;
+}
+.form-field input:focus {
+  border-color: #a46cf5;
+  box-shadow: 0 0 0 3px rgba(164, 108, 245, 0.25), 0 2px 5px rgba(0, 0, 0, 0.1) inset;
+  transform: translateY(-1px);
+}
+.form-field input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+.form-field input.ng-invalid.ng-touched {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+.form-field .error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #ff4d4f;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  background-color: rgba(255, 77, 79, 0.1);
+  animation: fadeIn 0.3s ease;
+}
+.form-field .error-message mat-icon {
+  font-size: 1rem;
+  height: 1rem;
+  width: 1rem;
+}
+.form-field .error-message span {
+  flex: 1;
+}
+
+.input-with-icon {
+  position: relative;
+  width: 100%;
+}
+.input-with-icon input {
+  padding-right: 2.8rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input-with-icon mat-icon {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a46cf5;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+.input-with-icon:hover mat-icon {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.edit-info-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  background: linear-gradient(to right, rgba(255, 204, 0, 0.1), rgba(255, 204, 0, 0.05));
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(255, 204, 0, 0.2);
+  margin: 0.8rem 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+.edit-info-container:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+.edit-info-container mat-icon {
+  color: #ffcc00;
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+  margin-top: 0.1rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+.edit-info-container .edit-info-content {
+  flex: 1;
+}
+.edit-info-container .edit-info-content p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+.edit-info-container .edit-info-content p:last-child {
+  margin-top: 0.6rem;
+  font-style: italic;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(255, 204, 0, 0.2);
+}
+.edit-info-container .edit-info-content p strong {
+  color: #ffffff;
+  font-weight: 500;
+  margin-right: 0.3rem;
+  letter-spacing: 0.3px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+.dialog-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+.dialog-actions button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.dialog-actions button:hover::before {
+  opacity: 1;
+}
+.dialog-actions button mat-icon {
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+.dialog-actions button span {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+.dialog-actions .btn-cancel {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.dialog-actions .btn-cancel:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+}
+.dialog-actions .btn-cancel:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.dialog-actions .btn-save {
+  background: linear-gradient(135deg, #a46cf5, rgb(134, 60, 242));
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.dialog-actions .btn-save:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgb(179, 132, 247), #a46cf5);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(164, 108, 245, 0.4);
+  transform: translateY(-3px);
+}
+.dialog-actions .btn-save:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+.dialog-actions .btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, rgb(168, 132, 221), rgb(140, 91, 211));
+  box-shadow: none;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  border-top-color: white;
+  border-left-color: white;
+  animation: spin 0.7s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+  margin-right: 0.5rem;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 480px) {
+  .dialog-actions {
+    flex-direction: column;
+  }
+  .dialog-actions button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,323 @@
+.dialog-content {
+  background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+  color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(126, 34, 206, 0.4);
+  background-color: rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+.dialog-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #7e22ce, #a855f7);
+}
+.dialog-header .header-icon {
+  color: #a855f7;
+  font-size: 2rem;
+  height: 2rem;
+  width: 2rem;
+  filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.5));
+}
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.formulario {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+  }
+}
+.form-row .form-field {
+  flex: 1;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.form-field label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+}
+.form-field label .required {
+  color: #ef4444;
+  margin-left: 4px;
+  font-size: 1.1rem;
+}
+.form-field input, .form-field select {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(126, 34, 206, 0.4);
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 0.9rem 1rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+.form-field input:focus, .form-field select:focus {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.form-field input:hover:not(:focus), .form-field select:hover:not(:focus) {
+  border-color: rgba(168, 85, 247, 0.6);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.form-field input::placeholder, .form-field select::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+.form-field input.ng-invalid.ng-touched, .form-field select.ng-invalid.ng-touched {
+  border-color: #ef4444;
+}
+.form-field select {
+  appearance: none;
+  background-color: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  padding-right: 3rem;
+  color: #ffffff;
+}
+.form-field select:focus {
+  outline: none;
+  border-color: #a855f7;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.3);
+}
+.form-field .error-message {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  animation: fadeIn 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.form-field .error-message mat-icon {
+  font-size: 1rem;
+  height: 1rem;
+  width: 1rem;
+}
+
+.select-container {
+  position: relative;
+  width: 100%;
+}
+.select-container .select-icon-container {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  pointer-events: none;
+}
+.select-container .select-icon-container mat-icon {
+  color: #a855f7;
+}
+.select-container .select-icon-container mat-icon.dropdown-icon {
+  font-size: 1.5rem;
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.input-with-icon {
+  position: relative;
+  width: 100%;
+}
+.input-with-icon input {
+  padding-right: 2.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input-with-icon mat-icon {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a855f7;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+.input-with-icon mat-icon.clickable {
+  cursor: pointer;
+}
+.input-with-icon:focus-within mat-icon {
+  opacity: 1;
+  color: #a855f7;
+}
+
+.user-info-display {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 1rem;
+  border: 1px solid rgba(164, 108, 245, 0.2);
+}
+.user-info-display .info-item {
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.user-info-display .info-item:last-child {
+  margin-bottom: 0;
+}
+.user-info-display .info-item .info-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  min-width: 100px;
+}
+.user-info-display .info-item .info-value {
+  color: #ffffff;
+  font-weight: 500;
+}
+.user-info-display .info-item .info-value.estado-activo {
+  color: #10b981;
+}
+.user-info-display .info-item .info-value.estado-inactivo {
+  color: #ef4444;
+}
+.user-info-display .info-item .info-value.estado-pendiente {
+  color: #f59e0b;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.dialog-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 120px;
+}
+.dialog-actions button span {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.dialog-actions button mat-icon {
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+}
+.dialog-actions .btn-cancel {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.dialog-actions .btn-cancel:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+.dialog-actions .btn-cancel:active {
+  transform: translateY(0);
+}
+.dialog-actions .btn-save {
+  background: linear-gradient(135deg, #7e22ce, #a855f7);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+.dialog-actions .btn-save::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.3s ease;
+}
+.dialog-actions .btn-save:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+.dialog-actions .btn-save:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+.dialog-actions .btn-save:active {
+  transform: translateY(0);
+}
+.dialog-actions .btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, rgb(123, 70, 170), rgb(167, 112, 220));
+  box-shadow: none;
+  transform: none;
+}
+.dialog-actions .btn-save:disabled::before {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 480px) {
+  .dialog-actions {
+    flex-direction: column;
+  }
+  .dialog-actions button {
+    width: 100%;
+  }
+}

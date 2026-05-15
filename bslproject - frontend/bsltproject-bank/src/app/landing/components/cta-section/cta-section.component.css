@@ -1,0 +1,101 @@
+.cta-section {
+  padding: 80px 0;
+  text-align: center;
+  background: linear-gradient(135deg, #a46cf5, #2c1658);
+  color: #ffffff;
+  position: relative;
+  z-index: 2;
+}
+.cta-section::before, .cta-section::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.05;
+  z-index: 1;
+  pointer-events: none;
+}
+.cta-section::before {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  top: -200px;
+  right: 10%;
+}
+.cta-section::after {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  bottom: -250px;
+  left: 5%;
+}
+.cta-section .container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 3;
+}
+.cta-section h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+@media (max-width: 768px) {
+  .cta-section h2 {
+    font-size: 28px;
+  }
+}
+.cta-section p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 768px) {
+  .cta-section p {
+    font-size: 16px;
+  }
+}
+.cta-section .cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+@media (max-width: 576px) {
+  .cta-section .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+    max-width: 250px;
+    margin: 0 auto;
+  }
+}
+.cta-section .cta-btn {
+  padding: 14px 30px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+.cta-section .cta-btn.primary {
+  background-color: #a6ff5c;
+  color: #1e1339;
+}
+.cta-section .cta-btn.primary:hover {
+  background-color: rgb(152, 255, 67);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+.cta-section .cta-btn.secondary {
+  background-color: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+}
+.cta-section .cta-btn.secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+}

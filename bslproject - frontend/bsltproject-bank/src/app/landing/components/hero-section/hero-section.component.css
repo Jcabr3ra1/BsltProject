@@ -1,0 +1,293 @@
+.hero {
+  display: block;
+  width: 100%;
+  background: linear-gradient(135deg, #1e1339, #2c1658);
+  color: #ffffff;
+  padding: 70px 0;
+  overflow: visible;
+  position: relative;
+  height: auto;
+  min-height: auto;
+}
+.hero .decoration {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+.hero .decoration.decoration-1 {
+  width: 300px;
+  height: 300px;
+  top: -150px;
+  right: 10%;
+  opacity: 0.3;
+}
+.hero .decoration.decoration-2 {
+  width: 400px;
+  height: 400px;
+  bottom: -200px;
+  left: 5%;
+  opacity: 0.15;
+}
+.hero .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  padding: 0 40px;
+}
+@media (max-width: 992px) {
+  .hero .container {
+    flex-direction: column;
+    text-align: center;
+    padding: 0 20px;
+  }
+}
+.hero .hero-content {
+  width: 45%;
+  padding-right: 40px;
+}
+@media (max-width: 992px) {
+  .hero .hero-content {
+    width: 100%;
+    padding-right: 0;
+    margin-bottom: 50px;
+  }
+}
+.hero .hero-title {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+@media (max-width: 768px) {
+  .hero .hero-title {
+    font-size: 32px;
+  }
+}
+.hero .hero-subtitle {
+  font-size: 17px;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  max-width: 500px;
+  line-height: 1.6;
+}
+@media (max-width: 992px) {
+  .hero .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+.hero .hero-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+@media (max-width: 992px) {
+  .hero .hero-buttons {
+    justify-content: center;
+  }
+}
+@media (max-width: 480px) {
+  .hero .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    max-width: 250px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+.hero .hero-button {
+  border: none;
+  padding: 12px 28px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.hero .hero-button.primary-btn {
+  background-color: #a6ff5c;
+  color: #1e1339;
+}
+.hero .hero-button.primary-btn:hover {
+  background-color: rgb(152, 255, 67);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(166, 255, 92, 0.4);
+}
+.hero .hero-button.secondary-btn {
+  background-color: transparent;
+  border: 2px solid #c39af7;
+  color: #ffffff;
+}
+.hero .hero-button.secondary-btn:hover {
+  background-color: rgba(195, 154, 247, 0.2);
+  transform: translateY(-2px);
+}
+.hero .social-proof {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+@media (max-width: 992px) {
+  .hero .social-proof {
+    justify-content: center;
+  }
+}
+@media (max-width: 480px) {
+  .hero .social-proof {
+    flex-direction: column;
+  }
+}
+.hero .stars {
+  color: #FFD700;
+  font-size: 18px;
+}
+.hero .rating-text {
+  font-size: 13px;
+  opacity: 0.9;
+}
+.hero .users {
+  display: flex;
+}
+.hero .user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #1e1339;
+  margin-left: -8px;
+}
+.hero .user-avatar:first-child {
+  margin-left: 0;
+}
+.hero .user-avatar:nth-child(1) {
+  background-color: #f5a46c;
+}
+.hero .user-avatar:nth-child(2) {
+  background-color: #6cf5a4;
+}
+.hero .user-avatar:nth-child(3) {
+  background-color: #f56ca4;
+}
+.hero .user-avatar:nth-child(4) {
+  background-color: #a46cf5;
+}
+.hero .hero-image {
+  width: 40%;
+  position: relative;
+}
+@media (max-width: 992px) {
+  .hero .hero-image {
+    width: 100%;
+    max-width: 350px;
+  }
+}
+.hero .card-mockup {
+  width: 100%;
+  aspect-ratio: 16/10;
+  background: linear-gradient(135deg, #a46cf5, #ff8a8a);
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+  transform: perspective(1000px) rotateY(-12deg) rotateX(4deg);
+  transition: transform 0.5s ease;
+}
+.hero .card-mockup:hover {
+  transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+}
+.hero .card-mockup::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 50px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+}
+.hero .card-mockup .card-chip {
+  position: absolute;
+  top: 80px;
+  left: 30px;
+  width: 45px;
+  height: 35px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+}
+.hero .card-mockup .card-chip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+}
+.hero .card-mockup .card-logo {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: bold;
+}
+.hero .card-mockup .card-number {
+  position: absolute;
+  bottom: 75px;
+  left: 30px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 20px;
+  letter-spacing: 3px;
+}
+.hero .card-mockup .card-name {
+  position: absolute;
+  bottom: 35px;
+  left: 30px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  text-transform: uppercase;
+}
+.hero .card-mockup .card-date {
+  position: absolute;
+  bottom: 35px;
+  right: 30px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+}
+.hero .hero-badge {
+  position: absolute;
+  bottom: -15px;
+  left: -15px;
+  background: #1e1339;
+  padding: 12px 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  z-index: 10;
+}
+@media (max-width: 992px) {
+  .hero .hero-badge {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+.hero .badge-icon {
+  font-size: 20px;
+  color: #c39af7;
+}
+.hero .badge-text {
+  font-size: 13px;
+}
+.hero .badge-title {
+  font-weight: 700;
+  margin-bottom: 3px;
+  color: #c39af7;
+}

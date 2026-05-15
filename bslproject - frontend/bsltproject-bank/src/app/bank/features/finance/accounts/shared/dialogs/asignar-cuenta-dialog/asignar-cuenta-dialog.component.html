@@ -1,0 +1,89 @@
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon class="header-icon">link</mat-icon>
+    <h2 mat-dialog-title>Asignar cuenta a usuario</h2>
+  </div>
+
+  <form [formGroup]="form" class="formulario-asignacion">
+    <div class="form-field">
+      <label for="usuario_id">Selecciona un usuario<span class="required">*</span></label>
+      <div class="select-with-icon">
+        <select id="usuario_id" formControlName="usuario_id">
+          <option [value]="null" disabled selected>Selecciona un usuario</option>
+          <option *ngFor="let user of usuarios" [value]="user.id">{{ user.nombre }} {{ user.apellido }}</option>
+        </select>
+        <mat-icon>assignment_ind</mat-icon>
+      </div>
+      <div class="error-message" *ngIf="form.get('usuario_id')?.touched && form.get('usuario_id')?.hasError('required')">
+        Debes seleccionar un usuario
+      </div>
+      <div class="empty-users" *ngIf="usuarios.length === 0">
+        <mat-icon>info</mat-icon>
+        <span>No hay usuarios disponibles para asignar</span>
+      </div>
+    </div>
+    
+    <!-- Información de la cuenta seleccionada -->
+    <div class="account-info-container" *ngIf="data">
+      <div class="section-label">
+        <div class="label-bar"></div>
+        <span>Información de la cuenta</span>
+      </div>
+      
+      <div class="account-details">
+        <div class="account-detail">
+          <div class="detail-icon">
+            <mat-icon>credit_card</mat-icon>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">Tipo:</span>
+            <span class="detail-value">{{ getTipoCuentaLabel(data.tipo) }}</span>
+          </div>
+        </div>
+        
+        <div class="account-detail">
+          <div class="detail-icon">
+            <mat-icon>numbers</mat-icon>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">Número:</span>
+            <span class="detail-value">{{ data.numero_cuenta }}</span>
+          </div>
+        </div>
+        
+        <div class="account-detail" *ngIf="data.saldo !== undefined">
+          <div class="detail-icon">
+            <mat-icon>account_balance_wallet</mat-icon>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">Saldo:</span>
+            <span class="detail-value">${{ data.saldo | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mensaje de error si hay alguno -->
+    <div class="error-container" *ngIf="mensajeError">
+      <mat-icon>error</mat-icon>
+      <p>{{ mensajeError }}</p>
+    </div>
+
+    <div class="info-container">
+      <mat-icon>info</mat-icon>
+      <p>La asignación de una cuenta permite a un usuario acceder y gestionar esta cuenta. Una vez asignada, solo ese usuario podrá realizar operaciones sobre ella.</p>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button type="submit" class="btn-save" [disabled]="!form.valid || cargando" (click)="asignar()">
+        <div class="spinner" *ngIf="cargando"></div>
+        <mat-icon *ngIf="!cargando">link</mat-icon>
+        Asignar
+      </button>      
+    </div>
+  </form>
+</div>

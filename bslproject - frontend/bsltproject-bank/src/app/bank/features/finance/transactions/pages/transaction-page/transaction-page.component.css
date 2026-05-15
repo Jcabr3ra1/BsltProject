@@ -1,0 +1,660 @@
+.transacciones-page-container {
+  background: linear-gradient(145deg, #2c1658 0%, #1f1f1f 100%);
+  color: #ffffff;
+  padding: 2.5rem;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.transacciones-page-container .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.transacciones-page-container .header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(164, 108, 245, 0) 0%, rgba(164, 108, 245, 0.7) 50%, rgba(164, 108, 245, 0) 100%);
+}
+
+.transacciones-page-container .header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.transacciones-page-container .header h1::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 70%;
+  background: #a46cf5;
+  border-radius: 4px;
+}
+
+.transacciones-page-container .header h1 mat-icon {
+  color: #a46cf5;
+  margin-right: 0.75rem;
+  font-size: 2rem;
+  height: 2rem;
+  width: 2rem;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.transacciones-page-container .header button[mat-raised-button] {
+  background: linear-gradient(135deg, #a46cf5, rgb(134, 60, 242));
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 6px 15px rgba(164, 108, 245, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.transacciones-page-container .header button[mat-raised-button]:hover {
+  background: linear-gradient(135deg, rgb(179, 132, 247), #a46cf5);
+  box-shadow: 0 8px 20px rgba(164, 108, 245, 0.6);
+  transform: translateY(-3px);
+}
+
+.transacciones-page-container .header button[mat-raised-button]:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(164, 108, 245, 0.4);
+}
+
+.transacciones-page-container .header button[mat-raised-button] mat-icon {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+}
+
+.transacciones-page-container mat-divider {
+  display: none;
+}
+
+.transacciones-page-container .cargando {
+  display: flex;
+  justify-content: center;
+  margin: 3rem 0;
+  z-index: 10;
+}
+
+.transacciones-page-container .dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card {
+  padding: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: rgba(255, 255, 255, 0.98);
+  border: none;
+  position: relative;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+}
+
+.transacciones-page-container .dashboard-cards .stat-card:hover .card-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.transacciones-page-container .dashboard-cards .stat-card:hover .stat-value {
+  color: #2c1658;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card mat-card-content {
+  padding: 0;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card .card-header {
+  height: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card .card-body {
+  padding: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card .card-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+  margin-right: 24px;
+  background-color: rgba(98, 0, 234, 0.08);
+  transition: all 0.4s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.transacciones-page-container .dashboard-cards .stat-card .card-icon mat-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  transition: all 0.3s ease;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card .card-info {
+  flex: 1;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card .card-info .stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: #333333;
+  margin-bottom: 8px;
+  transition: color 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card .card-info .stat-label {
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.7);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  position: relative;
+  display: inline-block;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card.cuentas .card-header {
+  background: linear-gradient(90deg, #a46cf5, rgb(194, 156, 248));
+}
+
+.transacciones-page-container .dashboard-cards .stat-card.cuentas .card-icon {
+  background: linear-gradient(135deg, rgba(164, 108, 245, 0.1), rgba(164, 108, 245, 0.05));
+  border: 1px solid rgba(164, 108, 245, 0.2);
+}
+
+.transacciones-page-container .dashboard-cards .stat-card.cuentas .card-icon mat-icon {
+  color: #a46cf5;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card.bolsillos .card-header {
+  background: linear-gradient(90deg, #c39af7, rgb(223, 201, 251));
+}
+
+.transacciones-page-container .dashboard-cards .stat-card.bolsillos .card-icon {
+  background: linear-gradient(135deg, rgba(195, 154, 247, 0.1), rgba(195, 154, 247, 0.05));
+  border: 1px solid rgba(195, 154, 247, 0.2);
+}
+
+.transacciones-page-container .dashboard-cards .stat-card.bolsillos .card-icon mat-icon {
+  color: #c39af7;
+}
+
+.transacciones-page-container .dashboard-cards .stat-card.total .card-header {
+  background: linear-gradient(90deg, #2c1658, rgb(64, 32, 129));
+}
+
+.transacciones-page-container .dashboard-cards .stat-card.total .card-icon {
+  background: linear-gradient(135deg, rgba(44, 22, 88, 0.1), rgba(44, 22, 88, 0.05));
+  border: 1px solid rgba(44, 22, 88, 0.2);
+}
+
+.transacciones-page-container .dashboard-cards .stat-card.total .card-icon mat-icon {
+  color: #2c1658;
+}
+
+.transacciones-page-container .sin-transacciones {
+  text-align: center;
+  margin: 4rem auto;
+  max-width: 500px;
+  color: #e0e0e0;
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.transacciones-page-container .sin-transacciones mat-icon {
+  font-size: 4rem;
+  height: 4rem;
+  width: 4rem;
+  margin-bottom: 1.5rem;
+  color: rgba(164, 108, 245, 0.6);
+  animation: float 3s infinite ease-in-out;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.transacciones-page-container .sin-transacciones p {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+.transacciones-page-container .search-filter {
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.transacciones-page-container .search-filter mat-form-field {
+  width: 100%;
+  max-width: 550px;
+  display: block;
+}
+
+.transacciones-page-container .transacciones-table {
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.5s ease-out;
+}
+
+.transacciones-page-container .transacciones-table .acciones {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-width: 100px;
+}
+
+.transacciones-page-container .transacciones-table .acciones button {
+  transition: all 0.2s ease;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.transacciones-page-container .transacciones-table .acciones button mat-icon {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.transacciones-page-container .transacciones-table .acciones button[color=accent]:hover {
+  background-color: rgba(164, 108, 245, 0.1);
+  transform: translateY(-2px);
+}
+
+.transacciones-page-container .transacciones-table .acciones button[color=warn]:hover {
+  background-color: rgba(255, 59, 48, 0.1);
+  transform: translateY(-2px);
+}
+
+.transacciones-page-container .transacciones-table .acciones button[color=primary]:hover {
+  background-color: rgba(90, 200, 250, 0.1);
+  transform: translateY(-2px);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.transacciones-page-container .transacciones-table table {
+  width: 100%;
+  background-color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+.transacciones-page-container .transacciones-table table tr.mat-header-row {
+  background: linear-gradient(90deg, #2c1658, #a46cf5) !important;
+  height: 64px;
+  position: relative;
+}
+
+.transacciones-page-container .transacciones-table table th.mat-header-cell {
+  color: #ffffff !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  padding: 1rem 1.5rem !important;
+  border-bottom: none !important;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.transacciones-page-container .transacciones-table table th.mat-header-cell:last-child {
+  text-align: center;
+}
+
+.transacciones-page-container .transacciones-table table tr.mat-row {
+  height: 70px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.transacciones-page-container .transacciones-table table tr.mat-row:nth-child(odd) {
+  background-color: #f8f5ff !important;
+}
+
+.transacciones-page-container .transacciones-table table tr.mat-row:hover {
+  background-color: rgba(164, 108, 245, 0.1) !important;
+}
+
+.transacciones-page-container .transacciones-table table td.mat-cell {
+  padding: 1rem 1.5rem !important;
+  font-size: 1rem !important;
+  color: #333333;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+.transacciones-page-container .transacciones-table table td.mat-cell:last-child {
+  text-align: center;
+  padding: 0.5rem !important;
+}
+
+.transacciones-page-container .transacciones-table table td.mat-cell:first-child {
+  padding-left: 1.5rem !important;
+}
+
+.transacciones-page-container .transacciones-table table td.mat-cell:last-child {
+  padding-right: 1.5rem !important;
+}
+
+.transacciones-page-container .transacciones-table table .fecha-transaccion {
+  font-weight: 500;
+  color: #444444;
+}
+
+.transacciones-page-container .transacciones-table table .tipo-transaccion {
+  font-weight: 600;
+  color: #a46cf5;
+  background-color: rgba(164, 108, 245, 0.05);
+  padding: 5px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.transacciones-page-container .transacciones-table table .monto-cell {
+  font-weight: 700;
+  color: #333333 !important;
+  font-size: 1.05rem !important;
+}
+
+.transacciones-page-container .transacciones-table table .estado-anulada {
+  color: #F44336;
+  font-weight: 600;
+  background-color: rgba(244, 67, 54, 0.08);
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 5px rgba(244, 67, 54, 0.15);
+}
+
+.transacciones-page-container .transacciones-table table .estado-aprobada {
+  color: #4CAF50;
+  font-weight: 600;
+  background-color: rgba(76, 175, 80, 0.08);
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.15);
+}
+
+.transacciones-page-container .transacciones-table table .estado-pendiente {
+  color: #FF9800;
+  font-weight: 600;
+  background-color: rgba(255, 152, 0, 0.08);
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 5px rgba(255, 152, 0, 0.15);
+}
+
+.transacciones-page-container .transacciones-table table .estado-activa {
+  color: #4CAF50;
+  font-weight: 600;
+  background-color: rgba(76, 175, 80, 0.08);
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.15);
+}
+
+.transacciones-page-container .transacciones-table table .acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.transacciones-page-container .transacciones-table table .acciones button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.transacciones-page-container .transacciones-table table .acciones button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  transition: all 0.3s ease;
+}
+
+.transacciones-page-container .transacciones-table table .acciones button[color=accent] {
+  color: #a46cf5;
+}
+
+.transacciones-page-container .transacciones-table table .acciones button[color=accent]:hover {
+  background-color: rgba(164, 108, 245, 0.1);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 5px 10px rgba(164, 108, 245, 0.25);
+  border-color: rgba(164, 108, 245, 0.3);
+}
+
+.transacciones-page-container .transacciones-table table .acciones button[color=accent]:hover mat-icon {
+  transform: rotate(10deg);
+}
+
+.transacciones-page-container .transacciones-table table .acciones button[color=accent]:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(164, 108, 245, 0.2);
+}
+
+.transacciones-page-container .transacciones-table table .acciones button[color=warn] {
+  color: #ff5252;
+}
+
+.transacciones-page-container .transacciones-table table .acciones button[color=warn]:hover {
+  background-color: rgba(255, 82, 82, 0.1);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 5px 10px rgba(255, 82, 82, 0.25);
+  border-color: rgba(255, 82, 82, 0.3);
+}
+
+.transacciones-page-container .transacciones-table table .acciones button[color=warn]:hover mat-icon {
+  transform: rotate(90deg);
+}
+
+.transacciones-page-container .transacciones-table table .acciones button[color=warn]:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(255, 82, 82, 0.2);
+}
+
+.transacciones-page-container .transacciones-table .paginator-invisible {
+  height: 0;
+  visibility: hidden;
+  position: absolute;
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(to bottom, #ffffff, #f8f5ff);
+  border-top: 1px solid rgba(164, 108, 245, 0.1);
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container .paginacion-items-por-pagina {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container .paginacion-items-por-pagina span {
+  color: #444444;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container .paginacion-items-por-pagina mat-form-field {
+  width: 90px;
+  margin-bottom: -1.25em;
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container .paginacion-info {
+  color: #444444;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background-color: rgba(164, 108, 245, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(164, 108, 245, 0.1);
+  letter-spacing: 0.3px;
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container .paginacion-controles {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 0.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(164, 108, 245, 0.1);
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container .paginacion-controles button {
+  color: #a46cf5;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container .paginacion-controles button[disabled] {
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container .paginacion-controles button:not([disabled]):hover {
+  background-color: rgba(164, 108, 245, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(164, 108, 245, 0.15);
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container .paginacion-controles button:not([disabled]):active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(164, 108, 245, 0.1);
+}
+
+.transacciones-page-container .transacciones-table .paginacion-container .paginacion-controles button mat-icon {
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .transacciones-page-container {
+    padding: 1rem;
+  }
+  .transacciones-page-container .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .transacciones-page-container .header h1 {
+    margin-bottom: 1rem;
+  }
+  .transacciones-page-container .header button {
+    width: 100%;
+  }
+  .transacciones-page-container .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+}

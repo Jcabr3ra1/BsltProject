@@ -1,0 +1,280 @@
+.dialog-content {
+  background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+  color: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(164, 108, 245, 0.3);
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.dialog-header .header-icon {
+  color: #a46cf5;
+  font-size: 1.8rem;
+  height: 1.8rem;
+  width: 1.8rem;
+}
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.formulario-permiso {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.form-field label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+.form-field label .required {
+  color: #ff4d4f;
+  margin-left: 2px;
+}
+.form-field input, .form-field textarea {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(164, 108, 245, 0.3);
+  border-radius: 4px;
+  color: #ffffff;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+.form-field input:focus, .form-field textarea:focus {
+  border-color: #a46cf5;
+  box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.3);
+}
+.form-field input::placeholder, .form-field textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+.form-field input.ng-invalid.ng-touched, .form-field textarea.ng-invalid.ng-touched {
+  border-color: #ff4d4f;
+}
+.form-field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.form-field .error-message {
+  color: #ff4d4f;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.textarea-container {
+  position: relative;
+}
+.textarea-container textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 2.5rem;
+}
+.textarea-container mat-icon {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  color: #a46cf5;
+}
+
+.input-with-icon {
+  position: relative;
+}
+.input-with-icon input {
+  padding-right: 2.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input-with-icon mat-icon {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a46cf5;
+}
+
+.info-container {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(164, 108, 245, 0.2);
+  overflow: hidden;
+}
+.info-container .info-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(164, 108, 245, 0.1);
+  padding: 0.7rem 1rem;
+}
+.info-container .info-header h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #a46cf5;
+}
+.info-container .info-header mat-icon {
+  color: #a46cf5;
+  font-size: 1.1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+}
+.info-container .info-content {
+  padding: 0.8rem 1rem;
+}
+.info-container .info-content p {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+.info-container .info-content p strong {
+  color: #ffffff;
+  font-weight: 500;
+}
+.info-container .info-content p:last-child {
+  margin-bottom: 0;
+}
+.info-container.warning {
+  background-color: rgba(250, 173, 20, 0.05);
+  border-color: rgba(250, 173, 20, 0.2);
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+.info-container.warning mat-icon {
+  color: #faad14;
+  font-size: 1.1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+  margin-top: 0.1rem;
+}
+.info-container.warning p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(250, 173, 20, 0.9);
+  line-height: 1.4;
+}
+.info-container:not(.warning) {
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+.info-container:not(.warning) mat-icon {
+  color: #a46cf5;
+  font-size: 1.1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+  margin-top: 0.1rem;
+}
+.info-container:not(.warning) p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.dialog-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+.dialog-actions button mat-icon {
+  font-size: 1.1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+}
+.dialog-actions .btn-cancel {
+  background-color: transparent;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.dialog-actions .btn-cancel:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+.dialog-actions .btn-save {
+  background-color: #a46cf5;
+  color: #ffffff;
+}
+.dialog-actions .btn-save:hover:not(:disabled) {
+  background-color: #c39af7;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+.dialog-actions .btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: rgba(164, 108, 245, 0.6);
+  box-shadow: none;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 480px) {
+  .dialog-actions {
+    flex-direction: column;
+  }
+  .dialog-actions button {
+    width: 100%;
+  }
+}

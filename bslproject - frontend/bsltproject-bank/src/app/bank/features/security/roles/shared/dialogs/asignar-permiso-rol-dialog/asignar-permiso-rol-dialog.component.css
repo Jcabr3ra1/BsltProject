@@ -1,0 +1,220 @@
+.dialog-content {
+  background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+  color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(164, 108, 245, 0.3);
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.dialog-header .header-icon {
+  color: #a46cf5;
+  font-size: 1.8rem;
+  height: 1.8rem;
+  width: 1.8rem;
+}
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  gap: 1rem;
+}
+.loading-spinner span {
+  color: #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.permisos-lista {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.permisos-lista .filtro-container {
+  margin-bottom: 1rem;
+}
+.permisos-lista .filtro-container .search-box {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+.permisos-lista .filtro-container .search-box:focus-within {
+  background-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.3);
+}
+.permisos-lista .filtro-container .search-box mat-icon {
+  color: #a46cf5;
+}
+.permisos-lista .filtro-container .search-box input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  outline: none;
+  width: 100%;
+  font-size: 0.95rem;
+}
+.permisos-lista .filtro-container .search-box input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+.permisos-lista .permisos-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.permisos-lista .permisos-stats .stat-item {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid rgba(164, 108, 245, 0.2);
+}
+.permisos-lista .permisos-stats .stat-item .stat-label {
+  font-size: 0.8rem;
+  color: #e0e0e0;
+}
+.permisos-lista .permisos-stats .stat-item .stat-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+.permisos-lista .permisos-stats .stat-item .stat-value.assigned {
+  color: #a46cf5;
+}
+.permisos-lista .permiso-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.permisos-lista .permiso-item:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+.permisos-lista .permiso-item.asignado {
+  border-color: rgba(164, 108, 245, 0.3);
+  background-color: rgba(164, 108, 245, 0.1);
+}
+.permisos-lista .permiso-item .permiso-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-right: 1rem;
+}
+.permisos-lista .permiso-item .permiso-info strong {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+.permisos-lista .permiso-item .permiso-info small {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+.permisos-lista .permiso-item .acciones {
+  display: flex;
+  align-items: center;
+}
+.permisos-lista .permiso-item .acciones button.add-button {
+  color: #4cd964;
+}
+.permisos-lista .permiso-item .acciones button.add-button:hover {
+  background-color: rgba(76, 217, 100, 0.1);
+}
+.permisos-lista .permiso-item .acciones button.remove-button {
+  color: #ff3b30;
+}
+.permisos-lista .permiso-item .acciones button.remove-button:hover {
+  background-color: rgba(255, 59, 48, 0.1);
+}
+.permisos-lista .no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  color: #e0e0e0;
+}
+.permisos-lista .no-results mat-icon {
+  font-size: 2.5rem;
+  height: 2.5rem;
+  width: 2.5rem;
+  margin-bottom: 1rem;
+  color: rgba(164, 108, 245, 0.4);
+}
+.permisos-lista .no-results p {
+  font-size: 1rem;
+  text-align: center;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid rgba(164, 108, 245, 0.2);
+}
+.dialog-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.dialog-actions button.cancel-button {
+  background-color: #a46cf5;
+  color: #ffffff;
+}
+.dialog-actions button.cancel-button:hover {
+  background-color: rgb(134, 60, 242);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.permisos-lista::-webkit-scrollbar {
+  width: 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.permisos-lista::-webkit-scrollbar-thumb {
+  background-color: rgba(164, 108, 245, 0.3);
+  border-radius: 4px;
+}
+.permisos-lista::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(164, 108, 245, 0.5);
+}

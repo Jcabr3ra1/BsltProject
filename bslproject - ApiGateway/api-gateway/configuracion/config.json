@@ -1,0 +1,13 @@
+{
+    "servidor": {
+        "host": "0.0.0.0",
+        "puerto": 7777
+    },
+    "servicios": {
+        "seguridad": "http://localhost:8080",
+        "finanzas": "http://localhost:9999"
+    },
+    "seguridad": {
+        "clave_jwt": "qwertyuiopasdfghjklzxcvbnm123456"
+    }
+}

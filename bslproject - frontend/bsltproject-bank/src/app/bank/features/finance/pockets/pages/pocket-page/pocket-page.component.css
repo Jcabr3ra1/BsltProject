@@ -1,0 +1,604 @@
+.text-center {
+  text-align: center !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.pockets-page-container {
+  background: linear-gradient(145deg, #2c1658 0%, #1f1f1f 100%);
+  color: #ffffff;
+  padding: 2.5rem;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+.pockets-page-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="%23ffffff" fill-opacity="0.03" width="50" height="50" x="0" y="0"/><rect fill="%23ffffff" fill-opacity="0.03" width="50" height="50" x="50" y="50"/></svg>');
+  opacity: 0.05;
+  pointer-events: none;
+}
+.pockets-page-container .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+.pockets-page-container .header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(164, 108, 245, 0) 0%, rgba(164, 108, 245, 0.7) 50%, rgba(164, 108, 245, 0) 100%);
+}
+.pockets-page-container .header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-left: 1rem;
+}
+.pockets-page-container .header h1::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 70%;
+  background: #a46cf5;
+  border-radius: 4px;
+}
+.pockets-page-container .header h1 mat-icon {
+  color: #a46cf5;
+  margin-right: 0.75rem;
+  font-size: 2rem;
+  height: 2rem;
+  width: 2rem;
+  animation: pulse 2s infinite ease-in-out;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.pockets-page-container .header button[mat-raised-button] {
+  background: linear-gradient(135deg, #a46cf5, rgb(134, 60, 242));
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 6px 15px rgba(164, 108, 245, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+.pockets-page-container .header button[mat-raised-button]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: 0.6s;
+}
+.pockets-page-container .header button[mat-raised-button]:hover {
+  background: linear-gradient(135deg, rgb(179, 132, 247), #a46cf5);
+  box-shadow: 0 8px 20px rgba(164, 108, 245, 0.6);
+  transform: translateY(-3px);
+}
+.pockets-page-container .header button[mat-raised-button]:hover::before {
+  transform: translateX(100%);
+}
+.pockets-page-container .header button[mat-raised-button]:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(164, 108, 245, 0.4);
+}
+.pockets-page-container .header button[mat-raised-button] mat-icon {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+}
+.pockets-page-container mat-divider {
+  display: none;
+}
+.pockets-page-container .cargando {
+  display: flex;
+  justify-content: center;
+  margin: 4rem 0;
+  z-index: 10;
+}
+.pockets-page-container .cargando mat-spinner {
+  animation: fadeIn 0.5s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.pockets-page-container .sin-bolsillos {
+  text-align: center;
+  margin: 4rem auto;
+  max-width: 500px;
+  color: #e0e0e0;
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  animation: fadeIn 0.5s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.pockets-page-container .sin-bolsillos mat-icon {
+  font-size: 4rem;
+  height: 4rem;
+  width: 4rem;
+  margin-bottom: 1.5rem;
+  color: rgba(164, 108, 245, 0.6);
+  animation: float 3s infinite ease-in-out;
+}
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+.pockets-page-container .sin-bolsillos p {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  color: #ffffff;
+}
+.pockets-page-container .sin-bolsillos button {
+  margin-top: 1.5rem;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(164, 108, 245, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(164, 108, 245, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(164, 108, 245, 0);
+  }
+}
+.pockets-page-container .sin-bolsillos .paginacion-controles {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 0.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(164, 108, 245, 0.1);
+}
+.pockets-page-container .sin-bolsillos .paginacion-info {
+  color: #444444;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background-color: rgba(164, 108, 245, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(164, 108, 245, 0.1);
+  letter-spacing: 0.3px;
+}
+.pockets-page-container .bolsillos-table {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.5s ease-out;
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.pockets-page-container .bolsillos-table table {
+  width: 100%;
+  background-color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  border-collapse: collapse;
+  border-spacing: 0;
+  overflow: hidden;
+  table-layout: fixed;
+}
+.pockets-page-container .bolsillos-table table tr.mat-header-row {
+  background: linear-gradient(90deg, #2c1658, #a46cf5) !important;
+  height: 64px;
+  position: relative;
+}
+.pockets-page-container .bolsillos-table table tr.mat-header-row::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.1) 100%);
+}
+.pockets-page-container .bolsillos-table table th.mat-header-cell {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  padding: 0.75rem 0.5rem !important;
+  border-bottom: none !important;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.9rem !important;
+  position: relative;
+  white-space: nowrap;
+}
+.pockets-page-container .bolsillos-table table th.mat-header-cell:nth-child(4), .pockets-page-container .bolsillos-table table th.mat-header-cell:nth-child(5) {
+  text-align: right;
+}
+.pockets-page-container .bolsillos-table table th.mat-header-cell:nth-child(7), .pockets-page-container .bolsillos-table table th.mat-header-cell:nth-child(8) {
+  text-align: center;
+}
+.pockets-page-container .bolsillos-table table th.mat-header-cell::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.pockets-page-container .bolsillos-table table th.mat-header-cell:last-child::after {
+  display: none;
+}
+.pockets-page-container .bolsillos-table table tr.mat-row {
+  height: 70px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.pockets-page-container .bolsillos-table table tr.mat-row:nth-child(odd) {
+  background-color: #f8f5ff !important;
+}
+.pockets-page-container .bolsillos-table table tr.mat-row:hover {
+  background-color: rgba(164, 108, 245, 0.1) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  z-index: 1;
+  position: relative;
+}
+.pockets-page-container .bolsillos-table table td.mat-cell {
+  padding: 0.75rem 0.5rem !important;
+  color: #333333 !important;
+  border-bottom: 1px solid rgba(164, 108, 245, 0.1) !important;
+  font-size: 1rem !important;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.pockets-page-container .bolsillos-table table tr.mat-row:hover {
+  background-color: rgba(164, 108, 245, 0.1) !important;
+  transform: translateY(-2px);
+}
+.pockets-page-container .bolsillos-table .bolsillo-nombre {
+  color: #2c1658;
+  font-weight: 600;
+  font-size: 1.05rem;
+  position: relative;
+  display: inline-block;
+}
+.pockets-page-container .bolsillos-table .bolsillo-nombre:empty::before {
+  content: "Sin nombre";
+  font-style: italic;
+  color: #888888;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+.pockets-page-container .bolsillos-table .bolsillo-nombre::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: #2196F3;
+  transition: width 0.3s ease;
+}
+tr:hover .pockets-page-container .bolsillos-table .bolsillo-nombre::after {
+  width: 100%;
+}
+.pockets-page-container .bolsillos-table .saldo-cell, .pockets-page-container .bolsillos-table .meta-cell {
+  font-weight: 700;
+  color: #333333 !important;
+  font-size: 1.05rem !important;
+  position: relative;
+  text-align: right;
+}
+.pockets-page-container .bolsillos-table .saldo-cell::after, .pockets-page-container .bolsillos-table .meta-cell::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: #a46cf5;
+  transition: width 0.3s ease;
+}
+tr:hover .pockets-page-container .bolsillos-table .saldo-cell::after, tr:hover .pockets-page-container .bolsillos-table .meta-cell::after {
+  width: 60%;
+}
+.pockets-page-container .bolsillos-table .saldo-cell {
+  color: #4CAF50 !important;
+}
+.pockets-page-container .bolsillos-table .bolsillo-cell {
+  text-align: center;
+}
+.pockets-page-container .bolsillos-table .bolsillo-cell mat-icon {
+  font-size: 1.5rem;
+  height: 1.5rem;
+  width: 1.5rem;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+}
+tr:hover .pockets-page-container .bolsillos-table .bolsillo-cell mat-icon {
+  transform: scale(1.2);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
+}
+.pockets-page-container .bolsillos-table .bolsillo-cell mat-icon[color=primary] {
+  animation: pulse-success 2s infinite;
+}
+@keyframes pulse-success {
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+.pockets-page-container .bolsillos-table .bolsillo-cell mat-icon[color=warn] {
+  opacity: 0.7;
+}
+.pockets-page-container .bolsillos-table .cuenta-tipo {
+  font-weight: 600;
+  color: #a46cf5;
+  background-color: rgba(164, 108, 245, 0.08);
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 5px rgba(164, 108, 245, 0.1);
+  transition: all 0.3s ease;
+  letter-spacing: 0.3px;
+}
+tr:hover .pockets-page-container .bolsillos-table .cuenta-tipo {
+  background-color: rgba(164, 108, 245, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(164, 108, 245, 0.15);
+}
+.pockets-page-container .bolsillos-table .acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: center;
+}
+.pockets-page-container .bolsillos-table .acciones button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+.pockets-page-container .bolsillos-table .acciones button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  transition: all 0.3s ease;
+}
+.pockets-page-container .bolsillos-table .acciones button[color=accent] {
+  color: #a46cf5;
+}
+.pockets-page-container .bolsillos-table .acciones button[color=accent]:hover {
+  background-color: rgba(164, 108, 245, 0.1);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 5px 10px rgba(164, 108, 245, 0.25);
+  border-color: rgba(164, 108, 245, 0.3);
+}
+.pockets-page-container .bolsillos-table .acciones button[color=accent]:hover mat-icon {
+  transform: rotate(10deg);
+}
+.pockets-page-container .bolsillos-table .acciones button[color=accent]:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(164, 108, 245, 0.2);
+}
+.pockets-page-container .bolsillos-table .acciones button[color=warn] {
+  color: #ff5252;
+}
+.pockets-page-container .bolsillos-table .acciones button[color=warn]:hover {
+  background-color: rgba(255, 82, 82, 0.1);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 5px 10px rgba(255, 82, 82, 0.25);
+  border-color: rgba(255, 82, 82, 0.3);
+}
+.pockets-page-container .bolsillos-table .acciones button[color=warn]:hover mat-icon {
+  transform: rotate(90deg);
+}
+.pockets-page-container .bolsillos-table .acciones button[color=warn]:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(255, 82, 82, 0.2);
+}
+.pockets-page-container .paginacion-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(to bottom, #ffffff, #f8f5ff);
+  border-top: 1px solid rgba(164, 108, 245, 0.1);
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.03);
+}
+.pockets-page-container .paginacion-items-por-pagina {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.pockets-page-container .paginacion-items-por-pagina span {
+  color: #444444;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+.pockets-page-container .paginacion-items-por-pagina mat-form-field {
+  width: 90px;
+  margin-bottom: -1.25em;
+}
+.pockets-page-container .color-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pockets-page-container .color-box {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.pockets-page-container .color-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 50%);
+  border-radius: 50%;
+}
+.pockets-page-container .color-box:hover {
+  transform: scale(1.3) rotate(5deg);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+.pockets-page-container .color-cell {
+  text-align: center;
+}
+.pockets-page-container .paginacion-info {
+  color: #444444;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background-color: rgba(164, 108, 245, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(164, 108, 245, 0.1);
+  letter-spacing: 0.3px;
+}
+.pockets-page-container .paginacion-controles {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 0.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(164, 108, 245, 0.1);
+}
+.pockets-page-container .paginacion-controles button {
+  color: #a46cf5;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.pockets-page-container .paginacion-controles button[disabled] {
+  color: rgba(0, 0, 0, 0.2);
+}
+.pockets-page-container .paginacion-controles button:not([disabled]):hover {
+  background-color: rgba(164, 108, 245, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(164, 108, 245, 0.15);
+}
+.pockets-page-container .paginacion-controles button:not([disabled]):active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(164, 108, 245, 0.1);
+}
+.pockets-page-container .paginacion-controles button mat-icon {
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+  transition: all 0.3s ease;
+}
+.pockets-page-container .paginator-invisible {
+  height: 0;
+  visibility: hidden;
+  position: absolute;
+}

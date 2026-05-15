@@ -1,0 +1,392 @@
+{
+  "info": {
+    "name": "BSLTProject - Finanzas - Catálogos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección para probar los endpoints de catálogos del servicio financiero"
+  },
+  "item": [
+    {
+      "name": "Tipos de Movimiento",
+      "item": [
+        {
+          "name": "Obtener Todos los Tipos de Movimiento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-movimiento",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-movimiento"]
+            },
+            "description": "Obtiene todos los tipos de movimiento disponibles"
+          }
+        },
+        {
+          "name": "Crear Tipo de Movimiento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"NUEVO_TIPO_MOVIMIENTO\",\n    \"descripcion\": \"Descripción del nuevo tipo de movimiento\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-movimiento",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-movimiento"]
+            },
+            "description": "Crea un nuevo tipo de movimiento"
+          }
+        },
+        {
+          "name": "Obtener Tipo de Movimiento por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-movimiento/{{tipoMovimientoId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-movimiento", "{{tipoMovimientoId}}"]
+            },
+            "description": "Obtiene un tipo de movimiento específico por su ID"
+          }
+        },
+        {
+          "name": "Actualizar Tipo de Movimiento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"TIPO_MOVIMIENTO_ACTUALIZADO\",\n    \"descripcion\": \"Descripción actualizada del tipo de movimiento\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-movimiento/{{tipoMovimientoId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-movimiento", "{{tipoMovimientoId}}"]
+            },
+            "description": "Actualiza un tipo de movimiento existente"
+          }
+        },
+        {
+          "name": "Eliminar Tipo de Movimiento",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-movimiento/{{tipoMovimientoId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-movimiento", "{{tipoMovimientoId}}"]
+            },
+            "description": "Elimina un tipo de movimiento"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tipos de Transacción",
+      "item": [
+        {
+          "name": "Obtener Todos los Tipos de Transacción",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-transaccion",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-transaccion"]
+            },
+            "description": "Obtiene todos los tipos de transacción disponibles"
+          }
+        },
+        {
+          "name": "Crear Tipo de Transacción",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"NUEVO_TIPO_TRANSACCION\",\n    \"descripcion\": \"Descripción del nuevo tipo de transacción\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-transaccion",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-transaccion"]
+            },
+            "description": "Crea un nuevo tipo de transacción"
+          }
+        },
+        {
+          "name": "Obtener Tipo de Transacción por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-transaccion/{{tipoTransaccionId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-transaccion", "{{tipoTransaccionId}}"]
+            },
+            "description": "Obtiene un tipo de transacción específico por su ID"
+          }
+        },
+        {
+          "name": "Actualizar Tipo de Transacción",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"TIPO_TRANSACCION_ACTUALIZADO\",\n    \"descripcion\": \"Descripción actualizada del tipo de transacción\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-transaccion/{{tipoTransaccionId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-transaccion", "{{tipoTransaccionId}}"]
+            },
+            "description": "Actualiza un tipo de transacción existente"
+          }
+        },
+        {
+          "name": "Eliminar Tipo de Transacción",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/tipos-transaccion/{{tipoTransaccionId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "tipos-transaccion", "{{tipoTransaccionId}}"]
+            },
+            "description": "Elimina un tipo de transacción"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Estados de Transacción",
+      "item": [
+        {
+          "name": "Obtener Todos los Estados de Transacción",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion"]
+            },
+            "description": "Obtiene todos los estados de transacción disponibles"
+          }
+        },
+        {
+          "name": "Crear Estado de Transacción",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"NUEVO_ESTADO_TRANSACCION\",\n    \"descripcion\": \"Descripción del nuevo estado de transacción\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion"]
+            },
+            "description": "Crea un nuevo estado de transacción"
+          }
+        },
+        {
+          "name": "Obtener Estado de Transacción por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion/{{estadoTransaccionId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion", "{{estadoTransaccionId}}"]
+            },
+            "description": "Obtiene un estado de transacción específico por su ID"
+          }
+        },
+        {
+          "name": "Actualizar Estado de Transacción",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"ESTADO_TRANSACCION_ACTUALIZADO\",\n    \"descripcion\": \"Descripción actualizada del estado de transacción\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion/{{estadoTransaccionId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion", "{{estadoTransaccionId}}"]
+            },
+            "description": "Actualiza un estado de transacción existente"
+          }
+        },
+        {
+          "name": "Eliminar Estado de Transacción",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion/{{estadoTransaccionId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion", "{{estadoTransaccionId}}"]
+            },
+            "description": "Elimina un estado de transacción"
+          }
+        },
+        {
+          "name": "Inicializar Estados Predeterminados",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/estados-transaccion/inicializar",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "estados-transaccion", "inicializar"]
+            },
+            "description": "Inicializa los estados de transacción predeterminados en el sistema"
+          }
+        }
+      ]
+    }
+  ]
+}

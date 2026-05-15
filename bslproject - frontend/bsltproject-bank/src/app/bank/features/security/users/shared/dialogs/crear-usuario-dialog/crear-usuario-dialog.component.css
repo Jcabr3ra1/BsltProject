@@ -1,0 +1,311 @@
+.dialog-content {
+  background: linear-gradient(135deg, #2c1658 0%, #1f1f1f 100%);
+  color: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(164, 108, 245, 0.3);
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.dialog-header .header-icon {
+  color: #a46cf5;
+  font-size: 1.8rem;
+  height: 1.8rem;
+  width: 1.8rem;
+}
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.formulario {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.form-field label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+.form-field label .required {
+  color: #ff4d4f;
+  margin-left: 2px;
+}
+.form-field input, .form-field select {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(164, 108, 245, 0.3);
+  border-radius: 4px;
+  color: #ffffff;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+.form-field input:focus, .form-field select:focus {
+  border-color: #a46cf5;
+  box-shadow: 0 0 0 2px rgba(164, 108, 245, 0.3);
+}
+.form-field input::placeholder, .form-field select::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+.form-field input.ng-invalid.ng-touched, .form-field select.ng-invalid.ng-touched {
+  border-color: #ff4d4f;
+}
+.form-field select {
+  appearance: none;
+  background-color: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  color: #ffffff !important;
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 0.8rem;
+}
+.form-field select.custom-select {
+  padding-right: 2.5rem;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.form-field select option {
+  background-color: #2c1658;
+  color: #ffffff;
+  padding: 0.8rem;
+}
+.form-field .error-message {
+  color: #ff4d4f;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.select-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.select-container mat-icon {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a46cf5;
+  pointer-events: none;
+}
+
+.input-with-icon {
+  position: relative;
+}
+.input-with-icon input {
+  padding-right: 2.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.input-with-icon mat-icon {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a46cf5;
+}
+.input-with-icon mat-icon.clickable {
+  cursor: pointer;
+}
+
+.row-container {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+.row-container .half-width {
+  flex: 1 1 calc(50% - 0.5rem);
+  max-width: calc(50% - 0.5rem);
+}
+@media (max-width: 480px) {
+  .row-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .row-container .half-width {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.dialog-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+.dialog-actions button mat-icon {
+  font-size: 1.1rem;
+  height: 1.1rem;
+  width: 1.1rem;
+}
+.dialog-actions .btn-cancel {
+  background-color: transparent;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.dialog-actions .btn-cancel:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+.dialog-actions .btn-save {
+  background-color: #a46cf5;
+  color: #ffffff;
+}
+.dialog-actions .btn-save:hover:not(:disabled) {
+  background-color: #b685f7;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+.dialog-actions .btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: rgba(164, 108, 245, 0.6);
+  box-shadow: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pulseError {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 480px) {
+  .row-container {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .dialog-actions {
+    flex-direction: column;
+  }
+  .dialog-actions button {
+    width: 100%;
+  }
+}
+
+.error-general {
+  background-color: rgba(255, 87, 87, 0.2);
+  color: #ff5757;
+  padding: 0.75rem 1rem;
+  margin: 1rem;
+  border: 1px solid rgba(255, 87, 87, 0.4);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+}
+.error-general mat-icon {
+  margin-right: 0.75rem;
+  color: #ff5757;
+}
+
+.error-highlight {
+  animation: pulseError 0.5s ease-in-out;
+  box-shadow: 0 0 8px rgba(255, 87, 87, 0.4);
+}
+
+.password-strength {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+.password-strength .strength-bar {
+  height: 4px;
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+.password-strength .strength-bar.active-weak {
+  background-color: #ff4d4f;
+}
+.password-strength .strength-bar.active-medium {
+  background-color: #faad14;
+}
+.password-strength .strength-bar.active-strong {
+  background-color: #52c41a;
+}
+.password-strength .strength-text {
+  font-size: 0.75rem;
+  margin-left: 4px;
+  transition: all 0.3s ease;
+}
+.password-strength .strength-text.weak {
+  color: #ff4d4f;
+}
+.password-strength .strength-text.medium {
+  color: #faad14;
+}
+.password-strength .strength-text.strong {
+  color: #52c41a;
+}

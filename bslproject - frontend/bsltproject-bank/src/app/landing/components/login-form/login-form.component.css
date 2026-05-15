@@ -1,0 +1,229 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #2c1658, #1e1339);
+}
+.login-container .login-card {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  overflow: hidden;
+}
+.login-container .login-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background: linear-gradient(135deg, rgba(164, 108, 245, 0.1), rgba(195, 154, 247, 0.05));
+  border-radius: 0 0 0 100%;
+  z-index: 0;
+}
+.login-container .login-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, rgba(195, 154, 247, 0.05), rgba(164, 108, 245, 0.1));
+  border-radius: 0 100% 0 0;
+  z-index: 0;
+}
+.login-container .login-card .login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+.login-container .login-card .login-header .logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.login-container .login-card .login-header .logo-container .logo-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #a46cf5;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+.login-container .login-card .login-header .logo-container .logo-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2c1658;
+}
+.login-container .login-card .login-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c1658;
+  margin-bottom: 0.5rem;
+}
+.login-container .login-card .login-header p {
+  color: #666;
+  font-size: 1rem;
+}
+.login-container .login-card .loading-container {
+  text-align: center;
+  margin: 2rem 0;
+  position: relative;
+  z-index: 1;
+}
+.login-container .login-card .loading-container mat-spinner {
+  margin: 0 auto 1rem;
+}
+.login-container .login-card .loading-container p {
+  font-size: 1rem;
+  color: #2c1658;
+}
+.login-container .login-card form {
+  position: relative;
+  z-index: 1;
+}
+.login-container .login-card form .error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #d32f2f;
+  margin-bottom: 1.5rem;
+  padding: 0.8rem;
+  background-color: rgba(211, 47, 47, 0.05);
+  border-radius: 8px;
+}
+.login-container .login-card form .error-message mat-icon {
+  font-size: 20px;
+  color: #d32f2f;
+}
+.login-container .login-card form .form-field {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+.login-container .login-card form .forgot-password {
+  text-align: right;
+  margin-bottom: 1.5rem;
+}
+.login-container .login-card form .forgot-password a {
+  font-size: 0.9rem;
+  color: #a46cf5;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.login-container .login-card form .forgot-password a:hover {
+  text-decoration: underline;
+  color: #2c1658;
+}
+.login-container .login-card form .login-button {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 30px;
+  background-color: #a6ff5c;
+  color: #1e1339;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+.login-container .login-card form .login-button:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(166, 255, 92, 0.4);
+}
+.login-container .login-card form .login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.login-container .login-card form .login-button mat-icon {
+  color: #1e1339;
+}
+.login-container .login-card form .register-link {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+.login-container .login-card form .register-link p {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+}
+.login-container .login-card form .register-link p a {
+  font-weight: 600;
+  color: #a46cf5;
+  text-decoration: none;
+}
+.login-container .login-card form .register-link p a:hover {
+  text-decoration: underline;
+}
+.login-container .login-card form .secure-login {
+  text-align: center;
+  margin-top: 2rem;
+}
+.login-container .login-card form .secure-login .secure-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(164, 108, 245, 0.05);
+  border-radius: 20px;
+}
+.login-container .login-card form .secure-login .secure-item mat-icon {
+  font-size: 1rem;
+  color: #a46cf5;
+}
+.login-container .login-card form .secure-login .secure-item span {
+  font-size: 0.85rem;
+  color: #2c1658;
+}
+.login-container .login-card .login-footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.login-container .login-card .login-footer .app-badges p {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.8rem;
+}
+.login-container .login-card .login-footer .app-badges .badge-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.login-container .login-card .login-footer .app-badges .badge-icons .app-badge {
+  width: 45px;
+  height: 45px;
+  background-color: rgba(164, 108, 245, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.login-container .login-card .login-footer .app-badges .badge-icons .app-badge:hover {
+  background-color: #a46cf5;
+  transform: translateY(-3px);
+}
+.login-container .login-card .login-footer .app-badges .badge-icons .app-badge:hover mat-icon {
+  color: white;
+}
+.login-container .login-card .login-footer .app-badges .badge-icons .app-badge mat-icon {
+  color: #a46cf5;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}

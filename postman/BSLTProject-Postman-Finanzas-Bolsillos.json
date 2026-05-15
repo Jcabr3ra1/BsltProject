@@ -1,0 +1,150 @@
+{
+  "info": {
+    "name": "BSLTProject - Finanzas - Bolsillos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección para probar los endpoints de bolsillos del servicio financiero"
+  },
+  "item": [
+    {
+      "name": "Bolsillos",
+      "item": [
+        {
+          "name": "Obtener Todos los Bolsillos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos"]
+            },
+            "description": "Obtiene todos los bolsillos disponibles"
+          }
+        },
+        {
+          "name": "Crear Bolsillo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Bolsillo Ahorros\",\n    \"saldo\": 500,\n    \"cuenta_id\": \"{{cuentaId}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos"]
+            },
+            "description": "Crea un nuevo bolsillo"
+          }
+        },
+        {
+          "name": "Obtener Bolsillo por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos/{{bolsilloId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos", "{{bolsilloId}}"]
+            },
+            "description": "Obtiene un bolsillo específico por su ID"
+          }
+        },
+        {
+          "name": "Actualizar Bolsillo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Bolsillo Actualizado\",\n    \"saldo\": 750\n}"
+            },
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos/{{bolsilloId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos", "{{bolsilloId}}"]
+            },
+            "description": "Actualiza un bolsillo existente"
+          }
+        },
+        {
+          "name": "Eliminar Bolsillo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos/{{bolsilloId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos", "{{bolsilloId}}"]
+            },
+            "description": "Elimina un bolsillo"
+          }
+        },
+        {
+          "name": "Asignar Cuenta a Bolsillo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:7777/finanzas/bolsillos/{{bolsilloId}}/cuentas/{{cuentaId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "7777",
+              "path": ["finanzas", "bolsillos", "{{bolsilloId}}", "cuentas", "{{cuentaId}}"]
+            },
+            "description": "Asigna una cuenta a un bolsillo"
+          }
+        }
+      ]
+    }
+  ]
+}

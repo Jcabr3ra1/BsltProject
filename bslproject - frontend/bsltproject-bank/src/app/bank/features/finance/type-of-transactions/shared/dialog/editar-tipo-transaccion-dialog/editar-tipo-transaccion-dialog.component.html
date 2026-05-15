@@ -1,0 +1,58 @@
+<div class="dialog-content">
+  <div class="dialog-header">
+    <div class="header-icon-container">
+      <mat-icon class="header-icon">edit</mat-icon>
+    </div>
+    <h2 mat-dialog-title>Editar tipo de transacción</h2>
+  </div>
+
+  <form [formGroup]="form" class="formulario-transaccion">
+    <div class="form-field">
+      <label for="descripcion">Descripción<span class="required">*</span></label>
+      <div class="input-with-icon">
+        <input id="descripcion" type="text" formControlName="descripcion" placeholder="Ej. Pago de servicios">
+        <mat-icon>description</mat-icon>
+      </div>
+      
+      @if (form.get('descripcion')?.touched && form.get('descripcion')?.hasError('required')) {
+        <div class="error-message">
+          <mat-icon>error_outline</mat-icon>
+          <span>La descripción es obligatoria</span>
+        </div>
+      }
+      
+      @if (form.get('descripcion')?.touched && form.get('descripcion')?.hasError('minlength')) {
+        <div class="error-message">
+          <mat-icon>error_outline</mat-icon>
+          <span>Debe tener al menos 3 caracteres</span>
+        </div>
+      }
+    </div>
+    
+    <!-- Información del elemento a editar -->
+    <div class="edit-info-container">
+      <mat-icon>info</mat-icon>
+      <div class="edit-info-content">
+        <p><strong>ID:</strong> {{ getFormattedId() }}</p>
+        <p><strong>Descripción original:</strong> {{ descripcionOriginal }}</p>
+        <p>Estás editando un tipo de transacción existente. Los cambios afectarán a todas las transacciones asociadas.</p>
+      </div>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">
+        <mat-icon>close</mat-icon>
+        <span>Cancelar</span>
+      </button>
+      <button type="submit" class="btn-save" [disabled]="form.invalid || !form.dirty" (click)="guardar()">
+        @if (isLoading) {
+          <div class="spinner"></div>
+          <span>Procesando...</span>
+        } @else {
+          <mat-icon>save</mat-icon>
+          <span>Actualizar</span>
+        }
+      </button>      
+    </div>
+  </form>
+</div>
