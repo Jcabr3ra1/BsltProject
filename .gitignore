@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+target/
+*.class
+
+# Angular cache
+.angular/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.egg-info/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Claude Code internal
+.agents/
+skills-lock.json
+
+# pnpm
+pnpm-lock.yaml
+pnpm-workspace.yaml
+
+# Test artifacts
+test_sass.css
+test_sass_out.css
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
